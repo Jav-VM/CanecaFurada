@@ -1,0 +1,25 @@
+{% comment %}
+Carta de grifos: imagen que sube el propietario desde el admin. Mientras no
+haya ninguna publicada se reserva su hueco. Parámetro: tap_menu (o None).
+{% endcomment %}
+<section aria-labelledby="carta-grifos" class="mb-16">
+  {% include "components/section_heading.html" with id="carta-grifos" eyebrow="En grifo" title=tap_menu.title|default:"Carta de grifos" %}
+  {% if tap_menu %}
+    <figure class="card p-3 sm:p-4">
+      <img src="{{ tap_menu.image.url }}" alt="{{ tap_menu.title }}: cervezas que hay ahora en los grifos{% if tap_menu.text_alternative %} (versión en texto a continuación){% endif %}" {% if tap_menu.image_width %}width="{{ tap_menu.image_width }}" height="{{ tap_menu.image_height }}"{% endif %} loading="lazy" decoding="async" class="mx-auto h-auto w-full max-w-3xl rounded-xl">
+      {% if tap_menu.text_alternative %}
+        <figcaption class="mt-4">
+          <details>
+            <summary class="link cursor-pointer font-semibold">Ver la carta de grifos en texto</summary>
+            <p class="mt-3 text-sm text-mist">{{ tap_menu.text_alternative|linebreaksbr }}</p>
+          </details>
+        </figcaption>
+      {% endif %}
+    </figure>
+  {% else %}
+    <div class="pending flex min-h-48 flex-col items-center justify-center gap-2 text-center" data-tap-menu-placeholder>
+      <p class="font-semibold text-paper">La carta de grifos se publicará aquí</p>
+      <p>Mientras tanto, pregunta en la barra qué hay hoy en los grifos.</p>
+    </div>
+  {% endif %}
+</section>

@@ -3,13 +3,37 @@
 {% block content %}
 {% include "components/page_header.html" with eyebrow="Carta" title="Lo que servimos" intro="Cervezas de la casa, invitadas y de temporada." %}
 
-<section aria-labelledby="carta-listado" class="container-page py-16">
-  <h2 id="carta-listado" class="sr-only">Carta</h2>
+<div class="container-page py-16">
   {% if categories %}
-    {% for category in categories %}<div class="card mb-6">{{ category }}</div>{% endfor %}
-  {% else %}
-    {% url 'web:contact' as contact_url %}
-    {% include "components/empty_state.html" with title="Estamos preparando la carta online" text="Mientras tanto, pregunta en la barra por las cervezas de hoy." cta_url=contact_url cta_label="Dónde estamos" %}
+    <nav aria-label="Categorías de la carta" class="mb-12">
+      <ul class="flex flex-wrap gap-2">
+        <li><a href="#carta-grifos" class="badge badge-muted no-underline hover:text-gold">Grifos</a></li>
+        {% for category in categories %}
+          <li><a href="#{{ category.slug }}" class="badge badge-muted no-underline hover:text-gold">{{ category.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
   {% endif %}
-</section>
+
+  {% include "components/tap_menu.html" %}
+
+  {% if categories %}
+    {% for category in categories %}
+      <section aria-labelledby="{{ category.slug }}" class="mb-16 scroll-mt-24 last:mb-0">
+        {% include "components/section_heading.html" with id=category.slug title=category.name intro=category.description %}
+        <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {% for product in category.public_products %}
+            <li>{% include "components/product_card.html" %}</li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  {% else %}
+    <section aria-labelledby="carta-listado">
+      <h2 id="carta-listado" class="sr-only">Productos</h2>
+      {% url 'web:contact' as contact_url %}
+      {% include "components/empty_state.html" with title="Estamos preparando la carta online" text="Mientras tanto, pregunta en la barra por las cervezas de hoy." cta_url=contact_url cta_label="Dónde estamos" %}
+    </section>
+  {% endif %}
+</div>
 {% endblock %}

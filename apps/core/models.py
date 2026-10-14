@@ -32,6 +32,8 @@ class AuditEvent(models.Model):
         EMAIL_CHANGE_REQUESTED = "EMAIL_CHANGE_REQUESTED", "Cambio de email solicitado"
         EMAIL_CHANGED = "EMAIL_CHANGED", "Email modificado"
         PROFILE_UPDATED = "PROFILE_UPDATED", "Perfil modificado"
+        PRODUCT_STATUS_CHANGED = "PRODUCT_STATUS_CHANGED", "Publicación de producto modificada"
+        PRODUCT_AVAILABILITY_CHANGED = "PRODUCT_AVAILABILITY_CHANGED", "Disponibilidad de producto modificada"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

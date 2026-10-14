@@ -32,6 +32,7 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     "apps.core",
     "apps.accounts",
+    "apps.catalog",
     "apps.web",
 ]
 
@@ -154,6 +155,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Imágenes de la carta (apps.catalog.validators): tamaño máximo del fichero y
+# de cada lado en píxeles.
+CATALOG_IMAGE_MAX_BYTES = 5 * 1024 * 1024
+CATALOG_IMAGE_MAX_DIMENSION = 5000
 
 # --- Email ------------------------------------------------------------------
 # Proveedor SMTP configurable por variables de entorno. Desarrollo usa la

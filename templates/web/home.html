@@ -54,12 +54,12 @@
   </div>
 </section>
 
-{# --- Selección de cervezas (Fase 4) ------------------------------------------ #}
+{# --- Selección de cervezas: destacadas, publicadas y disponibles --------------- #}
 <section aria-labelledby="cervezas-titulo" class="container-page py-20">
   {% include "components/section_heading.html" with id="cervezas-titulo" eyebrow="Selección" title="Nuestras cervezas" %}
   {% if featured_beers %}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {% for beer in featured_beers %}<li class="card card-hover">{{ beer }}</li>{% endfor %}
+      {% for product in featured_beers %}<li>{% include "components/product_card.html" %}</li>{% endfor %}
     </ul>
   {% else %}
     {% url 'web:menu' as menu_url %}

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
@@ -10,3 +11,8 @@ urlpatterns = [
     path("cuenta/", include("apps.accounts.urls")),
     path("", include("apps.web.urls")),
 ]
+
+# Solo en desarrollo: Django sirve las imágenes subidas. En producción las
+# servirá el almacenamiento que se defina en la Fase 12 (`static()` no hace
+# nada con DEBUG=False).
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

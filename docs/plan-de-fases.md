@@ -8,7 +8,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 1 | Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** ([detalle](fase-01-proyecto-base.md)) |
 | 2 | Autenticación, registro, perfiles, verificación de email y permisos | **Completa** ([detalle](fase-02-registro-perfil-verificacion.md)) |
 | 3 | Sistema de diseño y web pública | **Completa** ([detalle](fase-03-sistema-diseno-web-publica.md)) |
-| 4 | Carta y cervezas | Pendiente |
+| 4 | Carta y cervezas | **Completa** ([detalle](fase-04-carta.md)) |
 | 5 | Fidelización: ledger de puntos y QR personal | Pendiente |
 | 6 | Panel de empleado y registro de compras | Pendiente |
 | 7 | Recompensas y canjes | Pendiente |
@@ -50,6 +50,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Depende de:** Fases 0–1 y 3 (sistema de diseño).
 - **Incluye:** categorías, productos fijos, cervezas propias/invitadas/rotativas, 14 grifos, estilos, graduación, precios `DecimalField` (2 decimales), imágenes validadas, disponibilidad, publicación y archivo sin borrar historial; gestión por el propietario sin tocar código; página pública Carta.
 - **Criterios:** validación de precios e imágenes; solo OWNER gestiona; productos archivados no se borran.
+- **Ajuste (2026-10-14, decidido por el usuario):** en lugar de modelar 14 grifos, el propietario sube una imagen de la carta de grifos (`TapMenu`) y la Carta reserva su hueco hasta entonces. Un único precio por producto; las cervezas agotadas se muestran como "Agotada"; la gestión se hace en el admin de Django.
 
 ## Fase 5 — Fidelización: ledger de puntos y QR personal
 - **Depende de:** Fase 2.
