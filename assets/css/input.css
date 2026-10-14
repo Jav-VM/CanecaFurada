@@ -108,6 +108,31 @@
   .result-row { @apply flex min-h-16 items-center justify-between gap-4 px-5 py-3 no-underline hover:text-gold; }
   .done-banner { @apply flex items-center justify-center gap-3 rounded-xl border-2 border-ok p-4 text-ok; }
 
+  /* Dashboard del propietario (Fase 9): menú lateral en escritorio, barra deslizable en móvil */
+  .dash-nav { @apply flex gap-1 overflow-x-auto py-2 lg:flex-col lg:overflow-visible lg:py-0; }
+  .dash-nav-link {
+    @apply flex min-h-11 items-center whitespace-nowrap rounded-full px-4 text-sm font-bold uppercase tracking-wider
+      text-mist no-underline hover:text-paper aria-[current=page]:bg-gold aria-[current=page]:text-ink lg:rounded-lg;
+  }
+  .dash-subnav { @apply mb-6 flex flex-wrap gap-2; }
+  .filters { @apply grid gap-4 rounded-2xl border border-line bg-coal p-4 sm:grid-cols-2 lg:grid-cols-4; }
+  .filters .field label { @apply text-xs uppercase tracking-wider text-mist; }
+  .table-wrap { @apply overflow-x-auto rounded-2xl border border-line bg-coal; }
+  .data-table { @apply w-full text-left text-sm; }
+  .data-table th { @apply whitespace-nowrap border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wider text-mist; }
+  .data-table td { @apply border-b border-line px-4 py-3 align-top; }
+  .data-table tr:last-child td { @apply border-b-0; }
+  .num { @apply text-right tabular-nums; }
+  .note { @apply text-sm text-mist; }
+  .stat-sub { @apply mt-1 text-xs text-mist; }
+  /* Barra de magnitud de una sola serie: dorado sobre la pista; el valor va siempre en texto al lado */
+  .bar-track { @apply h-2.5 w-full rounded-full bg-line; }
+  .bar-fill { @apply h-2.5 rounded-full bg-gold; }
+  .btn-sm { @apply min-h-9 px-4 py-1.5 text-xs; }
+  .field textarea {
+    @apply block w-full rounded-lg border border-line bg-ink px-3.5 py-2.5 text-base text-paper transition hover:border-mist focus:border-gold;
+  }
+
   /* Contenido pendiente de aportar por el propietario */
   .pending { @apply rounded-xl border border-dashed border-line p-4 text-sm text-mist; }
 

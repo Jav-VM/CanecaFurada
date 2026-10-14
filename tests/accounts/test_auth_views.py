@@ -25,9 +25,8 @@ class LoginLogoutTests(TestCase):
     def test_owner_and_employee_home(self):
         owner = make_user(email="o@example.com", role=User.Role.OWNER)
         self.client.force_login(owner)
-        self.assertRedirects(
-            self.client.get(reverse("accounts:home")), reverse("admin:index"), fetch_redirect_response=False
-        )
+        # Desde la Fase 9 el propietario va a su dashboard.
+        self.assertRedirects(self.client.get(reverse("accounts:home")), reverse("dashboard:home"))
         employee = make_user(email="e@example.com", role=User.Role.EMPLOYEE)
         self.client.force_login(employee)
         self.assertRedirects(self.client.get(reverse("accounts:home")), reverse("staff:home"))

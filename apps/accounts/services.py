@@ -265,6 +265,15 @@ def set_user_active(*, actor, user, is_active):
     return target
 
 
+def record_customer_data_access(*, actor, customer):
+    """
+    Deja constancia de que el propietario abrió la ficha completa de un cliente
+    (Fase 9): quién, cuándo y de qué cliente (por `public_id`), sin los datos.
+    """
+    _ensure_active_owner(actor)
+    record_audit_event(action=AuditEvent.Action.CUSTOMER_DATA_VIEWED, actor=actor, target=customer)
+
+
 # --- Registro público ---------------------------------------------------------
 
 

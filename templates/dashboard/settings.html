@@ -1,0 +1,28 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Configuración · Dashboard{% endblock %}
+{% block heading %}Configuración{% endblock %}
+{% block body %}
+<section aria-labelledby="conversion" class="max-w-2xl">
+  <h2 id="conversion" class="heading-md mb-2">Conversión de puntos</h2>
+  <p class="mb-4">Vigente: <strong data-current-rate>{{ rate.points_per_euro }} puntos por euro</strong>{% if not rate.rule %} (valor por defecto, pendiente de confirmar){% endif %}. Los puntos se redondean hacia abajo.</p>
+  {% include "components/form_errors.html" %}
+  <form method="post" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Aplicar nueva conversión</button>
+  </form>
+  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">Historial</h3>
+  {% if rules %}
+    <ul class="card space-y-2 text-sm">{% for rule in rules %}<li>{{ rule.points_per_euro }} pts/€ desde {{ rule.valid_from|date:"d/m/Y H:i" }}{% if rule.created_by %} · {{ rule.created_by.get_full_name }}{% endif %}{% if rule.note %} · {{ rule.note }}{% endif %}</li>{% endfor %}</ul>
+  {% else %}<p class="note">Todavía no se ha creado ninguna regla: se aplica el valor por defecto.</p>{% endif %}
+</section>
+
+<section aria-labelledby="fijos" class="mt-10 max-w-2xl">
+  <h2 id="fijos" class="heading-md mb-2">Valores fijados en la configuración del servidor</h2>
+  <p class="note mb-4">Se cambian en los ajustes del proyecto, no desde aquí.</p>
+  <dl class="card grid gap-3 text-sm sm:grid-cols-2">
+    {% for label, value in read_only_settings %}<div><dt class="text-mist">{{ label }}</dt><dd class="font-semibold">{{ value }}</dd></div>{% endfor %}
+  </dl>
+  <p class="note mt-4">Administración técnica (auditoría, gestión avanzada): <a class="link" href="{{ admin_url }}">admin</a>.</p>
+</section>
+{% endblock %}

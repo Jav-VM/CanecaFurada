@@ -1,0 +1,16 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Contenido · Dashboard{% endblock %}
+{% block heading %}Contenido del local{% endblock %}
+{% block intro %}<p class="lead mt-2">Datos que se muestran en la web pública (inicio, La cervecería, Contacto y pie de página). Lo que dejes vacío aparece como «Pendiente de publicar».</p>{% endblock %}
+{% block body %}
+<div class="max-w-2xl">
+  {% include "components/form_errors.html" %}
+  <form method="post" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    <p class="note">Son datos públicos del local: no escribas datos personales de clientes ni de empleados.</p>
+    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar contenido</button>
+  </form>
+  <p class="note mt-4">El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas.</p>
+</div>
+{% endblock %}

@@ -94,3 +94,58 @@ def staff_purchases_summary(staff, *, since):
         registered_by=staff, status=Purchase.Status.COMPLETED, created_at__gte=since
     ).aggregate(count=Count("id"), amount=Coalesce(Sum("amount"), Decimal("0.00")))
     return totals["count"], Decimal(totals["amount"]).quantize(Decimal("0.01"))
+
+
+# --- Dashboard del propietario (Fase 9) ---------------------------------------------
+
+
+def _require_owner(actor):
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede ver todas las compras.")
+
+
+def _in_period(queryset, start, end, field="created_at"):
+    if start is not None:
+        queryset = queryset.filter(**{f"{field}__gte": start})
+    if end is not None:
+        queryset = queryset.filter(**{f"{field}__lt": end})
+    return queryset
+
+
+def all_purchases(*, actor, start=None, end=None, registered_by=None, status=None):
+    """Todas las compras registradas (solo propietario), con sus puntos, cliente y empleado."""
+    _require_owner(actor)
+    queryset = _in_period(Purchase.objects.all(), start, end)
+    if registered_by is not None:
+        queryset = queryset.filter(registered_by=registered_by)
+    if status:
+        queryset = queryset.filter(status=status)
+    return (
+        queryset.select_related("customer", "registered_by")
+        .only(
+            "public_id", "amount", "created_at", "status", "source",
+            "customer__public_id", "customer__first_name", "customer__last_name",
+            "registered_by__first_name", "registered_by__last_name",
+        )
+        .annotate(points=Coalesce(Sum("points_transactions__points"), 0))
+        .order_by("-created_at", "-id")
+    )
+
+
+def purchases_by_staff(*, actor, start=None, end=None):
+    """Número e importe de compras vigentes por miembro del personal en el periodo."""
+    _require_owner(actor)
+    queryset = _in_period(Purchase.objects.filter(status=Purchase.Status.COMPLETED), start, end)
+    rows = (
+        queryset.values("registered_by")
+        .annotate(count=Count("id"), amount=Coalesce(Sum("amount"), Decimal("0.00")))
+        .order_by()
+    )
+    return {row["registered_by"]: (row["count"], Decimal(row["amount"]).quantize(Decimal("0.01"))) for row in rows}
+
+
+def customer_ids_with_purchases(*, actor, start=None, end=None):
+    """Clientes con al menos una compra vigente en el periodo (para filtrar estadísticas)."""
+    _require_owner(actor)
+    queryset = _in_period(Purchase.objects.filter(status=Purchase.Status.COMPLETED), start, end)
+    return queryset.values("customer").distinct()

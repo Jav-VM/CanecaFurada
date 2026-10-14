@@ -1,0 +1,82 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Recompensas · Dashboard{% endblock %}
+{% block heading %}Recompensas{% endblock %}
+{% block body %}
+<section aria-labelledby="catalogo">
+  <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+    <h2 id="catalogo" class="heading-md">Catálogo</h2>
+    <a class="btn btn-primary btn-sm" href="{% url 'admin:rewards_reward_add' %}">Nueva recompensa</a>
+  </div>
+  {% if rewards %}
+    <div class="table-wrap">
+      <table class="data-table" data-reward-list>
+        <thead><tr><th scope="col">Recompensa</th><th scope="col" class="num">Coste</th><th scope="col">Estado</th><th scope="col" class="num">Unidades</th><th scope="col" class="num">Utilizadas</th><th scope="col" class="num">Pendientes</th><th scope="col">Acciones</th></tr></thead>
+        <tbody>
+          {% for reward in rewards %}
+            <tr>
+              <td class="font-semibold">{{ reward.name }}</td>
+              <td class="num">{{ reward.points_cost }} pts</td>
+              <td>{{ reward.get_status_display }}</td>
+              <td class="num">{% if reward.is_unlimited %}Sin límite{% else %}{{ reward.stock }}{% endif %}</td>
+              <td class="num">{{ reward.used_count }}</td>
+              <td class="num">{{ reward.pending_count }}</td>
+              <td>
+                <form method="post" action="{% url 'dashboard:reward_status' reward.public_id %}" class="flex flex-wrap gap-2">
+                  {% csrf_token %}
+                  {% for value in manageable %}{% if value != reward.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "ACTIVE" %}Activar{% elif value == "PAUSED" %}Pausar{% else %}Archivar{% endif %}</button>{% endif %}{% endfor %}
+                  <a class="btn btn-ghost btn-sm" href="{% url 'admin:rewards_reward_change' reward.pk %}">Editar</a>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="pending">Todavía no hay recompensas.</p>
+  {% endif %}
+  <p class="note mt-3">La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan.</p>
+</section>
+
+<section aria-labelledby="canjes" class="mt-10">
+  <h2 id="canjes" class="heading-md mb-4">Canjes</h2>
+  <form method="get" class="filters mb-4" aria-label="Filtrar canjes">
+    {% include "dashboard/_period_fields.html" %}
+    <div class="field">
+      <label for="r-estado">Estado</label>
+      <select name="estado" id="r-estado">{% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+    </div>
+    <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+  </form>
+  {% include "dashboard/_period_notice.html" %}
+  <dl class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div class="stat"><dt class="stat-label">Solicitados</dt><dd class="stat-value">{{ stats.requested }}</dd></div>
+    <div class="stat"><dt class="stat-label">Utilizados</dt><dd class="stat-value">{{ stats.used }}</dd><dd class="stat-sub">Validados en barra</dd></div>
+    <div class="stat"><dt class="stat-label">Cancelados o caducados</dt><dd class="stat-value">{{ stats.closed }}</dd></div>
+    <div class="stat"><dt class="stat-label">Pendientes ahora</dt><dd class="stat-value">{{ stats.pending_now }}</dd><dd class="stat-sub">Sin filtro de fechas</dd></div>
+  </dl>
+  {% if page.object_list %}
+    <div class="table-wrap mt-6">
+      <table class="data-table" data-redemption-list>
+        <thead><tr><th scope="col">Solicitado</th><th scope="col">Cliente</th><th scope="col">Recompensa</th><th scope="col" class="num">Puntos</th><th scope="col">Estado</th><th scope="col">Validado por</th></tr></thead>
+        <tbody>
+          {% for r in page %}
+            <tr>
+              <td class="whitespace-nowrap">{{ r.created_at|date:"d/m/Y H:i" }}</td>
+              <td><a class="link" href="{% url 'dashboard:customer_detail' r.customer.public_id %}">{{ r.customer.get_full_name }}</a></td>
+              <td>{{ r.reward.name }}</td>
+              <td class="num">{{ r.points_cost }}</td>
+              <td>{{ r.get_status_display }}</td>
+              <td>{% if r.validated_by %}{{ r.validated_by.get_full_name }} · {{ r.validated_at|date:"d/m H:i" }}{% else %}—{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "dashboard/_pagination.html" %}
+  {% else %}
+    <p class="pending mt-6">No hay canjes con estos filtros.</p>
+  {% endif %}
+  <p class="note mt-3">Los códigos de canje no se muestran nunca en el dashboard.</p>
+</section>
+{% endblock %}

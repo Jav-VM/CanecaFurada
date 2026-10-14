@@ -38,6 +38,7 @@ LOCAL_APPS = [
     "apps.purchases",
     "apps.rewards",
     "apps.staff",
+    "apps.dashboard",
     "apps.web",
 ]
 

@@ -435,3 +435,21 @@ def visible_redemptions_for_staff(user):
     if is_staff_member(user):
         return Redemption.objects.filter(validated_by=user)
     return Redemption.objects.none()
+
+
+# Estados a los que el propietario puede pasar una recompensa desde el dashboard.
+MANAGEABLE_REWARD_STATUSES = (Reward.Status.ACTIVE, Reward.Status.PAUSED, Reward.Status.ARCHIVED)
+
+
+def set_reward_status(*, actor, reward, status):
+    """Activa, pausa o archiva una recompensa (solo propietario). Nunca la borra."""
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede gestionar las recompensas.")
+    if status not in MANAGEABLE_REWARD_STATUSES:
+        raise ValidationError("Estado de recompensa no válido.")
+    with transaction.atomic():
+        locked = Reward.objects.select_for_update().get(pk=reward.pk)
+        if locked.status == status:
+            return locked
+        locked.status = status
+        return save_reward(actor=actor, reward=locked, changed_fields=["status"])

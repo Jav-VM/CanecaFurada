@@ -13,7 +13,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 6 | Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** ([detalle](fase-06-fidelizacion.md)) |
 | 7 | Recompensas y canjes | **Completa** ([detalle](fase-07-recompensas-canjes.md)) |
 | 8 | Panel de empleados | **Completa** ([detalle](fase-08-panel-empleados.md)) |
-| 9 | Dashboard del propietario y estadísticas | Pendiente |
+| 9 | Dashboard del propietario y estadísticas | **Completa** ([detalle](fase-09-dashboard-propietario.md)) |
 | 10 | Eventos y reservas | Pendiente |
 | 11 | API, auditoría, seguridad y preparación final para la app móvil | Pendiente |
 | — | Notificaciones completas y envío de promociones de cumpleaños | Pendiente (sin número asignado tras la reordenación) |
@@ -86,6 +86,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Depende de:** Fases 2–8 (la gestión de eventos y reservas se añadirá al dashboard en la Fase 10).
 - **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos (interfaz para `ledger.adjust_points`/`reverse_movement`), recompensas y canjes (sobre `rewards.services.save_reward` y los selectores), carta, contenido editable y configuración de fidelización; estadísticas reales (sobre `purchases.selectors.registered_purchases_stats` y `loyalty.selectors.points_stats`) y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
 - **Criterios:** acceso solo OWNER; las compras registradas no se presentan como facturación total; tests de permisos.
+- **Implementado (2026-10-14):** app `apps.dashboard` en `/dashboard/` con modelo híbrido (acciones rápidas en el dashboard, fichas completas en el admin), contenido del local editable (`web.BusinessInfo`) y Eventos/Reservas visibles como «Fase 10» sin cifras (decisiones del usuario). Ver [fase-09-dashboard-propietario.md](fase-09-dashboard-propietario.md).
 
 ## Fase 10 — Eventos y reservas (antes Fase 8)
 - **Depende de:** Fases 2–3.

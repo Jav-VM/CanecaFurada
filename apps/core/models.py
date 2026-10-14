@@ -41,6 +41,8 @@ class AuditEvent(models.Model):
         POINTS_REVERSED = "POINTS_REVERSED", "Movimiento de puntos compensado"
         REWARD_SAVED = "REWARD_SAVED", "Recompensa creada o modificada"
         REDEMPTION_VALIDATED = "REDEMPTION_VALIDATED", "Canje validado"
+        CUSTOMER_DATA_VIEWED = "CUSTOMER_DATA_VIEWED", "Ficha de cliente consultada"
+        SITE_CONTENT_UPDATED = "SITE_CONTENT_UPDATED", "Contenido del local modificado"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

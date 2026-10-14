@@ -251,6 +251,13 @@ def reverse_movement(*, actor, movement, reason):
     """
     _require_owner(actor)
     reason = _parse_reason(reason)
+    if movement.kind == Kind.REDEMPTION:
+        # Devolverlo aquí dejaría el canje pendiente o usado con los puntos
+        # devueltos: los canjes se devuelven cancelándolos o al caducar.
+        raise ValidationError(
+            "Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento.",
+            code="redemption_reversal",
+        )
     with transaction.atomic():
         result = _compensate(movement, actor=actor, reason=reason)
         if not result.created:

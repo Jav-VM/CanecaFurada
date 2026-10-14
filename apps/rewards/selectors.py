@@ -4,8 +4,13 @@ Consultas de recompensas y canjes para la web y la futura API (solo lectura).
 Los canjes se piden siempre para un cliente ya resuelto en el servidor (el
 usuario autenticado), nunca para un ID enviado por él.
 """
-from django.db.models import Q
+from dataclasses import dataclass
+
+from django.core.exceptions import PermissionDenied
+from django.db.models import Count, Q
 from django.utils import timezone
+
+from apps.accounts.permissions import is_owner
 
 from .models import Redemption, Reward
 
@@ -53,3 +58,73 @@ def validations_by(staff, *, since=None):
     if since is not None:
         queryset = queryset.filter(validated_at__gte=since)
     return queryset.select_related("customer", "reward").order_by("-validated_at", "-id")
+
+
+# --- Dashboard del propietario (Fase 9) ---------------------------------------------
+
+
+def _require_owner(actor):
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede ver todos los canjes.")
+
+
+def _in_period(queryset, field, start, end):
+    if start is not None:
+        queryset = queryset.filter(**{f"{field}__gte": start})
+    if end is not None:
+        queryset = queryset.filter(**{f"{field}__lt": end})
+    return queryset
+
+
+@dataclass(frozen=True)
+class RedemptionStats:
+    requested: int
+    used: int
+    closed: int
+    pending_now: int
+
+
+def redemption_stats(*, actor, start=None, end=None):
+    """
+    Canjes del periodo (solo propietario): solicitados, **utilizados**
+    (validados en barra en el periodo) y cancelados o caducados; más los
+    pendientes de recoger ahora mismo, sin filtrar por fechas.
+    """
+    _require_owner(actor)
+    Status = Redemption.Status
+    return RedemptionStats(
+        requested=_in_period(Redemption.objects.all(), "created_at", start, end).count(),
+        used=_in_period(Redemption.objects.filter(status=Status.USED), "validated_at", start, end).count(),
+        closed=_in_period(Redemption.objects.filter(status__in=Redemption.CLOSED_STATUSES), "closed_at", start, end).count(),
+        pending_now=Redemption.objects.filter(status=Status.PENDING).count(),
+    )
+
+
+def all_redemptions(*, actor, start=None, end=None, status=None):
+    """Canjes solicitados en el periodo (solo propietario). Sin el código: nunca se muestra."""
+    _require_owner(actor)
+    queryset = _in_period(Redemption.objects.all(), "created_at", start, end)
+    if status:
+        queryset = queryset.filter(status=status)
+    return (
+        queryset.select_related("customer", "reward", "validated_by")
+        .defer("code")
+        .order_by("-created_at", "-id")
+    )
+
+
+def rewards_overview(*, actor):
+    """Todas las recompensas con sus canjes utilizados y pendientes."""
+    _require_owner(actor)
+    Status = Redemption.Status
+    return Reward.objects.annotate(
+        used_count=Count("redemptions", filter=Q(redemptions__status=Status.USED)),
+        pending_count=Count("redemptions", filter=Q(redemptions__status=Status.PENDING)),
+    ).order_by("position", "points_cost", "name")
+
+
+def validations_by_staff(*, actor, start=None, end=None):
+    """Canjes validados por cada miembro del personal en el periodo: `{user_id: número}`."""
+    _require_owner(actor)
+    queryset = _in_period(Redemption.objects.filter(status=Redemption.Status.USED), "validated_at", start, end)
+    return {row["validated_by"]: row["count"] for row in queryset.values("validated_by").annotate(count=Count("id")).order_by()}

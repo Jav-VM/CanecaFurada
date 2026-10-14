@@ -17,7 +17,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar la conversión por defecto) |
 | 7 — Recompensas y canjes | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar el plazo de recogida) |
 | 8 — Panel de empleados | **Completa** (pendiente probar en móviles y tablets físicos) |
-| 9–11 | Pendientes (9 dashboard, 10 eventos y reservas, 11 API, auditoría, seguridad y preparación para la app) |
+| 9 — Dashboard del propietario y estadísticas | **Completa** (pendiente revisión visual en navegador y validar en PostgreSQL) |
+| 10–11 | Pendientes (10 eventos y reservas, 11 API, auditoría, seguridad y preparación para la app) |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -56,6 +57,7 @@ Rutas disponibles:
 - Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Recompensas muestra el catálogo real; Eventos, un estado vacío hasta su fase.
 - QR personal del cliente (email verificado) en `/cuenta/mi-qr/`, sus puntos (saldo, movimientos y compras) en `/cuenta/puntos/` y sus canjes en `/cuenta/canjes/`.
 - Panel del personal (empleados y propietarios) en `/panel/`: inicio, registrar compras (`/panel/compras/`), validar canjes (`/panel/canjes/`), consultar sus resultados (`/panel/resultados/`) y su perfil (`/panel/perfil/`).
+- Dashboard del propietario en `/dashboard/`: resumen, clientes (con estadísticas geográficas), empleados, compras, puntos, recompensas, carta, cervezas, promociones, contenido del local y configuración. Eventos y reservas llegan en la Fase 10.
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
 
@@ -72,6 +74,10 @@ Crea un empleado desde el admin y un cliente con el registro público; verifica 
 ## Panel de empleados
 
 Al entrar, un empleado llega a `/panel/`: botones grandes para registrar una compra o validar un canje, el resumen de lo que ha hecho hoy, sus resultados por periodo y su perfil. Está pensado para móvil y tablet. Solo ve el nombre abreviado de cada cliente (nunca su dirección, fecha de nacimiento, teléfono, email ni saldo) y no puede cambiar roles, puntos ni configuración. Flujo completo, seguridad y pruebas: [docs/fase-08-panel-empleados.md](docs/fase-08-panel-empleados.md).
+
+## Dashboard del propietario
+
+Al entrar, el propietario llega a `/dashboard/`. Ve cifras reales del periodo que elija (clientes, compras registradas e importe —que **no** es la facturación total del local—, puntos emitidos y canjeados, recompensas utilizadas), busca y filtra clientes, abre su ficha completa (consulta auditada), ve de qué zonas proceden según las direcciones que declararon (país, provincia, localidad o código postal, sin direcciones completas ni geolocalización por IP), gestiona empleados, ajusta o compensa puntos, cambia estados de productos, recompensas y promociones, edita el contenido público del local y la conversión de puntos. Las fichas completas de productos, recompensas y promociones se siguen editando en el admin. Solo propietarios; los empleados nunca acceden a la dirección ni a la fecha de nacimiento. Secciones, definiciones, seguridad y pruebas: [docs/fase-09-dashboard-propietario.md](docs/fase-09-dashboard-propietario.md).
 
 ## Puntos y promociones
 
@@ -111,7 +117,8 @@ apps/loyalty/      QR personal del cliente; ledger de puntos, conversión, promo
 apps/purchases/    registro de compras manuales, panel del personal y estadísticas de compras registradas
 apps/rewards/      catálogo de recompensas, canjes con código de un solo uso, panel de validación y caducidad
 apps/staff/        panel del personal: inicio, perfil del empleado y consulta de resultados (solo presentación)
-apps/web/          páginas públicas, contenido del local y context processor
+apps/dashboard/    dashboard del propietario: secciones de gestión y estadísticas (solo presentación)
+apps/web/          páginas públicas, contenido del local (editable desde el dashboard) y context processor
 templates/         plantilla base, componentes, páginas públicas, de cuenta, del panel del personal, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
 static/            CSS compilado, JS de mejora progresiva (menú, lector QR), jsQR incluido (vendor/) y recursos gráficos oficiales (img/brand/)
@@ -134,3 +141,4 @@ requirements/      dependencias por entorno
 - [Fase 6 — Fidelización](docs/fase-06-fidelizacion.md): reglas de puntos y redondeo, ledger y compensaciones, promociones, cumpleaños (29-F, anti-abuso, consentimiento), concurrencia, estadísticas, API prevista, tests y pendientes.
 - [Fase 7 — Recompensas y canjes](docs/fase-07-recompensas-canjes.md): proceso de canje, validaciones del servidor, código de un solo uso, estados, ledger, concurrencia, panel del personal, API prevista, tests y pendientes.
 - [Fase 8 — Panel de empleados](docs/fase-08-panel-empleados.md): flujo del empleado, rutas, diseño móvil, seguridad y privacidad, endpoints previstos, tests y pendientes.
+- [Fase 9 — Dashboard del propietario](docs/fase-09-dashboard-propietario.md): secciones, definiciones de las estadísticas, estadísticas geográficas, privacidad, contenido editable, endpoints previstos, tests y pendientes.

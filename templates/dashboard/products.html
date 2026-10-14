@@ -1,0 +1,62 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}{% if beers %}Cervezas{% else %}Carta{% endif %} · Dashboard{% endblock %}
+{% block heading %}{% if beers %}Cervezas{% else %}Carta{% endif %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% if beers %}Cervezas propias, invitadas y rotativas.{% else %}Productos fijos de la carta. Las cervezas están en su propia sección.{% endif %}</p>{% endblock %}
+{% block body %}
+<div class="mb-4 flex flex-wrap gap-2">
+  <a class="btn btn-primary btn-sm" href="{% url 'admin:catalog_product_add' %}">Nuevo producto</a>
+  <a class="btn btn-secondary btn-sm" href="{% url 'admin:catalog_category_changelist' %}">Categorías</a>
+  {% if beers %}<a class="btn btn-secondary btn-sm" href="{% url 'admin:catalog_beerstyle_changelist' %}">Estilos</a>{% endif %}
+  <a class="btn btn-secondary btn-sm" href="{% url 'admin:catalog_tapmenu_changelist' %}">Carta de grifos</a>
+</div>
+{% if beers %}<p class="note mb-4">Carta de grifos: {% if tap_menu %}publicada («{{ tap_menu.title }}»){% else %}sin publicar{% endif %}.</p>{% endif %}
+
+<form method="get" class="filters mb-4" aria-label="Filtrar productos">
+  <div class="field">
+    <label for="m-estado">Publicación</label>
+    <select name="estado" id="m-estado">{% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label for="m-categoria">Categoría</label>
+    <select name="categoria" id="m-categoria"><option value="">Todas</option>{% for c in categories %}<option value="{{ c.slug }}"{% if c == category %} selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+  </div>
+  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Filtrar</button></div>
+</form>
+
+{% if page.object_list %}
+  <div class="table-wrap">
+    <table class="data-table" data-product-list>
+      <thead><tr><th scope="col">Producto</th><th scope="col">Categoría</th>{% if beers %}<th scope="col">Tipo</th><th scope="col">Estilo</th><th scope="col" class="num">Graduación</th>{% endif %}<th scope="col" class="num">Precio</th><th scope="col">Publicación</th><th scope="col">Disponibilidad</th><th scope="col">Acciones</th></tr></thead>
+      <tbody>
+        {% for product in page %}
+          <tr>
+            <td class="font-semibold">{{ product.name }}{% if product.is_featured %} <span class="badge">Destacada</span>{% endif %}</td>
+            <td>{{ product.category.name }}</td>
+            {% if beers %}<td>{{ product.get_kind_display }}</td><td>{{ product.style.name|default:"—" }}</td><td class="num">{% if product.abv is not None %}{{ product.abv }} %{% else %}—{% endif %}</td>{% endif %}
+            <td class="num">{% if product.price is not None %}{{ product.price|floatformat:2 }} €{% else %}—{% endif %}</td>
+            <td>{{ product.get_status_display }}</td>
+            <td>
+              <form method="post" action="{% url 'dashboard:product_availability' product.public_id %}">
+                {% csrf_token %}
+                {% if product.is_available %}<span class="mr-2">Disponible</span><button type="submit" name="disponible" value="no" class="btn btn-secondary btn-sm">Marcar agotado</button>
+                {% else %}<span class="mr-2 text-danger">Agotado</span><button type="submit" name="disponible" value="si" class="btn btn-secondary btn-sm">Marcar disponible</button>{% endif %}
+              </form>
+            </td>
+            <td>
+              <form method="post" action="{% url 'dashboard:product_status' product.public_id %}" class="flex flex-wrap gap-2">
+                {% csrf_token %}
+                {% for value, label in product_statuses %}{% if value != product.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "PUBLISHED" %}Publicar{% elif value == "DRAFT" %}A borrador{% else %}Archivar{% endif %}</button>{% endif %}{% endfor %}
+                <a class="btn btn-ghost btn-sm" href="{% url 'admin:catalog_product_change' product.pk %}">Editar</a>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" %}
+{% else %}
+  <p class="pending">No hay productos con estos filtros.</p>
+{% endif %}
+<p class="note mt-3">Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin.</p>
+{% endblock %}

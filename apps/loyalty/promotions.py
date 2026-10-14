@@ -29,7 +29,7 @@ import datetime
 from dataclasses import dataclass
 
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -201,3 +201,21 @@ def birthday_promotion_recipients(*, channel, at=None):
             )
         )
     return recipients
+
+
+# Estados a los que el propietario puede pasar una promoción desde el dashboard.
+MANAGEABLE_STATUSES = (Promotion.Status.ACTIVE, Promotion.Status.PAUSED, Promotion.Status.ENDED)
+
+
+def set_promotion_status(*, actor, promotion, status):
+    """Activa, pausa o finaliza una promoción (solo propietario), validada y auditada."""
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario gestiona las promociones.")
+    if status not in MANAGEABLE_STATUSES:
+        raise ValidationError("Estado de promoción no válido.")
+    with transaction.atomic():
+        locked = Promotion.objects.select_for_update().get(pk=promotion.pk)
+        if locked.status == status:
+            return locked
+        locked.status = status
+        return save_promotion(actor=actor, promotion=locked, changed_fields=["status"])

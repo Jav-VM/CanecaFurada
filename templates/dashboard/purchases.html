@@ -1,0 +1,49 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Compras · Dashboard{% endblock %}
+{% block heading %}Compras registradas{% endblock %}
+{% block body %}
+<form method="get" class="filters mb-4" aria-label="Filtrar compras">
+  {% include "dashboard/_period_fields.html" %}
+  <div class="field">
+    <label for="c-empleado">Registrada por</label>
+    <select name="empleado" id="c-empleado"><option value="">Todo el personal</option>{% for m in staff_options %}<option value="{{ m.public_id }}"{% if m == selected_staff %} selected{% endif %}>{{ m.get_full_name }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label for="c-estado">Estado</label>
+    <select name="estado" id="c-estado">{% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  </div>
+  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+</form>
+{% include "dashboard/_period_notice.html" %}
+
+<dl class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  <div class="stat"><dt class="stat-label">Compras registradas</dt><dd class="stat-value">{{ stats.purchases_count }}</dd></div>
+  <div class="stat"><dt class="stat-label">Importe registrado</dt><dd class="stat-value">{{ stats.registered_amount|floatformat:2 }} €</dd></div>
+  <div class="stat"><dt class="stat-label">Ticket medio</dt><dd class="stat-value">{% if stats.average_amount %}{{ stats.average_amount|floatformat:2 }} €{% else %}—{% endif %}</dd></div>
+  <div class="stat"><dt class="stat-label">Clientes distintos</dt><dd class="stat-value">{{ stats.customers_count }}</dd></div>
+</dl>
+<p class="note mt-3 mb-6"><strong class="text-paper">{{ stats.label }}.</strong> {{ stats.note }} Las cifras de arriba cuentan todo el personal y solo compras vigentes.</p>
+
+{% if page.object_list %}
+  <div class="table-wrap">
+    <table class="data-table" data-purchase-list>
+      <thead><tr><th scope="col">Fecha</th><th scope="col">Cliente</th><th scope="col" class="num">Importe</th><th scope="col" class="num">Puntos</th><th scope="col">Registrada por</th><th scope="col">Estado</th></tr></thead>
+      <tbody>
+        {% for p in page %}
+          <tr>
+            <td class="whitespace-nowrap">{{ p.created_at|date:"d/m/Y H:i" }}</td>
+            <td><a class="link" href="{% url 'dashboard:customer_detail' p.customer.public_id %}">{{ p.customer.get_full_name }}</a></td>
+            <td class="num">{{ p.amount|floatformat:2 }} €</td>
+            <td class="num">+{{ p.points }}</td>
+            <td>{{ p.registered_by.get_full_name }}</td>
+            <td>{{ p.get_status_display }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" %}
+{% else %}
+  <p class="pending">No hay compras registradas con estos filtros.</p>
+{% endif %}
+{% endblock %}

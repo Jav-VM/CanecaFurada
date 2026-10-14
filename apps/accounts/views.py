@@ -136,7 +136,7 @@ def home(request):
     if user.role == User.Role.CUSTOMER:
         return redirect("accounts:profile")
     if user.role == User.Role.OWNER:
-        return redirect("admin:index")
+        return redirect("dashboard:home")
     return redirect("staff:home")
 
 

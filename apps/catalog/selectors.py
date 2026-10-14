@@ -12,7 +12,10 @@ exactamente lo mismo:
   disponibles.
 - Las categorías sin productos públicos no se muestran.
 """
+from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
+
+from apps.accounts.permissions import is_owner
 
 from .models import Category, Product, TapMenu
 
@@ -47,3 +50,22 @@ def featured_beers(limit=FEATURED_BEERS_LIMIT):
 def current_tap_menu():
     """Carta de grifos publicada más reciente, o `None`."""
     return TapMenu.objects.filter(is_published=True).order_by("-updated_at", "-id").first()
+
+
+def products_for_management(*, actor, beers=None, status=None, category=None):
+    """
+    Todos los productos, también borradores y archivados (solo propietario,
+    dashboard de la Fase 9). `beers=True` solo cervezas; `False`, el resto.
+    """
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede gestionar la carta.")
+    queryset = Product.objects.select_related("category", "style")
+    if beers is True:
+        queryset = queryset.filter(kind__in=Product.BEER_KINDS)
+    elif beers is False:
+        queryset = queryset.exclude(kind__in=Product.BEER_KINDS)
+    if status:
+        queryset = queryset.filter(status=status)
+    if category is not None:
+        queryset = queryset.filter(category=category)
+    return queryset.order_by("category__position", "category__name", "position", "name")

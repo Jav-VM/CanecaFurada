@@ -1,0 +1,6 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}{{ title }} · Dashboard{% endblock %}
+{% block heading %}{{ title }}{% endblock %}
+{% block body %}
+<p class="pending" data-pending-phase>Disponible en la Fase 10 (eventos y reservas). Todavía no hay datos de {{ title|lower }} en el sistema, así que no se muestran cifras.</p>
+{% endblock %}

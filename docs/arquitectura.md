@@ -19,13 +19,13 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 |---|---|---|---|
 | `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`) y limitador de intentos (`throttling`) | 0 | Existe |
 | `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
-| `apps.web` | Páginas públicas, contenido del local (`content.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 | Existe |
+| `apps.web` | Páginas públicas, contenido del local (`content.py` y, desde la Fase 9, `BusinessInfo` editable con `services.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 (contenido editable: 9) | Existe |
 | `apps.catalog` | Carta: categorías, estilos, productos (fijos y cervezas), imagen de la carta de grifos, selectores públicos y servicios de publicación/disponibilidad | 4 | Existe |
 | `apps.loyalty` | Token QR del cliente (Fase 5); ledger de puntos, conversión, promociones y base de cumpleaños (Fase 6): `conversion`, `ledger` (única vía de escritura), `promotions`, `selectors` (lectura) | 5–6 | Existe |
 | `apps.purchases` | Registro de compras manuales y panel del personal; `on_purchase_registered` genera los puntos en la misma transacción; `selectors` (historial del cliente y estadísticas de compras registradas) | 5–6 | Existe |
 | `apps.rewards` | Catálogo de recompensas y canjes: `codes` (código de un solo uso), `services` (solicitud, validación, cancelación, caducidad), `selectors`; descuenta y devuelve puntos solo a través de `loyalty.ledger` | 7 | Existe |
 | `apps.staff` | Panel del personal en `/panel/`: inicio, perfil del empleado y consulta de sus resultados; layout común de las pantallas de compras y canjes. Solo presentación, sin modelos | 8 | Existe |
-| `apps.dashboard` | Panel del propietario y estadísticas (solo presentación) | 9 | Pendiente |
+| `apps.dashboard` | Dashboard del propietario en `/dashboard/`: resumen, clientes, estadísticas geográficas, empleados, compras, puntos, recompensas, carta, promociones, contenido y configuración. Solo presentación, sin modelos | 9 | Existe |
 | `apps.events` | Eventos y reservas | 10 | Pendiente |
 | `apps.api` | API REST v1 (solo presentación sobre los servicios) | 11 | Pendiente |
 | `apps.notifications` | Registro y envío de notificaciones; promociones de cumpleaños | Sin asignar | Pendiente |
@@ -85,6 +85,9 @@ Límites conocidos:
 
 ### Panel del personal
 - `apps.staff` solo presenta: las escrituras siguen en `purchases.services` y `rewards.services`, y las lecturas propias del empleado están en `purchases.selectors` (`purchases_registered_by`, `staff_purchases_summary`) y `rewards.selectors` (`validations_by`), filtradas siempre por el usuario autenticado. Endpoints previstos: [Fase 8, §8](fase-08-panel-empleados.md#8-preparación-para-la-app).
+
+### Dashboard del propietario
+- `apps.dashboard` solo presenta. Las lecturas están en selectores de dominio que exigen un propietario (`accounts.selectors`, `purchases.selectors`, `loyalty.selectors`, `rewards.selectors`, `catalog.selectors`) y las escrituras en los servicios existentes. Los datos personales completos del cliente solo salen de `accounts.selectors.customer_for_owner`, y su consulta se audita. Endpoints previstos: [Fase 9, §5](fase-09-dashboard-propietario.md#5-separación-de-responsabilidades-y-preparación-para-la-app).
 
 ### Presentación web
 - Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.

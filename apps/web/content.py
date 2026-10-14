@@ -3,8 +3,11 @@ Contenido estático de la web pública.
 
 Solo datos reales del negocio. Lo que el propietario aún no ha aportado vale
 `None` y las plantillas lo muestran como pendiente: nunca se inventan
-direcciones, horarios, precios ni textos. En la Fase 9 este contenido pasará a
-ser editable desde el panel del propietario.
+direcciones, horarios, precios ni textos.
+
+Desde la Fase 9 el propietario edita la dirección, el horario, el contacto, las
+redes y la presentación en el dashboard (`models.BusinessInfo`); estos valores
+son los de partida y `services.business_info()` los sustituye por lo guardado.
 """
 
 # Lema oficial, tal como aparece en el logotipo.

@@ -1,0 +1,17 @@
+{% comment %}Campos del filtro de periodo, dentro de un formulario GET. Parámetro: period_form.{% endcomment %}
+<div class="field">
+  <label for="id_periodo">Periodo</label>
+  <select name="periodo" id="id_periodo">
+    {% for value, label in period_form.fields.periodo.choices %}
+      <option value="{{ value }}"{% if value == period.key %} selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+</div>
+<div class="field">
+  <label for="id_desde">Desde <span class="optional-mark">(personalizado)</span></label>
+  <input type="date" name="desde" id="id_desde" value="{{ period_form.data.desde|default:'' }}">
+</div>
+<div class="field">
+  <label for="id_hasta">Hasta <span class="optional-mark">(personalizado)</span></label>
+  <input type="date" name="hasta" id="id_hasta" value="{{ period_form.data.hasta|default:'' }}">
+</div>

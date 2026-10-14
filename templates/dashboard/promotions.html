@@ -1,0 +1,36 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Promociones · Dashboard{% endblock %}
+{% block heading %}Promociones{% endblock %}
+{% block intro %}<p class="lead mt-2">Puntos extra al registrar una compra. Esta fase no envía avisos a los clientes.</p>{% endblock %}
+{% block body %}
+<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'admin:loyalty_promotion_add' %}">Nueva promoción</a></div>
+{% if promotions %}
+  <div class="table-wrap">
+    <table class="data-table" data-promotion-list>
+      <thead><tr><th scope="col">Promoción</th><th scope="col">Tipo</th><th scope="col">Bonificación</th><th scope="col">Vigencia</th><th scope="col">Estado</th><th scope="col" class="num">Usos</th><th scope="col">Acciones</th></tr></thead>
+      <tbody>
+        {% for promo in promotions %}
+          <tr>
+            <td class="font-semibold">{{ promo.name }}</td>
+            <td>{{ promo.get_kind_display }}</td>
+            <td>{% if promo.bonus_type == "FIXED_POINTS" %}+{{ promo.fixed_points }} pts{% else %}×{{ promo.multiplier }}{% endif %}{% if promo.min_purchase_amount %} · desde {{ promo.min_purchase_amount|floatformat:2 }} €{% endif %}</td>
+            <td class="whitespace-nowrap">{{ promo.starts_at|date:"d/m/Y" }} – {% if promo.ends_at %}{{ promo.ends_at|date:"d/m/Y" }}{% else %}sin fin{% endif %}</td>
+            <td>{{ promo.get_status_display }}</td>
+            <td class="num">{{ promo.uses }}{% if promo.max_total_uses %} / {{ promo.max_total_uses }}{% endif %}</td>
+            <td>
+              <form method="post" action="{% url 'dashboard:promotion_status' promo.public_id %}" class="flex flex-wrap gap-2">
+                {% csrf_token %}
+                {% for value in manageable %}{% if value != promo.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "ACTIVE" %}Activar{% elif value == "PAUSED" %}Pausar{% else %}Finalizar{% endif %}</button>{% endif %}{% endfor %}
+                <a class="btn btn-ghost btn-sm" href="{% url 'admin:loyalty_promotion_change' promo.pk %}">Editar</a>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="pending">Todavía no hay promociones.</p>
+{% endif %}
+<p class="note mt-3">Condiciones, fechas y límites se editan en el admin. Usos: bonificaciones concedidas hasta hoy.</p>
+{% endblock %}

@@ -22,7 +22,7 @@ from django.db.models.functions import Coalesce
 
 from apps.accounts.permissions import is_owner
 
-from .models import PointsTransaction
+from .models import PointsTransaction, Promotion
 
 Kind = PointsTransaction.Kind
 
@@ -103,3 +103,42 @@ def points_stats(*, actor, start=None, end=None):
         outstanding=overall["outstanding"],
         customers_with_points=overall["customers"],
     )
+
+
+# --- Dashboard del propietario (Fase 9) ---------------------------------------------
+
+
+def all_movements(*, actor, start=None, end=None, kind=None):
+    """Movimientos del ledger de todos los clientes (solo propietario), del más reciente al más antiguo."""
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede ver todos los movimientos de puntos.")
+    movements = PointsTransaction.objects.all()
+    if start is not None:
+        movements = movements.filter(created_at__gte=start)
+    if end is not None:
+        movements = movements.filter(created_at__lt=end)
+    if kind:
+        movements = movements.filter(kind=kind)
+    return movements.select_related("customer", "promotion", "created_by").order_by("-created_at", "-id")
+
+
+def reversible_ids(movements):
+    """
+    Ids de los movimientos que el propietario puede compensar desde el
+    dashboard: no se compensan compensaciones ni canjes (los canjes se
+    devuelven cancelándolos o al caducar) ni movimientos ya compensados.
+    """
+    candidates = [m.pk for m in movements if m.kind not in (Kind.REVERSAL, Kind.REDEMPTION)]
+    reversed_ids = set(
+        PointsTransaction.objects.filter(reverses__in=candidates).values_list("reverses_id", flat=True)
+    )
+    return {pk for pk in candidates if pk not in reversed_ids}
+
+
+def promotions_overview(*, actor):
+    """Promociones con el número de bonificaciones concedidas."""
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede ver las promociones.")
+    return Promotion.objects.annotate(
+        uses=Count("points_transactions", filter=Q(points_transactions__kind=Kind.PROMOTION_BONUS))
+    ).order_by("-starts_at", "-id")

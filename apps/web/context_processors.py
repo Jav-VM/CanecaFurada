@@ -1,10 +1,10 @@
-from . import content
+from . import content, services
 
 
 def site(request):
     """Datos comunes a todas las páginas (cabecera, navegación y pie)."""
     return {
         "site_nav": content.MAIN_NAV,
-        "business": content.BUSINESS,
+        "business": services.business_info(),
         "tagline": content.TAGLINE,
     }

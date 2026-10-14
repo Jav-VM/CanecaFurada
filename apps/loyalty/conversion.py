@@ -53,6 +53,11 @@ def current_rule(at=None):
     return LoyaltyRule.objects.filter(valid_from__lte=at).order_by("-valid_from", "-id").first()
 
 
+def rule_history(limit=10):
+    """Últimas reglas de conversión, de la más reciente a la más antigua."""
+    return list(LoyaltyRule.objects.select_related("created_by").order_by("-valid_from", "-id")[:limit])
+
+
 def current_rate(at=None):
     rule = current_rule(at)
     if rule is not None:
