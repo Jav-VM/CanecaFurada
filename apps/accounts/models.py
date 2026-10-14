@@ -1,11 +1,14 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.utils import timezone
+
+from apps.core.models import TimeStampedModel
 
 from .managers import UserManager
 from .normalization import normalize_email_address
@@ -21,8 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
       identificador interno de los procesos.
 
     Los datos personales específicos del cliente (dirección, fecha de nacimiento,
-    teléfono, preferencias) no viven aquí: se añadirán en un perfil de cliente
-    1:1 en la fase de registro.
+    teléfono, preferencias) no viven aquí, sino en `CustomerProfile`.
     """
 
     class Role(models.TextChoices):
@@ -100,3 +102,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_customer(self):
         return self.role == self.Role.CUSTOMER
+
+
+class CustomerProfile(TimeStampedModel):
+    """
+    Perfil 1:1 de los clientes.
+
+    Aquí vivirán los datos personales que solo tienen sentido para clientes
+    (dirección, fecha de nacimiento, teléfono, preferencias); los campos se
+    añaden en la fase de registro. Lo crean los servicios de cuentas en la misma
+    transacción que el alta del cliente o el paso al rol CUSTOMER
+    (`services.ensure_customer_profile`). El `OneToOneField` impide perfiles
+    duplicados en la base de datos.
+    """
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        verbose_name="usuario",
+        on_delete=models.CASCADE,
+        related_name="customer_profile",
+    )
+
+    class Meta:
+        verbose_name = "perfil de cliente"
+        verbose_name_plural = "perfiles de cliente"
+
+    def __str__(self):
+        return f"Perfil de cliente {self.user.public_id}"

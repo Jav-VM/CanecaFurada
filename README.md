@@ -9,7 +9,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | Fase | Estado |
 |---|---|
 | 0 — Fundación del proyecto | **Completa** |
-| 1–11 | Pendientes |
+| 1 — Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** |
+| 2–12 | Pendientes |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -55,10 +56,12 @@ python manage.py test --settings=config.settings.test
 
 ## Estructura
 
+Arquitectura, mapa de módulos y preparación para la app móvil: [docs/arquitectura.md](docs/arquitectura.md).
+
 ```text
 config/            settings por entorno (base, dev, test, prod), urls, wsgi/asgi
 apps/core/         modelos base y auditoría
-apps/accounts/     usuario personalizado, roles, servicios, permisos, create_owner
+apps/accounts/     usuario personalizado, roles, perfil de cliente, servicios, permisos, create_owner
 static/img/brand/  recursos gráficos oficiales
 tests/             pruebas por app
 docs/              plan de fases y documentación de cada fase
@@ -68,4 +71,6 @@ requirements/      dependencias por entorno
 ## Documentación
 
 - [Plan de fases](docs/plan-de-fases.md)
+- [Arquitectura](docs/arquitectura.md): módulos, usuario y perfil de cliente, identificadores, cómo incorporar DRF.
 - [Fase 0 — Fundación](docs/fase-00-fundacion.md): decisiones, modelo de datos, roles, seguridad, tests y limitaciones.
+- [Fase 1 — Proyecto base](docs/fase-01-proyecto-base.md): perfil de cliente transaccional, migraciones, tests y preparación para la app.

@@ -13,7 +13,7 @@ from django.db import IntegrityError, transaction
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
-from .models import User
+from .models import CustomerProfile, User
 from .normalization import normalize_email_address
 
 Role = User.Role
@@ -40,6 +40,17 @@ def _ensure_active_owner(actor):
         raise PermissionDenied("Operación reservada al propietario.")
 
 
+def ensure_customer_profile(user):
+    """
+    Devuelve el perfil del cliente y lo crea si no existe. Es idempotente.
+
+    Debe llamarse dentro de la transacción que da de alta al cliente o le asigna
+    el rol CUSTOMER, para que nunca quede un cliente sin perfil.
+    """
+    profile, _ = CustomerProfile.objects.get_or_create(user=user)
+    return profile
+
+
 def _create_user(*, role, email, first_name, last_name, password, actor=None, instance=None):
     user = instance if instance is not None else User()
     user.email = normalize_email_address(email)
@@ -58,6 +69,9 @@ def _create_user(*, role, email, first_name, last_name, password, actor=None, in
     except IntegrityError as exc:
         # Carrera entre dos altas con el mismo email: la restricción única decide.
         raise ValidationError({"email": "Ya existe una cuenta con este email."}) from exc
+
+    if role == Role.CUSTOMER:
+        ensure_customer_profile(user)
 
     record_audit_event(
         action=_CREATION_ACTIONS[role],
@@ -165,6 +179,8 @@ def change_role(*, actor, user, new_role):
     target.role = new_role
     _apply_role_flags(target)
     target.save(update_fields=["role", "is_staff", "is_superuser"])
+    if new_role == Role.CUSTOMER:
+        ensure_customer_profile(target)
 
     record_audit_event(
         action=AuditEvent.Action.ROLE_CHANGED,

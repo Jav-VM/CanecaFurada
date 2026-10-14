@@ -1,7 +1,7 @@
 # Fase 0 — Fundación del proyecto
 
 **Estado:** Completa (con las limitaciones indicadas al final).
-**Fecha:** 2026-10-14.
+**Fecha:** 2026-10-14. Continúa en la [Fase 1](fase-01-proyecto-base.md) (perfil de cliente, mapa de módulos y preparación para la app).
 
 ## 1. Objetivo, alcance y exclusiones
 
@@ -18,7 +18,7 @@
 - Recursos de marca movidos a `static/img/brand/`.
 - Tests, plan de fases y documentación.
 
-**Excluye** (fases posteriores, ver [plan-de-fases.md](plan-de-fases.md)): web pública y Tailwind, registro público, verificación de email, perfil de cliente (dirección, fecha de nacimiento, teléfono), preferencias de comunicación, carta, fidelización, compras, recompensas, reservas, eventos, dashboard, notificaciones y API.
+**Excluye** (fases posteriores, ver [plan-de-fases.md](plan-de-fases.md)): web pública y Tailwind, registro público, verificación de email, campos del perfil de cliente (dirección, fecha de nacimiento, teléfono), preferencias de comunicación, carta, fidelización, compras, recompensas, reservas, eventos, dashboard, notificaciones y API.
 
 ## 2. Decisiones técnicas
 
@@ -32,8 +32,8 @@
 | PK interna `BigAutoField` + `public_id` UUID | La PK no se expone; `public_id` es el identificador estable para URLs, auditoría, API y app móvil. El email no se usa como identificador interno. |
 | Política de email: `strip()` + minúsculas | Evita cuentas duplicadas por mayúsculas. No se eliminan puntos ni `+etiqueta` porque dependen del proveedor. Se aplica en `save()`, `clean()`, el manager y el login (`get_by_natural_key`). |
 | Restricciones en BD | `UniqueConstraint(Lower(email))`, rol dentro de los valores válidos y `is_staff`/`is_superuser` solo con rol `OWNER`. Protegen la invariante aunque se use `update()` o SQL. |
-| `is_staff`/`is_superuser` derivados del rol | Solo el propietario accede al admin técnico mientras no exista el dashboard (Fase 8). Los empleados no tienen acceso al admin. |
-| Datos del cliente fuera de `User` | Dirección, fecha de nacimiento, teléfono y preferencias irán en un `CustomerProfile` 1:1 (Fase 2): empleados y propietario no necesitan esos campos y se minimiza la exposición. |
+| `is_staff`/`is_superuser` derivados del rol | Solo el propietario accede al admin técnico mientras no exista el dashboard (Fase 9). Los empleados no tienen acceso al admin. |
+| Datos del cliente fuera de `User` | Dirección, fecha de nacimiento, teléfono y preferencias van en `CustomerProfile` 1:1 (modelo mínimo creado en la [Fase 1](fase-01-proyecto-base.md); campos en la Fase 3): empleados y propietario no necesitan esos campos y se minimiza la exposición. Justificación completa en [arquitectura.md](arquitectura.md#2-usuario-y-perfil-de-cliente). |
 | Servicios como única vía para crear usuarios y cambiar roles | Web, admin, comandos y la futura API reutilizan la misma lógica, los mismos permisos y la misma auditoría. |
 | Rol del actor comprobado en BD | `_ensure_active_owner` consulta la base de datos; un rol manipulado en memoria no concede permisos. |
 | Protección del último propietario | `change_role` bloquea las filas de propietarios (`select_for_update`) y no permite quedarse sin propietarios activos; el admin tampoco permite desactivar al último. |
@@ -79,7 +79,7 @@ No se han creado rutas públicas ni plantillas: la única ruta es el admin.
 ## 5. Servicios y permisos
 
 `apps/accounts/services.py`:
-- `create_customer(email, first_name, last_name, password)`: no acepta `role`; siempre crea `CUSTOMER`. La usará el registro público de la Fase 2.
+- `create_customer(email, first_name, last_name, password)`: no acepta `role`; siempre crea `CUSTOMER`. La usará el registro público de la Fase 3.
 - `create_employee(actor, ...)`: solo propietario activo.
 - `create_owner(..., actor=None)`: sin actor solo si no existe ningún propietario; con actor, este debe ser propietario.
 - `create_user_by_owner(actor, role, ...)`: altas desde el admin.
@@ -169,12 +169,12 @@ No se han ejecutado contra PostgreSQL (no está instalado en el equipo de desarr
 
 ## 10. Limitaciones, riesgos y pendientes
 
-- **PostgreSQL:** los tests se han ejecutado en SQLite. `select_for_update` no bloquea en SQLite, por lo que la protección concurrente del último propietario y de `create_owner` solo es efectiva en PostgreSQL. Hay que repetir los tests con `DATABASE_URL` de PostgreSQL antes de producción (Fase 11 o antes).
-- **Admin técnico:** es la herramienta temporal del propietario hasta el dashboard (Fase 8). Expone nombre y email de los usuarios al propietario, lo que se considera justificado para la gestión.
+- **PostgreSQL:** los tests se han ejecutado en SQLite. `select_for_update` no bloquea en SQLite, por lo que la protección concurrente del último propietario y de `create_owner` solo es efectiva en PostgreSQL. Hay que repetir los tests con `DATABASE_URL` de PostgreSQL antes de producción (Fase 12 o antes).
+- **Admin técnico:** es la herramienta temporal del propietario hasta el dashboard (Fase 9). Expone nombre y email de los usuarios al propietario, lo que se considera justificado para la gestión.
 - **`createsuperuser`:** no audita ni impide crear más propietarios; usar `create_owner`.
-- **Rate limiting** del login del admin: pendiente (Fase 2 para el login público y Fase 11 en general).
-- **Sin servidor WSGI ni guía de despliegue** (Fase 11).
-- Política de conservación y documentación completa de datos personales: se redactará en la Fase 2, cuando se recojan datos personales del cliente.
+- **Rate limiting** del login del admin: pendiente (Fase 3 para el login público y Fase 12 en general).
+- **Sin servidor WSGI ni guía de despliegue** (Fase 12).
+- Política de conservación y documentación completa de datos personales: se redactará en la Fase 3, cuando se recojan datos personales del cliente.
 
 ## 11. Estado de los criterios de aceptación
 
@@ -191,4 +191,4 @@ No se han ejecutado contra PostgreSQL (no está instalado en el equipo de desarr
 
 ## 12. Dependencias para la fase siguiente
 
-La Fase 1 (sistema de diseño y web pública) necesita: la CLI standalone de Tailwind (sin Node), los textos e información real del negocio aportados por el propietario (no se inventarán) y los recursos de `static/img/brand/`.
+La [Fase 1](fase-01-proyecto-base.md) completa la base con el perfil de cliente y la preparación para la app. La Fase 2 (sistema de diseño y web pública) necesitará la CLI standalone de Tailwind (sin Node), los textos e información real del negocio aportados por el propietario (no se inventarán) y los recursos de `static/img/brand/`.
