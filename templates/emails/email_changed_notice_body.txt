@@ -1,0 +1,8 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+El email de acceso de tu cuenta de Caneca Furada se ha cambiado a otra dirección, que ya ha sido confirmada.
+
+Si no has sido tú, contacta con el local cuanto antes.
+
+Caneca Furada
+{% endautoescape %}

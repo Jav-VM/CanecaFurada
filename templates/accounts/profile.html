@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil{% endblock %}
+{% block content %}
+<h1>Mi perfil</h1>
+{% include "accounts/_verification_notice.html" %}
+
+{% if missing_fields %}
+  <p class="notice">Completa los datos obligatorios de tu perfil.</p>
+{% endif %}
+
+<section aria-labelledby="acceso">
+  <h2 id="acceso">Acceso</h2>
+  <dl class="data">
+    <dt>Email</dt>
+    <dd>{{ user.email }} {% if user.is_email_verified %}(verificado){% else %}(pendiente de verificación){% endif %}</dd>
+  </dl>
+  <p><a href="{% url 'accounts:email_change' %}">Cambiar email</a> · <a href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></p>
+</section>
+
+<section aria-labelledby="datos">
+  <h2 id="datos">Mis datos</h2>
+  <p>Los campos marcados con <span class="required-mark">*</span> son obligatorios.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for title, fields in form.grouped_fields %}
+      <fieldset>
+        <legend>{{ title }}</legend>
+        {% for field in fields %}{% include "accounts/_field.html" %}{% endfor %}
+      </fieldset>
+    {% endfor %}
+    <p class="help">La fecha de nacimiento solo puede cambiarse una vez al año.</p>
+    <button type="submit">Guardar datos</button>
+  </form>
+</section>
+
+<section aria-labelledby="preferencias-titulo" id="preferencias">
+  <h2 id="preferencias-titulo">Preferencias de comunicación</h2>
+  <p class="help">Son opcionales. Los emails promocionales solo se envían a direcciones verificadas, y los SMS requieren un teléfono móvil.</p>
+  <form method="post" action="{% url 'accounts:preferences' %}">
+    {% csrf_token %}
+    {% for field in preferences_form %}{% include "accounts/_field.html" %}{% endfor %}
+    <button type="submit">Guardar preferencias</button>
+  </form>
+</section>
+{% endblock %}

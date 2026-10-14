@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Cambiar email{% endblock %}
+{% block content %}
+<h1>Cambiar email</h1>
+<p>Te enviaremos un enlace a la nueva dirección. Tu email actual seguirá siendo el de acceso hasta que confirmes la nueva, que quedará verificada al hacerlo.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+  <button type="submit">Enviar enlace de confirmación</button>
+</form>
+<p><a href="{% url 'accounts:home' %}">Volver</a></p>
+{% endblock %}

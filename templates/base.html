@@ -1,0 +1,35 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Caneca Furada{% endblock %} · Caneca Furada</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <span class="brand">Caneca Furada</span>
+    <nav aria-label="Cuenta">
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:home' %}">Mi cuenta</a>
+        <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="link-button">Salir</button>
+        </form>
+      {% else %}
+        <a href="{% url 'accounts:login' %}">Entrar</a>
+        <a href="{% url 'accounts:register' %}">Registrarse</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main id="contenido">
+    {% if messages %}
+      <ul class="messages" role="status">
+        {% for message in messages %}<li class="message {{ message.tags }}">{{ message }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

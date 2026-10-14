@@ -10,7 +10,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 |---|---|
 | 0 — Fundación del proyecto | **Completa** |
 | 1 — Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** |
-| 2–12 | Pendientes |
+| 2 — Autenticación, registro, perfiles, verificación de email y permisos | **Completa** (pendiente validar en PostgreSQL y con SMTP real) |
+| 3–12 | Pendientes (la Fase 3 es ahora el sistema de diseño y la web pública) |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -45,7 +46,11 @@ Pide los datos de forma interactiva (contraseña oculta) y solo funciona si toda
 python manage.py runserver
 ```
 
-Por ahora solo existe el admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), accesible únicamente para propietarios.
+Rutas disponibles:
+- Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
+- Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios.
+
+En desarrollo los emails (verificación, recuperación de contraseña…) se imprimen en la consola de `runserver`. En Windows, si aparece `UnicodeEncodeError` al enviar un email, arranca con `$env:PYTHONUTF8=1`. Configuración del correo y de producción: [docs/fase-02-registro-perfil-verificacion.md](docs/fase-02-registro-perfil-verificacion.md#6-configuración-del-correo-y-variables-de-entorno).
 
 ## Pruebas
 
@@ -60,8 +65,9 @@ Arquitectura, mapa de módulos y preparación para la app móvil: [docs/arquitec
 
 ```text
 config/            settings por entorno (base, dev, test, prod), urls, wsgi/asgi
-apps/core/         modelos base y auditoría
-apps/accounts/     usuario personalizado, roles, perfil de cliente, servicios, permisos, create_owner
+apps/core/         modelos base, auditoría y limitador de intentos
+apps/accounts/     usuario, roles, perfil de cliente, registro, verificación de email, preferencias, servicios, permisos, vistas de cuenta
+templates/         plantilla base, páginas de cuenta y emails (provisionales hasta el sistema de diseño)
 static/img/brand/  recursos gráficos oficiales
 tests/             pruebas por app
 docs/              plan de fases y documentación de cada fase
@@ -74,3 +80,4 @@ requirements/      dependencias por entorno
 - [Arquitectura](docs/arquitectura.md): módulos, usuario y perfil de cliente, identificadores, cómo incorporar DRF.
 - [Fase 0 — Fundación](docs/fase-00-fundacion.md): decisiones, modelo de datos, roles, seguridad, tests y limitaciones.
 - [Fase 1 — Proyecto base](docs/fase-01-proyecto-base.md): perfil de cliente transaccional, migraciones, tests y preparación para la app.
+- [Fase 2 — Registro, perfiles y verificación de email](docs/fase-02-registro-perfil-verificacion.md): campos del registro, modelo de datos, flujo de verificación, configuración del correo, preferencias de comunicación, permisos, tests y pendientes.

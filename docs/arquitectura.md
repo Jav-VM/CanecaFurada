@@ -17,9 +17,9 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 
 | App | Responsabilidad | Fase | Estado |
 |---|---|---|---|
-| `apps.core` | Modelos base (`TimeStampedModel`) y auditoría (`AuditEvent`) | 0 | Existe |
-| `apps.accounts` | Usuario, roles, `CustomerProfile`, servicios de cuentas, permisos, `create_owner` | 0 (perfil: Fase 1; campos: Fase 3) | Existe |
-| `apps.web` | Plantilla base, páginas públicas y páginas de error | 2 | Pendiente |
+| `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`) y limitador de intentos (`throttling`) | 0 | Existe |
+| `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
+| `apps.web` | Plantilla base, páginas públicas y páginas de error | 3 | Pendiente |
 | `apps.catalog` | Carta: categorías, productos, cervezas y grifos | 4 | Pendiente |
 | `apps.loyalty` | Ledger de puntos, configuración de conversión y token QR | 5 | Pendiente |
 | `apps.purchases` | Registro de compras y panel de empleado (genera puntos mediante `loyalty`) | 6 | Pendiente |
@@ -44,7 +44,7 @@ Motivos:
 
 Coste asumido: un `JOIN`/consulta extra al leer datos del cliente y la necesidad de garantizar que el perfil existe (ver abajo). Se considera menor que los beneficios.
 
-Desde la Fase 1 el perfil existe pero es **mínimo**: solo la relación con el usuario y las fechas de creación/modificación. Sus campos se añaden en la Fase 3 (registro), con sus validaciones.
+Desde la Fase 1 el perfil existe; en la Fase 2 recibió sus campos (dirección estructurada, fecha de nacimiento, teléfono, consentimientos promocionales) y sus validaciones. Detalle en [fase-02-registro-perfil-verificacion.md](fase-02-registro-perfil-verificacion.md).
 
 ### Cómo se garantiza que todo cliente tiene perfil
 
@@ -57,7 +57,7 @@ Desde la Fase 1 el perfil existe pero es **mínimo**: solo la relación con el u
 
 Límites conocidos:
 - La base de datos no puede exigir que exista una fila relacionada ("todo `CUSTOMER` tiene perfil") sin triggers específicos; la garantía la dan los servicios. Los atajos de bajo nivel (`User.objects.create_user`, SQL directo) no crean el perfil: solo se usan en tests y en migraciones.
-- Al pasar de cliente a empleado o propietario **se conserva el perfil**. Hasta la Fase 3 no tiene datos personales; la política de conservación o borrado de esos datos se decide en la Fase 3.
+- Al pasar de cliente a empleado o propietario **se conserva el perfil** con sus datos personales. La política de conservación y borrado está pendiente de decisión (ver [Fase 2](fase-02-registro-perfil-verificacion.md#10-limitaciones-riesgos-y-pendientes)).
 - El código que lea el perfil en fases posteriores debe usar `ensure_customer_profile` (o tratar `CustomerProfile.DoesNotExist`) en lugar de suponer que `user.customer_profile` siempre existe.
 
 ## 3. Preparación para la app móvil
@@ -70,7 +70,8 @@ Límites conocidos:
 
 ### Independencia de las plantillas
 - Validación de reglas de negocio en servicios y modelos, no en formularios ni plantillas. Los formularios web solo convierten la entrada; la API usará serializadores que llamen a los mismos servicios.
-- Los servicios lanzan `ValidationError`/`PermissionDenied` de Django, que la web traduce a mensajes y la API a respuestas 400/403.
+- Los servicios lanzan `ValidationError`/`PermissionDenied` de Django, que la web traduce a mensajes y la API a respuestas 400/403. `services.RateLimited` se traducirá a 429.
+- Los servicios de cuentas no reciben `request` ni dependen de la sesión: actúan sobre un `user` ya autenticado (por sesión en la web o por token en la API). Los enlaces de los emails se construyen con `SITE_BASE_URL`. Operaciones de cuentas que necesitará la app: [Fase 2, §8](fase-02-registro-perfil-verificacion.md#8-preparación-para-la-app-móvil).
 
 ### Cómo incorporar Django REST Framework (Fase 11)
 1. Añadir `djangorestframework` con versión acotada a `requirements/base.txt` e incluirlo en `INSTALLED_APPS`.

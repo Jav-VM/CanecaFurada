@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Revisa tu correo{% endblock %}
+{% block content %}
+<h1>Revisa tu correo</h1>
+<p>Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez.</p>
+<p>Ya puedes <a href="{% url 'accounts:login' %}">entrar</a>. Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles.</p>
+<p>¿No te ha llegado? <a href="{% url 'accounts:resend_verification' %}">Solicitar otro enlace</a>.</p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{% if success %}Email confirmado{% else %}Enlace no válido{% endif %}{% endblock %}
+{% block content %}
+{% if success %}
+  <h1>Email confirmado</h1>
+  <p>Tu dirección de correo ha quedado verificada.</p>
+  <p><a href="{% if user.is_authenticated %}{% url 'accounts:home' %}{% else %}{% url 'accounts:login' %}{% endif %}">Continuar</a></p>
+{% else %}
+  <h1>No se ha podido confirmar el email</h1>
+  <p class="notice">{{ error }}</p>
+  <p><a href="{% url 'accounts:resend_verification' %}">Solicitar un nuevo enlace de verificación</a></p>
+{% endif %}
+{% endblock %}

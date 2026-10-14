@@ -1,0 +1,12 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+Gracias por registrarte en Caneca Furada. Para confirmar tu dirección de correo abre este enlace y pulsa «Confirmar email»:
+
+{{ verification_url }}
+
+El enlace caduca en {{ ttl_hours }} horas y solo puede usarse una vez.
+
+Si no has creado esta cuenta, ignora este mensaje.
+
+Caneca Furada
+{% endautoescape %}

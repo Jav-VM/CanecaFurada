@@ -1,0 +1,12 @@
+{% autoescape off %}Hola:
+
+Alguien ha intentado crear una cuenta en Caneca Furada con esta dirección de correo, pero ya tienes una.
+
+Si has olvidado tu contraseña, puedes restablecerla aquí:
+
+{{ password_reset_url }}
+
+Si no has sido tú, ignora este mensaje: tu cuenta no ha cambiado.
+
+Caneca Furada
+{% endautoescape %}

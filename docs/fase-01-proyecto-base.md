@@ -70,4 +70,6 @@ No se han ejecutado contra PostgreSQL (no instalado en el equipo).
 
 ## 10. Dependencias para la fase siguiente
 
-La Fase 2 (sistema de diseño y web pública) necesita su prompt de fase, la CLI standalone de Tailwind (sin Node), los textos reales del negocio aportados por el propietario y los recursos de `static/img/brand/`.
+> Nota posterior (2026-10-14): el plan se reordenó; la Fase 2 pasó a ser el registro, los perfiles y la verificación de email ([detalle](fase-02-registro-perfil-verificacion.md)) y el sistema de diseño es ahora la Fase 3.
+
+El sistema de diseño y la web pública necesitan su prompt de fase, la CLI standalone de Tailwind (sin Node), los textos reales del negocio aportados por el propietario y los recursos de `static/img/brand/`.

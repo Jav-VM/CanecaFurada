@@ -9,5 +9,6 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-insecure-solo-para-desarrollo
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
-# Los correos se muestran en consola: no se envía nada real en desarrollo.
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# Por defecto los correos se muestran en consola (no se envía nada real). Para
+# probar un SMTP de desarrollo (p. ej. Mailpit) define EMAIL_BACKEND en .env.
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")

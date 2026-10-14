@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<h1>Entrar</h1>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button type="submit">Entrar</button>
+</form>
+<p><a href="{% url 'accounts:password_reset' %}">¿Has olvidado tu contraseña?</a></p>
+<p>¿No tienes cuenta? <a href="{% url 'accounts:register' %}">Regístrate</a>.</p>
+<p><a href="{% url 'accounts:resend_verification' %}">Reenviar el email de verificación</a></p>
+{% endblock %}

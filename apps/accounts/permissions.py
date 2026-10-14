@@ -52,6 +52,23 @@ def role_required(*roles):
     return decorator
 
 
+def verified_email_required(view_func):
+    """
+    Para vistas que exigen email verificado (puntos, canjes, reservas...):
+    sin sesión redirige al login; con email pendiente responde 403.
+    """
+
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect_to_login(request.get_full_path())
+        if not (request.user.is_active and request.user.is_email_verified):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped
+
+
 class RoleRequiredMixin(AccessMixin):
     """Equivalente a `role_required` para vistas basadas en clases."""
 

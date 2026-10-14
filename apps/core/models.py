@@ -26,6 +26,12 @@ class AuditEvent(models.Model):
         EMPLOYEE_CREATED = "EMPLOYEE_CREATED", "Empleado creado"
         CUSTOMER_CREATED = "CUSTOMER_CREATED", "Cliente creado"
         ROLE_CHANGED = "ROLE_CHANGED", "Rol modificado"
+        ACCOUNT_ACTIVATED = "ACCOUNT_ACTIVATED", "Cuenta activada"
+        ACCOUNT_DEACTIVATED = "ACCOUNT_DEACTIVATED", "Cuenta desactivada"
+        EMAIL_VERIFIED = "EMAIL_VERIFIED", "Email verificado"
+        EMAIL_CHANGE_REQUESTED = "EMAIL_CHANGE_REQUESTED", "Cambio de email solicitado"
+        EMAIL_CHANGED = "EMAIL_CHANGED", "Email modificado"
+        PROFILE_UPDATED = "PROFILE_UPDATED", "Perfil modificado"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

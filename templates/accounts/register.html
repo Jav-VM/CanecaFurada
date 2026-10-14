@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta{% endblock %}
+{% block content %}
+<h1>Crear cuenta de cliente</h1>
+<p>Los campos marcados con <span class="required-mark">*</span> son obligatorios. El teléfono móvil es opcional.</p>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for title, fields in form.grouped_fields %}
+    <fieldset>
+      <legend>{{ title }}</legend>
+      {% if forloop.last %}
+        <p class="help">Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil.</p>
+      {% endif %}
+      {% for field in fields %}{% include "accounts/_field.html" %}{% endfor %}
+    </fieldset>
+  {% endfor %}
+  <button type="submit">Crear cuenta</button>
+</form>
+<p>¿Ya tienes cuenta? <a href="{% url 'accounts:login' %}">Entra</a>.</p>
+{% endblock %}

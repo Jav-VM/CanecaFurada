@@ -93,7 +93,39 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-LOGIN_URL = "admin:login"
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "accounts:home"
+LOGOUT_REDIRECT_URL = "accounts:login"
+
+# Enlaces de recuperación de contraseña (tokens nativos de Django).
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 2  # 2 horas
+
+# --- Cuentas de cliente -------------------------------------------------------
+
+# URL pública del sitio para construir los enlaces de los emails. No se deduce
+# de la cabecera Host de la petición para evitar enlaces manipulados.
+SITE_BASE_URL = env("SITE_BASE_URL", default="http://localhost:8000").rstrip("/")
+
+# Verificación de email: caducidad del enlace y límites de reenvío por cuenta.
+EMAIL_VERIFICATION_TOKEN_TTL_HOURS = env.int("EMAIL_VERIFICATION_TOKEN_TTL_HOURS", default=24)
+EMAIL_VERIFICATION_RESEND_INTERVAL_SECONDS = 60
+EMAIL_VERIFICATION_MAX_PER_DAY = 5
+
+# Edad mínima para registrarse y días entre cambios de la fecha de nacimiento.
+ACCOUNTS_MIN_CUSTOMER_AGE = env.int("ACCOUNTS_MIN_CUSTOMER_AGE", default=18)
+ACCOUNTS_DATE_OF_BIRTH_CHANGE_COOLDOWN_DAYS = 365
+
+# Región por defecto para interpretar teléfonos escritos sin prefijo internacional.
+PHONE_DEFAULT_REGION = "ES"
+
+# Límite de intentos fallidos de inicio de sesión por email y por IP (el de IP
+# es más alto porque muchos clientes comparten la wifi del local).
+LOGIN_MAX_FAILURES_PER_EMAIL = 5
+LOGIN_MAX_FAILURES_PER_IP = 30
+LOGIN_FAILURE_WINDOW_SECONDS = 15 * 60
+
+# Límite de registros y reenvíos públicos por IP y hora.
+PUBLIC_FORM_MAX_PER_IP_PER_HOUR = 20
 
 # --- Sesiones y cookies -----------------------------------------------------
 
@@ -122,9 +154,24 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # --- Email ------------------------------------------------------------------
-# El proveedor real se configurará en la fase de verificación de email.
+# Proveedor SMTP configurable por variables de entorno. Desarrollo usa la
+# consola y los tests la memoria; producción rechaza los backends simulados.
 
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=10)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@example.com")
+
+# --- Caché ------------------------------------------------------------------
+# Se usa para limitar intentos de inicio de sesión. La caché en memoria es por
+# proceso: con varios procesos en producción conviene una caché compartida.
+
+CACHES = {"default": env.cache("CACHE_URL", default="locmemcache://")}
 
 # --- Admin ------------------------------------------------------------------
 # Ruta del admin configurable para no exponerla en la ruta por defecto.

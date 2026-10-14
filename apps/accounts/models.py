@@ -1,8 +1,10 @@
+import hashlib
 import uuid
 
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -10,6 +12,8 @@ from django.utils import timezone
 
 from apps.core.models import TimeStampedModel
 
+from . import validators
+from .countries import COUNTRY_NAMES, DEFAULT_COUNTRY
 from .managers import UserManager
 from .normalization import normalize_email_address
 
@@ -42,6 +46,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         "rol", max_length=16, choices=Role.choices, default=Role.CUSTOMER, db_index=True
     )
     is_active = models.BooleanField("activo", default=True)
+    email_verified_at = models.DateTimeField(
+        "email verificado el",
+        null=True,
+        blank=True,
+        help_text="Vacío mientras el email actual no se haya confirmado con un enlace.",
+    )
     is_staff = models.BooleanField(
         "acceso al admin técnico",
         default=False,
@@ -77,13 +87,53 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._loaded_email = instance.__dict__.get("email")
+        instance._loaded_email_verified_at = instance.__dict__.get("email_verified_at")
+        return instance
+
+    def refresh_from_db(self, *args, **kwargs):
+        super().refresh_from_db(*args, **kwargs)
+        self._loaded_email = self.__dict__.get("email")
+        self._loaded_email_verified_at = self.__dict__.get("email_verified_at")
+
     def clean(self):
         super().clean()
         self.email = normalize_email_address(self.email)
 
     def save(self, *args, **kwargs):
         self.email = normalize_email_address(self.email)
+        self._reset_verification_if_email_changed(kwargs)
         super().save(*args, **kwargs)
+        self._loaded_email = self.email
+        self._loaded_email_verified_at = self.email_verified_at
+
+    def _reset_verification_if_email_changed(self, save_kwargs):
+        """
+        Invariante: un email nuevo nunca hereda la verificación del anterior.
+
+        Si el email cambia y quien guarda no fija a la vez una nueva fecha de
+        verificación (solo lo hace `services.confirm_email_token`), la
+        verificación se anula. Cubre el admin y cualquier otro `save()`;
+        `QuerySet.update()` no pasa por aquí y no debe usarse para cambiar emails.
+        """
+        loaded_email = getattr(self, "_loaded_email", None)
+        if self.pk is None or loaded_email is None or self.email == loaded_email:
+            return
+        update_fields = save_kwargs.get("update_fields")
+        if update_fields is not None and "email" not in update_fields:
+            return  # este guardado no persiste el email
+        if self.email_verified_at != getattr(self, "_loaded_email_verified_at", None):
+            return
+        self.email_verified_at = None
+        if update_fields is not None:
+            save_kwargs["update_fields"] = {*update_fields, "email_verified_at"}
+
+    @property
+    def is_email_verified(self):
+        return self.email_verified_at is not None
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
@@ -106,15 +156,25 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class CustomerProfile(TimeStampedModel):
     """
-    Perfil 1:1 de los clientes.
+    Perfil 1:1 de los clientes con sus datos personales.
 
-    Aquí vivirán los datos personales que solo tienen sentido para clientes
-    (dirección, fecha de nacimiento, teléfono, preferencias); los campos se
-    añaden en la fase de registro. Lo crean los servicios de cuentas en la misma
-    transacción que el alta del cliente o el paso al rol CUSTOMER
-    (`services.ensure_customer_profile`). El `OneToOneField` impide perfiles
-    duplicados en la base de datos.
+    Lo crean los servicios de cuentas en la misma transacción que el alta del
+    cliente o el paso al rol CUSTOMER (`services.ensure_customer_profile`). El
+    `OneToOneField` impide perfiles duplicados en la base de datos.
+
+    Los campos personales admiten vacío en BD porque los clientes anteriores a
+    la Fase 2 (y quien pasa a cliente desde otro rol) no los tienen; el registro
+    público y la edición del perfil los exigen (`REQUIRED_FIELDS`).
     """
+
+    REQUIRED_FIELDS = (
+        "address_line_1",
+        "postal_code",
+        "city",
+        "province",
+        "country",
+        "date_of_birth",
+    )
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -122,10 +182,168 @@ class CustomerProfile(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="customer_profile",
     )
+    address_line_1 = models.CharField(
+        "dirección", max_length=200, blank=True, help_text="Calle, número, piso."
+    )
+    address_line_2 = models.CharField("dirección (línea 2)", max_length=200, blank=True)
+    postal_code = models.CharField("código postal", max_length=12, blank=True)
+    city = models.CharField("localidad", max_length=100, blank=True)
+    province = models.CharField(
+        "provincia", max_length=100, blank=True, help_text="Provincia, estado o región."
+    )
+    # Código ISO 3166-1 alfa-2. La lista (`countries.COUNTRIES`) se valida en
+    # `clean()` y no como `choices` para no generar migraciones al actualizarla.
+    country = models.CharField(
+        "país", max_length=2, default=DEFAULT_COUNTRY, blank=True, help_text="Código ISO 3166-1."
+    )
+    date_of_birth = models.DateField("fecha de nacimiento", null=True, blank=True)
+    date_of_birth_changed_at = models.DateTimeField(
+        "última modificación de la fecha de nacimiento",
+        null=True,
+        blank=True,
+        help_text="Limita los cambios posteriores (promociones de cumpleaños).",
+    )
+    phone_number = models.CharField(
+        "teléfono móvil",
+        max_length=16,
+        blank=True,
+        validators=[validators.validate_e164],
+        help_text="Opcional. Formato internacional E.164. No está verificado.",
+    )
+    promo_email_opt_in = models.BooleanField("acepta emails promocionales", default=False)
+    promo_sms_opt_in = models.BooleanField("acepta SMS promocionales", default=False)
 
     class Meta:
         verbose_name = "perfil de cliente"
         verbose_name_plural = "perfiles de cliente"
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(promo_sms_opt_in=False) | ~Q(phone_number=""),
+                name="accounts_profile_sms_opt_in_requires_phone",
+            ),
+        ]
 
     def __str__(self):
         return f"Perfil de cliente {self.user.public_id}"
+
+    def clean(self):
+        super().clean()
+        for name in ("address_line_1", "address_line_2", "city", "province"):
+            setattr(self, name, validators.normalize_text(getattr(self, name)))
+        self.postal_code = validators.normalize_postal_code(self.postal_code)
+        errors = {}
+        if self.country:
+            try:
+                validators.validate_country(self.country)
+            except ValidationError as exc:
+                errors["country"] = exc.messages
+        if self.postal_code and self.country and "country" not in errors:
+            try:
+                validators.validate_postal_code(self.postal_code, self.country)
+            except ValidationError as exc:
+                errors["postal_code"] = exc.messages
+        if self.date_of_birth is not None:
+            try:
+                validators.validate_date_of_birth(self.date_of_birth)
+            except ValidationError as exc:
+                errors["date_of_birth"] = exc.messages
+        if self.promo_sms_opt_in and not self.phone_number:
+            errors["promo_sms_opt_in"] = ["Para recibir SMS promocionales indica un teléfono móvil."]
+        if errors:
+            raise ValidationError(errors)
+
+    def get_country_display(self):
+        return COUNTRY_NAMES.get(self.country, self.country)
+
+    def missing_required_fields(self):
+        return [name for name in self.REQUIRED_FIELDS if getattr(self, name) in (None, "")]
+
+
+class EmailVerificationToken(models.Model):
+    """
+    Enlace de confirmación de email: alta (`VERIFY`) o cambio de email (`CHANGE`).
+
+    Solo se guarda el hash SHA-256 del token; el valor en claro únicamente viaja
+    en el email. Es de un solo uso (`used_at`), caduca (`expires_at`) y se
+    revoca al emitir otro para el mismo usuario (`revoked_at`).
+    """
+
+    class Purpose(models.TextChoices):
+        VERIFY = "VERIFY", "Verificación del email"
+        CHANGE = "CHANGE", "Cambio de email"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="usuario",
+        on_delete=models.CASCADE,
+        related_name="email_tokens",
+    )
+    purpose = models.CharField("finalidad", max_length=16, choices=Purpose.choices)
+    email = models.EmailField("email a confirmar", max_length=254)
+    token_hash = models.CharField("hash del token", max_length=64, unique=True)
+    created_at = models.DateTimeField("creado", default=timezone.now)
+    expires_at = models.DateTimeField("caduca")
+    used_at = models.DateTimeField("usado", null=True, blank=True)
+    revoked_at = models.DateTimeField("revocado", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "token de verificación de email"
+        verbose_name_plural = "tokens de verificación de email"
+        indexes = [models.Index(fields=["user", "created_at"])]
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(purpose__in=["VERIFY", "CHANGE"]),
+                name="accounts_emailtoken_purpose_valid",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.get_purpose_display()} · {self.created_at:%Y-%m-%d %H:%M}"
+
+    @staticmethod
+    def hash_token(raw_token):
+        return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+
+class CommunicationPreferenceChange(models.Model):
+    """
+    Historial inmutable de cambios del consentimiento promocional.
+
+    Permite demostrar cuándo y por qué vía se dio o retiró cada consentimiento.
+    No se edita ni se borra: el estado vigente está en `CustomerProfile`.
+    """
+
+    class Channel(models.TextChoices):
+        EMAIL = "EMAIL", "Email promocional"
+        SMS = "SMS", "SMS promocional"
+
+    class Source(models.TextChoices):
+        REGISTRATION = "REGISTRATION", "Registro"
+        PROFILE = "PROFILE", "Perfil del cliente"
+        SYSTEM = "SYSTEM", "Automático (teléfono eliminado)"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="cliente",
+        on_delete=models.CASCADE,
+        related_name="communication_preference_changes",
+    )
+    channel = models.CharField("canal", max_length=8, choices=Channel.choices)
+    opted_in = models.BooleanField("consiente")
+    source = models.CharField("origen", max_length=16, choices=Source.choices)
+    created_at = models.DateTimeField("fecha", default=timezone.now, db_index=True)
+
+    class Meta:
+        verbose_name = "cambio de preferencia de comunicación"
+        verbose_name_plural = "cambios de preferencias de comunicación"
+        ordering = ["-created_at", "-id"]
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(channel__in=["EMAIL", "SMS"]),
+                name="accounts_prefchange_channel_valid",
+            ),
+        ]
+
+    def __str__(self):
+        state = "alta" if self.opted_in else "baja"
+        return f"{self.get_channel_display()}: {state} · {self.created_at:%Y-%m-%d %H:%M}"

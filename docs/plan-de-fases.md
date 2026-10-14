@@ -6,8 +6,8 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 |------|--------|--------|
 | 0 | Fundación del proyecto | **Completa** ([detalle](fase-00-fundacion.md)) |
 | 1 | Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** ([detalle](fase-01-proyecto-base.md)) |
-| 2 | Sistema de diseño y web pública | Pendiente |
-| 3 | Registro, perfil de cliente y verificación de email | Pendiente |
+| 2 | Autenticación, registro, perfiles, verificación de email y permisos | **Completa** ([detalle](fase-02-registro-perfil-verificacion.md)) |
+| 3 | Sistema de diseño y web pública | Pendiente |
 | 4 | Carta y cervezas | Pendiente |
 | 5 | Fidelización: ledger de puntos y QR personal | Pendiente |
 | 6 | Panel de empleado y registro de compras | Pendiente |
@@ -29,27 +29,29 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 ## Fase 1 — Proyecto base: perfil de cliente, módulos y preparación para la app
 - **Depende de:** Fase 0.
 - **Incluye:** revisión del prompt de la Fase 1 frente a lo construido en la Fase 0; `CustomerProfile` 1:1 mínimo (sin datos personales) creado en la misma transacción que el alta del cliente o el paso al rol CUSTOMER; migración de datos para clientes existentes; mapa de módulos; identificadores estables y guía para incorporar DRF ([arquitectura.md](arquitectura.md)).
-- **Exclusiones:** campos personales del perfil y registro (Fase 3); apps de dominio vacías; DRF (Fase 11).
+- **Exclusiones:** campos personales del perfil y registro (Fase 2 tras la reordenación); apps de dominio vacías; DRF (Fase 11).
 - **Criterios:** todo cliente creado por los servicios tiene exactamente un perfil; la creación es transaccional; migraciones revisadas y reversibles; `check`, `makemigrations --check` y tests superados.
 
-## Fase 2 — Sistema de diseño y web pública
+> **Reordenación (2026-10-14):** el prompt de la Fase 2 pidió el registro, los perfiles y la verificación de email, que el plan inicial situaba en la Fase 3. Por decisión del usuario se intercambiaron: el registro pasa a ser la Fase 2 y el sistema de diseño la Fase 3. Las plantillas de cuenta de la Fase 2 son HTML sencillo y accesible que la Fase 3 integrará en el sistema de diseño. Los documentos de las Fases 0 y 1 conservan la numeración antigua.
+
+## Fase 2 — Autenticación, registro, perfiles, verificación de email y permisos
 - **Depende de:** Fases 0–1.
-- **Incluye:** Tailwind CSS mediante la CLI standalone (sin Node), plantilla base accesible y responsive con la paleta oficial y los recursos de `static/img/brand/`, navegación, páginas Inicio, La cervecería y Contacto, páginas de error. Alpine.js/HTMX solo si aportan algo concreto.
-- **Exclusiones:** Carta, Recompensas, Eventos, Registro y Perfil (se enlazan cuando existan).
+- **Incluye:** campos del `CustomerProfile`: dirección estructurada (`address_line_1`, `address_line_2`, `postal_code`, `city`, `province`, `country`), fecha de nacimiento (`DateField`, sin fechas futuras, límites documentados, 29 de febrero), teléfono opcional normalizado E.164; registro público solo CUSTOMER; login/logout; recuperación y cambio de contraseña; verificación de email con token seguro, caducidad, uso único, reenvío limitado y mensajes anti-enumeración; cambio de email con nueva verificación; preferencias de comunicación (email/SMS promocional) desactivadas por defecto y con historial de cambios; edición del perfil; emails transaccionales configurados por variables de entorno; activación/desactivación auditada de cuentas por el propietario; acciones permitidas con cuenta pendiente de verificación documentadas.
+- **Criterios:** tests de registro, validación, verificación, tokens caducados/usados, reenvío, cambio de email, fecha de nacimiento, teléfono, dirección, preferencias, registro solo como cliente y acceso a perfiles ajenos; política de datos personales documentada.
+
+## Fase 3 — Sistema de diseño y web pública
+- **Depende de:** Fases 0–2.
+- **Incluye:** Tailwind CSS mediante la CLI standalone (sin Node), plantilla base accesible y responsive con la paleta oficial y los recursos de `static/img/brand/`, navegación, páginas Inicio, La cervecería y Contacto, páginas de error. Integra las plantillas de cuenta de la Fase 2 (`templates/base.html`, `templates/accounts/`) en el sistema de diseño. Alpine.js/HTMX solo si aportan algo concreto.
+- **Exclusiones:** Carta, Recompensas y Eventos (se enlazan cuando existan).
 - **Criterios:** sin horarios, precios ni datos inventados (los textos del negocio se marcan como pendientes de aportar por el propietario); contraste AA; responsive móvil/tablet/escritorio; tests de vistas públicas.
 
-## Fase 3 — Registro, perfil de cliente y verificación de email
-- **Depende de:** Fases 0–2.
-- **Incluye:** campos del `CustomerProfile` existente: dirección estructurada (`address_line_1`, `address_line_2`, `postal_code`, `city`, `province`, `country`), fecha de nacimiento (`DateField`, sin fechas futuras, límites documentados), teléfono opcional normalizado E.164; registro público solo CUSTOMER (usa `services.create_customer`); login/logout; recuperación de contraseña; verificación de email con token seguro, caducidad, uso único, reenvío limitado y mensajes anti-enumeración; preferencias de comunicación (email/SMS promocional) desactivadas por defecto y con historial de cambios; edición del perfil; servicio base de notificaciones por email configurado por variables de entorno; acciones permitidas con cuenta pendiente de verificación documentadas.
-- **Criterios:** todos los tests de registro, validación, verificación, tokens caducados/usados, reenvío, fecha de nacimiento, teléfono, dirección, preferencias y permisos del perfil del §25 del prompt maestro; política de datos personales documentada.
-
 ## Fase 4 — Carta y cervezas
-- **Depende de:** Fases 0–2.
+- **Depende de:** Fases 0–1 y 3 (sistema de diseño).
 - **Incluye:** categorías, productos fijos, cervezas propias/invitadas/rotativas, 14 grifos, estilos, graduación, precios `DecimalField` (2 decimales), imágenes validadas, disponibilidad, publicación y archivo sin borrar historial; gestión por el propietario sin tocar código; página pública Carta.
 - **Criterios:** validación de precios e imágenes; solo OWNER gestiona; productos archivados no se borran.
 
 ## Fase 5 — Fidelización: ledger de puntos y QR personal
-- **Depende de:** Fase 3.
+- **Depende de:** Fase 2.
 - **Incluye:** ledger auditable de movimientos (saldo derivado), configuración de conversión importe→puntos, token QR opaco y aleatorio (sin datos personales), rotación del token, vista del cliente con saldo, historial y QR.
 - **Criterios:** puntos solo calculados en backend; movimientos inmutables con compensaciones; tests de concurrencia e idempotencia.
 
@@ -69,12 +71,12 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** transiciones validadas en servidor; datos de reservas protegidos; tests.
 
 ## Fase 9 — Dashboard del propietario y estadísticas
-- **Depende de:** Fases 3–8.
+- **Depende de:** Fases 2–8.
 - **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos, recompensas, carta, eventos, reservas, contenido editable y configuración de fidelización; estadísticas reales y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
 - **Criterios:** acceso solo OWNER; las compras registradas no se presentan como facturación total; tests de permisos.
 
 ## Fase 10 — Notificaciones completas y promociones de cumpleaños
-- **Depende de:** Fases 3, 5, 7.
+- **Depende de:** Fases 2, 5, 7.
 - **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas, promociones de cumpleaños configurables (29 de febrero, una por cliente y periodo, bloqueo de cambios abusivos de fecha, solo emails verificados y con consentimiento).
 - **Criterios:** sin envíos simulados; tests de reintentos, duplicados y consentimiento.
 

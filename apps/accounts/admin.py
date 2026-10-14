@@ -14,7 +14,7 @@ from django.contrib.auth.forms import BaseUserCreationForm, UserChangeForm
 from django.core.exceptions import PermissionDenied, ValidationError
 
 from . import services
-from .models import User
+from .models import CommunicationPreferenceChange, User
 
 
 class UserAdminCreationForm(BaseUserCreationForm):
@@ -55,19 +55,44 @@ def _change_role_action(new_role, description):
     return action
 
 
+def _set_active_action(is_active, description):
+    def action(modeladmin, request, queryset):
+        changed = 0
+        for user in queryset:
+            try:
+                services.set_user_active(actor=request.user, user=user, is_active=is_active)
+                changed += 1
+            except (PermissionDenied, ValidationError) as exc:
+                messages.error(request, f"{user}: {'; '.join(getattr(exc, 'messages', [str(exc)]))}")
+        if changed:
+            messages.success(request, f"Estado actualizado en {changed} usuario(s).")
+
+    action.__name__ = "activate_users" if is_active else "deactivate_users"
+    action.short_description = description
+    return action
+
+
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
 
-    list_display = ("email", "first_name", "last_name", "role", "is_active", "date_joined")
+    list_display = ("email", "first_name", "last_name", "role", "is_active", "email_verified", "date_joined")
     list_filter = ("role", "is_active")
     search_fields = ("email", "first_name", "last_name")
     ordering = ("-date_joined",)
-    readonly_fields = ("public_id", "role", "is_staff", "is_superuser", "last_login", "date_joined")
+    readonly_fields = (
+        "public_id",
+        "email_verified_at",
+        "role",
+        "is_staff",
+        "is_superuser",
+        "last_login",
+        "date_joined",
+    )
 
     fieldsets = (
-        (None, {"fields": ("public_id", "email", "password")}),
+        (None, {"fields": ("public_id", "email", "email_verified_at", "password")}),
         ("Datos personales", {"fields": ("first_name", "last_name")}),
         ("Rol y estado", {"fields": ("role", "is_active", "is_staff", "is_superuser")}),
         ("Fechas", {"fields": ("last_login", "date_joined")}),
@@ -87,7 +112,13 @@ class UserAdmin(DjangoUserAdmin):
         _change_role_action(User.Role.EMPLOYEE, "Cambiar rol a Empleado"),
         _change_role_action(User.Role.CUSTOMER, "Cambiar rol a Cliente"),
         _change_role_action(User.Role.OWNER, "Cambiar rol a Propietario"),
+        _set_active_action(True, "Activar (autorizar) cuentas"),
+        _set_active_action(False, "Desactivar cuentas"),
     ]
+
+    @admin.display(boolean=True, description="email verificado")
+    def email_verified(self, obj):
+        return obj.is_email_verified
 
     def get_readonly_fields(self, request, obj=None):
         # En el alta el rol se elige en el formulario; después solo por acciones.
@@ -97,7 +128,15 @@ class UserAdmin(DjangoUserAdmin):
 
     def save_model(self, request, obj, form, change):
         if change:
+            # Si cambia el email, el modelo anula la verificación (User.save).
+            # La activación/desactivación pasa por el servicio, que audita.
+            active_changed = "is_active" in form.changed_data
+            new_active = obj.is_active
+            if active_changed:
+                obj.is_active = not new_active
             super().save_model(request, obj, form, change)
+            if active_changed:
+                services.set_user_active(actor=request.user, user=obj, is_active=new_active)
             return
         services.create_user_by_owner(
             actor=request.user,
@@ -111,4 +150,22 @@ class UserAdmin(DjangoUserAdmin):
 
     def has_delete_permission(self, request, obj=None):
         # Se desactivan cuentas en lugar de borrarlas para conservar el historial.
+        return False
+
+
+@admin.register(CommunicationPreferenceChange)
+class CommunicationPreferenceChangeAdmin(admin.ModelAdmin):
+    """Historial de consentimientos de solo lectura (evidencia; no se edita ni se borra)."""
+
+    list_display = ("created_at", "user", "channel", "opted_in", "source")
+    list_filter = ("channel", "opted_in", "source")
+    readonly_fields = ("created_at", "user", "channel", "opted_in", "source")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
         return False

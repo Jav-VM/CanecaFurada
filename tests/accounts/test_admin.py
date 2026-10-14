@@ -1,7 +1,10 @@
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
+from apps.accounts import services
 from apps.accounts.models import User
 from apps.core.models import AuditEvent
 
@@ -95,6 +98,70 @@ class UserAdminTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.owner.refresh_from_db()
         self.assertTrue(self.owner.is_active)
+
+    def test_owner_deactivates_and_reactivates_employee_with_audit(self):
+        self.client.force_login(self.owner)
+        self.client.post(
+            self.changelist, {"action": "deactivate_users", "_selected_action": [self.employee.pk]}
+        )
+        self.employee.refresh_from_db()
+        self.assertFalse(self.employee.is_active)
+        self.client.post(
+            self.changelist, {"action": "activate_users", "_selected_action": [self.employee.pk]}
+        )
+        self.employee.refresh_from_db()
+        self.assertTrue(self.employee.is_active)
+        actions = list(
+            AuditEvent.objects.filter(target_public_id=self.employee.public_id)
+            .order_by("id")
+            .values_list("action", flat=True)
+        )
+        self.assertEqual(actions, ["ACCOUNT_DEACTIVATED", "ACCOUNT_ACTIVATED"])
+
+    def test_change_form_deactivation_is_audited(self):
+        self.client.force_login(self.owner)
+        url = reverse("admin:accounts_user_change", args=[self.employee.pk])
+        self.client.post(url, {"email": self.employee.email, "first_name": "E", "last_name": "F"})
+        self.employee.refresh_from_db()
+        self.assertFalse(self.employee.is_active)
+        self.assertTrue(AuditEvent.objects.filter(action="ACCOUNT_DEACTIVATED").exists())
+
+    def test_deactivated_employee_loses_access(self):
+        self.client.force_login(self.employee)
+        self.assertEqual(self.client.get(reverse("accounts:home")).status_code, 200)
+        services.set_user_active(actor=self.owner, user=self.employee, is_active=False)
+        response = self.client.get(reverse("accounts:home"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("accounts:login"), response["Location"])
+
+    def test_non_owner_cannot_change_active_state(self):
+        with self.assertRaises(PermissionDenied):
+            services.set_user_active(actor=self.employee, user=self.customer, is_active=False)
+
+    def test_last_owner_cannot_be_deactivated_by_action(self):
+        self.client.force_login(self.owner)
+        self.client.post(self.changelist, {"action": "deactivate_users", "_selected_action": [self.owner.pk]})
+        self.owner.refresh_from_db()
+        self.assertTrue(self.owner.is_active)
+
+    def test_admin_email_edit_resets_verification(self):
+        User.objects.filter(pk=self.customer.pk).update(email_verified_at=timezone.now())
+        self.client.force_login(self.owner)
+        url = reverse("admin:accounts_user_change", args=[self.customer.pk])
+        self.client.post(
+            url,
+            {"email": "corregido@example.com", "first_name": "Ana", "last_name": "F", "is_active": "on",
+             "email_verified_at": "2020-01-01 00:00"},
+        )
+        self.customer.refresh_from_db()
+        self.assertEqual(self.customer.email, "corregido@example.com")
+        self.assertFalse(self.customer.is_email_verified)
+
+    def test_preference_history_is_read_only(self):
+        self.client.force_login(self.owner)
+        self.assertEqual(
+            self.client.get(reverse("admin:accounts_communicationpreferencechange_add")).status_code, 403
+        )
 
     def test_users_cannot_be_deleted_from_admin(self):
         self.client.force_login(self.owner)

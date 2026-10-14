@@ -6,17 +6,56 @@ web, el admin, los comandos y la futura API deben llamarlos en lugar de
 modificar los modelos directamente. El rol nunca se toma de datos del cliente
 en flujos públicos.
 """
+import datetime
+import secrets
+
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import IntegrityError, transaction
+from django.core.validators import validate_email
+from django.db import IntegrityError, models, transaction
+from django.utils import timezone
 
+from apps.core import throttling
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
-from .models import CustomerProfile, User
+from . import emails
+from .models import CommunicationPreferenceChange, CustomerProfile, EmailVerificationToken, User
 from .normalization import normalize_email_address
+from .validators import normalize_phone_number, normalize_text
 
 Role = User.Role
+TokenPurpose = EmailVerificationToken.Purpose
+Channel = CommunicationPreferenceChange.Channel
+Source = CommunicationPreferenceChange.Source
+
+# Campos del perfil que el cliente puede editar (lista blanca contra asignación masiva).
+PROFILE_FIELDS = (
+    "address_line_1",
+    "address_line_2",
+    "postal_code",
+    "city",
+    "province",
+    "country",
+    "date_of_birth",
+    "phone_number",
+)
+
+
+class EmailAlreadyRegistered(ValidationError):
+    """
+    El email ya pertenece a una cuenta. La web no lo revela (responde igual que
+    un registro correcto y avisa al titular por email); la futura API debe
+    hacer lo mismo.
+    """
+
+    def __init__(self):
+        super().__init__({"email": "Ya existe una cuenta con este email."}, code="email_taken")
+
+
+class RateLimited(Exception):
+    """Se ha superado el límite de envíos de verificación para la cuenta."""
 
 _CREATION_ACTIONS = {
     Role.OWNER: AuditEvent.Action.OWNER_CREATED,
@@ -68,7 +107,7 @@ def _create_user(*, role, email, first_name, last_name, password, actor=None, in
             user.save()
     except IntegrityError as exc:
         # Carrera entre dos altas con el mismo email: la restricción única decide.
-        raise ValidationError({"email": "Ya existe una cuenta con este email."}) from exc
+        raise EmailAlreadyRegistered() from exc
 
     if role == Role.CUSTOMER:
         ensure_customer_profile(user)
@@ -193,3 +232,502 @@ def change_role(*, actor, user, new_role):
     user.is_staff = target.is_staff
     user.is_superuser = target.is_superuser
     return target
+
+
+@transaction.atomic
+def set_user_active(*, actor, user, is_active):
+    """
+    Activa o desactiva una cuenta (autorizar o dar de baja a un empleado, por
+    ejemplo). Solo un propietario activo; nunca deja el sistema sin propietarios
+    activos. Una cuenta desactivada no puede iniciar sesión.
+    """
+    _ensure_active_owner(actor)
+    target = User.objects.select_for_update().get(pk=user.pk)
+    if target.is_active == is_active:
+        return target
+    if not is_active and target.role == Role.OWNER:
+        active_owners = list(
+            User.objects.select_for_update()
+            .filter(role=Role.OWNER, is_active=True)
+            .values_list("pk", flat=True)
+        )
+        if len(active_owners) <= 1:
+            raise ValidationError("No se puede desactivar al último propietario activo.")
+    target.is_active = is_active
+    target.save(update_fields=["is_active"])
+    record_audit_event(
+        action=AuditEvent.Action.ACCOUNT_ACTIVATED if is_active else AuditEvent.Action.ACCOUNT_DEACTIVATED,
+        actor=actor,
+        target=target,
+        metadata={"role": target.role},
+    )
+    user.is_active = target.is_active
+    return target
+
+
+# --- Registro público ---------------------------------------------------------
+
+
+def _coerce_date(value, field):
+    """Acepta `date` o texto ISO (API); rechaza fechas imposibles como 2001-02-30."""
+    if isinstance(value, datetime.datetime):
+        raise ValidationError({field: "Introduce una fecha válida."})
+    try:
+        return models.DateField().to_python(value)
+    except ValidationError:
+        raise ValidationError({field: "Introduce una fecha válida."}) from None
+
+
+def _apply_profile_data(profile, data):
+    """Asigna solo los campos permitidos, normalizados. No guarda."""
+    errors = {}
+    for name in PROFILE_FIELDS:
+        if name not in data:
+            continue
+        value = data[name]
+        try:
+            if name == "phone_number":
+                value = normalize_phone_number(value)
+            elif name == "date_of_birth":
+                value = _coerce_date(value, name) if value not in (None, "") else None
+            else:
+                value = normalize_text(value)
+        except ValidationError as exc:
+            errors[name] = exc.messages
+            continue
+        setattr(profile, name, value)
+    if errors:
+        raise ValidationError(errors)
+
+
+def _validate_complete_profile(profile):
+    errors = {}
+    try:
+        profile.full_clean(exclude=["user"])
+    except ValidationError as exc:
+        errors.update(exc.message_dict)
+    for name in profile.missing_required_fields():
+        errors.setdefault(name, ["Este campo es obligatorio."])
+    if errors:
+        raise ValidationError(errors)
+
+
+def _record_preference(user, channel, opted_in, source):
+    CommunicationPreferenceChange.objects.create(
+        user=user, channel=channel, opted_in=opted_in, source=source
+    )
+
+
+def register_customer(
+    *,
+    email,
+    password,
+    first_name,
+    last_name,
+    address_line_1,
+    postal_code,
+    city,
+    province,
+    country,
+    date_of_birth,
+    address_line_2="",
+    phone_number="",
+    promo_email_opt_in=False,
+    promo_sms_opt_in=False,
+):
+    """
+    Registro público de un cliente con todos sus datos obligatorios.
+
+    - Siempre crea el rol CUSTOMER (no acepta `role`) con el email pendiente de
+      verificación.
+    - Valida todos los datos en servidor; nada se guarda si algo falla.
+    - Registra el estado inicial de los dos consentimientos promocionales.
+    - Emite un token de verificación y envía el email al confirmar la transacción.
+
+    Lanza `EmailAlreadyRegistered` si el email ya existe (ver su docstring).
+    """
+    with transaction.atomic():
+        email = normalize_email_address(email)
+        if User.objects.filter(email=email).exists():
+            raise EmailAlreadyRegistered()
+
+        profile = CustomerProfile(
+            promo_email_opt_in=bool(promo_email_opt_in),
+            promo_sms_opt_in=bool(promo_sms_opt_in),
+        )
+        _apply_profile_data(
+            profile,
+            {
+                "address_line_1": address_line_1,
+                "address_line_2": address_line_2,
+                "postal_code": postal_code,
+                "city": city,
+                "province": province,
+                "country": country,
+                "date_of_birth": date_of_birth,
+                "phone_number": phone_number,
+            },
+        )
+        _validate_complete_profile(profile)
+
+        user = _create_user(
+            role=Role.CUSTOMER,
+            email=email,
+            first_name=normalize_text(first_name),
+            last_name=normalize_text(last_name),
+            password=password,
+        )
+        # `_create_user` ya creó (y dejó en caché) el perfil vacío; se completa
+        # en la misma transacción.
+        stored = user.customer_profile
+        for name in (*PROFILE_FIELDS, "promo_email_opt_in", "promo_sms_opt_in"):
+            setattr(stored, name, getattr(profile, name))
+        stored.save()
+
+        _record_preference(user, Channel.EMAIL, stored.promo_email_opt_in, Source.REGISTRATION)
+        _record_preference(user, Channel.SMS, stored.promo_sms_opt_in, Source.REGISTRATION)
+
+        raw_token = _issue_email_token(user, TokenPurpose.VERIFY, user.email, enforce_limits=False)
+        _send_token_on_commit(user, user.email, raw_token, is_email_change=False)
+    return user
+
+
+def notify_existing_account(email):
+    """
+    Avisa al titular de que alguien intentó registrarse con su email, con un
+    enlace a la recuperación de contraseña. Limitado a un aviso por día y cuenta.
+    """
+    user = User.objects.filter(email=normalize_email_address(email), is_active=True).first()
+    if user is None or throttling.is_limited("existing-account-notice", user.pk, 1):
+        return
+    throttling.register_attempt("existing-account-notice", user.pk, 60 * 60 * 24)
+    transaction.on_commit(lambda: emails.send_existing_account_notice(to=user.email))
+
+
+# --- Verificación de email -----------------------------------------------------
+
+
+def _issue_email_token(user, purpose, email, *, enforce_limits=True):
+    """
+    Crea un token nuevo y revoca los pendientes del usuario. Devuelve el token en
+    claro (solo para el email). Bloquea la fila del usuario para serializar
+    emisiones concurrentes y aplicar los límites de reenvío.
+    """
+    now = timezone.now()
+    User.objects.select_for_update().filter(pk=user.pk).first()
+    if enforce_limits:
+        recent = EmailVerificationToken.objects.filter(
+            user=user, created_at__gte=now - datetime.timedelta(days=1)
+        )
+        # El intervalo mínimo es por finalidad (verificar no bloquea un cambio
+        # de email inmediato); el máximo diario cuenta todos los envíos.
+        last = recent.filter(purpose=purpose).order_by("-created_at").first()
+        interval = datetime.timedelta(seconds=settings.EMAIL_VERIFICATION_RESEND_INTERVAL_SECONDS)
+        if last is not None and now - last.created_at < interval:
+            raise RateLimited("Espera un minuto antes de solicitar otro email.")
+        if recent.count() >= settings.EMAIL_VERIFICATION_MAX_PER_DAY:
+            raise RateLimited("Has alcanzado el máximo de emails de verificación por hoy.")
+
+    EmailVerificationToken.objects.filter(
+        user=user, used_at__isnull=True, revoked_at__isnull=True
+    ).update(revoked_at=now)
+    raw_token = secrets.token_urlsafe(32)
+    EmailVerificationToken.objects.create(
+        user=user,
+        purpose=purpose,
+        email=email,
+        token_hash=EmailVerificationToken.hash_token(raw_token),
+        created_at=now,
+        expires_at=now + datetime.timedelta(hours=settings.EMAIL_VERIFICATION_TOKEN_TTL_HOURS),
+    )
+    return raw_token
+
+
+def _send_token_on_commit(user, to, raw_token, *, is_email_change):
+    first_name = user.first_name
+    ttl = settings.EMAIL_VERIFICATION_TOKEN_TTL_HOURS
+    transaction.on_commit(
+        lambda: emails.send_verification_email(
+            to=to,
+            first_name=first_name,
+            raw_token=raw_token,
+            ttl_hours=ttl,
+            is_email_change=is_email_change,
+        )
+    )
+
+
+@transaction.atomic
+def resend_verification_email(user):
+    """
+    Reenvía el enlace de verificación del email actual. Devuelve False si no hay
+    nada que verificar. Lanza `RateLimited` si se supera el límite.
+    """
+    user = User.objects.select_for_update().get(pk=user.pk)
+    if not user.is_active or user.is_email_verified:
+        return False
+    raw_token = _issue_email_token(user, TokenPurpose.VERIFY, user.email)
+    _send_token_on_commit(user, user.email, raw_token, is_email_change=False)
+    return True
+
+
+def request_verification_resend(email):
+    """
+    Variante pública (sin sesión): no revela si el email existe, está verificado
+    o ha superado el límite. Siempre devuelve None.
+    """
+    user = User.objects.filter(email=normalize_email_address(email)).first()
+    if user is None:
+        return
+    try:
+        resend_verification_email(user)
+    except RateLimited:
+        pass
+
+
+_TOKEN_ERRORS = {
+    "invalid": "El enlace no es válido.",
+    "expired": "El enlace ha caducado. Solicita uno nuevo.",
+    "used": "Este enlace ya se ha utilizado.",
+    "revoked": "Este enlace ha sido sustituido por uno más reciente.",
+    "email_taken": "Ese email ya no está disponible.",
+}
+
+
+def _token_error(code):
+    return ValidationError(_TOKEN_ERRORS[code], code=code)
+
+
+@transaction.atomic
+def confirm_email_token(raw_token):
+    """
+    Confirma un enlace de verificación o de cambio de email y lo invalida.
+
+    Es la única vía que marca un email como verificado. El consumo del token es
+    atómico (UPDATE condicionado), por lo que dos confirmaciones simultáneas no
+    pueden tener éxito ambas. Devuelve el usuario.
+    """
+    if not raw_token or len(raw_token) > 128:
+        raise _token_error("invalid")
+    token = (
+        EmailVerificationToken.objects.select_for_update()
+        .filter(token_hash=EmailVerificationToken.hash_token(raw_token))
+        .first()
+    )
+    if token is None:
+        raise _token_error("invalid")
+    if token.used_at is not None:
+        raise _token_error("used")
+    if token.revoked_at is not None:
+        raise _token_error("revoked")
+    now = timezone.now()
+    if token.expires_at <= now:
+        raise _token_error("expired")
+
+    user = User.objects.select_for_update().get(pk=token.user_id)
+    if not user.is_active:
+        raise _token_error("invalid")
+
+    claimed = EmailVerificationToken.objects.filter(
+        pk=token.pk, used_at__isnull=True, revoked_at__isnull=True
+    ).update(used_at=now)
+    if claimed != 1:
+        raise _token_error("used")
+
+    if token.purpose == TokenPurpose.VERIFY:
+        if token.email != user.email:
+            # El email cambió después de emitir el enlace.
+            raise _token_error("invalid")
+        if not user.is_email_verified:
+            user.email_verified_at = now
+            user.save(update_fields=["email_verified_at"])
+            record_audit_event(action=AuditEvent.Action.EMAIL_VERIFIED, actor=user, target=user)
+        return user
+
+    # Cambio de email: el nuevo queda verificado porque se acaba de confirmar.
+    if User.objects.filter(email=token.email).exclude(pk=user.pk).exists():
+        raise _token_error("email_taken")
+    old_email, first_name = user.email, user.first_name
+    user.email = token.email
+    user.email_verified_at = now
+    try:
+        with transaction.atomic():
+            user.save(update_fields=["email", "email_verified_at"])
+    except IntegrityError:
+        raise _token_error("email_taken") from None
+    EmailVerificationToken.objects.filter(
+        user=user, used_at__isnull=True, revoked_at__isnull=True
+    ).update(revoked_at=now)
+    record_audit_event(action=AuditEvent.Action.EMAIL_CHANGED, actor=user, target=user)
+    transaction.on_commit(
+        lambda: emails.send_email_changed_notice(to=old_email, first_name=first_name)
+    )
+    return user
+
+
+@transaction.atomic
+def request_email_change(*, user, new_email, password):
+    """
+    Solicita cambiar el email. Exige la contraseña actual. El email no cambia
+    hasta que se confirma el enlace enviado a la nueva dirección; mientras
+    tanto el actual sigue siendo el de acceso.
+
+    Si la nueva dirección ya pertenece a otra cuenta no se envía nada, pero no
+    se informa de ello (anti-enumeración). Lanza `RateLimited` si se supera el
+    límite de envíos.
+    """
+    user = User.objects.select_for_update().get(pk=user.pk)
+    if not user.is_active:
+        raise PermissionDenied
+    if not user.check_password(password or ""):
+        raise ValidationError({"password": "La contraseña no es correcta."})
+    new_email = normalize_email_address(new_email or "")
+    try:
+        validate_email(new_email)
+    except ValidationError:
+        raise ValidationError({"new_email": "Introduce un email válido."}) from None
+    if len(new_email) > 254:
+        raise ValidationError({"new_email": "El email es demasiado largo."})
+    if new_email == user.email:
+        raise ValidationError({"new_email": "Ese ya es tu email actual."})
+    if User.objects.filter(email=new_email).exists():
+        return
+    raw_token = _issue_email_token(user, TokenPurpose.CHANGE, new_email)
+    record_audit_event(action=AuditEvent.Action.EMAIL_CHANGE_REQUESTED, actor=user, target=user)
+    _send_token_on_commit(user, new_email, raw_token, is_email_change=True)
+
+
+def require_verified_email(user):
+    """Para operaciones que exigen un email verificado (puntos, canjes, reservas...)."""
+    if not (getattr(user, "is_authenticated", False) and user.is_active and user.is_email_verified):
+        raise PermissionDenied("Debes verificar tu email para usar esta función.")
+
+
+# --- Perfil ----------------------------------------------------------------------
+
+
+def _require_active_customer(user):
+    if not (user.is_active and user.role == Role.CUSTOMER):
+        raise PermissionDenied("Solo los clientes tienen perfil de cliente.")
+
+
+@transaction.atomic
+def update_customer_profile(*, user, first_name, last_name, **profile_data):
+    """
+    Modifica los datos personales del cliente autenticado (`user`; nunca un ID
+    recibido del cliente). Solo acepta los campos de `PROFILE_FIELDS`.
+
+    Reglas: todos los obligatorios deben quedar completos; la fecha de
+    nacimiento puede cambiarse una vez cada
+    `ACCOUNTS_DATE_OF_BIRTH_CHANGE_COOLDOWN_DAYS` (protege las promociones de
+    cumpleaños); si se borra el teléfono se retira el consentimiento de SMS.
+    El email no se modifica aquí (`request_email_change`).
+    """
+    unknown = set(profile_data) - set(PROFILE_FIELDS)
+    if unknown:
+        raise ValidationError(f"Campos no permitidos: {', '.join(sorted(unknown))}.")
+    user = User.objects.select_for_update().get(pk=user.pk)
+    _require_active_customer(user)
+    ensure_customer_profile(user)
+    profile = CustomerProfile.objects.select_for_update().get(user=user)
+    before = {name: getattr(profile, name) for name in PROFILE_FIELDS}
+
+    _apply_profile_data(profile, profile_data)
+    changed = [name for name in PROFILE_FIELDS if getattr(profile, name) != before[name]]
+
+    now = timezone.now()
+    if "date_of_birth" in changed and before["date_of_birth"] is not None:
+        cooldown = datetime.timedelta(days=settings.ACCOUNTS_DATE_OF_BIRTH_CHANGE_COOLDOWN_DAYS)
+        last_change = profile.date_of_birth_changed_at
+        if last_change is not None and now - last_change < cooldown:
+            raise ValidationError(
+                {"date_of_birth": "La fecha de nacimiento solo puede cambiarse una vez al año."}
+            )
+        profile.date_of_birth_changed_at = now
+
+    sms_withdrawn = profile.promo_sms_opt_in and not profile.phone_number
+    if sms_withdrawn:
+        profile.promo_sms_opt_in = False
+
+    old_names = {"first_name": user.first_name, "last_name": user.last_name}
+    user.first_name = normalize_text(first_name)
+    user.last_name = normalize_text(last_name)
+    user_changed = [name for name, old in old_names.items() if getattr(user, name) != old]
+    errors = {}
+    try:
+        user.full_clean(exclude=["password"])
+    except ValidationError as exc:
+        errors.update(exc.message_dict)
+    try:
+        _validate_complete_profile(profile)
+    except ValidationError as exc:
+        errors.update(exc.message_dict)
+    if errors:
+        raise ValidationError(errors)
+
+    profile.save()
+    user.save(update_fields=["first_name", "last_name"])
+    if sms_withdrawn:
+        _record_preference(user, Channel.SMS, False, Source.SYSTEM)
+    if changed or user_changed:
+        # Solo los nombres de los campos, nunca sus valores.
+        record_audit_event(
+            action=AuditEvent.Action.PROFILE_UPDATED,
+            actor=user,
+            target=user,
+            metadata={"fields": sorted(user_changed + changed)},
+        )
+    return profile
+
+
+@transaction.atomic
+def set_communication_preferences(*, user, promo_email_opt_in, promo_sms_opt_in, source=Source.PROFILE):
+    """
+    Cambia los consentimientos promocionales y registra cada cambio en el
+    historial. Verificar el email no implica consentimiento: solo cambian aquí.
+    """
+    user = User.objects.select_for_update().get(pk=user.pk)
+    _require_active_customer(user)
+    ensure_customer_profile(user)
+    profile = CustomerProfile.objects.select_for_update().get(user=user)
+    promo_email_opt_in, promo_sms_opt_in = bool(promo_email_opt_in), bool(promo_sms_opt_in)
+    if promo_sms_opt_in and not profile.phone_number:
+        raise ValidationError(
+            {"promo_sms_opt_in": "Para recibir SMS promocionales indica antes un teléfono móvil."}
+        )
+    changes = []
+    if profile.promo_email_opt_in != promo_email_opt_in:
+        profile.promo_email_opt_in = promo_email_opt_in
+        changes.append((Channel.EMAIL, promo_email_opt_in))
+    if profile.promo_sms_opt_in != promo_sms_opt_in:
+        profile.promo_sms_opt_in = promo_sms_opt_in
+        changes.append((Channel.SMS, promo_sms_opt_in))
+    if changes:
+        profile.save(update_fields=["promo_email_opt_in", "promo_sms_opt_in", "updated_at"])
+        for channel, opted_in in changes:
+            _record_preference(user, channel, opted_in, source)
+    return profile
+
+
+# --- Comprobaciones antes de enviar promociones ---------------------------------
+
+
+def _customer_profile_or_none(user):
+    if not (user.is_active and user.role == Role.CUSTOMER):
+        return None
+    try:
+        return user.customer_profile
+    except CustomerProfile.DoesNotExist:
+        return None
+
+
+def can_receive_promotional_email(user):
+    """Cliente activo, email verificado y consentimiento explícito vigente."""
+    profile = _customer_profile_or_none(user)
+    return bool(profile and user.is_email_verified and profile.promo_email_opt_in)
+
+
+def can_receive_promotional_sms(user):
+    """Cliente activo, teléfono indicado y consentimiento explícito vigente."""
+    profile = _customer_profile_or_none(user)
+    return bool(profile and profile.phone_number and profile.promo_sms_opt_in)

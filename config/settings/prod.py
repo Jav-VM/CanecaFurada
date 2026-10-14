@@ -15,6 +15,23 @@ if not ALLOWED_HOSTS:
 
 CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 
+# --- Email real obligatorio ----------------------------------------------------
+# En producción no se simulan envíos: se rechazan los backends de consola,
+# memoria, fichero o nulo y se exige un servidor SMTP y una URL pública HTTPS.
+
+_SIMULATED_EMAIL_BACKENDS = {
+    "django.core.mail.backends.console.EmailBackend",
+    "django.core.mail.backends.locmem.EmailBackend",
+    "django.core.mail.backends.filebased.EmailBackend",
+    "django.core.mail.backends.dummy.EmailBackend",
+}
+if EMAIL_BACKEND in _SIMULATED_EMAIL_BACKENDS:  # noqa: F405
+    raise ImproperlyConfigured("EMAIL_BACKEND no puede ser un backend simulado en producción.")
+if EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend" and not EMAIL_HOST:  # noqa: F405
+    raise ImproperlyConfigured("EMAIL_HOST es obligatoria en producción.")
+if not SITE_BASE_URL.startswith("https://"):  # noqa: F405
+    raise ImproperlyConfigured("SITE_BASE_URL es obligatoria en producción y debe usar https://.")
+
 # --- HTTPS y cookies seguras -------------------------------------------------
 
 SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)

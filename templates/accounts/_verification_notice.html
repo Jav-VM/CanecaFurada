@@ -1,0 +1,9 @@
+{% if not user.is_email_verified %}
+<div class="notice">
+  <p><strong>Tu email está pendiente de verificación.</strong> Hasta que lo confirmes no podrás usar las funciones que lo requieren (puntos, canjes, reservas) ni recibirás promociones.</p>
+  <form method="post" action="{% url 'accounts:resend_verification_self' %}">
+    {% csrf_token %}
+    <button type="submit">Reenviar enlace de verificación</button>
+  </form>
+</div>
+{% endif %}

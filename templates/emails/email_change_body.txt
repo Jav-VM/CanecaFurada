@@ -1,0 +1,12 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+Has solicitado usar esta dirección como nuevo email de tu cuenta de Caneca Furada. Para confirmarla abre este enlace y pulsa «Confirmar email»:
+
+{{ verification_url }}
+
+El enlace caduca en {{ ttl_hours }} horas y solo puede usarse una vez. Hasta que lo confirmes, tu email anterior sigue siendo el de acceso.
+
+Si no lo has solicitado tú, ignora este mensaje.
+
+Caneca Furada
+{% endautoescape %}

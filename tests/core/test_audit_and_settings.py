@@ -33,8 +33,17 @@ class AuditEventTests(TestCase):
 class ProductionSettingsTests(SimpleTestCase):
     """Se ejecuta en un proceso aparte para no contaminar la configuración de los tests."""
 
+    # Configuración mínima válida (valores ficticios).
+    REQUIRED = {
+        "DJANGO_SECRET_KEY": "x" * 50,
+        "DJANGO_ALLOWED_HOSTS": "example.com",
+        "EMAIL_HOST": "smtp.example.com",
+        "SITE_BASE_URL": "https://www.example.com",
+    }
+
     def _import_prod(self, extra_env):
-        env = {k: v for k, v in os.environ.items() if not k.startswith("DJANGO_")}
+        prefixes = ("DJANGO_", "EMAIL_", "SITE_BASE_URL")
+        env = {k: v for k, v in os.environ.items() if not k.startswith(prefixes)}
         env.update(extra_env)
         env["DJANGO_SETTINGS_MODULE"] = "config.settings.prod"
         return subprocess.run(
@@ -53,5 +62,24 @@ class ProductionSettingsTests(SimpleTestCase):
         self.assertIn("DJANGO_ALLOWED_HOSTS", result.stderr)
 
     def test_prod_loads_with_required_variables(self):
-        result = self._import_prod({"DJANGO_SECRET_KEY": "x" * 50, "DJANGO_ALLOWED_HOSTS": "example.com"})
+        result = self._import_prod(self.REQUIRED)
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_prod_requires_email_host(self):
+        result = self._import_prod({**self.REQUIRED, "EMAIL_HOST": ""})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("EMAIL_HOST", result.stderr)
+
+    def test_prod_rejects_simulated_email_backends(self):
+        for backend in ("console", "locmem", "filebased", "dummy"):
+            with self.subTest(backend=backend):
+                result = self._import_prod(
+                    {**self.REQUIRED, "EMAIL_BACKEND": f"django.core.mail.backends.{backend}.EmailBackend"}
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("EMAIL_BACKEND", result.stderr)
+
+    def test_prod_requires_https_site_url(self):
+        result = self._import_prod({**self.REQUIRED, "SITE_BASE_URL": "http://www.example.com"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("SITE_BASE_URL", result.stderr)
