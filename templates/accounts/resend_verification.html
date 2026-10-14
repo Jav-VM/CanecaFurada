@@ -1,11 +1,16 @@
-{% extends "base.html" %}
+{% extends "accounts/_layout.html" %}
 {% block title %}Reenviar verificación{% endblock %}
-{% block content %}
-<h1>Reenviar el email de verificación</h1>
-<form method="post" novalidate>
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-  <button type="submit">Enviar enlace</button>
-</form>
+{% block eyebrow %}Verificación del email{% endblock %}
+{% block heading %}Reenviar el email de verificación{% endblock %}
+{% block intro %}<p class="lead mt-3">Indica el email con el que te registraste y te enviaremos un nuevo enlace.</p>{% endblock %}
+{% block body %}
+<div class="card p-6 sm:p-8">
+  {% include "components/form_errors.html" %}
+  <form method="post" novalidate data-loading class="space-y-5">
+    {% csrf_token %}
+    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Enviando…">Enviar enlace</button>
+  </form>
+</div>
+<p class="mt-6 text-center text-sm text-mist"><a class="link" href="{% url 'accounts:login' %}">Volver a entrar</a></p>
 {% endblock %}

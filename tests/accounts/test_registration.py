@@ -215,10 +215,10 @@ class RegisterViewTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         for title in (
-            "A. Datos personales",
-            "B. Dirección postal",
-            "C. Acceso a la cuenta",
-            "D. Preferencias de comunicación",
+            "Datos personales",
+            "Dirección postal",
+            "Acceso a la cuenta",
+            "Preferencias de comunicación",
         ):
             self.assertContains(response, title)
         self.assertContains(response, "(opcional)")

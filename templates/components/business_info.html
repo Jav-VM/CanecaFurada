@@ -1,0 +1,35 @@
+{% comment %}
+Datos del local (apps/web/content.py). Lo que falta se marca como pendiente;
+nunca se muestran valores inventados.
+{% endcomment %}
+<dl class="space-y-4 text-sm">
+  <div>
+    <dt class="font-semibold text-paper">Dirección</dt>
+    <dd class="text-mist">{% if business.address %}{{ business.address }}{% else %}{{ business.city }} · <span class="italic">dirección pendiente de publicar</span>{% endif %}</dd>
+  </div>
+  <div>
+    <dt class="font-semibold text-paper">Horario</dt>
+    <dd class="text-mist">
+      {% if business.opening_hours %}
+        <ul>{% for days, hours in business.opening_hours %}<li>{{ days }}: {{ hours }}</li>{% endfor %}</ul>
+      {% else %}<span class="italic">Pendiente de publicar</span>{% endif %}
+    </dd>
+  </div>
+  {% if not compact or business.email or business.phone %}
+  <div>
+    <dt class="font-semibold text-paper">Contacto</dt>
+    <dd class="text-mist">
+      {% if business.email or business.phone %}
+        {% if business.email %}<a class="link" href="mailto:{{ business.email }}">{{ business.email }}</a><br>{% endif %}
+        {% if business.phone %}<a class="link" href="tel:{{ business.phone }}">{{ business.phone }}</a>{% endif %}
+      {% else %}<span class="italic">Pendiente de publicar</span>{% endif %}
+    </dd>
+  </div>
+  {% endif %}
+  {% if business.social_links %}
+  <div>
+    <dt class="font-semibold text-paper">Redes</dt>
+    <dd><ul class="flex flex-wrap gap-3">{% for name, url in business.social_links %}<li><a class="link" href="{{ url }}" rel="noopener noreferrer">{{ name }}</a></li>{% endfor %}</ul></dd>
+  </div>
+  {% endif %}
+</dl>

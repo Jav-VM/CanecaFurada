@@ -17,6 +17,9 @@ __pycache__/
 .env.*
 !.env.example
 
+# Binarios de herramientas descargadas (Tailwind CLI)
+.tools/
+
 # Ficheros generados por Django
 media/
 staticfiles/

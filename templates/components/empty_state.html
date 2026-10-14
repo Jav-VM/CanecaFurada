@@ -1,0 +1,12 @@
+{% comment %}
+Estado vacío de un listado (carta, eventos, recompensas) mientras no haya datos
+reales. Parámetros: title, text, cta_url, cta_label.
+{% endcomment %}
+<div class="card flex flex-col items-start gap-4 border-dashed sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <span class="badge mb-3">Próximamente</span>
+    <p class="text-lg font-bold">{{ title }}</p>
+    {% if text %}<p class="mt-1 text-mist">{{ text }}</p>{% endif %}
+  </div>
+  {% if cta_url %}<a href="{{ cta_url }}" class="btn btn-secondary shrink-0">{{ cta_label }}</a>{% endif %}
+</div>

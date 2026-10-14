@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Acceso no permitido{% endblock %}
+{% block content %}
+{% include "components/error_page.html" with code="403" title="Acceso no permitido" text="No tienes permiso para ver esta página. Si crees que es un error, entra con otra cuenta." %}
+{% endblock %}

@@ -178,7 +178,7 @@ Errores: `ValidationError` → 400 con `message_dict`, `PermissionDenied` → 40
 - **Teléfono no verificado:** no se usa para recuperar la cuenta ni se marca como verificado.
 - **Consentimiento:** el historial no guarda IP ni el texto exacto aceptado (minimización). Si el asesor legal lo exige, se añadirá una versión del texto de consentimiento.
 - **Cuentas existentes** (propietario creado en la Fase 0): quedan pendientes de verificación. Pueden verificarse desde `/cuenta/verificar-email/reenviar/` (el propietario va directo al admin y no ve "Mi cuenta"; los empleados y clientes tienen además el botón en su página).
-- **Plantillas provisionales:** HTML sencillo; la Fase 3 las integrará en el sistema de diseño. No existe aún la página de inicio (`/` responde 404).
+- **Plantillas provisionales:** HTML sencillo; la Fase 3 las integrará en el sistema de diseño. No existe aún la página de inicio (`/` responde 404). *Resuelto en la [Fase 3](fase-03-sistema-diseno-web-publica.md).*
 - **El admin** no muestra el perfil del cliente (dirección, fecha de nacimiento): no hace falta y se minimiza la exposición. Gestión de clientes en la Fase 9.
 
 ## 11. Seguridad y privacidad

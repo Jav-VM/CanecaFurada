@@ -11,7 +11,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 0 — Fundación del proyecto | **Completa** |
 | 1 — Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** |
 | 2 — Autenticación, registro, perfiles, verificación de email y permisos | **Completa** (pendiente validar en PostgreSQL y con SMTP real) |
-| 3–12 | Pendientes (la Fase 3 es ahora el sistema de diseño y la web pública) |
+| 3 — Sistema de diseño y web pública | **Completa** (contenidos del local pendientes de aportar por el propietario) |
+| 4–12 | Pendientes |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -47,10 +48,21 @@ python manage.py runserver
 ```
 
 Rutas disponibles:
+- Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Carta, Recompensas y Eventos muestran un estado vacío hasta sus fases.
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios.
 
 En desarrollo los emails (verificación, recuperación de contraseña…) se imprimen en la consola de `runserver`. En Windows, si aparece `UnicodeEncodeError` al enviar un email, arranca con `$env:PYTHONUTF8=1`. Configuración del correo y de producción: [docs/fase-02-registro-perfil-verificacion.md](docs/fase-02-registro-perfil-verificacion.md#6-configuración-del-correo-y-variables-de-entorno).
+
+## Estilos (Tailwind CSS)
+
+El CSS compilado (`static/css/app.css`) está versionado, así que no hace falta nada para ejecutar el proyecto. Si cambias clases en las plantillas o en `assets/css/input.css`, recompila con la CLI standalone de Tailwind (sin Node; el script descarga la versión fijada y verifica su checksum):
+
+```powershell
+python scripts/tailwind.py build    # o "watch" mientras desarrollas
+```
+
+Paleta, componentes y datos del local (`apps/web/content.py`): [docs/fase-03-sistema-diseno-web-publica.md](docs/fase-03-sistema-diseno-web-publica.md).
 
 ## Pruebas
 
@@ -67,8 +79,11 @@ Arquitectura, mapa de módulos y preparación para la app móvil: [docs/arquitec
 config/            settings por entorno (base, dev, test, prod), urls, wsgi/asgi
 apps/core/         modelos base, auditoría y limitador de intentos
 apps/accounts/     usuario, roles, perfil de cliente, registro, verificación de email, preferencias, servicios, permisos, vistas de cuenta
-templates/         plantilla base, páginas de cuenta y emails (provisionales hasta el sistema de diseño)
-static/img/brand/  recursos gráficos oficiales
+apps/web/          páginas públicas, contenido del local y context processor
+templates/         plantilla base, componentes, páginas públicas, de cuenta, de error y emails
+assets/css/        fuente de Tailwind (tokens y componentes)
+static/            CSS compilado, JS de mejora progresiva y recursos gráficos oficiales (img/brand/)
+scripts/           tailwind.py (descarga verificada y compilación del CSS)
 tests/             pruebas por app
 docs/              plan de fases y documentación de cada fase
 requirements/      dependencias por entorno
@@ -81,3 +96,4 @@ requirements/      dependencias por entorno
 - [Fase 0 — Fundación](docs/fase-00-fundacion.md): decisiones, modelo de datos, roles, seguridad, tests y limitaciones.
 - [Fase 1 — Proyecto base](docs/fase-01-proyecto-base.md): perfil de cliente transaccional, migraciones, tests y preparación para la app.
 - [Fase 2 — Registro, perfiles y verificación de email](docs/fase-02-registro-perfil-verificacion.md): campos del registro, modelo de datos, flujo de verificación, configuración del correo, preferencias de comunicación, permisos, tests y pendientes.
+- [Fase 3 — Sistema de diseño y web pública](docs/fase-03-sistema-diseno-web-publica.md): paleta y contraste, componentes, páginas, formulario de registro, accesibilidad, Tailwind, tests y contenido pendiente.

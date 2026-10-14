@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Eventos{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with eyebrow="Agenda" title="Eventos" intro="Lo que pasa en Caneca Furada." %}
+
+<section aria-labelledby="eventos-listado" class="container-page py-16">
+  <h2 id="eventos-listado" class="sr-only">Próximos eventos</h2>
+  {% if events %}
+    <ul class="grid gap-4 md:grid-cols-2">
+      {% for event in events %}<li class="card card-hover">{{ event }}</li>{% endfor %}
+    </ul>
+  {% else %}
+    {% include "components/empty_state.html" with title="No hay eventos publicados todavía" text="Cuando programemos el próximo, lo verás aquí." %}
+  {% endif %}
+</section>
+{% endblock %}

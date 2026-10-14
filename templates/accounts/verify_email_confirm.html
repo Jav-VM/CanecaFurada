@@ -1,10 +1,13 @@
-{% extends "base.html" %}
+{% extends "accounts/_layout.html" %}
 {% block title %}Confirmar email{% endblock %}
-{% block content %}
-<h1>Confirmar tu email</h1>
-<p>Pulsa el botón para confirmar esta dirección de correo.</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Confirmar email</button>
-</form>
+{% block eyebrow %}Verificación del email{% endblock %}
+{% block heading %}Confirmar tu email{% endblock %}
+{% block body %}
+<div class="card p-6 text-center sm:p-8">
+  <p class="text-mist">Pulsa el botón para confirmar esta dirección de correo.</p>
+  <form method="post" data-loading class="mt-6">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Confirmando…">Confirmar email</button>
+  </form>
+</div>
 {% endblock %}

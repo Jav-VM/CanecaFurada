@@ -1,0 +1,32 @@
+"""
+Contenido estático de la web pública.
+
+Solo datos reales del negocio. Lo que el propietario aún no ha aportado vale
+`None` y las plantillas lo muestran como pendiente: nunca se inventan
+direcciones, horarios, precios ni textos. En la Fase 9 este contenido pasará a
+ser editable desde el panel del propietario.
+"""
+
+# Lema oficial, tal como aparece en el logotipo.
+TAGLINE = "A cervexería 100% artesá da Coruña"
+
+BUSINESS = {
+    "name": "Caneca Furada",
+    "city": "A Coruña",  # figura en el logotipo oficial
+    "address": None,
+    "opening_hours": None,  # lista de (días, horario) cuando se conozca
+    "email": None,
+    "phone": None,
+    "social_links": (),  # tuplas (nombre, url)
+    "about_text": None,  # presentación de la marca
+}
+
+# Navegación principal: (nombre de URL, etiqueta).
+MAIN_NAV = (
+    ("web:home", "Inicio"),
+    ("web:about", "La cervecería"),
+    ("web:menu", "Carta"),
+    ("web:rewards", "Recompensas"),
+    ("web:events", "Eventos"),
+    ("web:contact", "Contacto"),
+)

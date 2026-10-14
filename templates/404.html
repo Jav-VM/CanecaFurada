@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Esta jarra está vacía{% endblock %}
+{% block content %}
+{% include "components/error_page.html" with code="404" title="Esta jarra está vacía" text="La página que buscas no existe o se ha movido." %}
+{% endblock %}

@@ -19,7 +19,7 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 |---|---|---|---|
 | `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`) y limitador de intentos (`throttling`) | 0 | Existe |
 | `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
-| `apps.web` | Plantilla base, páginas públicas y páginas de error | 3 | Pendiente |
+| `apps.web` | Páginas públicas, contenido del local (`content.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 | Existe |
 | `apps.catalog` | Carta: categorías, productos, cervezas y grifos | 4 | Pendiente |
 | `apps.loyalty` | Ledger de puntos, configuración de conversión y token QR | 5 | Pendiente |
 | `apps.purchases` | Registro de compras y panel de empleado (genera puntos mediante `loyalty`) | 6 | Pendiente |
@@ -72,6 +72,9 @@ Límites conocidos:
 - Validación de reglas de negocio en servicios y modelos, no en formularios ni plantillas. Los formularios web solo convierten la entrada; la API usará serializadores que llamen a los mismos servicios.
 - Los servicios lanzan `ValidationError`/`PermissionDenied` de Django, que la web traduce a mensajes y la API a respuestas 400/403. `services.RateLimited` se traducirá a 429.
 - Los servicios de cuentas no reciben `request` ni dependen de la sesión: actúan sobre un `user` ya autenticado (por sesión en la web o por token en la API). Los enlaces de los emails se construyen con `SITE_BASE_URL`. Operaciones de cuentas que necesitará la app: [Fase 2, §8](fase-02-registro-perfil-verificacion.md#8-preparación-para-la-app-móvil).
+
+### Presentación web
+- Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.
 
 ### Cómo incorporar Django REST Framework (Fase 11)
 1. Añadir `djangorestframework` con versión acotada a `requirements/base.txt` e incluirlo en `INSTALLED_APPS`.

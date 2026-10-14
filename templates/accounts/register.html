@@ -1,22 +1,38 @@
-{% extends "base.html" %}
+{% extends "accounts/_layout.html" %}
 {% block title %}Crear cuenta{% endblock %}
-{% block content %}
-<h1>Crear cuenta de cliente</h1>
-<p>Los campos marcados con <span class="required-mark">*</span> son obligatorios. El teléfono móvil es opcional.</p>
-
-<form method="post" novalidate>
+{% block width %}max-w-3xl{% endblock %}
+{% block eyebrow %}Únete al club{% endblock %}
+{% block heading %}Crear cuenta de cliente{% endblock %}
+{% block intro %}
+<p class="lead mt-3">Regístrate para acceder al programa de puntos y a las novedades de la casa.</p>
+<p class="mt-4 text-sm text-mist">Los campos marcados con <span class="required-mark">*</span> son obligatorios. El teléfono móvil es opcional.</p>
+{% endblock %}
+{% block body %}
+{% include "components/form_errors.html" %}
+<form method="post" novalidate data-loading class="space-y-6">
   {% csrf_token %}
-  {{ form.non_field_errors }}
   {% for title, fields in form.grouped_fields %}
-    <fieldset>
-      <legend>{{ title }}</legend>
+    <fieldset class="form-section">
+      <legend class="form-legend float-left w-full">
+        <span class="step-number" aria-hidden="true">{{ forloop.counter }}</span>
+        <span><span class="sr-only">Paso {{ forloop.counter }}: </span>{{ title }}</span>
+      </legend>
       {% if forloop.last %}
-        <p class="help">Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil.</p>
+        <p class="clear-both pt-2 text-sm text-mist">Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil.</p>
       {% endif %}
-      {% for field in fields %}{% include "accounts/_field.html" %}{% endfor %}
+      <div class="clear-both grid gap-5 pt-2 {% if not forloop.last %}sm:grid-cols-2{% endif %}">
+        {% for field in fields %}
+          <div class="{% if field.name == 'address_line_1' or field.name == 'address_line_2' or field.name == 'email' %}sm:col-span-2{% endif %}">
+            {% include "accounts/_field.html" %}
+          </div>
+        {% endfor %}
+      </div>
     </fieldset>
   {% endfor %}
-  <button type="submit">Crear cuenta</button>
+  <div class="flex flex-col items-center gap-4 pt-2">
+    <button type="submit" class="btn btn-primary w-full sm:w-auto sm:min-w-64" data-loading-text="Creando cuenta…">Crear cuenta</button>
+    <p class="text-center text-sm text-mist">Después te enviaremos un email para verificar tu dirección.</p>
+  </div>
 </form>
-<p>¿Ya tienes cuenta? <a href="{% url 'accounts:login' %}">Entra</a>.</p>
+<p class="mt-8 text-center text-sm text-mist">¿Ya tienes cuenta? <a class="link" href="{% url 'accounts:login' %}">Entra</a>.</p>
 {% endblock %}

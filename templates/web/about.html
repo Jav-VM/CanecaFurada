@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}La cervecería{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with eyebrow="La cervecería" title="Caneca Furada" intro=tagline %}
+
+<section aria-labelledby="historia-titulo" class="container-page py-20">
+  <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+    <div class="prose-site">
+      {% include "components/section_heading.html" with id="historia-titulo" eyebrow="Nuestra historia" title="Cerveza 100% artesana" %}
+      {% if business.about_text %}
+        <p>{{ business.about_text }}</p>
+      {% else %}
+        <p>Caneca Furada es una cervecería artesana de {{ business.city }}.</p>
+        {% include "components/pending.html" with what="historia de la cervecería y del local" %}
+      {% endif %}
+    </div>
+    <figure class="mx-auto w-full max-w-md">
+      <img src="{% static 'img/brand/logoknkany.jpeg' %}" alt="Cartel del X aniversario de Caneca Furada: un corazón hecho de lúpulo con el logotipo de la casa" width="2048" height="2048" loading="lazy" class="logo-blend h-auto w-full">
+      <figcaption class="mt-3 text-center text-sm text-mist">Imagen del X aniversario.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section aria-labelledby="como-titulo" class="border-t border-line bg-coal/40 py-20">
+  <div class="container-page">
+    {% include "components/section_heading.html" with id="como-titulo" eyebrow="La casa" title="Cómo trabajamos" %}
+    {% include "components/pending.html" with what="elaboración, estilos de la casa y cervezas invitadas" %}
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="{% url 'web:menu' %}" class="btn btn-primary">Ver la carta</a>
+      <a href="{% url 'web:contact' %}" class="btn btn-secondary">Cómo llegar</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% comment %}
+Layout de las páginas de cuenta: columna centrada.
+Bloques: width, eyebrow, heading, intro, body.
+{% endcomment %}
+{% block content %}
+<div class="container-page py-12 sm:py-16">
+  <div class="mx-auto {% block width %}max-w-lg{% endblock %}">
+    <header class="mb-8 text-center">
+      <p class="eyebrow mb-3">{% block eyebrow %}Tu cuenta{% endblock %}</p>
+      <h1 class="heading-lg">{% block heading %}{% endblock %}</h1>
+      {% block intro %}{% endblock %}
+    </header>
+    {% block body %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

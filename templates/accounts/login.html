@@ -1,15 +1,20 @@
-{% extends "base.html" %}
+{% extends "accounts/_layout.html" %}
 {% block title %}Entrar{% endblock %}
-{% block content %}
-<h1>Entrar</h1>
-<form method="post" novalidate>
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-  <input type="hidden" name="next" value="{{ next }}">
-  <button type="submit">Entrar</button>
-</form>
-<p><a href="{% url 'accounts:password_reset' %}">¿Has olvidado tu contraseña?</a></p>
-<p>¿No tienes cuenta? <a href="{% url 'accounts:register' %}">Regístrate</a>.</p>
-<p><a href="{% url 'accounts:resend_verification' %}">Reenviar el email de verificación</a></p>
+{% block heading %}Entrar{% endblock %}
+{% block intro %}<p class="lead mt-3">Accede a tu cuenta de Caneca Furada.</p>{% endblock %}
+{% block body %}
+<div class="card p-6 sm:p-8">
+  {% include "components/form_errors.html" %}
+  <form method="post" novalidate data-loading class="space-y-5">
+    {% csrf_token %}
+    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Entrando…">Entrar</button>
+  </form>
+  <p class="mt-5 text-center text-sm"><a class="link" href="{% url 'accounts:password_reset' %}">¿Has olvidado tu contraseña?</a></p>
+</div>
+<div class="mt-6 space-y-2 text-center text-sm text-mist">
+  <p>¿No tienes cuenta? <a class="link" href="{% url 'accounts:register' %}">Regístrate</a>.</p>
+  <p><a class="link" href="{% url 'accounts:resend_verification' %}">Reenviar el email de verificación</a></p>
+</div>
 {% endblock %}

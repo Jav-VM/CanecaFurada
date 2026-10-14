@@ -104,13 +104,13 @@ class RegistrationForm(PersonalDataFieldsMixin):
     )
 
     sections = (
-        ("A. Datos personales", ("first_name", "last_name", "date_of_birth", "phone_number")),
+        ("Datos personales", ("first_name", "last_name", "date_of_birth", "phone_number")),
         (
-            "B. Dirección postal",
+            "Dirección postal",
             ("address_line_1", "address_line_2", "postal_code", "city", "province", "country"),
         ),
-        ("C. Acceso a la cuenta", ("email", "password1", "password2")),
-        ("D. Preferencias de comunicación", ("promo_email_opt_in", "promo_sms_opt_in")),
+        ("Acceso a la cuenta", ("email", "password1", "password2")),
+        ("Preferencias de comunicación", ("promo_email_opt_in", "promo_sms_opt_in")),
     )
 
     def clean(self):

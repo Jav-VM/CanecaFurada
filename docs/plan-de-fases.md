@@ -7,7 +7,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 0 | Fundación del proyecto | **Completa** ([detalle](fase-00-fundacion.md)) |
 | 1 | Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** ([detalle](fase-01-proyecto-base.md)) |
 | 2 | Autenticación, registro, perfiles, verificación de email y permisos | **Completa** ([detalle](fase-02-registro-perfil-verificacion.md)) |
-| 3 | Sistema de diseño y web pública | Pendiente |
+| 3 | Sistema de diseño y web pública | **Completa** ([detalle](fase-03-sistema-diseno-web-publica.md)) |
 | 4 | Carta y cervezas | Pendiente |
 | 5 | Fidelización: ledger de puntos y QR personal | Pendiente |
 | 6 | Panel de empleado y registro de compras | Pendiente |
@@ -42,7 +42,8 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 ## Fase 3 — Sistema de diseño y web pública
 - **Depende de:** Fases 0–2.
 - **Incluye:** Tailwind CSS mediante la CLI standalone (sin Node), plantilla base accesible y responsive con la paleta oficial y los recursos de `static/img/brand/`, navegación, páginas Inicio, La cervecería y Contacto, páginas de error. Integra las plantillas de cuenta de la Fase 2 (`templates/base.html`, `templates/accounts/`) en el sistema de diseño. Alpine.js/HTMX solo si aportan algo concreto.
-- **Exclusiones:** Carta, Recompensas y Eventos (se enlazan cuando existan).
+- **Exclusiones:** modelos y gestión de Carta, Recompensas y Eventos.
+- **Ajuste (2026-10-14, decidido por el usuario):** el prompt de la fase pidió también las páginas Carta, Recompensas y Eventos y las secciones del Inicio "Selección de cervezas" y "Eventos destacados". Se crearon con su diseño final y un estado vacío, sin datos inventados; las Fases 4, 7 y 8 rellenarán su contexto. Los datos del local quedan pendientes en `apps/web/content.py`.
 - **Criterios:** sin horarios, precios ni datos inventados (los textos del negocio se marcan como pendientes de aportar por el propietario); contraste AA; responsive móvil/tablet/escritorio; tests de vistas públicas.
 
 ## Fase 4 — Carta y cervezas

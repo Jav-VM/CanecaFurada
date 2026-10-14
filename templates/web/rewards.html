@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Recompensas{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with eyebrow="Programa de puntos" title="Recompensas" intro="Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa." %}
+
+<section aria-labelledby="como-funciona" class="container-page py-16">
+  <div class="mb-10 flex flex-wrap items-center gap-3">
+    <h2 id="como-funciona" class="heading-lg">Cómo funcionará</h2>
+    <span class="badge">Próximamente</span>
+  </div>
+  {% include "components/loyalty_steps.html" %}
+  <p class="mt-6 text-sm text-mist">Para sumar y canjear puntos necesitarás una cuenta con el email verificado.</p>
+</section>
+
+<section aria-labelledby="catalogo" class="container-page">
+  {% include "components/section_heading.html" with id="catalogo" eyebrow="Catálogo" title="Recompensas disponibles" %}
+  {% if rewards %}
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for reward in rewards %}<li class="card card-hover">{{ reward }}</li>{% endfor %}
+    </ul>
+  {% else %}
+    {% include "components/empty_state.html" with title="El catálogo de recompensas aún no está publicado" text="Lo anunciaremos aquí y por email a quienes lo hayan aceptado." %}
+  {% endif %}
+  <div class="mt-6">{% include "components/pending.html" with what="condiciones del programa de puntos" %}</div>
+</section>
+
+<section aria-labelledby="unete" class="container-page pt-16">
+  <div class="card flex flex-col gap-6 p-8 sm:p-12 md:flex-row md:items-center md:justify-between">
+    {% if user.is_authenticated %}
+      <div>
+        <h2 id="unete" class="heading-lg">Ya formas parte</h2>
+        <p class="lead mt-3">Revisa tus datos y preferencias en tu cuenta.</p>
+      </div>
+      <a href="{% url 'accounts:home' %}" class="btn btn-primary shrink-0">Mi cuenta</a>
+    {% else %}
+      <div>
+        <h2 id="unete" class="heading-lg">Únete al club</h2>
+        <p class="lead mt-3">Crea tu cuenta ahora y estarás listo cuando arranque el programa.</p>
+      </div>
+      <div class="flex shrink-0 flex-wrap gap-3">
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary">Crear cuenta</a>
+        <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Entrar</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

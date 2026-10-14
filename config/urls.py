@@ -8,4 +8,5 @@ admin.site.site_title = "Caneca Furada"
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("cuenta/", include("apps.accounts.urls")),
+    path("", include("apps.web.urls")),
 ]

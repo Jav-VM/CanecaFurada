@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Petición no válida{% endblock %}
+{% block content %}
+{% include "components/error_page.html" with code="400" title="Petición no válida" text="No hemos podido procesar la petición. Vuelve a intentarlo desde el inicio." %}
+{% endblock %}

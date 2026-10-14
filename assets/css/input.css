@@ -1,0 +1,117 @@
+/*
+ * Sistema de diseño de Caneca Furada (Tailwind CSS v4, CLI standalone).
+ * Fuente: este archivo. Salida versionada: static/css/app.css.
+ * Compilar: python scripts/tailwind.py build
+ */
+@import "tailwindcss";
+
+@source "../../templates";
+@source "../../apps";
+@source "../../static/js";
+
+/* --- Tokens ---------------------------------------------------------------- */
+@theme {
+  /* Paleta oficial */
+  --color-ink: #080808;     /* Negro: fondo principal */
+  --color-coal: #171717;    /* Carbón: superficies */
+  --color-gold: #ffb800;    /* Dorado: acento, acciones */
+  --color-paper: #ffffff;   /* Blanco: texto principal */
+  --color-mist: #a5a5a5;    /* Gris: texto secundario */
+
+  /* Derivados funcionales (no forman parte de la paleta de marca) */
+  --color-line: #2c2c2c;    /* bordes sobre carbón */
+  --color-danger: #ff7a7a;  /* errores: 7,9:1 sobre negro */
+  --color-ok: #6ee7a0;      /* confirmaciones */
+
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --tracking-brand: 0.14em;
+}
+
+/* --- Base ------------------------------------------------------------------ */
+@layer base {
+  html { color-scheme: dark; scroll-behavior: smooth; }
+  body { @apply bg-ink text-paper font-sans antialiased leading-relaxed; }
+  :focus-visible { outline: 3px solid var(--color-gold); outline-offset: 3px; }
+  ::selection { background: var(--color-gold); color: var(--color-ink); }
+  a { @apply underline-offset-4; }
+  h1, h2, h3 { @apply text-balance; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+}
+
+/* --- Componentes ----------------------------------------------------------- */
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8; }
+
+  .eyebrow { @apply text-xs font-semibold uppercase text-gold; letter-spacing: var(--tracking-brand); }
+  .heading-xl { @apply text-4xl font-extrabold uppercase leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl; }
+  .heading-lg { @apply text-3xl font-bold uppercase tracking-tight sm:text-4xl; }
+  .heading-md { @apply text-xl font-bold uppercase tracking-wide; }
+  .lead { @apply text-lg text-mist; }
+  .prose-site p { @apply mb-4 text-mist; }
+  .link { @apply text-gold underline hover:text-paper; }
+
+  /* Ornamento inspirado en las líneas del logo */
+  .rule-gold { @apply flex items-center gap-3 text-gold; }
+  .rule-gold::before, .rule-gold::after { content: ""; @apply h-px flex-1 bg-gold/60; }
+
+  /* Botones */
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5
+      text-sm font-bold uppercase tracking-wider no-underline transition
+      disabled:cursor-not-allowed disabled:opacity-70;
+  }
+  .btn-primary { @apply bg-gold text-ink hover:bg-paper; }
+  .btn-secondary { @apply border border-paper/40 text-paper hover:border-gold hover:text-gold; }
+  .btn-ghost { @apply px-3 text-mist hover:text-gold; }
+  .btn-block { @apply w-full; }
+  .btn[aria-busy="true"]::before {
+    content: ""; @apply size-4 animate-spin rounded-full border-2 border-current border-r-transparent;
+  }
+
+  /* Superficies */
+  .card { @apply rounded-2xl border border-line bg-coal p-6; }
+  .card-hover { @apply transition hover:border-gold/60; }
+  .badge { @apply inline-flex items-center rounded-full border border-gold/50 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-gold; }
+  .badge-muted { @apply border-line text-mist; }
+  .step-number { @apply flex size-9 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-extrabold text-ink; }
+
+  /* Avisos */
+  .alert { @apply rounded-xl border-l-4 bg-coal p-4 text-paper; }
+  .alert-info { @apply border-gold; }
+  .alert-success { @apply border-ok; }
+  .alert-error { @apply border-danger; }
+  .alert-warning { @apply border-gold; }
+
+  /* Contenido pendiente de aportar por el propietario */
+  .pending { @apply rounded-xl border border-dashed border-line p-4 text-sm text-mist; }
+
+  /* Formularios */
+  .form-section { @apply rounded-2xl border border-line bg-coal space-y-5 p-5 sm:p-8; }
+  .form-legend { @apply flex items-center gap-3 text-lg font-bold uppercase tracking-wide; }
+  .field label { @apply mb-1.5 block text-sm font-semibold text-paper; }
+  .field input:not([type="checkbox"]), .field select {
+    @apply block min-h-11 w-full rounded-lg border border-line bg-ink px-3.5 py-2.5 text-base text-paper
+      placeholder:text-mist/70 transition hover:border-mist focus:border-gold;
+  }
+  .field input[aria-invalid="true"], .field select[aria-invalid="true"] { @apply border-danger; }
+  .field.checkbox { @apply flex items-start gap-3; }
+  .field.checkbox input { @apply mt-1 size-5 shrink-0 accent-gold; }
+  .field.checkbox label { @apply mb-0 font-normal text-paper; }
+  .field .help { @apply mt-1.5 text-sm text-mist; }
+  .errorlist { @apply mt-1.5 space-y-1 text-sm font-semibold text-danger; }
+  .required-mark { @apply text-gold; }
+  .optional-mark { @apply ml-1 text-xs font-normal uppercase tracking-wider text-mist; }
+
+  /* Navegación principal: plegable en móvil solo si hay JavaScript */
+  .js .nav-panel:not(.is-open) { @apply hidden lg:flex; }
+  .nav-link { @apply block rounded-lg px-3 py-2 text-sm font-semibold uppercase tracking-wider text-mist no-underline hover:text-paper; }
+  .nav-link[aria-current="page"] { @apply text-gold; }
+
+  /* El logo es JPEG sobre negro puro: "lighten" lo funde con el negro de marca */
+  .logo-blend { mix-blend-mode: lighten; }
+
+  .sr-only-focusable:not(:focus) { @apply sr-only; }
+}

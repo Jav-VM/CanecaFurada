@@ -1,0 +1,43 @@
+{% load static %}
+<footer class="mt-24 border-t border-line bg-coal">
+  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="space-y-4 sm:col-span-2 lg:col-span-1">
+      <img src="{% static 'img/brand/logoknk.jpeg' %}" alt="Caneca Furada" width="2048" height="2048" loading="lazy" class="size-32 rounded-2xl">
+      <p class="text-sm text-mist">{{ tagline }}.</p>
+    </div>
+
+    <nav aria-label="Pie: secciones">
+      <h2 class="eyebrow mb-4">Explora</h2>
+      <ul class="space-y-2 text-sm">
+        {% for url_name, label in site_nav %}
+          <li><a href="{% url url_name %}" class="text-mist no-underline hover:text-gold">{{ label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <nav aria-label="Pie: cuenta">
+      <h2 class="eyebrow mb-4">Tu cuenta</h2>
+      <ul class="space-y-2 text-sm">
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'accounts:home' %}" class="text-mist no-underline hover:text-gold">Mi cuenta</a></li>
+        {% else %}
+          <li><a href="{% url 'accounts:register' %}" class="text-mist no-underline hover:text-gold">Crear cuenta</a></li>
+          <li><a href="{% url 'accounts:login' %}" class="text-mist no-underline hover:text-gold">Entrar</a></li>
+          <li><a href="{% url 'accounts:resend_verification' %}" class="text-mist no-underline hover:text-gold">Reenviar verificación</a></li>
+        {% endif %}
+        <li><a href="{% url 'web:rewards' %}" class="text-mist no-underline hover:text-gold">Programa de puntos</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="eyebrow mb-4">Visítanos</h2>
+      {% include "components/business_info.html" with compact=True %}
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="container-page flex flex-col gap-2 py-6 text-xs text-mist sm:flex-row sm:justify-between">
+      <p>© {% now "Y" %} {{ business.name|default:"Caneca Furada" }} · {{ business.city|default:"A Coruña" }}</p>
+      <p>Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,7 @@
+{% comment %}Cuerpo común de las páginas de error. Parámetros: code, title, text.{% endcomment %}
+<section class="container-page py-24 text-center">
+  <p class="eyebrow mb-4">Error {{ code }}</p>
+  <h1 class="heading-xl mx-auto max-w-2xl">{{ title }}</h1>
+  <p class="lead mx-auto mt-5 max-w-xl">{{ text }}</p>
+  <a href="{% url 'web:home' %}" class="btn btn-primary mt-10">Volver al inicio</a>
+</section>

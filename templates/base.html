@@ -1,35 +1,67 @@
 {% load static %}<!doctype html>
-<html lang="es">
+<html lang="es" class="no-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Caneca Furada{% endblock %} · Caneca Furada</title>
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <meta name="description" content="{% block meta_description %}Caneca Furada, {{ tagline|lower }}.{% endblock %}">
+  <meta name="theme-color" content="#080808">
+  <link rel="icon" href="{% static 'img/brand/logoknk.jpeg' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'js/app.js' %}" defer></script>
 </head>
-<body>
-  <a class="skip-link" href="#contenido">Saltar al contenido</a>
-  <header class="site-header">
-    <span class="brand">Caneca Furada</span>
-    <nav aria-label="Cuenta">
-      {% if user.is_authenticated %}
-        <a href="{% url 'accounts:home' %}">Mi cuenta</a>
-        <form method="post" action="{% url 'accounts:logout' %}" class="inline">
-          {% csrf_token %}
-          <button type="submit" class="link-button">Salir</button>
-        </form>
-      {% else %}
-        <a href="{% url 'accounts:login' %}">Entrar</a>
-        <a href="{% url 'accounts:register' %}">Registrarse</a>
-      {% endif %}
-    </nav>
+<body class="flex min-h-screen flex-col">
+  <a class="sr-only-focusable fixed left-4 top-4 z-50 rounded-lg bg-gold px-4 py-2 font-bold text-ink" href="#contenido">Saltar al contenido</a>
+
+  <header class="sticky top-0 z-40 border-b border-line bg-ink/95 backdrop-blur">
+    <div class="container-page flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
+      <a href="{% url 'web:home' %}" class="shrink-0" aria-label="Caneca Furada, ir al inicio">
+        <img src="{% static 'img/brand/bannerknk.jpeg' %}" alt="" width="966" height="240" class="logo-blend h-11 w-auto sm:h-12">
+      </a>
+
+      <button type="button" class="btn btn-ghost lg:hidden" data-nav-toggle aria-controls="menu-principal" aria-expanded="false">
+        <svg aria-hidden="true" viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        Menú
+      </button>
+
+      <div id="menu-principal" class="nav-panel w-full flex-col gap-4 pb-4 lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:pb-0">
+        <nav aria-label="Principal">
+          <ul class="flex flex-col gap-1 lg:flex-row lg:gap-0">
+            {% for url_name, label in site_nav %}
+              {% url url_name as nav_url %}
+              <li><a href="{{ nav_url }}" class="nav-link"{% if request.path == nav_url %} aria-current="page"{% endif %}>{{ label }}</a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+        <nav aria-label="Cuenta" class="flex flex-wrap items-center gap-2">
+          {% if user.is_authenticated %}
+            <a href="{% url 'accounts:home' %}" class="btn btn-secondary">Mi cuenta</a>
+            <form method="post" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-ghost">Salir</button>
+            </form>
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-ghost">Entrar</a>
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary">Crear cuenta</a>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
   </header>
-  <main id="contenido">
+
+  <main id="contenido" tabindex="-1" class="flex-1 focus:outline-none">
     {% if messages %}
-      <ul class="messages" role="status">
-        {% for message in messages %}<li class="message {{ message.tags }}">{{ message }}</li>{% endfor %}
-      </ul>
+      <div class="container-page pt-6">
+        <ul class="space-y-2" role="status">
+          {% for message in messages %}
+            <li class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
     {% block content %}{% endblock %}
   </main>
+
+  {% include "components/footer.html" %}
 </body>
 </html>

@@ -1,0 +1,8 @@
+{% comment %}Cabecera de página. Parámetros: eyebrow, title, intro.{% endcomment %}
+<header class="border-b border-line bg-coal/40">
+  <div class="container-page py-14 sm:py-20">
+    {% if eyebrow %}<p class="eyebrow mb-3">{{ eyebrow }}</p>{% endif %}
+    <h1 class="heading-xl max-w-3xl">{{ title }}</h1>
+    {% if intro %}<p class="lead mt-5 max-w-2xl">{{ intro }}</p>{% endif %}
+  </div>
+</header>

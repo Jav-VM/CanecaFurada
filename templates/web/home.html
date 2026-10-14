@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+
+{# --- Hero ------------------------------------------------------------------ #}
+<section aria-labelledby="hero-titulo" class="relative overflow-hidden border-b border-line">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,184,0,0.14),transparent_60%)]" aria-hidden="true"></div>
+  <div class="container-page relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[1.15fr_1fr] lg:py-28">
+    <div>
+      <p class="eyebrow mb-5">{{ business.city }}</p>
+      <h1 id="hero-titulo" class="heading-xl">{{ tagline }}</h1>
+      <p class="lead mt-6 max-w-xl">Cerveza artesana en {{ business.city }}. Ven a probarla, descubre la carta y únete a nuestro programa de puntos.</p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="{% url 'web:menu' %}" class="btn btn-primary">Ver la carta</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'accounts:home' %}" class="btn btn-secondary">Mi cuenta</a>
+        {% else %}
+          <a href="{% url 'accounts:register' %}" class="btn btn-secondary">Únete al club</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="mx-auto w-full max-w-sm lg:max-w-md">
+      <img src="{% static 'img/brand/logoknk.jpeg' %}" alt="Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada" width="2048" height="2048" fetchpriority="high" class="logo-blend h-auto w-full">
+    </div>
+  </div>
+</section>
+
+{# --- Presentación de la marca ----------------------------------------------- #}
+<section aria-labelledby="marca-titulo" class="container-page py-20">
+  <div class="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-start">
+    {% include "components/section_heading.html" with id="marca-titulo" eyebrow="La casa" title="Somos Caneca Furada" %}
+    <div class="prose-site">
+      {% if business.about_text %}
+        <p>{{ business.about_text }}</p>
+      {% else %}
+        <p>Una cervecería 100% artesana en {{ business.city }}.</p>
+        {% include "components/pending.html" with what="presentación de la marca (historia, filosofía y cerveza)" %}
+      {% endif %}
+      <a href="{% url 'web:about' %}" class="link mt-2 inline-block font-semibold">Conoce la cervecería →</a>
+    </div>
+  </div>
+</section>
+
+{# --- Acceso a la carta --------------------------------------------------- #}
+<section aria-labelledby="carta-titulo" class="container-page">
+  <div class="card flex flex-col gap-6 p-8 sm:p-12 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="eyebrow mb-3">Carta</p>
+      <h2 id="carta-titulo" class="heading-lg">La carta de la casa</h2>
+      <p class="lead mt-3">Consulta las cervezas y todo lo que servimos.</p>
+    </div>
+    <a href="{% url 'web:menu' %}" class="btn btn-primary shrink-0">Ver la carta</a>
+  </div>
+</section>
+
+{# --- Selección de cervezas (Fase 4) ------------------------------------------ #}
+<section aria-labelledby="cervezas-titulo" class="container-page py-20">
+  {% include "components/section_heading.html" with id="cervezas-titulo" eyebrow="Selección" title="Nuestras cervezas" %}
+  {% if featured_beers %}
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for beer in featured_beers %}<li class="card card-hover">{{ beer }}</li>{% endfor %}
+    </ul>
+  {% else %}
+    {% url 'web:menu' as menu_url %}
+    {% include "components/empty_state.html" with title="Estamos preparando la selección de cervezas" text="Muy pronto podrás ver aquí las cervezas destacadas de la casa." cta_url=menu_url cta_label="Ir a la carta" %}
+  {% endif %}
+</section>
+
+{# --- Programa de puntos (Fases 5–7) ------------------------------------------ #}
+<section aria-labelledby="puntos-titulo" class="border-y border-line bg-coal/40 py-20">
+  <div class="container-page">
+    <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-2xl">
+        <p class="eyebrow mb-3">Programa de puntos <span class="badge ml-2 align-middle">Próximamente</span></p>
+        <h2 id="puntos-titulo" class="heading-lg">Cada visita suma</h2>
+        <p class="lead mt-4">Así funcionará el club de Caneca Furada. Crea tu cuenta y verifica tu email para estar listo cuando arranque.</p>
+      </div>
+      <a href="{% url 'web:rewards' %}" class="btn btn-secondary shrink-0">Ver recompensas</a>
+    </div>
+    {% include "components/loyalty_steps.html" %}
+  </div>
+</section>
+
+{# --- Eventos destacados (Fase 8) ----------------------------------------------- #}
+<section aria-labelledby="eventos-titulo" class="container-page py-20">
+  {% include "components/section_heading.html" with id="eventos-titulo" eyebrow="Agenda" title="Eventos destacados" %}
+  {% if featured_events %}
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for event in featured_events %}<li class="card card-hover">{{ event }}</li>{% endfor %}
+    </ul>
+  {% else %}
+    {% url 'web:events' as events_url %}
+    {% include "components/empty_state.html" with title="No hay eventos publicados todavía" text="Los próximos eventos de la casa aparecerán aquí." cta_url=events_url cta_label="Ver eventos" %}
+  {% endif %}
+</section>
+
+{# --- Información del local ------------------------------------------------- #}
+<section aria-labelledby="local-titulo" class="container-page">
+  <div class="card grid gap-10 p-8 sm:p-12 md:grid-cols-2">
+    <div>
+      <p class="eyebrow mb-3">El local</p>
+      <h2 id="local-titulo" class="heading-lg">Ven a vernos</h2>
+      <p class="lead mt-4">Te esperamos en {{ business.city }}.</p>
+      <a href="{% url 'web:contact' %}" class="btn btn-secondary mt-8">Contacto</a>
+    </div>
+    {% include "components/business_info.html" %}
+  </div>
+</section>
+{% endblock %}

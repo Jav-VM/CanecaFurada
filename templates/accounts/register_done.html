@@ -1,8 +1,20 @@
-{% extends "base.html" %}
+{% extends "accounts/_layout.html" %}
 {% block title %}Revisa tu correo{% endblock %}
-{% block content %}
-<h1>Revisa tu correo</h1>
-<p>Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez.</p>
-<p>Ya puedes <a href="{% url 'accounts:login' %}">entrar</a>. Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles.</p>
-<p>¿No te ha llegado? <a href="{% url 'accounts:resend_verification' %}">Solicitar otro enlace</a>.</p>
+{% block eyebrow %}Solicitud de registro recibida{% endblock %}
+{% block heading %}Revisa tu correo{% endblock %}
+{% block body %}
+<div class="card space-y-6 p-6 sm:p-8">
+  <div class="alert alert-warning">
+    <p class="font-bold">Falta un paso: verificar tu email.</p>
+    <p class="mt-1 text-sm text-mist">Tu cuenta quedará pendiente de verificación hasta que confirmes tu dirección de correo.</p>
+  </div>
+  <p class="text-mist">Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez.</p>
+  <ol class="space-y-4">
+    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">1</span><span>Abre el email que te hemos enviado (revisa también la carpeta de spam).</span></li>
+    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">2</span><span>Pulsa el enlace y confirma tu dirección.</span></li>
+    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">3</span><span>Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles.</span></li>
+  </ol>
+  <p class="text-sm text-mist">Mientras tanto ya puedes <a class="link" href="{% url 'accounts:login' %}">entrar</a> y revisar tu perfil.</p>
+</div>
+<p class="mt-6 text-center text-sm text-mist">¿No te ha llegado? <a class="link" href="{% url 'accounts:resend_verification' %}">Solicitar otro enlace</a>.</p>
 {% endblock %}

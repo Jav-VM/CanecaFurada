@@ -1,16 +1,18 @@
-{% extends "base.html" %}
+{% extends "accounts/_layout.html" %}
 {% block title %}Mi cuenta{% endblock %}
-{% block content %}
-<h1>Mi cuenta</h1>
+{% block heading %}Mi cuenta{% endblock %}
+{% block body %}
 {% include "accounts/_verification_notice.html" %}
-<dl class="data">
-  <dt>Nombre</dt><dd>{{ user.get_full_name }}</dd>
-  <dt>Email</dt><dd>{{ user.email }}</dd>
-  <dt>Rol</dt><dd>{{ user.get_role_display }}</dd>
-</dl>
-<p>El panel de empleado estará disponible en una fase posterior.</p>
-<ul>
-  <li><a href="{% url 'accounts:email_change' %}">Cambiar email</a></li>
-  <li><a href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></li>
-</ul>
+<div class="card space-y-6 p-6 sm:p-8">
+  <dl class="space-y-3 text-sm">
+    <div><dt class="text-mist">Nombre</dt><dd class="font-semibold">{{ user.get_full_name }}</dd></div>
+    <div><dt class="text-mist">Email</dt><dd class="break-all font-semibold">{{ user.email }}</dd></div>
+    <div><dt class="text-mist">Rol</dt><dd class="font-semibold">{{ user.get_role_display }}</dd></div>
+  </dl>
+  <p class="pending">El panel de empleado estará disponible en una fase posterior.</p>
+  <ul class="space-y-2 border-t border-line pt-4 text-sm">
+    <li><a class="link" href="{% url 'accounts:email_change' %}">Cambiar email</a></li>
+    <li><a class="link" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></li>
+  </ul>
+</div>
 {% endblock %}
