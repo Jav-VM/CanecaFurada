@@ -29,6 +29,7 @@ from django.db import IntegrityError, transaction
 
 from apps.accounts.permissions import is_owner, is_staff_member
 from apps.core import throttling
+from apps.loyalty import ledger
 from apps.loyalty import services as loyalty
 from apps.loyalty.models import CustomerQRCode
 
@@ -121,11 +122,12 @@ def new_idempotency_key():
 
 def on_purchase_registered(purchase):
     """
-    Punto de extensión dentro de la misma transacción que crea la compra.
-
-    Hoy no hace nada. La fase de puntos generará aquí el movimiento del ledger,
-    de modo que compra y puntos se confirmen o se deshagan juntos.
+    Se ejecuta dentro de la misma transacción que crea la compra: genera los
+    puntos y las bonificaciones de promociones en el ledger, de modo que compra
+    y puntos se confirman o se deshacen juntos. Los puntos los calcula el
+    servidor a partir del importe guardado; nada llega del navegador.
     """
+    ledger.award_points_for_purchase(purchase)
 
 
 def _current_token(customer):

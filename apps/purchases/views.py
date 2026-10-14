@@ -16,6 +16,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from apps.accounts.models import User
 from apps.accounts.permissions import role_required
+from apps.loyalty import selectors as loyalty_selectors
 from apps.loyalty import services as loyalty
 
 from . import services
@@ -132,5 +133,9 @@ def detail(request, public_id):
     return render(
         request,
         "purchases/detail.html",
-        {"purchase": purchase, "customer_name": loyalty.customer_display_name(purchase.customer)},
+        {
+            "purchase": purchase,
+            "customer_name": loyalty.customer_display_name(purchase.customer),
+            "points": loyalty_selectors.points_for_purchase(purchase),
+        },
     )

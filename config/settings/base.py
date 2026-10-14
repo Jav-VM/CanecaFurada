@@ -146,6 +146,19 @@ PURCHASES_ENABLED_SOURCES = ("MANUAL",)
 PURCHASES_MAX_QR_FAILURES = 20
 PURCHASES_QR_FAILURE_WINDOW_SECONDS = 15 * 60
 
+# --- Puntos y promociones ---------------------------------------------------
+
+# Conversión que se aplica mientras el propietario no cree ninguna regla en el
+# admin (Fidelización → Reglas de conversión). Pendiente de confirmar por él.
+LOYALTY_DEFAULT_POINTS_PER_EURO = Decimal("1.00")
+# Cumpleaños: la fecha de nacimiento debe llevar al menos estos días sin
+# cambiar y entre dos promociones de cumpleaños deben pasar al menos estos días
+# (además de la restricción única de una por cliente y año).
+LOYALTY_BIRTHDAY_DOB_STABLE_DAYS = 30
+LOYALTY_BIRTHDAY_MIN_DAYS_BETWEEN_BONUSES = 300
+# Ajustes manuales: valor absoluto máximo por movimiento.
+LOYALTY_MAX_ADJUSTMENT_POINTS = 100000
+
 # --- Sesiones y cookies -----------------------------------------------------
 
 SESSION_COOKIE_HTTPONLY = True

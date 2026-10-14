@@ -26,7 +26,8 @@
         </div>
       </dl>
       <ul class="space-y-2 border-t border-line pt-4 text-sm">
-        {% if user.is_email_verified %}<li><a class="link font-semibold" href="{% url 'loyalty:my_qr' %}">Mi código QR</a></li>{% endif %}
+        {% if user.is_email_verified %}<li><a class="link font-semibold" href="{% url 'loyalty:my_qr' %}">Mi código QR</a></li>
+        <li><a class="link font-semibold" href="{% url 'loyalty:my_points' %}">Mis puntos</a></li>{% endif %}
         <li><a class="link" href="{% url 'accounts:email_change' %}">Cambiar email</a></li>
         <li><a class="link" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></li>
         <li><a class="link" href="#preferencias">Preferencias de comunicación</a></li>

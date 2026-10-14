@@ -215,8 +215,13 @@ class PurchaseAdminTests(PanelTestCase):
     def test_qr_tokens_are_not_in_admin(self):
         self.client.force_login(make_owner())
         response = self.client.get(reverse("admin:index"))
-        self.assertNotContains(response, "loyalty")
+        # Desde la Fase 6 la app de fidelización está en el admin (puntos y
+        # promociones), pero el modelo del QR y su token siguen fuera.
+        self.assertNotContains(response, "customerqrcode")
         self.assertNotContains(response, self.token)
+        self.register()
+        for url in (reverse("admin:loyalty_pointstransaction_changelist"), reverse("admin:purchases_purchase_changelist")):
+            self.assertNotContains(self.client.get(url), self.token)
 
     def test_employee_has_no_admin_access(self):
         response = self.client.get(reverse("admin:purchases_purchase_changelist"))

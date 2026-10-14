@@ -242,6 +242,8 @@ Nuevos (72):
 
 ## 14. Dependencias para la fase siguiente (Fase 6 — Ledger de puntos)
 
+*Resuelto en la [Fase 6](fase-06-fidelizacion.md).*
+
 - Generar los puntos en `apps.purchases.services.on_purchase_registered`, dentro de la misma transacción que la compra, con un movimiento por compra (restricción única sobre la compra) para heredar la idempotencia.
 - Mostrar el saldo y el historial en la vista del cliente, nunca en el QR.
 - Las anulaciones de compras (si se aprueban) deberán generar movimientos compensatorios en lugar de borrar.

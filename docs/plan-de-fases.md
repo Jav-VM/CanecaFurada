@@ -10,11 +10,11 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 3 | Sistema de diseño y web pública | **Completa** ([detalle](fase-03-sistema-diseno-web-publica.md)) |
 | 4 | Carta y cervezas | **Completa** ([detalle](fase-04-carta.md)) |
 | 5 | QR personal y registro de compras manuales | **Completa** ([detalle](fase-05-qr-compras.md)) |
-| 6 | Fidelización: ledger de puntos | Pendiente |
+| 6 | Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** ([detalle](fase-06-fidelizacion.md)) |
 | 7 | Recompensas y canjes | Pendiente |
 | 8 | Eventos y reservas | Pendiente |
 | 9 | Dashboard del propietario y estadísticas | Pendiente |
-| 10 | Notificaciones completas y promociones de cumpleaños | Pendiente |
+| 10 | Notificaciones completas y envío de promociones de cumpleaños | Pendiente |
 | 11 | API REST v1 | Pendiente |
 | 12 | Endurecimiento y despliegue | Pendiente |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
@@ -59,10 +59,12 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Incluye:** token QR opaco y aleatorio (sin datos personales) con rotación, vista del cliente con su QR, panel del personal (empleados y propietarios) con escaneo desde el navegador (nativo + jsQR local) o código tecleado, servicio transaccional e idempotente de compras manuales, resultados de sus operaciones, preparación para TPV futuro sin simularlo.
 - **Criterios:** validación de personal, permisos, cliente activo, token, importe, idempotencia y estado; datos personales mínimos visibles; token fuera de logs; tests de QR, permisos, importe, duplicados, cliente inactivo y fallos transaccionales.
 
-## Fase 6 — Fidelización: ledger de puntos
+> **Ajuste de alcance (2026-10-14, decidido por el usuario):** el prompt de la Fase 6 pidió, además del ledger, un sistema de promociones, la base de las promociones de cumpleaños y distinguir compras registradas de facturación. Se adelantan a la Fase 6 sin envíos ni interfaz: la Fase 10 conserva el envío de notificaciones y la Fase 9 el dashboard. La "fecha de nacimiento verificada" se interpreta como la fecha validada del perfil más reglas anti-abuso, y las promociones dan puntos extra al registrar una compra.
+
+## Fase 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños
 - **Depende de:** Fase 5.
-- **Incluye:** ledger auditable de movimientos (saldo derivado), configuración de conversión importe→puntos, generación de puntos en `purchases.services.on_purchase_registered` (misma transacción que la compra), vista del cliente con saldo e historial.
-- **Criterios:** puntos solo calculados en backend; movimientos inmutables con compensaciones; tests de concurrencia e idempotencia.
+- **Incluye:** ledger auditable e inmutable (saldo derivado, compensaciones), conversión importe→puntos configurable y versionada (`Decimal`, redondeo hacia abajo), generación de puntos en `purchases.services.on_purchase_registered` (misma transacción que la compra), promociones configurables (condiciones, fechas, límites, estado) que dan puntos extra, base de cumpleaños (detección, 29 de febrero, una por cliente y año, anti-abuso de la fecha, selección de destinatarios con consentimiento y email verificado, sin envíos), ajustes y compensaciones del propietario (servicio), vista del cliente con saldo e historiales, estadísticas mínimas (compras registradas ≠ facturación).
+- **Criterios:** puntos solo calculados en backend; movimientos inmutables con compensaciones; tests de redondeo, duplicados, concurrencia, promociones e idempotencia.
 
 ## Fase 7 — Recompensas y canjes
 - **Depende de:** Fases 5–6 (compras y ledger).
@@ -76,12 +78,12 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 
 ## Fase 9 — Dashboard del propietario y estadísticas
 - **Depende de:** Fases 2–8.
-- **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos, recompensas, carta, eventos, reservas, contenido editable y configuración de fidelización; estadísticas reales y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
+- **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos (interfaz para `ledger.adjust_points`/`reverse_movement`), recompensas, carta, eventos, reservas, contenido editable y configuración de fidelización; estadísticas reales (sobre `purchases.selectors.registered_purchases_stats` y `loyalty.selectors.points_stats`) y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
 - **Criterios:** acceso solo OWNER; las compras registradas no se presentan como facturación total; tests de permisos.
 
 ## Fase 10 — Notificaciones completas y promociones de cumpleaños
 - **Depende de:** Fases 2, 5, 7.
-- **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas, promociones de cumpleaños configurables (29 de febrero, una por cliente y periodo, bloqueo de cambios abusivos de fecha, solo emails verificados y con consentimiento).
+- **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas, envío de los avisos de cumpleaños a partir de `loyalty.promotions.birthday_promotion_recipients` (la elegibilidad, el 29 de febrero, el límite por año y el anti-abuso ya existen desde la Fase 6), volviendo a comprobar el consentimiento justo antes de cada envío.
 - **Criterios:** sin envíos simulados; tests de reintentos, duplicados y consentimiento.
 
 ## Fase 11 — API REST v1

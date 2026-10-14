@@ -9,6 +9,7 @@
     <div class="flex justify-between gap-4"><dt class="text-mist">Cliente</dt><dd class="font-semibold">{{ customer_name }}</dd></div>
     <div class="flex justify-between gap-4"><dt class="text-mist">Fecha y hora</dt><dd class="font-semibold">{{ purchase.created_at|date:"d/m/Y H:i" }}</dd></div>
     <div class="flex justify-between gap-4"><dt class="text-mist">Origen</dt><dd class="font-semibold">{{ purchase.get_source_display }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">Puntos generados</dt><dd class="font-semibold" data-purchase-points>{{ points }}</dd></div>
     <div class="flex justify-between gap-4"><dt class="text-mist">Estado</dt><dd><span class="badge">{{ purchase.get_status_display }}</span></dd></div>
     <div class="flex justify-between gap-4"><dt class="text-mist">Registrada por</dt><dd class="font-semibold">{{ purchase.registered_by.get_short_name }}</dd></div>
     <div class="flex flex-col gap-1"><dt class="text-mist">Identificador</dt><dd class="break-all font-mono text-xs">{{ purchase.public_id }}</dd></div>

@@ -1,0 +1,73 @@
+{% extends "accounts/_layout.html" %}
+{% block title %}Mis puntos{% endblock %}
+{% block width %}max-w-3xl{% endblock %}
+{% block heading %}Mis puntos{% endblock %}
+{% block intro %}<p class="lead mt-4">Sumas puntos cada vez que el personal registra una compra con tu código QR.</p>{% endblock %}
+{% block body %}
+<section aria-labelledby="saldo" class="card space-y-6 p-6 sm:p-8">
+  <h2 id="saldo" class="sr-only">Saldo</h2>
+  <div class="text-center">
+    <p class="text-sm text-mist">Saldo disponible</p>
+    <p class="mt-1 text-5xl font-extrabold text-gold" data-points-balance>{{ summary.balance }}</p>
+    <p class="text-sm text-mist">puntos</p>
+  </div>
+  <dl class="grid gap-4 border-t border-line pt-6 text-center text-sm sm:grid-cols-3">
+    <div><dt class="text-mist">Obtenidos</dt><dd class="text-xl font-bold" data-points-earned>{{ summary.earned }}</dd></div>
+    <div><dt class="text-mist">Utilizados</dt><dd class="text-xl font-bold" data-points-used>{{ summary.used }}</dd></div>
+    <div><dt class="text-mist">Corregidos</dt><dd class="text-xl font-bold" data-points-corrected>{{ summary.corrected }}</dd></div>
+  </dl>
+</section>
+
+<section aria-labelledby="movimientos" class="mt-10">
+  <h2 id="movimientos" class="heading-md mb-4">Movimientos</h2>
+  {% if movements.object_list %}
+    <ul class="card divide-y divide-line p-0">
+      {% for movement in movements %}
+        <li class="flex items-center justify-between gap-4 px-5 py-3">
+          <span>
+            <span class="block font-semibold">{% if movement.promotion %}{{ movement.promotion.name }}{% else %}{{ movement.get_kind_display }}{% endif %}</span>
+            <span class="block text-sm text-mist">{{ movement.created_at|date:"d/m/Y H:i" }}{% if movement.purchase %} · compra de {{ movement.purchase.amount|floatformat:2 }} €{% endif %}</span>
+          </span>
+          <span class="font-bold {% if movement.points > 0 %}text-gold{% endif %}">{% if movement.points > 0 %}+{% endif %}{{ movement.points }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if movements.has_other_pages %}
+      <nav aria-label="Páginas de movimientos" class="mt-4 flex justify-between text-sm">
+        {% if movements.has_previous %}<a class="link" href="?page={{ movements.previous_page_number }}&amp;compras={{ purchases.number }}">Más recientes</a>{% else %}<span></span>{% endif %}
+        {% if movements.has_next %}<a class="link" href="?page={{ movements.next_page_number }}&amp;compras={{ purchases.number }}">Anteriores</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="pending">Todavía no tienes movimientos de puntos.</p>
+  {% endif %}
+</section>
+
+<section aria-labelledby="compras" class="mt-10">
+  <h2 id="compras" class="heading-md mb-4">Mis compras</h2>
+  {% if purchases.object_list %}
+    <ul class="card divide-y divide-line p-0">
+      {% for purchase in purchases %}
+        <li class="flex items-center justify-between gap-4 px-5 py-3">
+          <span>
+            <span class="block font-semibold">{{ purchase.amount|floatformat:2 }} €</span>
+            <span class="block text-sm text-mist">{{ purchase.created_at|date:"d/m/Y H:i" }}{% if purchase.status != "COMPLETED" %} · {{ purchase.get_status_display }}{% endif %}</span>
+          </span>
+          <span class="text-sm text-mist">{{ purchase.points }} puntos</span>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if purchases.has_other_pages %}
+      <nav aria-label="Páginas de compras" class="mt-4 flex justify-between text-sm">
+        {% if purchases.has_previous %}<a class="link" href="?page={{ movements.number }}&amp;compras={{ purchases.previous_page_number }}">Más recientes</a>{% else %}<span></span>{% endif %}
+        {% if purchases.has_next %}<a class="link" href="?page={{ movements.number }}&amp;compras={{ purchases.next_page_number }}">Anteriores</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="pending">Todavía no hay compras registradas con tu código.</p>
+  {% endif %}
+</section>
+
+<p class="mt-8 text-sm text-mist">Los puntos se calculan en el local a partir del importe registrado: se redondean hacia abajo a puntos enteros. Si ves algún error, coméntalo en la barra.</p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'loyalty:my_qr' %}">Mi código QR</a> · <a class="link" href="{% url 'accounts:profile' %}">Volver a mi perfil</a></p>
+{% endblock %}

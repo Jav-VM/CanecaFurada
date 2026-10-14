@@ -1,16 +1,21 @@
-"""Vista del cliente con su QR personal. Solo presentación: las reglas están en `services`."""
+"""
+Vistas del cliente: QR personal y puntos. Solo presentación: las reglas están
+en `services`, `ledger` y `selectors`.
+"""
 import segno
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from apps.accounts.models import User
 from apps.accounts.permissions import verified_email_required
+from apps.purchases import selectors as purchase_selectors
 
-from . import services
+from . import selectors, services
 
 
 def _require_customer(user):
@@ -31,6 +36,30 @@ def my_qr(request):
         request,
         "loyalty/my_qr.html",
         {"qr_image": image, "qr_code_text": services.format_code(qr.token), "qr_rotated_at": qr.rotated_at},
+    )
+
+
+HISTORY_PAGE_SIZE = 20
+
+
+@never_cache
+@verified_email_required
+def my_points(request):
+    """Saldo, historial de movimientos y de compras del cliente autenticado (nunca de otro)."""
+    _require_customer(request.user)
+    customer = request.user
+    movements = Paginator(selectors.points_history(customer), HISTORY_PAGE_SIZE).get_page(request.GET.get("page"))
+    purchases = Paginator(
+        purchase_selectors.customer_purchases(customer), HISTORY_PAGE_SIZE
+    ).get_page(request.GET.get("compras"))
+    return render(
+        request,
+        "loyalty/my_points.html",
+        {
+            "summary": selectors.points_summary(customer),
+            "movements": movements,
+            "purchases": purchases,
+        },
     )
 
 

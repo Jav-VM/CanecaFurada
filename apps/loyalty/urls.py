@@ -4,7 +4,9 @@ from . import views
 
 app_name = "loyalty"
 
+# Montadas bajo /cuenta/ (antes que las de accounts).
 urlpatterns = [
-    path("", views.my_qr, name="my_qr"),
-    path("renovar/", views.rotate, name="rotate"),
+    path("mi-qr/", views.my_qr, name="my_qr"),
+    path("mi-qr/renovar/", views.rotate, name="rotate"),
+    path("puntos/", views.my_points, name="my_points"),
 ]

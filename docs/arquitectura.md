@@ -21,8 +21,8 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 | `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
 | `apps.web` | Páginas públicas, contenido del local (`content.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 | Existe |
 | `apps.catalog` | Carta: categorías, estilos, productos (fijos y cervezas), imagen de la carta de grifos, selectores públicos y servicios de publicación/disponibilidad | 4 | Existe |
-| `apps.loyalty` | Token QR del cliente (Fase 5); ledger de puntos y configuración de conversión (Fase 6) | 5–6 | Existe (QR) |
-| `apps.purchases` | Registro de compras manuales y panel del personal; punto de extensión `on_purchase_registered` para los puntos | 5 | Existe |
+| `apps.loyalty` | Token QR del cliente (Fase 5); ledger de puntos, conversión, promociones y base de cumpleaños (Fase 6): `conversion`, `ledger` (única vía de escritura), `promotions`, `selectors` (lectura) | 5–6 | Existe |
+| `apps.purchases` | Registro de compras manuales y panel del personal; `on_purchase_registered` genera los puntos en la misma transacción; `selectors` (historial del cliente y estadísticas de compras registradas) | 5–6 | Existe |
 | `apps.rewards` | Catálogo de recompensas y canjes | 7 | Pendiente |
 | `apps.events` | Eventos y reservas | 8 | Pendiente |
 | `apps.dashboard` | Panel del propietario y estadísticas (solo presentación) | 9 | Pendiente |
@@ -75,6 +75,9 @@ Límites conocidos:
 
 ### Carta
 - Reglas de visibilidad en `apps/catalog/selectors.py` y cambios de estado y disponibilidad en `apps/catalog/services.py`. La web y la futura API usan los mismos. Endpoints previstos: [Fase 4, §7](fase-04-carta.md#7-preparación-para-la-app-móvil-y-la-futura-api-fase-11).
+
+### Puntos y promociones
+- Escrituras solo por `apps/loyalty/ledger.py`; lecturas por `apps/loyalty/selectors.py` y `apps/purchases/selectors.py`. Los servicios reciben el cliente ya resuelto (el usuario autenticado), nunca un ID enviado por él. Endpoints previstos: [Fase 6, §8](fase-06-fidelizacion.md#8-preparación-para-la-app-y-la-api-fase-11).
 
 ### Presentación web
 - Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.

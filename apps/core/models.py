@@ -35,6 +35,10 @@ class AuditEvent(models.Model):
         PRODUCT_STATUS_CHANGED = "PRODUCT_STATUS_CHANGED", "Publicación de producto modificada"
         PRODUCT_AVAILABILITY_CHANGED = "PRODUCT_AVAILABILITY_CHANGED", "Disponibilidad de producto modificada"
         QR_ROTATED = "QR_ROTATED", "QR personal renovado"
+        LOYALTY_RULE_CREATED = "LOYALTY_RULE_CREATED", "Conversión de puntos modificada"
+        PROMOTION_SAVED = "PROMOTION_SAVED", "Promoción creada o modificada"
+        POINTS_ADJUSTED = "POINTS_ADJUSTED", "Ajuste manual de puntos"
+        POINTS_REVERSED = "POINTS_REVERSED", "Movimiento de puntos compensado"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
