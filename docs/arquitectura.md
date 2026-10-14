@@ -23,7 +23,7 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 | `apps.catalog` | Carta: categorías, estilos, productos (fijos y cervezas), imagen de la carta de grifos, selectores públicos y servicios de publicación/disponibilidad | 4 | Existe |
 | `apps.loyalty` | Token QR del cliente (Fase 5); ledger de puntos, conversión, promociones y base de cumpleaños (Fase 6): `conversion`, `ledger` (única vía de escritura), `promotions`, `selectors` (lectura) | 5–6 | Existe |
 | `apps.purchases` | Registro de compras manuales y panel del personal; `on_purchase_registered` genera los puntos en la misma transacción; `selectors` (historial del cliente y estadísticas de compras registradas) | 5–6 | Existe |
-| `apps.rewards` | Catálogo de recompensas y canjes | 7 | Pendiente |
+| `apps.rewards` | Catálogo de recompensas y canjes: `codes` (código de un solo uso), `services` (solicitud, validación, cancelación, caducidad), `selectors`; descuenta y devuelve puntos solo a través de `loyalty.ledger` | 7 | Existe |
 | `apps.events` | Eventos y reservas | 8 | Pendiente |
 | `apps.dashboard` | Panel del propietario y estadísticas (solo presentación) | 9 | Pendiente |
 | `apps.notifications` | Registro y envío de notificaciones; promociones de cumpleaños | 10 | Pendiente |
@@ -78,6 +78,9 @@ Límites conocidos:
 
 ### Puntos y promociones
 - Escrituras solo por `apps/loyalty/ledger.py`; lecturas por `apps/loyalty/selectors.py` y `apps/purchases/selectors.py`. Los servicios reciben el cliente ya resuelto (el usuario autenticado), nunca un ID enviado por él. Endpoints previstos: [Fase 6, §8](fase-06-fidelizacion.md#8-preparación-para-la-app-y-la-api-fase-11).
+
+### Recompensas y canjes
+- Escrituras por `apps/rewards/services.py` (que usa `loyalty.ledger.spend_points`/`refund_spent_points` en la misma transacción); lecturas por `apps/rewards/selectors.py`. `rewards` depende de `loyalty`, nunca al revés: el movimiento del ledger no conoce el canje, es el canje quien enlaza sus movimientos. Los códigos viajan siempre en el cuerpo de la petición, nunca en la URL. Endpoints previstos: [Fase 7, §8](fase-07-recompensas-canjes.md#8-preparación-para-la-app-y-la-api-fase-11).
 
 ### Presentación web
 - Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.

@@ -39,6 +39,8 @@ class AuditEvent(models.Model):
         PROMOTION_SAVED = "PROMOTION_SAVED", "Promoción creada o modificada"
         POINTS_ADJUSTED = "POINTS_ADJUSTED", "Ajuste manual de puntos"
         POINTS_REVERSED = "POINTS_REVERSED", "Movimiento de puntos compensado"
+        REWARD_SAVED = "REWARD_SAVED", "Recompensa creada o modificada"
+        REDEMPTION_VALIDATED = "REDEMPTION_VALIDATED", "Canje validado"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

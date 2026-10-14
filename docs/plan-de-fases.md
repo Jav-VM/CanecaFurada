@@ -11,7 +11,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 4 | Carta y cervezas | **Completa** ([detalle](fase-04-carta.md)) |
 | 5 | QR personal y registro de compras manuales | **Completa** ([detalle](fase-05-qr-compras.md)) |
 | 6 | Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** ([detalle](fase-06-fidelizacion.md)) |
-| 7 | Recompensas y canjes | Pendiente |
+| 7 | Recompensas y canjes | **Completa** ([detalle](fase-07-recompensas-canjes.md)) |
 | 8 | Eventos y reservas | Pendiente |
 | 9 | Dashboard del propietario y estadísticas | Pendiente |
 | 10 | Notificaciones completas y envío de promociones de cumpleaños | Pendiente |
@@ -70,6 +70,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Depende de:** Fases 5–6 (compras y ledger).
 - **Incluye:** catálogo de recompensas gestionado por el propietario, solicitud de canje por el cliente, código de un solo uso, validación por empleado, movimientos de puntos y auditoría.
 - **Criterios:** protección frente a doble consumo y concurrencia; tests de saldo insuficiente, código usado/caducado.
+- **Implementado (2026-10-14):** los puntos se descuentan al solicitar el canje (movimiento `REDEMPTION`) y se devuelven con una compensación si el cliente cancela o el código caduca (30 días, configurable); un solo código pendiente por cliente y recompensa; validación por el personal en `/panel/canjes/`; comando `expire_redemptions` (su programación queda para la Fase 10).
 
 ## Fase 8 — Eventos y reservas
 - **Depende de:** Fases 2–3.
@@ -78,12 +79,12 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 
 ## Fase 9 — Dashboard del propietario y estadísticas
 - **Depende de:** Fases 2–8.
-- **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos (interfaz para `ledger.adjust_points`/`reverse_movement`), recompensas, carta, eventos, reservas, contenido editable y configuración de fidelización; estadísticas reales (sobre `purchases.selectors.registered_purchases_stats` y `loyalty.selectors.points_stats`) y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
+- **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos (interfaz para `ledger.adjust_points`/`reverse_movement`), recompensas y canjes (sobre `rewards.services.save_reward` y los selectores), carta, eventos, reservas, contenido editable y configuración de fidelización; estadísticas reales (sobre `purchases.selectors.registered_purchases_stats` y `loyalty.selectors.points_stats`) y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
 - **Criterios:** acceso solo OWNER; las compras registradas no se presentan como facturación total; tests de permisos.
 
 ## Fase 10 — Notificaciones completas y promociones de cumpleaños
 - **Depende de:** Fases 2, 5, 7.
-- **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas, envío de los avisos de cumpleaños a partir de `loyalty.promotions.birthday_promotion_recipients` (la elegibilidad, el 29 de febrero, el límite por año y el anti-abuso ya existen desde la Fase 6), volviendo a comprobar el consentimiento justo antes de cada envío.
+- **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas (incluida `expire_redemptions` de la Fase 7), envío de los avisos de cumpleaños a partir de `loyalty.promotions.birthday_promotion_recipients` (la elegibilidad, el 29 de febrero, el límite por año y el anti-abuso ya existen desde la Fase 6), volviendo a comprobar el consentimiento justo antes de cada envío.
 - **Criterios:** sin envíos simulados; tests de reintentos, duplicados y consentimiento.
 
 ## Fase 11 — API REST v1

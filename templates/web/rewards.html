@@ -5,18 +5,31 @@
 
 <section aria-labelledby="como-funciona" class="container-page py-16">
   <div class="mb-10 flex flex-wrap items-center gap-3">
-    <h2 id="como-funciona" class="heading-lg">Cómo funcionará</h2>
-    <span class="badge">Próximamente</span>
+    <h2 id="como-funciona" class="heading-lg">Cómo funciona</h2>
   </div>
   {% include "components/loyalty_steps.html" %}
-  <p class="mt-6 text-sm text-mist">Para sumar y canjear puntos necesitarás una cuenta con el email verificado.</p>
+  <p class="mt-6 text-sm text-mist">Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos.</p>
 </section>
 
 <section aria-labelledby="catalogo" class="container-page">
   {% include "components/section_heading.html" with id="catalogo" eyebrow="Catálogo" title="Recompensas disponibles" %}
   {% if rewards %}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {% for reward in rewards %}<li class="card card-hover">{{ reward }}</li>{% endfor %}
+      {% for reward in rewards %}
+        <li class="card card-hover flex flex-col gap-4" data-reward>
+          {% if reward.image %}<img src="{{ reward.image.url }}" alt="" width="{{ reward.image_width }}" height="{{ reward.image_height }}" class="aspect-[4/3] h-auto w-full rounded-xl object-cover" loading="lazy">{% endif %}
+          <div class="flex-1">
+            <h3 class="heading-md">{{ reward.name }}</h3>
+            {% if reward.description %}<p class="mt-2 text-mist">{{ reward.description|truncatechars:200 }}</p>{% endif %}
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <span class="text-lg font-extrabold text-gold">{{ reward.points_cost }} puntos</span>
+            {% if not reward.is_in_stock %}<span class="badge badge-muted">Agotada</span>
+            {% elif reward.valid_until %}<span class="text-sm text-mist">Hasta el {{ reward.valid_until|date:"d/m/Y" }}</span>{% endif %}
+          </div>
+          {% if reward.is_in_stock %}<a href="{% url 'rewards:reward_detail' reward.public_id %}" class="btn btn-secondary btn-block">Canjear</a>{% endif %}
+        </li>
+      {% endfor %}
     </ul>
   {% else %}
     {% include "components/empty_state.html" with title="El catálogo de recompensas aún no está publicado" text="Lo anunciaremos aquí y por email a quienes lo hayan aceptado." %}
@@ -29,13 +42,13 @@
     {% if user.is_authenticated %}
       <div>
         <h2 id="unete" class="heading-lg">Ya formas parte</h2>
-        <p class="lead mt-3">Revisa tus datos y preferencias en tu cuenta.</p>
+        <p class="lead mt-3">Consulta tus puntos y tus canjes en tu cuenta.</p>
       </div>
       <a href="{% url 'accounts:home' %}" class="btn btn-primary shrink-0">Mi cuenta</a>
     {% else %}
       <div>
         <h2 id="unete" class="heading-lg">Únete al club</h2>
-        <p class="lead mt-3">Crea tu cuenta ahora y estarás listo cuando arranque el programa.</p>
+        <p class="lead mt-3">Crea tu cuenta y empieza a sumar puntos con tus consumiciones.</p>
       </div>
       <div class="flex shrink-0 flex-wrap gap-3">
         <a href="{% url 'accounts:register' %}" class="btn btn-primary">Crear cuenta</a>

@@ -1,0 +1,40 @@
+{% extends "accounts/_layout.html" %}
+{% block title %}Mi canje{% endblock %}
+{% block eyebrow %}Mis canjes{% endblock %}
+{% block heading %}{{ redemption.reward.name }}{% endblock %}
+{% block body %}
+<div class="card space-y-6 p-6 text-center sm:p-8">
+  <p><span class="badge" data-redemption-status>{% if is_expired %}Caducado{% else %}{{ redemption.get_status_display }}{% endif %}</span></p>
+
+  {% if qr_image %}
+    <p class="text-mist">Enseña este código en la barra para recoger tu recompensa. Solo sirve una vez.</p>
+    <div class="mx-auto w-full max-w-xs rounded-2xl bg-paper p-3">
+      <img src="{{ qr_image }}" alt="Código QR de tu canje" width="296" height="296" class="h-auto w-full" data-redemption-qr>
+    </div>
+    <div>
+      <p class="text-sm text-mist">Si la cámara no lo lee, dicta este código:</p>
+      <p class="mt-2 break-words font-mono text-lg font-bold tracking-wider text-gold" data-redemption-code>{{ code_text }}</p>
+    </div>
+    <p class="text-sm text-mist">Válido hasta el {{ redemption.expires_at|date:"d/m/Y H:i" }}. Si no lo usas, te devolveremos los puntos.</p>
+  {% elif redemption.status == "USED" %}
+    <p class="text-mist">Recogido el {{ redemption.validated_at|date:"d/m/Y H:i" }}. ¡Que lo disfrutes!</p>
+  {% elif redemption.status == "CANCELLED" or redemption.status == "EXPIRED" %}
+    <p class="text-mist">Este canje se cerró el {{ redemption.closed_at|date:"d/m/Y H:i" }} y te devolvimos {{ redemption.points_cost }} puntos.</p>
+  {% elif is_expired %}
+    <p class="text-mist">El plazo para recogerlo terminó el {{ redemption.expires_at|date:"d/m/Y H:i" }}. Te devolveremos los puntos.</p>
+  {% endif %}
+
+  <dl class="space-y-3 border-t border-line pt-6 text-left text-sm">
+    <div class="flex justify-between gap-4"><dt class="text-mist">Puntos</dt><dd class="font-semibold">{{ redemption.points_cost }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">Solicitado</dt><dd class="font-semibold">{{ redemption.created_at|date:"d/m/Y H:i" }}</dd></div>
+  </dl>
+
+  {% if qr_image %}
+    <form method="post" action="{% url 'rewards:cancel' redemption.public_id %}" data-loading>
+      {% csrf_token %}
+      <button type="submit" class="btn btn-secondary" data-loading-text="Cancelando…">Cancelar el canje y recuperar los puntos</button>
+    </form>
+  {% endif %}
+</div>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'rewards:my_redemptions' %}">Mis canjes</a> · <a class="link" href="{% url 'loyalty:my_points' %}">Mis puntos</a></p>
+{% endblock %}

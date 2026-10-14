@@ -242,6 +242,8 @@ Modificado: `tests/purchases/test_views.py::test_qr_tokens_are_not_in_admin` com
 
 ## 13. Dependencias para la fase siguiente (Fase 7 — Recompensas y canjes)
 
+> Resuelto en la [Fase 7](fase-07-recompensas-canjes.md): `ledger.spend_points`/`refund_spent_points`; además, "Utilizados" pasó a ser neto de las devoluciones de canjes (y "Obtenidos" ya no las incluye).
+
 - Escribir los canjes como movimientos `REDEMPTION` desde un servicio nuevo de `ledger` que bloquee al cliente y use `_append` (comprueba el saldo dentro de la transacción).
 - "Utilizados" ya suma los `REDEMPTION`; la vista "Mis puntos" no necesita cambios.
 - Un canje cancelado o caducado debe compensarse con `reverse_movement`, no borrarse.

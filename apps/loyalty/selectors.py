@@ -8,7 +8,9 @@ Definiciones del resumen:
 - **Saldo:** suma de todos los movimientos.
 - **Obtenidos:** suma de los movimientos positivos (compras, promociones,
   ajustes a favor y compensaciones a favor).
-- **Utilizados:** puntos gastados en canjes (Fase 7; hoy siempre 0).
+- **Utilizados:** puntos gastados en canjes, descontadas las devoluciones de
+  canjes cancelados o caducados (Fase 7).
+- **Obtenidos** no incluye esas devoluciones.
 - **Corregidos:** resto de movimientos negativos (compensaciones y ajustes en
   contra). Saldo = obtenidos − utilizados − corregidos.
 """
@@ -24,6 +26,17 @@ from .models import PointsTransaction
 
 Kind = PointsTransaction.Kind
 
+# Canjes y sus devoluciones forman "utilizados"; el resto, obtenidos o corregidos.
+_REDEMPTION_FLOW = Q(kind=Kind.REDEMPTION) | Q(kind=Kind.REVERSAL, reverses__kind=Kind.REDEMPTION)
+
+
+def _totals():
+    return {
+        "earned": Coalesce(Sum("points", filter=Q(points__gt=0) & ~_REDEMPTION_FLOW), 0),
+        "used": Coalesce(Sum("points", filter=_REDEMPTION_FLOW), 0),
+        "corrected": Coalesce(Sum("points", filter=Q(points__lt=0) & ~_REDEMPTION_FLOW), 0),
+    }
+
 
 @dataclass(frozen=True)
 class PointsSummary:
@@ -35,10 +48,7 @@ class PointsSummary:
 
 def points_summary(customer):
     totals = PointsTransaction.objects.filter(customer=customer).aggregate(
-        balance=Coalesce(Sum("points"), 0),
-        earned=Coalesce(Sum("points", filter=Q(points__gt=0)), 0),
-        used=Coalesce(Sum("points", filter=Q(kind=Kind.REDEMPTION)), 0),
-        corrected=Coalesce(Sum("points", filter=Q(points__lt=0) & ~Q(kind=Kind.REDEMPTION)), 0),
+        balance=Coalesce(Sum("points"), 0), **_totals()
     )
     return PointsSummary(
         balance=totals["balance"],
@@ -52,7 +62,7 @@ def points_history(customer):
     """Movimientos del cliente, del más reciente al más antiguo."""
     return (
         PointsTransaction.objects.filter(customer=customer)
-        .select_related("promotion", "purchase")
+        .select_related("promotion", "purchase", "reverses")
         .order_by("-created_at", "-id")
     )
 
@@ -82,16 +92,12 @@ def points_stats(*, actor, start=None, end=None):
         movements = movements.filter(created_at__gte=start)
     if end is not None:
         movements = movements.filter(created_at__lt=end)
-    period = movements.aggregate(
-        issued=Coalesce(Sum("points", filter=Q(points__gt=0)), 0),
-        used=Coalesce(Sum("points", filter=Q(kind=Kind.REDEMPTION)), 0),
-        corrected=Coalesce(Sum("points", filter=Q(points__lt=0) & ~Q(kind=Kind.REDEMPTION)), 0),
-    )
+    period = movements.aggregate(**_totals())
     overall = PointsTransaction.objects.aggregate(
         outstanding=Coalesce(Sum("points"), 0), customers=Count("customer", distinct=True)
     )
     return PointsStats(
-        issued=period["issued"],
+        issued=period["earned"],
         used=-period["used"],
         corrected=-period["corrected"],
         outstanding=overall["outstanding"],

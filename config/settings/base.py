@@ -36,6 +36,7 @@ LOCAL_APPS = [
     "apps.catalog",
     "apps.loyalty",
     "apps.purchases",
+    "apps.rewards",
     "apps.web",
 ]
 
@@ -158,6 +159,17 @@ LOYALTY_BIRTHDAY_DOB_STABLE_DAYS = 30
 LOYALTY_BIRTHDAY_MIN_DAYS_BETWEEN_BONUSES = 300
 # Ajustes manuales: valor absoluto máximo por movimiento.
 LOYALTY_MAX_ADJUSTMENT_POINTS = 100000
+
+# --- Recompensas y canjes ---------------------------------------------------
+
+# Días que tiene el cliente para recoger una recompensa canjeada. Pasado ese
+# plazo el código deja de valer y se le devuelven los puntos. Pendiente de
+# confirmar por el propietario.
+REWARDS_CODE_VALIDITY_DAYS = 30
+# Códigos de canje no válidos seguidos que puede probar un miembro del personal
+# antes de tener que esperar.
+REWARDS_MAX_CODE_FAILURES = 20
+REWARDS_CODE_FAILURE_WINDOW_SECONDS = 15 * 60
 
 # --- Sesiones y cookies -----------------------------------------------------
 

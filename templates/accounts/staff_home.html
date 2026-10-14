@@ -10,6 +10,7 @@
     <div><dt class="text-mist">Rol</dt><dd class="font-semibold">{{ user.get_role_display }}</dd></div>
   </dl>
   <a href="{% url 'purchases:scan' %}" class="btn btn-primary btn-block">Registrar compra</a>
+  <a href="{% url 'rewards_panel:scan' %}" class="btn btn-secondary btn-block">Validar canje</a>
   <ul class="space-y-2 border-t border-line pt-4 text-sm">
     <li><a class="link" href="{% url 'accounts:email_change' %}">Cambiar email</a></li>
     <li><a class="link" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></li>

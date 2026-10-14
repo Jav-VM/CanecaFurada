@@ -9,6 +9,8 @@ Ledger de puntos: única vía para escribir movimientos.
   con motivo y referencia de idempotencia.
 - `reverse_movement(...)`: movimiento compensatorio de otro (p. ej. una compra
   anulada en el futuro). Nunca se editan ni se borran movimientos.
+- `spend_points(...)` / `refund_spent_points(...)`: descuento de un canje y su
+  devolución si se cancela o caduca (Fase 7, desde `apps.rewards.services`).
 
 Concurrencia: cada escritura bloquea la fila del cliente (`select_for_update`)
 y recalcula el saldo dentro de la transacción, de modo que dos operaciones
@@ -215,6 +217,33 @@ def adjust_points(*, actor, customer, points, reason, idempotency_key):
     return MovementResult(movement=movement, created=True)
 
 
+def _compensate(movement, *, actor, reason):
+    """Movimiento de signo contrario a `movement`, una sola vez (`OneToOne` en BD)."""
+    original = PointsTransaction.objects.select_for_update().get(pk=movement.pk)
+    if original.kind == Kind.REVERSAL:
+        raise ValidationError("Una compensación no se compensa: registra un ajuste.", code="reversal_of_reversal")
+    existing = PointsTransaction.objects.filter(reverses=original).first()
+    if existing is not None:
+        return MovementResult(movement=existing, created=False)
+    customer = _lock_customer(original.customer)
+    try:
+        with transaction.atomic():
+            reversal = _append(
+                customer,
+                kind=Kind.REVERSAL,
+                points=-original.points,
+                reverses=original,
+                created_by=actor,
+                reason=reason,
+            )
+    except IntegrityError:
+        existing = PointsTransaction.objects.filter(reverses=original).first()
+        if existing is None:
+            raise
+        return MovementResult(movement=existing, created=False)
+    return MovementResult(movement=reversal, created=True)
+
+
 def reverse_movement(*, actor, movement, reason):
     """
     Compensa un movimiento con otro de signo contrario (solo propietario).
@@ -223,28 +252,11 @@ def reverse_movement(*, actor, movement, reason):
     _require_owner(actor)
     reason = _parse_reason(reason)
     with transaction.atomic():
-        original = PointsTransaction.objects.select_for_update().get(pk=movement.pk)
-        if original.kind == Kind.REVERSAL:
-            raise ValidationError("Una compensación no se compensa: registra un ajuste.", code="reversal_of_reversal")
-        existing = PointsTransaction.objects.filter(reverses=original).first()
-        if existing is not None:
-            return MovementResult(movement=existing, created=False)
-        customer = _lock_customer(original.customer)
-        try:
-            with transaction.atomic():
-                reversal = _append(
-                    customer,
-                    kind=Kind.REVERSAL,
-                    points=-original.points,
-                    reverses=original,
-                    created_by=actor,
-                    reason=reason,
-                )
-        except IntegrityError:
-            existing = PointsTransaction.objects.filter(reverses=original).first()
-            if existing is None:
-                raise
-            return MovementResult(movement=existing, created=False)
+        result = _compensate(movement, actor=actor, reason=reason)
+        if not result.created:
+            return result
+        reversal, customer = result.movement, result.movement.customer
+        original = reversal.reverses
         record_audit_event(
             action=AuditEvent.Action.POINTS_REVERSED,
             actor=actor,
@@ -252,3 +264,40 @@ def reverse_movement(*, actor, movement, reason):
             metadata={"points": reversal.points, "movement": str(reversal.public_id), "reverses": str(original.public_id)},
         )
     return MovementResult(movement=reversal, created=True)
+
+
+# --- Canjes (Fase 7) ------------------------------------------------------------------
+#
+# Los usa `apps.rewards.services`, que comprueba antes los permisos y las reglas
+# del canje. Deben llamarse dentro de su transacción, con el cliente ya bloqueado
+# por `lock_customer`, para que el canje y el movimiento se confirmen juntos.
+
+
+def lock_customer(customer):
+    """Bloquea la fila del cliente hasta el final de la transacción en curso."""
+    return _lock_customer(customer)
+
+
+def spend_points(*, customer, points, reason):
+    """
+    Descuenta `points` (> 0) con un movimiento `REDEMPTION`. Lanza
+    `InsufficientPoints` si el saldo, recalculado dentro de la transacción, no
+    alcanza. `customer` debe venir de `lock_customer`.
+    """
+    if isinstance(points, bool) or not isinstance(points, int) or points <= 0:
+        raise ValueError("Los puntos de un canje deben ser un entero positivo.")
+    if not transaction.get_connection().in_atomic_block:
+        raise RuntimeError("spend_points debe llamarse dentro de una transacción.")
+    return _append(customer, kind=Kind.REDEMPTION, points=-points, reason=reason)
+
+
+def refund_spent_points(*, movement, actor=None, reason):
+    """
+    Devuelve los puntos de un movimiento `REDEMPTION` (canje cancelado o
+    caducado) con una compensación. `actor` es `None` cuando lo hace el sistema.
+    Idempotente: un canje solo se devuelve una vez.
+    """
+    if movement.kind != Kind.REDEMPTION:
+        raise ValueError("Solo se devuelven movimientos de canje.")
+    with transaction.atomic():
+        return _compensate(movement, actor=actor, reason=reason)

@@ -280,7 +280,7 @@ class PointsTransaction(models.Model):
         PROMOTION_BONUS = "PROMOTION_BONUS", "Promoción"
         ADJUSTMENT = "ADJUSTMENT", "Ajuste manual"
         REVERSAL = "REVERSAL", "Compensación"
-        # Reservado para los canjes de la Fase 7: ningún flujo lo crea todavía.
+        # Canje de una recompensa (Fase 7, `ledger.spend_points`).
         REDEMPTION = "REDEMPTION", "Canje"
 
     public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)

@@ -25,7 +25,7 @@
       {% for movement in movements %}
         <li class="flex items-center justify-between gap-4 px-5 py-3">
           <span>
-            <span class="block font-semibold">{% if movement.promotion %}{{ movement.promotion.name }}{% else %}{{ movement.get_kind_display }}{% endif %}</span>
+            <span class="block font-semibold">{% if movement.promotion %}{{ movement.promotion.name }}{% elif movement.kind == "REVERSAL" and movement.reverses.kind == "REDEMPTION" %}Devolución de canje{% else %}{{ movement.get_kind_display }}{% endif %}</span>
             <span class="block text-sm text-mist">{{ movement.created_at|date:"d/m/Y H:i" }}{% if movement.purchase %} · compra de {{ movement.purchase.amount|floatformat:2 }} €{% endif %}</span>
           </span>
           <span class="font-bold {% if movement.points > 0 %}text-gold{% endif %}">{% if movement.points > 0 %}+{% endif %}{{ movement.points }}</span>
@@ -69,5 +69,5 @@
 </section>
 
 <p class="mt-8 text-sm text-mist">Los puntos se calculan en el local a partir del importe registrado: se redondean hacia abajo a puntos enteros. Si ves algún error, coméntalo en la barra.</p>
-<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'loyalty:my_qr' %}">Mi código QR</a> · <a class="link" href="{% url 'accounts:profile' %}">Volver a mi perfil</a></p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'web:rewards' %}">Canjear puntos</a> · <a class="link" href="{% url 'rewards:my_redemptions' %}">Mis canjes</a> · <a class="link" href="{% url 'loyalty:my_qr' %}">Mi código QR</a> · <a class="link" href="{% url 'accounts:profile' %}">Volver a mi perfil</a></p>
 {% endblock %}

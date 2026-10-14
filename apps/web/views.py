@@ -2,12 +2,13 @@
 Páginas públicas. Solo presentación: no contienen reglas de negocio.
 
 La carta se obtiene de `apps.catalog.selectors`, que decide qué es público y
-qué está disponible. Recompensas y eventos aún no tienen modelos (Fases 7 y 8):
-sus vistas pasan listas vacías con los nombres que usarán esas fases.
+qué está disponible; las recompensas, de `apps.rewards.selectors`. Los eventos
+aún no tienen modelos (Fase 8): su vista pasa una lista vacía.
 """
 from django.views.generic import TemplateView
 
 from apps.catalog import selectors as catalog
+from apps.rewards import selectors as rewards
 
 
 class HomeView(TemplateView):
@@ -36,7 +37,11 @@ class MenuView(TemplateView):
 
 class RewardsView(TemplateView):
     template_name = "web/rewards.html"
-    extra_context = {"rewards": []}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rewards"] = rewards.public_rewards()
+        return context
 
 
 class EventsView(TemplateView):

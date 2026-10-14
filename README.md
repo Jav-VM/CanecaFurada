@@ -15,7 +15,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 4 — Carta y cervezas | **Completa** (pendiente almacenamiento de imágenes en producción y validar en PostgreSQL) |
 | 5 — QR personal y registro de compras manuales | **Completa** (pendiente probar el escaneo en dispositivos físicos y la concurrencia en PostgreSQL) |
 | 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar la conversión por defecto) |
-| 7–12 | Pendientes |
+| 7 — Recompensas y canjes | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar el plazo de recogida) |
+| 8–12 | Pendientes |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -51,9 +52,9 @@ python manage.py runserver
 ```
 
 Rutas disponibles:
-- Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Recompensas y Eventos muestran un estado vacío hasta sus fases.
-- QR personal del cliente (email verificado) en `/cuenta/mi-qr/` y sus puntos (saldo, movimientos y compras) en `/cuenta/puntos/`.
-- Panel del personal (empleados y propietarios) para registrar compras en `/panel/compras/`.
+- Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Recompensas muestra el catálogo real; Eventos, un estado vacío hasta su fase.
+- QR personal del cliente (email verificado) en `/cuenta/mi-qr/`, sus puntos (saldo, movimientos y compras) en `/cuenta/puntos/` y sus canjes en `/cuenta/canjes/`.
+- Panel del personal (empleados y propietarios) para registrar compras en `/panel/compras/` y validar canjes en `/panel/canjes/`.
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
 
@@ -70,6 +71,10 @@ Crea un empleado desde el admin y un cliente con el registro público; verifica 
 ## Puntos y promociones
 
 Cada compra registrada suma puntos (por defecto 1 punto por euro, redondeando hacia abajo) en un ledger inmutable, en la misma transacción que la compra. El propietario cambia la conversión y crea promociones (puntos fijos o multiplicador, con fechas, condiciones, límites y estado, incluidas las de cumpleaños) en el admin, sección **Fidelización**. Esta fase no envía promociones. Reglas completas, anti-abuso de cumpleaños, API prevista y pruebas: [docs/fase-06-fidelizacion.md](docs/fase-06-fidelizacion.md).
+
+## Recompensas y canjes
+
+El propietario crea recompensas (coste en puntos, imagen, estado, fechas y unidades opcionales) en el admin, sección **Recompensas**. El cliente canjea desde `/recompensas/`: los puntos se descuentan en el ledger en la misma transacción y recibe un código de un solo uso (QR y texto) que enseña en la barra. El personal lo valida en `/panel/canjes/`; un código usado no vuelve a servir. Si el cliente cancela o el código caduca (30 días por defecto), recupera los puntos. `python manage.py expire_redemptions` caduca los vencidos. Proceso completo, validaciones, concurrencia, API prevista y pruebas: [docs/fase-07-recompensas-canjes.md](docs/fase-07-recompensas-canjes.md).
 
 ## Estilos (Tailwind CSS)
 
@@ -99,6 +104,7 @@ apps/accounts/     usuario, roles, perfil de cliente, registro, verificación de
 apps/catalog/      carta: categorías, estilos, productos, carta de grifos, selectores públicos, servicios y admin
 apps/loyalty/      QR personal del cliente; ledger de puntos, conversión, promociones y cumpleaños
 apps/purchases/    registro de compras manuales, panel del personal y estadísticas de compras registradas
+apps/rewards/      catálogo de recompensas, canjes con código de un solo uso, panel de validación y caducidad
 apps/web/          páginas públicas, contenido del local y context processor
 templates/         plantilla base, componentes, páginas públicas, de cuenta, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
@@ -120,3 +126,4 @@ requirements/      dependencias por entorno
 - [Fase 4 — Carta y cervezas](docs/fase-04-carta.md): modelo de datos, reglas de visibilidad y disponibilidad, guía de gestión para el propietario, validación de imágenes, API prevista, tests y pendientes.
 - [Fase 5 — QR personal y registro de compras](docs/fase-05-qr-compras.md): token QR, escaneo, validaciones e idempotencia, cómo probar el flujo, TPV y API previstos, tests y pendientes.
 - [Fase 6 — Fidelización](docs/fase-06-fidelizacion.md): reglas de puntos y redondeo, ledger y compensaciones, promociones, cumpleaños (29-F, anti-abuso, consentimiento), concurrencia, estadísticas, API prevista, tests y pendientes.
+- [Fase 7 — Recompensas y canjes](docs/fase-07-recompensas-canjes.md): proceso de canje, validaciones del servidor, código de un solo uso, estados, ledger, concurrencia, panel del personal, API prevista, tests y pendientes.
