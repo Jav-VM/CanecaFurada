@@ -24,10 +24,11 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 | `apps.loyalty` | Token QR del cliente (Fase 5); ledger de puntos, conversión, promociones y base de cumpleaños (Fase 6): `conversion`, `ledger` (única vía de escritura), `promotions`, `selectors` (lectura) | 5–6 | Existe |
 | `apps.purchases` | Registro de compras manuales y panel del personal; `on_purchase_registered` genera los puntos en la misma transacción; `selectors` (historial del cliente y estadísticas de compras registradas) | 5–6 | Existe |
 | `apps.rewards` | Catálogo de recompensas y canjes: `codes` (código de un solo uso), `services` (solicitud, validación, cancelación, caducidad), `selectors`; descuenta y devuelve puntos solo a través de `loyalty.ledger` | 7 | Existe |
-| `apps.events` | Eventos y reservas | 8 | Pendiente |
+| `apps.staff` | Panel del personal en `/panel/`: inicio, perfil del empleado y consulta de sus resultados; layout común de las pantallas de compras y canjes. Solo presentación, sin modelos | 8 | Existe |
 | `apps.dashboard` | Panel del propietario y estadísticas (solo presentación) | 9 | Pendiente |
-| `apps.notifications` | Registro y envío de notificaciones; promociones de cumpleaños | 10 | Pendiente |
+| `apps.events` | Eventos y reservas | 10 | Pendiente |
 | `apps.api` | API REST v1 (solo presentación sobre los servicios) | 11 | Pendiente |
+| `apps.notifications` | Registro y envío de notificaciones; promociones de cumpleaños | Sin asignar | Pendiente |
 
 Los nombres son los previstos. Si una fase justifica separar o unir módulos, se cambia esta tabla en la misma tarea.
 
@@ -81,6 +82,9 @@ Límites conocidos:
 
 ### Recompensas y canjes
 - Escrituras por `apps/rewards/services.py` (que usa `loyalty.ledger.spend_points`/`refund_spent_points` en la misma transacción); lecturas por `apps/rewards/selectors.py`. `rewards` depende de `loyalty`, nunca al revés: el movimiento del ledger no conoce el canje, es el canje quien enlaza sus movimientos. Los códigos viajan siempre en el cuerpo de la petición, nunca en la URL. Endpoints previstos: [Fase 7, §8](fase-07-recompensas-canjes.md#8-preparación-para-la-app-y-la-api-fase-11).
+
+### Panel del personal
+- `apps.staff` solo presenta: las escrituras siguen en `purchases.services` y `rewards.services`, y las lecturas propias del empleado están en `purchases.selectors` (`purchases_registered_by`, `staff_purchases_summary`) y `rewards.selectors` (`validations_by`), filtradas siempre por el usuario autenticado. Endpoints previstos: [Fase 8, §8](fase-08-panel-empleados.md#8-preparación-para-la-app).
 
 ### Presentación web
 - Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.

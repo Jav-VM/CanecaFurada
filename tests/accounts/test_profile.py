@@ -324,7 +324,7 @@ class ProfileViewTests(TestCase):
         self.assertEqual(response.request["PATH_INFO"], self.url)
         employee = make_user(email="e@example.com", role=User.Role.EMPLOYEE)
         self.client.force_login(employee)
-        response = self.client.get(reverse("accounts:home"))
+        response = self.client.get(reverse("accounts:home"), follow=True)
         dob = registration_data()["date_of_birth"]
         self.assertNotContains(response, dob.isoformat())
 

@@ -37,6 +37,7 @@ LOCAL_APPS = [
     "apps.loyalty",
     "apps.purchases",
     "apps.rewards",
+    "apps.staff",
     "apps.web",
 ]
 

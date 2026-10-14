@@ -42,3 +42,14 @@ def recent_validations_by(staff, limit=10):
     return list(
         Redemption.objects.filter(validated_by=staff).select_related("reward").order_by("-validated_at")[:limit]
     )
+
+
+def validations_by(staff, *, since=None):
+    """
+    Canjes que validó `staff` (panel del personal, Fase 8). Solo los propios,
+    también para el propietario: la vista global es del dashboard (Fase 9).
+    """
+    queryset = Redemption.objects.filter(validated_by=staff)
+    if since is not None:
+        queryset = queryset.filter(validated_at__gte=since)
+    return queryset.select_related("customer", "reward").order_by("-validated_at", "-id")

@@ -16,7 +16,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 5 — QR personal y registro de compras manuales | **Completa** (pendiente probar el escaneo en dispositivos físicos y la concurrencia en PostgreSQL) |
 | 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar la conversión por defecto) |
 | 7 — Recompensas y canjes | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar el plazo de recogida) |
-| 8–12 | Pendientes |
+| 8 — Panel de empleados | **Completa** (pendiente probar en móviles y tablets físicos) |
+| 9–11 | Pendientes (9 dashboard, 10 eventos y reservas, 11 API, auditoría, seguridad y preparación para la app) |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -54,19 +55,23 @@ python manage.py runserver
 Rutas disponibles:
 - Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Recompensas muestra el catálogo real; Eventos, un estado vacío hasta su fase.
 - QR personal del cliente (email verificado) en `/cuenta/mi-qr/`, sus puntos (saldo, movimientos y compras) en `/cuenta/puntos/` y sus canjes en `/cuenta/canjes/`.
-- Panel del personal (empleados y propietarios) para registrar compras en `/panel/compras/` y validar canjes en `/panel/canjes/`.
+- Panel del personal (empleados y propietarios) en `/panel/`: inicio, registrar compras (`/panel/compras/`), validar canjes (`/panel/canjes/`), consultar sus resultados (`/panel/resultados/`) y su perfil (`/panel/perfil/`).
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
 
 ## Gestionar la carta
 
-El propietario crea estilos, categorías y productos en el admin, publica, archiva o marca como agotado con las acciones de la lista y sube la imagen de la carta de grifos. Nada se borra: los productos se archivan. Las imágenes subidas solo se sirven en desarrollo hasta la Fase 12. Guía paso a paso: [docs/fase-04-carta.md](docs/fase-04-carta.md#4-gestión-de-la-carta-guía-para-el-propietario).
+El propietario crea estilos, categorías y productos en el admin, publica, archiva o marca como agotado con las acciones de la lista y sube la imagen de la carta de grifos. Nada se borra: los productos se archivan. Las imágenes subidas solo se sirven en desarrollo hasta la fase de despliegue (antes Fase 12, hoy sin número asignado). Guía paso a paso: [docs/fase-04-carta.md](docs/fase-04-carta.md#4-gestión-de-la-carta-guía-para-el-propietario).
 
 En desarrollo los emails (verificación, recuperación de contraseña…) se imprimen en la consola de `runserver`. En Windows, si aparece `UnicodeEncodeError` al enviar un email, arranca con `$env:PYTHONUTF8=1`. Configuración del correo y de producción: [docs/fase-02-registro-perfil-verificacion.md](docs/fase-02-registro-perfil-verificacion.md#6-configuración-del-correo-y-variables-de-entorno).
 
 ## Probar el registro de compras
 
 Crea un empleado desde el admin y un cliente con el registro público; verifica su email con el enlace que aparece en la consola. El cliente abre *Mi código QR* y el empleado, en *Registrar compra*, lo escanea con la cámara (solo en `localhost` o HTTPS) o teclea el código que aparece bajo el QR, confirma el nombre e introduce el importe. Guía completa y casos de prueba: [docs/fase-05-qr-compras.md](docs/fase-05-qr-compras.md#5-cómo-probar-el-flujo-de-compra).
+
+## Panel de empleados
+
+Al entrar, un empleado llega a `/panel/`: botones grandes para registrar una compra o validar un canje, el resumen de lo que ha hecho hoy, sus resultados por periodo y su perfil. Está pensado para móvil y tablet. Solo ve el nombre abreviado de cada cliente (nunca su dirección, fecha de nacimiento, teléfono, email ni saldo) y no puede cambiar roles, puntos ni configuración. Flujo completo, seguridad y pruebas: [docs/fase-08-panel-empleados.md](docs/fase-08-panel-empleados.md).
 
 ## Puntos y promociones
 
@@ -105,8 +110,9 @@ apps/catalog/      carta: categorías, estilos, productos, carta de grifos, sele
 apps/loyalty/      QR personal del cliente; ledger de puntos, conversión, promociones y cumpleaños
 apps/purchases/    registro de compras manuales, panel del personal y estadísticas de compras registradas
 apps/rewards/      catálogo de recompensas, canjes con código de un solo uso, panel de validación y caducidad
+apps/staff/        panel del personal: inicio, perfil del empleado y consulta de resultados (solo presentación)
 apps/web/          páginas públicas, contenido del local y context processor
-templates/         plantilla base, componentes, páginas públicas, de cuenta, de error y emails
+templates/         plantilla base, componentes, páginas públicas, de cuenta, del panel del personal, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
 static/            CSS compilado, JS de mejora progresiva (menú, lector QR), jsQR incluido (vendor/) y recursos gráficos oficiales (img/brand/)
 scripts/           tailwind.py (descarga verificada y compilación del CSS)
@@ -127,3 +133,4 @@ requirements/      dependencias por entorno
 - [Fase 5 — QR personal y registro de compras](docs/fase-05-qr-compras.md): token QR, escaneo, validaciones e idempotencia, cómo probar el flujo, TPV y API previstos, tests y pendientes.
 - [Fase 6 — Fidelización](docs/fase-06-fidelizacion.md): reglas de puntos y redondeo, ledger y compensaciones, promociones, cumpleaños (29-F, anti-abuso, consentimiento), concurrencia, estadísticas, API prevista, tests y pendientes.
 - [Fase 7 — Recompensas y canjes](docs/fase-07-recompensas-canjes.md): proceso de canje, validaciones del servidor, código de un solo uso, estados, ledger, concurrencia, panel del personal, API prevista, tests y pendientes.
+- [Fase 8 — Panel de empleados](docs/fase-08-panel-empleados.md): flujo del empleado, rutas, diseño móvil, seguridad y privacidad, endpoints previstos, tests y pendientes.

@@ -1,4 +1,4 @@
-{% extends "accounts/_layout.html" %}
+{% extends "staff/_layout.html" %}
 {% block title %}Confirmar canje{% endblock %}
 {% block eyebrow %}Panel del personal{% endblock %}
 {% block heading %}Confirmar canje{% endblock %}
@@ -21,10 +21,10 @@
     <form method="post" action="{% url 'rewards_panel:validate' %}" data-loading>
       {% csrf_token %}
       {{ form.code }}
-      <button type="submit" class="btn btn-primary btn-block" data-loading-text="Validando…">Validar y entregar</button>
+      <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="Validando…">Validar y entregar</button>
     </form>
   {% else %}
-    <p class="alert alert-error" role="alert">Este código no se puede usar: no entregues la recompensa.</p>
+    <p class="alert alert-error text-lg font-bold" role="alert">Este código no se puede usar: no entregues la recompensa.</p>
   {% endif %}
   <p class="text-center text-sm"><a class="link" href="{% url 'rewards_panel:scan' %}">Volver a escanear</a></p>
 </div>

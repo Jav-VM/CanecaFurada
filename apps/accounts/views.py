@@ -137,7 +137,7 @@ def home(request):
         return redirect("accounts:profile")
     if user.role == User.Role.OWNER:
         return redirect("admin:index")
-    return render(request, "accounts/staff_home.html")
+    return redirect("staff:home")
 
 
 def _profile_initial(user, profile):

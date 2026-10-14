@@ -1,0 +1,26 @@
+{% extends "staff/_layout.html" %}
+{% block title %}Mi perfil{% endblock %}
+{% block heading %}Mi perfil{% endblock %}
+{% block body %}
+{% include "accounts/_verification_notice.html" %}
+<div class="card space-y-6 p-6 sm:p-8">
+  <dl class="space-y-4">
+    <div><dt class="text-sm text-mist">Nombre</dt><dd class="text-lg font-semibold">{{ user.get_full_name }}</dd></div>
+    <div>
+      <dt class="text-sm text-mist">Email de acceso</dt>
+      <dd class="break-all text-lg font-semibold">{{ user.email }}</dd>
+      <dd class="mt-2">{% if user.is_email_verified %}<span class="badge">Verificado</span>{% else %}<span class="badge badge-muted">Pendiente de verificación</span>{% endif %}</dd>
+    </div>
+    <div><dt class="text-sm text-mist">Rol</dt><dd class="text-lg font-semibold">{{ user.get_role_display }}</dd></div>
+  </dl>
+  <p class="text-sm text-mist">Si tu nombre o tu rol no son correctos, pídeselo al propietario: solo él puede cambiarlos.</p>
+  <div class="grid gap-3 sm:grid-cols-2">
+    <a href="{% url 'accounts:email_change' %}" class="btn btn-secondary btn-lg">Cambiar email</a>
+    <a href="{% url 'accounts:password_change' %}" class="btn btn-secondary btn-lg">Cambiar contraseña</a>
+  </div>
+  <form method="post" action="{% url 'accounts:logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-ghost btn-block">Cerrar sesión</button>
+  </form>
+</div>
+{% endblock %}

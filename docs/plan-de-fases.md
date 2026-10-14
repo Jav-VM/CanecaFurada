@@ -12,11 +12,12 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 5 | QR personal y registro de compras manuales | **Completa** ([detalle](fase-05-qr-compras.md)) |
 | 6 | Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** ([detalle](fase-06-fidelizacion.md)) |
 | 7 | Recompensas y canjes | **Completa** ([detalle](fase-07-recompensas-canjes.md)) |
-| 8 | Eventos y reservas | Pendiente |
+| 8 | Panel de empleados | **Completa** ([detalle](fase-08-panel-empleados.md)) |
 | 9 | Dashboard del propietario y estadísticas | Pendiente |
-| 10 | Notificaciones completas y envío de promociones de cumpleaños | Pendiente |
-| 11 | API REST v1 | Pendiente |
-| 12 | Endurecimiento y despliegue | Pendiente |
+| 10 | Eventos y reservas | Pendiente |
+| 11 | API, auditoría, seguridad y preparación final para la app móvil | Pendiente |
+| — | Notificaciones completas y envío de promociones de cumpleaños | Pendiente (sin número asignado tras la reordenación) |
+| — | Endurecimiento y despliegue | Pendiente (sin número asignado tras la reordenación) |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -72,27 +73,37 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** protección frente a doble consumo y concurrencia; tests de saldo insuficiente, código usado/caducado.
 - **Implementado (2026-10-14):** los puntos se descuentan al solicitar el canje (movimiento `REDEMPTION`) y se devuelven con una compensación si el cliente cancela o el código caduca (30 días, configurable); un solo código pendiente por cliente y recompensa; validación por el personal en `/panel/canjes/`; comando `expire_redemptions` (su programación queda para la Fase 10).
 
-## Fase 8 — Eventos y reservas
-- **Depende de:** Fases 2–3.
-- **Incluye:** eventos gestionables, solicitudes de reserva con estados `PENDING/CONFIRMED/REJECTED/CANCELLED/COMPLETED` y transiciones válidas, confirmación manual, notificaciones transaccionales de reserva.
-- **Criterios:** transiciones validadas en servidor; datos de reservas protegidos; tests.
+> **Reordenación (2026-10-14, decidida por el usuario):** el prompt de la Fase 8 pidió el panel de empleados, que el plan no tenía como fase propia (las Fases 5 y 7 crearon sus pantallas). Nueva numeración: 8 Panel de empleados, 9 Dashboard del propietario, 10 Eventos y reservas (antes 8), 11 API, auditoría, seguridad y preparación final para la app móvil (antes 11 "API REST v1"). Las antiguas Fases 10 (notificaciones) y 12 (endurecimiento y despliegue) se conservan **sin número asignado** hasta que el usuario decida dónde van; su contenido no se ha descartado. Los documentos de fases anteriores conservan la numeración antigua en sus referencias.
+
+## Fase 8 — Panel de empleados
+- **Depende de:** Fases 5 y 7.
+- **Incluye:** app `apps.staff` (solo presentación) en `/panel/` con inicio, perfil del empleado (solo lectura) y consulta de sus resultados (compras registradas y canjes validados por periodo); integración de las pantallas de escaneo, registro de compras y validación de canjes en un layout común responsive con botones grandes y confirmaciones visibles; selectores de lectura en `purchases` y `rewards`.
+- **Exclusiones:** app separada de empleados, vista global de operaciones y gestión (Fase 9), anulación de compras, datos personales del cliente.
+- **Criterios:** solo personal (servidor); sin modificar roles, saldos ni configuración; sin dirección, fecha de nacimiento, teléfono ni historial privado; tests de escaneo, compras, canjes, errores y permisos.
+- **Implementado (2026-10-14):** ver [fase-08-panel-empleados.md](fase-08-panel-empleados.md).
 
 ## Fase 9 — Dashboard del propietario y estadísticas
-- **Depende de:** Fases 2–8.
-- **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos (interfaz para `ledger.adjust_points`/`reverse_movement`), recompensas y canjes (sobre `rewards.services.save_reward` y los selectores), carta, eventos, reservas, contenido editable y configuración de fidelización; estadísticas reales (sobre `purchases.selectors.registered_purchases_stats` y `loyalty.selectors.points_stats`) y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
+- **Depende de:** Fases 2–8 (la gestión de eventos y reservas se añadirá al dashboard en la Fase 10).
+- **Incluye:** gestión de clientes, empleados (alta/baja/rol vía servicios existentes), compras, puntos (interfaz para `ledger.adjust_points`/`reverse_movement`), recompensas y canjes (sobre `rewards.services.save_reward` y los selectores), carta, contenido editable y configuración de fidelización; estadísticas reales (sobre `purchases.selectors.registered_purchases_stats` y `loyalty.selectors.points_stats`) y geográficas (país, provincia, localidad, código postal) con filtros por periodo, sin direcciones completas.
 - **Criterios:** acceso solo OWNER; las compras registradas no se presentan como facturación total; tests de permisos.
 
-## Fase 10 — Notificaciones completas y promociones de cumpleaños
+## Fase 10 — Eventos y reservas (antes Fase 8)
+- **Depende de:** Fases 2–3.
+- **Incluye:** eventos gestionables (también desde el dashboard), solicitudes de reserva con estados `PENDING/CONFIRMED/REJECTED/CANCELLED/COMPLETED` y transiciones válidas, confirmación manual, notificaciones transaccionales de reserva.
+- **Criterios:** transiciones validadas en servidor; datos de reservas protegidos; tests.
+
+## Fase 11 — API, auditoría, seguridad y preparación final para la app móvil
+- **Depende de:** fases funcionales previas.
+- **Incluye:** Django REST Framework bajo `/api/v1/`, autenticación por token apropiada para móviles, permisos DRF basados en `apps.accounts.permissions`, serializadores explícitos con campos mínimos, paginación, errores coherentes, CORS restrictivo, documentación de endpoints.
+- **Incluye además (2026-10-14):** revisión de auditoría y de seguridad y preparación final para la app móvil; los endpoints del personal previstos están en [Fase 8, §8](fase-08-panel-empleados.md#8-preparación-para-la-app).
+- **Criterios:** sin duplicar lógica (solo llama a servicios); tests de API, permisos e IDOR.
+
+## Sin número — Notificaciones completas y promociones de cumpleaños (antes Fase 10)
 - **Depende de:** Fases 2, 5, 7.
 - **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas (incluida `expire_redemptions` de la Fase 7), envío de los avisos de cumpleaños a partir de `loyalty.promotions.birthday_promotion_recipients` (la elegibilidad, el 29 de febrero, el límite por año y el anti-abuso ya existen desde la Fase 6), volviendo a comprobar el consentimiento justo antes de cada envío.
 - **Criterios:** sin envíos simulados; tests de reintentos, duplicados y consentimiento.
 
-## Fase 11 — API REST v1
-- **Depende de:** fases funcionales previas.
-- **Incluye:** Django REST Framework bajo `/api/v1/`, autenticación por token apropiada para móviles, permisos DRF basados en `apps.accounts.permissions`, serializadores explícitos con campos mínimos, paginación, errores coherentes, CORS restrictivo, documentación de endpoints.
-- **Criterios:** sin duplicar lógica (solo llama a servicios); tests de API, permisos e IDOR.
-
-## Fase 12 — Endurecimiento y despliegue
+## Sin número — Endurecimiento y despliegue (antes Fase 12)
 - **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, rate limiting, revisión de seguridad, guía de despliegue, ejecución de tests contra PostgreSQL.
 
 ## Futuro — App móvil

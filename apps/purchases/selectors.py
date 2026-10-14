@@ -69,3 +69,28 @@ def registered_purchases_stats(*, actor, start=None, end=None):
         registered_amount=amount,
         average_amount=average,
     )
+
+
+def purchases_registered_by(staff, *, since=None):
+    """
+    Compras que registró `staff` (panel del personal, Fase 8), con sus puntos.
+
+    Solo las propias, también para el propietario: la vista global de compras
+    es del dashboard (Fase 9). Carga el cliente para mostrar su nombre abreviado.
+    """
+    queryset = Purchase.objects.filter(registered_by=staff)
+    if since is not None:
+        queryset = queryset.filter(created_at__gte=since)
+    return (
+        queryset.select_related("customer")
+        .annotate(points=Coalesce(Sum("points_transactions__points"), 0))
+        .order_by("-created_at", "-id")
+    )
+
+
+def staff_purchases_summary(staff, *, since):
+    """Número e importe de las compras vigentes (no anuladas) que registró `staff` desde `since`."""
+    totals = Purchase.objects.filter(
+        registered_by=staff, status=Purchase.Status.COMPLETED, created_at__gte=since
+    ).aggregate(count=Count("id"), amount=Coalesce(Sum("amount"), Decimal("0.00")))
+    return totals["count"], Decimal(totals["amount"]).quantize(Decimal("0.01"))

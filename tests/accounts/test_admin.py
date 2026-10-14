@@ -128,9 +128,9 @@ class UserAdminTests(TestCase):
 
     def test_deactivated_employee_loses_access(self):
         self.client.force_login(self.employee)
-        self.assertEqual(self.client.get(reverse("accounts:home")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("staff:home")).status_code, 200)
         services.set_user_active(actor=self.owner, user=self.employee, is_active=False)
-        response = self.client.get(reverse("accounts:home"))
+        response = self.client.get(reverse("staff:home"))
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("accounts:login"), response["Location"])
 

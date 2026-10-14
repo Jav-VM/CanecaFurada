@@ -1,0 +1,5 @@
+<dl class="grid grid-cols-3 gap-3" data-summary>
+  <div class="stat"><dt class="stat-label">Compras</dt><dd class="stat-value" data-summary-purchases>{{ summary.purchases_count }}</dd></div>
+  <div class="stat"><dt class="stat-label">Importe registrado</dt><dd class="stat-value" data-summary-amount>{{ summary.purchases_amount|floatformat:2 }} €</dd></div>
+  <div class="stat"><dt class="stat-label">Canjes</dt><dd class="stat-value" data-summary-validations>{{ summary.validations_count }}</dd></div>
+</dl>

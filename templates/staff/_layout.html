@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% comment %}
+Layout del panel del personal (Fase 8): barra de secciones con botones grandes
+y columna centrada. Pensado para móvil y tablet en barra.
+Bloques: width, eyebrow, heading, intro, body. La sección activa sale de la URL resuelta.
+{% endcomment %}
+{% block content %}
+<nav aria-label="Panel del personal" class="border-b border-line bg-coal">
+  <ul class="container-page panel-nav">
+    {% with ns=request.resolver_match.namespace name=request.resolver_match.url_name %}
+    <li><a href="{% url 'staff:home' %}" class="panel-nav-link"{% if ns == "staff" and name == "home" %} aria-current="page"{% endif %}>Inicio</a></li>
+    <li><a href="{% url 'purchases:scan' %}" class="panel-nav-link"{% if ns == "purchases" %} aria-current="page"{% endif %}>Compra</a></li>
+    <li><a href="{% url 'rewards_panel:scan' %}" class="panel-nav-link"{% if ns == "rewards_panel" %} aria-current="page"{% endif %}>Canje</a></li>
+    <li><a href="{% url 'staff:results' %}" class="panel-nav-link"{% if ns == "staff" and name == "results" %} aria-current="page"{% endif %}>Resultados</a></li>
+    <li><a href="{% url 'staff:profile' %}" class="panel-nav-link"{% if ns == "staff" and name == "profile" %} aria-current="page"{% endif %}>Perfil</a></li>
+    {% endwith %}
+  </ul>
+</nav>
+<div class="container-page py-8 sm:py-12">
+  <div class="mx-auto {% block width %}max-w-lg{% endblock %}">
+    <header class="mb-6 text-center sm:mb-8">
+      <p class="eyebrow mb-3">{% block eyebrow %}Panel del personal{% endblock %}</p>
+      <h1 class="heading-lg">{% block heading %}{% endblock %}</h1>
+      {% block intro %}{% endblock %}
+    </header>
+    {% block body %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

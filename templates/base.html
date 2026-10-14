@@ -36,7 +36,8 @@
         </nav>
         <nav aria-label="Cuenta" class="flex flex-wrap items-center gap-2">
           {% if user.is_authenticated %}
-            <a href="{% url 'accounts:home' %}" class="btn btn-secondary">Mi cuenta</a>
+            {% if user.role == "EMPLOYEE" or user.role == "OWNER" %}<a href="{% url 'staff:home' %}" class="btn btn-primary">Panel</a>{% endif %}
+            {% if user.role != "EMPLOYEE" %}<a href="{% url 'accounts:home' %}" class="btn btn-secondary">Mi cuenta</a>{% endif %}
             <form method="post" action="{% url 'accounts:logout' %}">
               {% csrf_token %}
               <button type="submit" class="btn btn-ghost">Salir</button>

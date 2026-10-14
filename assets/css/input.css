@@ -67,6 +67,7 @@
   .btn-secondary { @apply border border-paper/40 text-paper hover:border-gold hover:text-gold; }
   .btn-ghost { @apply px-3 text-mist hover:text-gold; }
   .btn-block { @apply w-full; }
+  .btn-lg { @apply min-h-14 px-8 text-base; }
   .btn[aria-busy="true"]::before {
     content: ""; @apply size-4 animate-spin rounded-full border-2 border-current border-r-transparent;
   }
@@ -84,6 +85,28 @@
   .alert-success { @apply border-ok; }
   .alert-error { @apply border-danger; }
   .alert-warning { @apply border-gold; }
+
+  /* Panel del personal (Fase 8): objetivos táctiles grandes para móvil y tablet */
+  .panel-nav { @apply flex gap-1 overflow-x-auto py-2; }
+  .panel-nav-link {
+    @apply flex min-h-12 items-center whitespace-nowrap rounded-full px-4 text-sm font-bold uppercase tracking-wider
+      text-mist no-underline hover:text-paper aria-[current=page]:bg-gold aria-[current=page]:text-ink;
+  }
+  .panel-tile {
+    @apply flex min-h-32 flex-col justify-center gap-2 rounded-2xl border border-line bg-coal p-6 text-paper
+      no-underline transition hover:border-gold;
+  }
+  .panel-tile-primary { @apply border-gold bg-gold text-ink hover:bg-paper; }
+  .stat { @apply rounded-xl border border-line bg-coal p-3 text-center sm:p-4; }
+  .stat-label { @apply text-xs font-semibold uppercase tracking-wider text-mist; }
+  .stat-value { @apply mt-1 text-xl font-extrabold text-gold sm:text-2xl; }
+  .segmented { @apply grid auto-cols-fr grid-flow-col gap-1 rounded-full border border-line bg-coal p-1; }
+  .segmented-option {
+    @apply flex min-h-11 items-center justify-center rounded-full px-3 text-sm font-bold uppercase tracking-wider
+      text-mist no-underline hover:text-paper aria-[current=true]:bg-gold aria-[current=true]:text-ink;
+  }
+  .result-row { @apply flex min-h-16 items-center justify-between gap-4 px-5 py-3 no-underline hover:text-gold; }
+  .done-banner { @apply flex items-center justify-center gap-3 rounded-xl border-2 border-ok p-4 text-ok; }
 
   /* Contenido pendiente de aportar por el propietario */
   .pending { @apply rounded-xl border border-dashed border-line p-4 text-sm text-mist; }

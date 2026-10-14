@@ -74,7 +74,7 @@ class AccessTests(PanelTestCase):
                 self.assertContains(response, "data-qr-scanner")
 
     def test_staff_home_links_to_panel(self):
-        self.assertContains(self.client.get(reverse("accounts:home")), reverse("purchases:scan"))
+        self.assertContains(self.client.get(reverse("accounts:home"), follow=True), reverse("purchases:scan"))
 
     def test_identify_and_register_require_post_and_csrf(self):
         self.assertEqual(self.client.get(reverse("purchases:identify")).status_code, 405)

@@ -26,7 +26,10 @@ class PurchaseForm(forms.Form):
         label="Importe (€)",
         max_length=12,
         help_text="Importe total pagado, por ejemplo 12,50.",
-        widget=forms.TextInput(attrs={"inputmode": "decimal", "autocomplete": "off"}),
+        widget=forms.TextInput(
+            # Letra grande: se teclea en barra, a menudo en un móvil o tablet.
+            attrs={"inputmode": "decimal", "autocomplete": "off", "class": "text-2xl font-bold"}
+        ),
     )
 
     def clean_amount(self):

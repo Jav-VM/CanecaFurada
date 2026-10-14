@@ -1,0 +1,53 @@
+{% extends "staff/_layout.html" %}
+{% block title %}Mis resultados{% endblock %}
+{% block width %}max-w-3xl{% endblock %}
+{% block heading %}Mis resultados{% endblock %}
+{% block intro %}<p class="lead mt-3">Lo que has registrado y validado tú.</p>{% endblock %}
+{% block body %}
+<div class="space-y-3">
+  <nav aria-label="Tipo de operación" class="segmented">
+    {% for value, label in kind_choices %}
+      <a href="?tipo={{ value }}&amp;periodo={{ period }}" class="segmented-option"{% if value == kind %} aria-current="true"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+  <nav aria-label="Periodo" class="segmented">
+    {% for value, label in period_choices %}
+      <a href="?tipo={{ kind }}&amp;periodo={{ value }}" class="segmented-option"{% if value == period %} aria-current="true"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+</div>
+
+<div class="mt-6">{% include "staff/_summary.html" %}</div>
+
+<section aria-labelledby="lista" class="mt-8">
+  <h2 id="lista" class="heading-md mb-4">{% if kind == "canjes" %}Canjes validados{% else %}Compras registradas{% endif %}</h2>
+  {% if rows %}
+    <ul class="card divide-y divide-line p-0" data-results-list>
+      {% for item, customer_name in rows %}
+        <li>
+          {% if kind == "canjes" %}
+            <a href="{% url 'rewards_panel:detail' item.public_id %}" class="result-row">
+              <span><span class="block font-semibold">{{ item.reward.name }}</span><span class="text-sm text-mist">{{ customer_name }} · {{ item.validated_at|date:"d/m H:i" }}</span></span>
+              <span class="shrink-0 font-semibold">{{ item.points_cost }} pts</span>
+            </a>
+          {% else %}
+            <a href="{% url 'purchases:detail' item.public_id %}" class="result-row">
+              <span><span class="block font-semibold">{{ item.amount|floatformat:2 }} €</span><span class="text-sm text-mist">{{ customer_name }} · {{ item.created_at|date:"d/m H:i" }}{% if item.status != "COMPLETED" %} · {{ item.get_status_display }}{% endif %}</span></span>
+              <span class="shrink-0 font-semibold">+{{ item.points }} pts</span>
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if page.has_other_pages %}
+      <nav aria-label="Páginas" class="mt-4 flex items-center justify-between gap-4">
+        {% if page.has_previous %}<a class="btn btn-secondary" href="?tipo={{ kind }}&amp;periodo={{ period }}&amp;page={{ page.previous_page_number }}">Anteriores</a>{% else %}<span></span>{% endif %}
+        <span class="text-sm text-mist">Página {{ page.number }} de {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}<a class="btn btn-secondary" href="?tipo={{ kind }}&amp;periodo={{ period }}&amp;page={{ page.next_page_number }}">Siguientes</a>{% else %}<span></span>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="pending">{% if kind == "canjes" %}No has validado ningún canje en este periodo.{% else %}No has registrado ninguna compra en este periodo.{% endif %}</p>
+  {% endif %}
+</section>
+{% endblock %}

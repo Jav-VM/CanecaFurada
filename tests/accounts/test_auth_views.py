@@ -30,7 +30,7 @@ class LoginLogoutTests(TestCase):
         )
         employee = make_user(email="e@example.com", role=User.Role.EMPLOYEE)
         self.client.force_login(employee)
-        self.assertContains(self.client.get(reverse("accounts:home")), "Empleado")
+        self.assertRedirects(self.client.get(reverse("accounts:home")), reverse("staff:home"))
 
     def test_generic_error_message(self):
         unknown = self.client.post(self.url, {"username": "nadie@example.com", "password": "x"})

@@ -1,4 +1,4 @@
-{% extends "accounts/_layout.html" %}
+{% extends "staff/_layout.html" %}
 {% block title %}Confirmar compra{% endblock %}
 {% block eyebrow %}Panel del personal{% endblock %}
 {% block heading %}Confirmar compra{% endblock %}
@@ -15,7 +15,7 @@
     {% csrf_token %}
     {% for field in form.hidden_fields %}{{ field }}{% endfor %}
     {% for field in form.visible_fields %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Registrando…">Registrar compra</button>
+    <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="Registrando…">Registrar compra</button>
   </form>
   <p class="text-center text-sm"><a class="link" href="{% url 'purchases:scan' %}">No es este cliente: volver a escanear</a></p>
 </div>

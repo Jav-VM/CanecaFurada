@@ -285,7 +285,7 @@ class StaffPanelViewTests(RewardsViewTestCase):
 
     def test_staff_home_links_to_panel(self):
         self.client.force_login(self.employee)
-        self.assertContains(self.client.get(reverse("accounts:home")), reverse("rewards_panel:scan"))
+        self.assertContains(self.client.get(reverse("accounts:home"), follow=True), reverse("rewards_panel:scan"))
 
 
 class RewardsAdminTests(RewardsViewTestCase):
