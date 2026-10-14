@@ -1,0 +1,2 @@
+# Punto de entrada para plataformas que esperan requirements.txt en la raíz
+-r requirements/base.txt

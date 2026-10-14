@@ -1,0 +1,2 @@
+# Producción (el servidor WSGI y el almacenamiento se añadirán en la fase de despliegue)
+-r base.txt
