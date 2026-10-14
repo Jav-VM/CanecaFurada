@@ -1,0 +1,8 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+{% if by_customer %}Has cancelado tu reserva{% else %}El local ha cancelado tu reserva{% endif %}{% if event_title %} para «{{ event_title }}»{% endif %} del {{ when }} ({{ party_size }} personas).
+{% if message %}
+Mensaje del local: {{ message }}
+{% endif %}
+Caneca Furada
+{% endautoescape %}

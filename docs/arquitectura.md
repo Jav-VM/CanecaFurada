@@ -26,9 +26,9 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 | `apps.rewards` | Catálogo de recompensas y canjes: `codes` (código de un solo uso), `services` (solicitud, validación, cancelación, caducidad), `selectors`; descuenta y devuelve puntos solo a través de `loyalty.ledger` | 7 | Existe |
 | `apps.staff` | Panel del personal en `/panel/`: inicio, perfil del empleado y consulta de sus resultados; layout común de las pantallas de compras y canjes. Solo presentación, sin modelos | 8 | Existe |
 | `apps.dashboard` | Dashboard del propietario en `/dashboard/`: resumen, clientes, estadísticas geográficas, empleados, compras, puntos, recompensas, carta, promociones, contenido y configuración. Solo presentación, sin modelos | 9 | Existe |
-| `apps.events` | Eventos y reservas | 10 | Pendiente |
+| `apps.events` | Eventos y reservas: `services` (única vía de escritura, transiciones y aforo), `selectors` (público, cliente, propietario). Depende de `accounts` y `notifications` | 10 | Existe |
 | `apps.api` | API REST v1 (solo presentación sobre los servicios) | 11 | Pendiente |
-| `apps.notifications` | Registro y envío de notificaciones; promociones de cumpleaños | Sin asignar | Pendiente |
+| `apps.notifications` | Registro y envío de notificaciones (email; SMS opcional sin proveedor), cola con reintentos, campañas promocionales, enlace de baja. Infraestructura: no depende de dominios salvo `accounts` (consentimiento, importado en diferido porque `accounts` envía sus emails por aquí). El flujo de cumpleaños vive en `loyalty.birthdays` | 10 | Existe |
 
 Los nombres son los previstos. Si una fase justifica separar o unir módulos, se cambia esta tabla en la misma tarea.
 
@@ -88,6 +88,9 @@ Límites conocidos:
 
 ### Dashboard del propietario
 - `apps.dashboard` solo presenta. Las lecturas están en selectores de dominio que exigen un propietario (`accounts.selectors`, `purchases.selectors`, `loyalty.selectors`, `rewards.selectors`, `catalog.selectors`) y las escrituras en los servicios existentes. Los datos personales completos del cliente solo salen de `accounts.selectors.customer_for_owner`, y su consulta se audita. Endpoints previstos: [Fase 9, §5](fase-09-dashboard-propietario.md#5-separación-de-responsabilidades-y-preparación-para-la-app).
+
+### Eventos, reservas y notificaciones
+- Escrituras por `apps/events/services.py` y `apps/notifications/{services,campaigns}.py`; lecturas por sus `selectors`. Ninguna petición web envía campañas: lo hace el comando `process_notifications`. Los mensajes con token se envían al momento sin guardar su contexto. Endpoints previstos: [Fase 10, §10](fase-10-eventos-reservas-notificaciones.md#10-preparación-para-la-app-y-la-api-fase-11).
 
 ### Presentación web
 - Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.

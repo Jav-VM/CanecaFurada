@@ -140,5 +140,8 @@ def promotions_overview(*, actor):
     if not is_owner(actor):
         raise PermissionDenied("Solo el propietario puede ver las promociones.")
     return Promotion.objects.annotate(
-        uses=Count("points_transactions", filter=Q(points_transactions__kind=Kind.PROMOTION_BONUS))
+        uses=Count(
+            "points_transactions",
+            filter=Q(points_transactions__kind__in=[Kind.PROMOTION_BONUS, Kind.BIRTHDAY_GIFT]),
+        )
     ).order_by("-starts_at", "-id")

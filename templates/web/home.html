@@ -3,6 +3,12 @@
 {% block title %}Inicio{% endblock %}
 {% block content %}
 
+{% if business.announcement %}
+<section aria-label="Aviso" class="border-b border-line bg-coal/40" data-announcement>
+  <p class="container-page py-3 text-center font-semibold text-gold">{{ business.announcement }}</p>
+</section>
+{% endif %}
+
 {# --- Hero ------------------------------------------------------------------ #}
 <section aria-labelledby="hero-titulo" class="relative overflow-hidden border-b border-line">
   <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,184,0,0.14),transparent_60%)]" aria-hidden="true"></div>
@@ -10,7 +16,7 @@
     <div>
       <p class="eyebrow mb-5">{{ business.city }}</p>
       <h1 id="hero-titulo" class="heading-xl">{{ tagline }}</h1>
-      <p class="lead mt-6 max-w-xl">Cerveza artesana en {{ business.city }}. Ven a probarla, descubre la carta y únete a nuestro programa de puntos.</p>
+      <p class="lead mt-6 max-w-xl">{% if business.hero_text %}{{ business.hero_text }}{% else %}Cerveza artesana en {{ business.city }}. Ven a probarla, descubre la carta y únete a nuestro programa de puntos.{% endif %}</p>
       <div class="mt-9 flex flex-wrap gap-3">
         <a href="{% url 'web:menu' %}" class="btn btn-primary">Ver la carta</a>
         {% if user.is_authenticated %}
@@ -82,12 +88,12 @@
   </div>
 </section>
 
-{# --- Eventos destacados (Fase 8) ----------------------------------------------- #}
+{# --- Eventos destacados: publicados y no terminados ------------------------------ #}
 <section aria-labelledby="eventos-titulo" class="container-page py-20">
   {% include "components/section_heading.html" with id="eventos-titulo" eyebrow="Agenda" title="Eventos destacados" %}
   {% if featured_events %}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {% for event in featured_events %}<li class="card card-hover">{{ event }}</li>{% endfor %}
+      {% for event in featured_events %}<li>{% include "components/event_card.html" %}</li>{% endfor %}
     </ul>
   {% else %}
     {% url 'web:events' as events_url %}

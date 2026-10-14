@@ -29,6 +29,8 @@ if EMAIL_BACKEND in _SIMULATED_EMAIL_BACKENDS:  # noqa: F405
     raise ImproperlyConfigured("EMAIL_BACKEND no puede ser un backend simulado en producción.")
 if EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend" and not EMAIL_HOST:  # noqa: F405
     raise ImproperlyConfigured("EMAIL_HOST es obligatoria en producción.")
+if SMS_BACKEND in {"apps.notifications.sms.LocmemSmsBackend"}:  # noqa: F405
+    raise ImproperlyConfigured("SMS_BACKEND no puede ser un backend simulado en producción.")
 if not SITE_BASE_URL.startswith("https://"):  # noqa: F405
     raise ImproperlyConfigured("SITE_BASE_URL es obligatoria en producción y debe usar https://.")
 

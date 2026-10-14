@@ -1,0 +1,1 @@
+{% autoescape off %}Caneca Furada: ¡Feliz cumpleaños! Te hemos regalado {{ points }} puntos. Baja: {{ unsubscribe_url }}{% endautoescape %}

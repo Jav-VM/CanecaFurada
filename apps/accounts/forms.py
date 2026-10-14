@@ -9,7 +9,7 @@ pueda asignarse desde el navegador.
 """
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
 
 from apps.core import throttling
@@ -202,3 +202,24 @@ class ThrottledAuthenticationForm(AuthenticationForm):
             for scope, ident, _ in keys:
                 throttling.register_attempt(scope, ident, settings.LOGIN_FAILURE_WINDOW_SECONDS)
             raise
+
+
+class NotifyingPasswordResetForm(PasswordResetForm):
+    """
+    Recuperación de la cuenta nativa de Django (tokens y caducidad de Django)
+    cuyo email sale por el sistema de notificaciones (Fase 10): queda
+    registrado como `PASSWORD_RESET` sin guardar el enlace ni el token.
+    """
+
+    def send_mail(
+        self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None
+    ):
+        from . import emails
+
+        emails.send_password_reset(
+            user=context["user"],
+            to=to_email,
+            subject_template=subject_template_name,
+            body_template=email_template_name,
+            context=context,
+        )

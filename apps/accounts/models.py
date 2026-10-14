@@ -321,6 +321,7 @@ class CommunicationPreferenceChange(models.Model):
         REGISTRATION = "REGISTRATION", "Registro"
         PROFILE = "PROFILE", "Perfil del cliente"
         SYSTEM = "SYSTEM", "Automático (teléfono eliminado)"
+        UNSUBSCRIBE_LINK = "UNSUBSCRIBE", "Enlace de baja de un mensaje"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

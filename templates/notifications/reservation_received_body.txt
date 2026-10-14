@@ -1,0 +1,13 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+Hemos recibido tu solicitud de reserva{% if event_title %} para «{{ event_title }}»{% endif %}:
+
+- Fecha: {{ when }}
+- Personas: {{ party_size }}
+
+Todavía no está confirmada: te escribiremos en cuanto la revisemos. Puedes consultarla o cancelarla en tu cuenta:
+
+{{ site_base_url }}{% url "events:my_reservations" %}
+
+Caneca Furada
+{% endautoescape %}

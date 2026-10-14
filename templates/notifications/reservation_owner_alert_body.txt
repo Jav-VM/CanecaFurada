@@ -1,0 +1,13 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+{{ alert }}{% if event_title %} para «{{ event_title }}»{% endif %}:
+
+- Fecha: {{ when }}
+- Personas: {{ party_size }}
+
+Los datos del cliente están en el dashboard (no se envían por email):
+
+{{ site_base_url }}{% url "dashboard:reservations" %}
+
+Caneca Furada
+{% endautoescape %}

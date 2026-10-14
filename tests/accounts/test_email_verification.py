@@ -243,11 +243,20 @@ class PendingAccountRestrictionsTests(TestCase):
 
 class EmailFailureTests(VerificationTestMixin, TestCase):
     def test_smtp_failure_does_not_break_registration_nor_log_address(self):
-        with mock.patch("apps.accounts.emails.send_mail", side_effect=OSError("smtp caído nueva@example.com")):
-            with self.assertLogs("apps.accounts.emails", level="ERROR") as logs:
+        with mock.patch(
+            "apps.notifications.services._send_email", side_effect=OSError("smtp caído nueva@example.com")
+        ):
+            with self.assertLogs("apps.notifications.services", level="ERROR") as logs:
                 with self.captureOnCommitCallbacks(execute=True):
                     user = services.register_customer(**registration_data())
         self.assertTrue(User.objects.filter(pk=user.pk).exists())
         joined = " ".join(logs.output)
         self.assertNotIn("nueva@example.com", joined)
         self.assertIn("OSError", joined)
+        # Fase 10: el fallo queda registrado, sin contexto (el token no se guarda).
+        from apps.notifications.models import Notification
+
+        notification = Notification.objects.get(recipient=user)
+        self.assertEqual(notification.kind, Notification.Kind.EMAIL_VERIFICATION)
+        self.assertEqual(notification.status, Notification.Status.FAILED)
+        self.assertEqual(notification.context, {})

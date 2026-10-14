@@ -16,7 +16,9 @@ from django.utils import timezone
 from apps.accounts.countries import COUNTRIES
 from apps.accounts.selectors import GEO_LEVEL_LABELS
 from apps.catalog.models import Product
+from apps.events.models import Event, Reservation
 from apps.loyalty.models import PointsTransaction
+from apps.notifications.models import Campaign, Channel, Notification
 from apps.purchases.models import Purchase
 from apps.rewards.models import Redemption
 
@@ -154,6 +156,11 @@ PURCHASE_STATUS_CHOICES = (("", "Todos"),) + tuple(Purchase.Status.choices)
 REDEMPTION_STATUS_CHOICES = (("", "Todos"),) + tuple(Redemption.Status.choices)
 MOVEMENT_KIND_CHOICES = (("", "Todos"),) + tuple(PointsTransaction.Kind.choices)
 PRODUCT_STATUS_CHOICES = (("", "Todos"),) + tuple(Product.Status.choices)
+EVENT_STATUS_CHOICES = (("", "Todos"),) + tuple(Event.Status.choices)
+RESERVATION_STATUS_CHOICES = (("", "Todos"),) + tuple(Reservation.Status.choices)
+RESERVATION_WHEN_CHOICES = (("proximas", "Próximas"), ("hoy", "Hoy"), ("pasadas", "Pasadas"), ("todas", "Todas"))
+NOTIFICATION_STATUS_CHOICES = (("", "Todos"),) + tuple(Notification.Status.choices)
+NOTIFICATION_KIND_CHOICES = (("", "Todos"),) + tuple(Notification.Kind.choices)
 
 choice = _choice
 
@@ -245,3 +252,93 @@ class BusinessInfoForm(forms.Form):
         max_length=2000,
         widget=forms.Textarea(attrs={"rows": 6}),
     )
+    hero_text = forms.CharField(
+        label="Texto de bienvenida del inicio",
+        required=False,
+        max_length=300,
+        widget=forms.Textarea(attrs={"rows": 2}),
+        help_text="Frase bajo el lema en la portada. Vacío: el texto genérico de la marca.",
+    )
+    announcement = forms.CharField(
+        label="Aviso destacado",
+        required=False,
+        max_length=200,
+        help_text="Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso.",
+    )
+
+
+# --- Eventos, reservas y comunicaciones (Fase 10) -------------------------------
+
+_DATETIME_WIDGET = {"type": "datetime-local"}
+
+
+class EventForm(forms.ModelForm):
+    """Solo convierte la entrada: `events.services.save_event` valida y guarda."""
+
+    class Meta:
+        model = Event
+        fields = (
+            "title",
+            "summary",
+            "description",
+            "starts_at",
+            "ends_at",
+            "image",
+            "is_featured",
+            "accepts_reservations",
+            "capacity",
+        )
+        widgets = {
+            "starts_at": forms.DateTimeInput(attrs=_DATETIME_WIDGET, format="%Y-%m-%dT%H:%M"),
+            "ends_at": forms.DateTimeInput(attrs=_DATETIME_WIDGET, format="%Y-%m-%dT%H:%M"),
+            "description": forms.Textarea(attrs={"rows": 6}),
+        }
+
+    def service_data(self):
+        data = {name: self.cleaned_data.get(name) for name in self.Meta.fields}
+        if data["image"] is False:  # «Eliminar» en el campo de imagen
+            data["image"] = ""
+        elif data["image"] is None:
+            data.pop("image")
+        return data
+
+
+class ReservationActionForm(forms.Form):
+    ACTIONS = (("confirmar", "Confirmar"), ("rechazar", "Rechazar"), ("cancelar", "Cancelar"), ("completar", "Completar"))
+
+    accion = forms.ChoiceField(choices=ACTIONS)
+    mensaje = forms.CharField(
+        label="Mensaje para el cliente",
+        required=False,
+        max_length=300,
+        widget=forms.Textarea(attrs={"rows": 2}),
+        help_text="Opcional. Se muestra al cliente y va en el email. No incluyas datos personales.",
+    )
+
+
+class CampaignForm(forms.Form):
+    name = forms.CharField(label="Nombre interno", max_length=100, help_text="Solo lo ves tú.")
+    channel = forms.ChoiceField(label="Canal", choices=Channel.choices)
+    subject = forms.CharField(label="Asunto", max_length=120, required=False, help_text="Obligatorio en email.")
+    body = forms.CharField(
+        label="Mensaje",
+        max_length=Campaign.MAX_EMAIL_BODY,
+        widget=forms.Textarea(attrs={"rows": 8}),
+        help_text=(
+            f"Texto plano. Email: hasta {Campaign.MAX_EMAIL_BODY} caracteres; SMS: hasta {Campaign.MAX_SMS_BODY}. "
+            "Se añade siempre el enlace de baja. No incluyas datos personales."
+        ),
+    )
+
+
+def reservation_period(key, now=None):
+    """(inicio, fin, orden descendente) de la fecha de la reserva según el filtro."""
+    now = now or timezone.now()
+    today = _midnight(timezone.localdate(now))
+    if key == "hoy":
+        return today, today + datetime.timedelta(days=1), False
+    if key == "pasadas":
+        return None, now, True
+    if key == "todas":
+        return None, None, True
+    return today, None, False

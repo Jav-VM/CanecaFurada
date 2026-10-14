@@ -15,10 +15,12 @@ urlpatterns = [
     path("panel/", include("apps.staff.urls")),
     path("panel/compras/", include("apps.purchases.urls")),
     path("panel/canjes/", include("apps.rewards.panel_urls")),
+    path("comunicaciones/", include("apps.notifications.urls")),
+    path("", include("apps.events.urls")),
     path("", include("apps.web.urls")),
 ]
 
 # Solo en desarrollo: Django sirve las imágenes subidas. En producción las
-# servirá el almacenamiento que se defina en la Fase 12 (`static()` no hace
+# servirá el almacenamiento que se defina en la fase de despliegue (`static()` no hace
 # nada con DEBUG=False).
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

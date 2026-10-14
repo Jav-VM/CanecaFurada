@@ -1,5 +1,7 @@
 # Fase 9 — Dashboard del propietario y estadísticas
 
+> **Nota (Fase 10, 2026-10-14):** las secciones Eventos y Reservas, las cifras del resumen y la sección Comunicaciones ya son reales; el contenido editable añade los textos del inicio. Ver [fase-10-eventos-reservas-notificaciones.md](fase-10-eventos-reservas-notificaciones.md).
+
 **Estado:** Completa (pendiente de revisión visual en navegador y de validar en PostgreSQL; ver §11).
 **Fecha:** 2026-10-14.
 **Depende de:** Fases 2–8. La gestión de eventos y reservas se añadirá al dashboard en la [Fase 10](plan-de-fases.md).

@@ -1,0 +1,15 @@
+{% comment %}
+Evento publicado. Parámetro: event (de apps.events.selectors).
+{% endcomment %}
+<article class="card card-hover flex h-full flex-col gap-4" aria-labelledby="evento-{{ event.public_id }}">
+  {% if event.image %}
+    <img src="{{ event.image.url }}" alt="" {% if event.image_width %}width="{{ event.image_width }}" height="{{ event.image_height }}"{% endif %} loading="lazy" decoding="async" class="aspect-[4/3] w-full rounded-xl object-cover">
+  {% endif %}
+  <p class="eyebrow"><time datetime="{{ event.starts_at|date:'c' }}">{{ event.starts_at|date:"l j \d\e F · H:i" }}</time></p>
+  <h3 id="evento-{{ event.public_id }}" class="text-lg font-bold">{{ event.title }}</h3>
+  {% if event.summary %}<p class="text-sm text-mist">{{ event.summary }}</p>{% endif %}
+  <div class="mt-auto flex flex-wrap items-center gap-3">
+    {% if event.accepts_reservations %}<span class="badge">Con reserva</span>{% endif %}
+    <a class="link font-semibold" href="{% url 'events:event_detail' event.public_id %}">Ver evento<span class="sr-only">: {{ event.title }}</span> →</a>
+  </div>
+</article>

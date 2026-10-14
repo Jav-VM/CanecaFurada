@@ -410,7 +410,7 @@ def notify_existing_account(email):
     if user is None or throttling.is_limited("existing-account-notice", user.pk, 1):
         return
     throttling.register_attempt("existing-account-notice", user.pk, 60 * 60 * 24)
-    transaction.on_commit(lambda: emails.send_existing_account_notice(to=user.email))
+    transaction.on_commit(lambda: emails.send_existing_account_notice(user=user, to=user.email))
 
 
 # --- Verificación de email -----------------------------------------------------
@@ -457,6 +457,7 @@ def _send_token_on_commit(user, to, raw_token, *, is_email_change):
     ttl = settings.EMAIL_VERIFICATION_TOKEN_TTL_HOURS
     transaction.on_commit(
         lambda: emails.send_verification_email(
+            user=user,
             to=to,
             first_name=first_name,
             raw_token=raw_token,
@@ -569,7 +570,7 @@ def confirm_email_token(raw_token):
     ).update(revoked_at=now)
     record_audit_event(action=AuditEvent.Action.EMAIL_CHANGED, actor=user, target=user)
     transaction.on_commit(
-        lambda: emails.send_email_changed_notice(to=old_email, first_name=first_name)
+        lambda: emails.send_email_changed_notice(user=user, to=old_email, first_name=first_name)
     )
     return user
 
@@ -715,6 +716,29 @@ def set_communication_preferences(*, user, promo_email_opt_in, promo_sms_opt_in,
         profile.save(update_fields=["promo_email_opt_in", "promo_sms_opt_in", "updated_at"])
         for channel, opted_in in changes:
             _record_preference(user, channel, opted_in, source)
+    return profile
+
+
+@transaction.atomic
+def withdraw_promotional_consent(*, user, channel, source=Source.UNSUBSCRIBE_LINK):
+    """
+    Retira el consentimiento de un canal (enlace de baja de un mensaje
+    promocional, Fase 10). Idempotente: si ya estaba retirado no registra nada.
+    No exige sesión: quien llama ya ha validado el enlace firmado.
+    """
+    if channel not in Channel.values:
+        raise ValidationError("Canal no válido.")
+    user = User.objects.select_for_update().get(pk=user.pk)
+    if user.role != Role.CUSTOMER:
+        return None
+    profile = CustomerProfile.objects.select_for_update().filter(user=user).first()
+    if profile is None:
+        return None
+    field = "promo_email_opt_in" if channel == Channel.EMAIL else "promo_sms_opt_in"
+    if getattr(profile, field):
+        setattr(profile, field, False)
+        profile.save(update_fields=[field, "updated_at"])
+        _record_preference(user, channel, False, source)
     return profile
 
 

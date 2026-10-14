@@ -11,6 +11,8 @@ Ledger de puntos: única vía para escribir movimientos.
   anulada en el futuro). Nunca se editan ni se borran movimientos.
 - `spend_points(...)` / `refund_spent_points(...)`: descuento de un canje y su
   devolución si se cancela o caduca (Fase 7, desde `apps.rewards.services`).
+- `grant_birthday_gift(...)`: regalo de cumpleaños sin compra (Fase 10, desde
+  `birthdays.run_birthday_promotions`).
 
 Concurrencia: cada escritura bloquea la fila del cliente (`select_for_update`)
 y recalcula el saldo dentro de la transacción, de modo que dos operaciones
@@ -27,6 +29,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Sum
+from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.accounts.permissions import is_owner
@@ -34,7 +37,7 @@ from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
 from . import conversion, promotions
-from .models import PointsTransaction
+from .models import PointsTransaction, Promotion
 
 logger = logging.getLogger(__name__)
 
@@ -308,3 +311,54 @@ def refund_spent_points(*, movement, actor=None, reason):
         raise ValueError("Solo se devuelven movimientos de canje.")
     with transaction.atomic():
         return _compensate(movement, actor=actor, reason=reason)
+
+
+# --- Cumpleaños (Fase 10) --------------------------------------------------------------
+
+
+def grant_birthday_gift(*, customer, promotion, day, at=None):
+    """
+    Regala los puntos fijos de `promotion` (de cumpleaños) a `customer` por su
+    cumpleaños del día `day`. Devuelve el movimiento creado o `None` si no le
+    corresponde: cliente no activo o sin email verificado, promoción no
+    vigente o agotada, anti-abuso de la fecha (`promotions.birthday_year_for`)
+    o regalo de ese año ya concedido.
+
+    Todo se comprueba con el cliente y la promoción bloqueados. Aunque dos
+    ejecuciones coincidan, la restricción única (cliente, año) impide un
+    segundo regalo.
+    """
+    at = at or timezone.now()
+    with transaction.atomic():
+        customer = _lock_customer(customer)
+        if not (customer.role == User.Role.CUSTOMER and customer.is_active and customer.is_email_verified):
+            return None
+        promo = Promotion.objects.select_for_update().get(pk=promotion.pk)
+        if not (
+            promo.kind == Promotion.Kind.BIRTHDAY
+            and promo.bonus_type == Promotion.BonusType.FIXED_POINTS
+            and promotions.active_promotions(at).filter(pk=promo.pk).exists()
+        ):
+            return None
+        if promo.max_total_uses is not None:
+            uses = PointsTransaction.objects.filter(promotion=promo, kind=Kind.BIRTHDAY_GIFT).count()
+            if uses >= promo.max_total_uses:
+                return None
+        year = promotions.birthday_year_for(customer, at, 0, day=day)
+        if year is None:
+            return None
+        try:
+            with transaction.atomic():
+                movement = _append(
+                    customer,
+                    kind=Kind.BIRTHDAY_GIFT,
+                    points=promo.fixed_points,
+                    promotion=promo,
+                    birthday_year=year,
+                    reason=f"Regalo de cumpleaños {year}",
+                )
+        except IntegrityError:
+            # Otra ejecución lo concedió a la vez.
+            return None
+    logger.info("Regalo de cumpleaños %s: %s puntos", movement.public_id, movement.points)
+    return movement

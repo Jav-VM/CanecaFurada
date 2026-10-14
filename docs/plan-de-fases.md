@@ -14,9 +14,8 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 7 | Recompensas y canjes | **Completa** ([detalle](fase-07-recompensas-canjes.md)) |
 | 8 | Panel de empleados | **Completa** ([detalle](fase-08-panel-empleados.md)) |
 | 9 | Dashboard del propietario y estadísticas | **Completa** ([detalle](fase-09-dashboard-propietario.md)) |
-| 10 | Eventos y reservas | Pendiente |
+| 10 | Eventos, reservas, contenido y notificaciones | **Completa** ([detalle](fase-10-eventos-reservas-notificaciones.md)) |
 | 11 | API, auditoría, seguridad y preparación final para la app móvil | Pendiente |
-| — | Notificaciones completas y envío de promociones de cumpleaños | Pendiente (sin número asignado tras la reordenación) |
 | — | Endurecimiento y despliegue | Pendiente (sin número asignado tras la reordenación) |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
@@ -88,10 +87,11 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** acceso solo OWNER; las compras registradas no se presentan como facturación total; tests de permisos.
 - **Implementado (2026-10-14):** app `apps.dashboard` en `/dashboard/` con modelo híbrido (acciones rápidas en el dashboard, fichas completas en el admin), contenido del local editable (`web.BusinessInfo`) y Eventos/Reservas visibles como «Fase 10» sin cifras (decisiones del usuario). Ver [fase-09-dashboard-propietario.md](fase-09-dashboard-propietario.md).
 
-## Fase 10 — Eventos y reservas (antes Fase 8)
-- **Depende de:** Fases 2–3.
+## Fase 10 — Eventos, reservas, contenido y notificaciones (antes Fase 8)
+- **Depende de:** Fases 2–3, 6–7 y 9.
 - **Incluye:** eventos gestionables (también desde el dashboard), solicitudes de reserva con estados `PENDING/CONFIRMED/REJECTED/CANCELLED/COMPLETED` y transiciones válidas, confirmación manual, notificaciones transaccionales de reserva.
 - **Criterios:** transiciones validadas en servidor; datos de reservas protegidos; tests.
+- **Ajuste de alcance (2026-10-14, decidido por el usuario):** el prompt de la fase incluyó la antigua fase «Notificaciones completas y promociones de cumpleaños» y la edición de los contenidos principales, que se implementan aquí. Decisiones: reservas de mesa o de evento solo para clientes verificados; el beneficio de cumpleaños pasa a ser un **regalo de puntos el mismo día** (sustituye la bonificación en compra de la Fase 6); tareas con comandos y el programador del sistema (sin Celery); campañas promocionales por email y textos del inicio editables. Ver [fase-10-eventos-reservas-notificaciones.md](fase-10-eventos-reservas-notificaciones.md).
 
 ## Fase 11 — API, auditoría, seguridad y preparación final para la app móvil
 - **Depende de:** fases funcionales previas.
@@ -99,13 +99,9 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Incluye además (2026-10-14):** revisión de auditoría y de seguridad y preparación final para la app móvil; los endpoints del personal previstos están en [Fase 8, §8](fase-08-panel-empleados.md#8-preparación-para-la-app).
 - **Criterios:** sin duplicar lógica (solo llama a servicios); tests de API, permisos e IDOR.
 
-## Sin número — Notificaciones completas y promociones de cumpleaños (antes Fase 10)
-- **Depende de:** Fases 2, 5, 7.
-- **Incluye:** registro de notificaciones con estados (pendiente/enviada/fallida) e idempotencia, distinción transaccional/promocional, SMS opcional por variables de entorno, tareas programadas (incluida `expire_redemptions` de la Fase 7), envío de los avisos de cumpleaños a partir de `loyalty.promotions.birthday_promotion_recipients` (la elegibilidad, el 29 de febrero, el límite por año y el anti-abuso ya existen desde la Fase 6), volviendo a comprobar el consentimiento justo antes de cada envío.
-- **Criterios:** sin envíos simulados; tests de reintentos, duplicados y consentimiento.
 
 ## Sin número — Endurecimiento y despliegue (antes Fase 12)
-- **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, rate limiting, revisión de seguridad, guía de despliegue, ejecución de tests contra PostgreSQL.
+- **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, rate limiting, revisión de seguridad, guía de despliegue, ejecución de tests contra PostgreSQL, proveedor SMTP real y programación de `process_notifications`, `run_birthday_promotions` y `expire_redemptions` (Fase 10).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

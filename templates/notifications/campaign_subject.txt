@@ -1,0 +1,1 @@
+{% autoescape off %}{{ campaign_subject }}{% endautoescape %}

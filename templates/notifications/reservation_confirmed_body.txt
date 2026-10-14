@@ -1,0 +1,15 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+Tu reserva{% if event_title %} para «{{ event_title }}»{% endif %} está confirmada:
+
+- Fecha: {{ when }}
+- Personas: {{ party_size }}
+{% if message %}
+Mensaje del local: {{ message }}
+{% endif %}
+Si no puedes venir, cancélala desde tu cuenta para liberar el sitio:
+
+{{ site_base_url }}{% url "events:my_reservations" %}
+
+Caneca Furada
+{% endautoescape %}

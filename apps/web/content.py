@@ -6,7 +6,7 @@ Solo datos reales del negocio. Lo que el propietario aún no ha aportado vale
 direcciones, horarios, precios ni textos.
 
 Desde la Fase 9 el propietario edita la dirección, el horario, el contacto, las
-redes y la presentación en el dashboard (`models.BusinessInfo`); estos valores
+redes, la presentación y (Fase 10) los textos del inicio en el dashboard (`models.BusinessInfo`); estos valores
 son los de partida y `services.business_info()` los sustituye por lo guardado.
 """
 
@@ -22,6 +22,8 @@ BUSINESS = {
     "phone": None,
     "social_links": (),  # tuplas (nombre, url)
     "about_text": None,  # presentación de la marca
+    "hero_text": None,  # frase de bienvenida del inicio (Fase 10)
+    "announcement": None,  # aviso destacado del inicio (Fase 10)
 }
 
 # Navegación principal: (nombre de URL, etiqueta).

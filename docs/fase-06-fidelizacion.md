@@ -1,5 +1,7 @@
 # Fase 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños
 
+> **Nota (Fase 10, 2026-10-14):** las promociones de cumpleaños ya no dan puntos al registrar una compra: regalan sus puntos fijos el día del cumpleaños (`BIRTHDAY_GIFT`, comando `run_birthday_promotions`) y solo admiten puntos fijos; `birthday_promotion_recipients` se sustituyó por `loyalty.birthdays.run_birthday_promotions`. La detección, el 29-F, el límite anual y el anti-abuso descritos aquí se mantienen. Ver [Fase 10, §7](fase-10-eventos-reservas-notificaciones.md#7-cumpleaños).
+
 **Estado:** Completa (pendiente de validar la concurrencia en PostgreSQL; ver §11).
 **Fecha:** 2026-10-14.
 **Depende de:** [Fase 5](fase-05-qr-compras.md) (compras manuales y QR) y [Fase 2](fase-02-registro-perfil-verificacion.md) (perfil, fecha de nacimiento y consentimientos).

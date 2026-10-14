@@ -33,9 +33,16 @@ from apps.accounts.permissions import role_required
 from apps.catalog import selectors as catalog_selectors
 from apps.catalog import services as catalog
 from apps.catalog.models import Category, Product
+from apps.events import selectors as event_selectors
+from apps.events import services as events_services
+from apps.events.models import Event, Reservation
 from apps.loyalty import conversion, ledger, promotions
 from apps.loyalty import selectors as loyalty_selectors
 from apps.loyalty.models import PointsTransaction, Promotion
+from apps.notifications import campaigns
+from apps.notifications import selectors as notification_selectors
+from apps.notifications import services as notification_services
+from apps.notifications.models import Campaign, Channel, Notification
 from apps.purchases import selectors as purchase_selectors
 from apps.rewards import selectors as reward_selectors
 from apps.rewards import services as rewards
@@ -48,7 +55,7 @@ from .forms import CustomerFilters, PeriodForm, choice, yes_no
 PAGE_SIZE = 25
 CUSTOMER_QUERY_SESSION_KEY = "dashboard_customer_query"
 
-# (clave, etiqueta, nombre de URL). Eventos y Reservas llegan en la Fase 10.
+# (clave, etiqueta, nombre de URL).
 SECTIONS = (
     ("resumen", "Resumen", "dashboard:home"),
     ("clientes", "Clientes", "dashboard:customers"),
@@ -61,6 +68,7 @@ SECTIONS = (
     ("eventos", "Eventos", "dashboard:events"),
     ("reservas", "Reservas", "dashboard:reservations"),
     ("promociones", "Promociones", "dashboard:promotions"),
+    ("comunicaciones", "Comunicaciones", "dashboard:communications"),
     ("contenido", "Contenido", "dashboard:content"),
     ("configuracion", "Configuración", "dashboard:settings"),
 )
@@ -126,6 +134,7 @@ def home(request):
             "purchases": purchase_selectors.registered_purchases_stats(actor=actor, **span),
             "points": loyalty_selectors.points_stats(actor=actor, **span),
             "redemptions": reward_selectors.redemption_stats(actor=actor, **span),
+            "reservations": event_selectors.reservation_stats(actor=actor, **span),
             "zones": accounts_selectors.geographic_distribution(actor=actor, level="localidad", limit=5),
         },
     )
@@ -637,21 +646,283 @@ def product_availability(request, public_id):
     return _back_to_products(request, product)
 
 
-# --- Eventos y reservas (Fase 10) -------------------------------------------------
+# --- Eventos (Fase 10) -------------------------------------------------------------
+
+
+def _event_or_404(request, public_id):
+    event = event_selectors.event_for_owner(actor=request.user, public_id=public_id)
+    if event is None:
+        raise Http404
+    return event
 
 
 @never_cache
 @require_GET
 @owner_required
 def events(request):
-    return _render(request, "pending_phase.html", "eventos", {"title": "Eventos"})
+    status = choice(request.GET, "estado", forms.EVENT_STATUS_CHOICES)
+    queryset = event_selectors.events_for_management(actor=request.user, status=status)
+    return _render(
+        request,
+        "events.html",
+        "eventos",
+        {
+            "page": _page(request, queryset),
+            "status": status,
+            "status_choices": forms.EVENT_STATUS_CHOICES,
+        },
+    )
+
+
+def _event_form_view(request, event):
+    form = forms.EventForm(request.POST or None, request.FILES or None, instance=event)
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            try:
+                saved = events_services.save_event(
+                    actor=request.user, event=event if event.pk else Event(), data=form.service_data()
+                )
+            except ValidationError as exc:
+                _apply_errors(form, exc)
+            else:
+                messages.success(request, f"Evento «{saved.title}» guardado.")
+                return redirect("dashboard:events")
+        status = 400
+    return _render(request, "event_form.html", "eventos", {"form": form, "event": event}, status=status)
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def event_create(request):
+    return _event_form_view(request, Event())
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def event_edit(request, public_id):
+    return _event_form_view(request, _event_or_404(request, public_id))
+
+
+@never_cache
+@require_POST
+@owner_required
+def event_status(request, public_id):
+    event = _event_or_404(request, public_id)
+    try:
+        events_services.set_event_status(actor=request.user, event=event, status=request.POST.get("estado"))
+    except ValidationError as exc:
+        _error(request, exc)
+    else:
+        messages.success(request, f"Estado de «{event.title}» actualizado.")
+    return redirect("dashboard:events")
+
+
+# --- Reservas (Fase 10) ------------------------------------------------------------
 
 
 @never_cache
 @require_GET
 @owner_required
 def reservations(request):
-    return _render(request, "pending_phase.html", "reservas", {"title": "Reservas"})
+    status = choice(request.GET, "estado", forms.RESERVATION_STATUS_CHOICES)
+    when = choice(request.GET, "cuando", forms.RESERVATION_WHEN_CHOICES, default="proximas")
+    start, end, newest_first = forms.reservation_period(when)
+    queryset = event_selectors.reservations_for_management(actor=request.user, status=status, start=start, end=end)
+    if newest_first:
+        queryset = queryset.order_by("-requested_for", "-id")
+    return _render(
+        request,
+        "reservations.html",
+        "reservas",
+        {
+            "page": _page(request, queryset),
+            "status": status,
+            "when": when,
+            "status_choices": forms.RESERVATION_STATUS_CHOICES,
+            "when_choices": forms.RESERVATION_WHEN_CHOICES,
+        },
+    )
+
+
+def _reservation_or_404(request, public_id):
+    reservation = event_selectors.reservation_for_owner(actor=request.user, public_id=public_id)
+    if reservation is None:
+        raise Http404
+    return reservation
+
+
+@never_cache
+@require_GET
+@owner_required
+def reservation_detail(request, public_id):
+    reservation = _reservation_or_404(request, public_id)
+    # El detalle muestra el contacto del cliente: la consulta queda auditada.
+    events_services.record_reservation_data_access(actor=request.user, reservation=reservation)
+    try:
+        phone = reservation.customer.customer_profile.phone_number
+    except CustomerProfile.DoesNotExist:
+        phone = ""
+    allowed = Reservation.TRANSITIONS.get(reservation.status, set())
+    return _render(
+        request,
+        "reservation_detail.html",
+        "reservas",
+        {
+            "reservation": reservation,
+            "phone": phone,
+            "seats_left": event_selectors.seats_left(reservation.event) if reservation.event_id else None,
+            "can_confirm": Reservation.Status.CONFIRMED in allowed,
+            "can_reject": Reservation.Status.REJECTED in allowed,
+            "can_cancel": Reservation.Status.CANCELLED in allowed,
+            "can_complete": Reservation.Status.COMPLETED in allowed,
+            "form": forms.ReservationActionForm(),
+        },
+    )
+
+
+_RESERVATION_ACTIONS = {
+    "confirmar": (events_services.confirm_reservation, "Reserva confirmada. Se ha avisado al cliente."),
+    "rechazar": (events_services.reject_reservation, "Reserva rechazada. Se ha avisado al cliente."),
+    "cancelar": (events_services.cancel_reservation, "Reserva cancelada. Se ha avisado al cliente."),
+}
+
+
+@never_cache
+@require_POST
+@owner_required
+def reservation_action(request, public_id):
+    reservation = _reservation_or_404(request, public_id)
+    form = forms.ReservationActionForm(request.POST)
+    if not form.is_valid():
+        _form_errors(request, form)
+        return redirect("dashboard:reservation_detail", public_id=public_id)
+    action, message = form.cleaned_data["accion"], form.cleaned_data["mensaje"]
+    try:
+        if action == "completar":
+            result = events_services.complete_reservation(actor=request.user, reservation=reservation)
+            success = "Reserva marcada como completada."
+        else:
+            service, success = _RESERVATION_ACTIONS[action]
+            result = service(actor=request.user, reservation=reservation, message=message)
+    except ValidationError as exc:
+        _error(request, exc)
+    else:
+        if result.created:
+            messages.success(request, success)
+        else:
+            messages.info(request, "La reserva ya estaba en ese estado.")
+    return redirect("dashboard:reservation_detail", public_id=public_id)
+
+
+# --- Comunicaciones (Fase 10) ------------------------------------------------------
+
+
+@never_cache
+@require_GET
+@owner_required
+def communications(request):
+    actor = request.user
+    status = choice(request.GET, "estado", forms.NOTIFICATION_STATUS_CHOICES)
+    kind = choice(request.GET, "tipo", forms.NOTIFICATION_KIND_CHOICES)
+    counts = notification_selectors.notification_counts(actor=actor)
+    return _render(
+        request,
+        "communications.html",
+        "comunicaciones",
+        {
+            "channels": notification_selectors.channel_status(actor=actor),
+            "campaigns": notification_selectors.campaigns_for_owner(actor=actor)[:20],
+            "audience": {
+                "email": notification_selectors.potential_recipients(actor=actor, channel=Channel.EMAIL),
+                "sms": notification_selectors.potential_recipients(actor=actor, channel=Channel.SMS),
+            },
+            "status_counts": [
+                (label, counts.get(value, 0)) for value, label in Notification.Status.choices
+            ],
+            "page": _page(request, notification_selectors.notification_log(actor=actor, status=status, kind=kind)),
+            "status": status,
+            "kind": kind,
+            "status_choices": forms.NOTIFICATION_STATUS_CHOICES,
+            "kind_choices": forms.NOTIFICATION_KIND_CHOICES,
+        },
+    )
+
+
+def _campaign_or_404(request, public_id):
+    campaign = notification_selectors.campaign_for_owner(actor=request.user, public_id=public_id)
+    if campaign is None:
+        raise Http404
+    return campaign
+
+
+def _campaign_form_view(request, campaign):
+    initial = {name: getattr(campaign, name) for name in campaigns.EDITABLE_FIELDS} if campaign.pk else {}
+    form = forms.CampaignForm(request.POST or None, initial=initial)
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            try:
+                campaigns.save_campaign(actor=request.user, campaign=campaign, data=form.cleaned_data)
+            except ValidationError as exc:
+                _apply_errors(form, exc)
+            else:
+                messages.success(request, "Campaña guardada como borrador. Revísala y prográmala cuando quieras.")
+                return redirect("dashboard:communications")
+        status = 400
+    context = {"form": form, "campaign": campaign, "sms_available": notification_services.sms_available()}
+    return _render(request, "campaign_form.html", "comunicaciones", context, status=status)
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def campaign_create(request):
+    return _campaign_form_view(request, Campaign())
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def campaign_edit(request, public_id):
+    campaign = _campaign_or_404(request, public_id)
+    if campaign.status != Campaign.Status.DRAFT:
+        messages.error(request, "Solo se pueden modificar las campañas en borrador.")
+        return redirect("dashboard:communications")
+    return _campaign_form_view(request, campaign)
+
+
+@never_cache
+@require_POST
+@owner_required
+def campaign_queue(request, public_id):
+    campaign = _campaign_or_404(request, public_id)
+    try:
+        campaigns.queue_campaign(actor=request.user, campaign=campaign)
+    except ValidationError as exc:
+        _error(request, exc)
+    else:
+        messages.success(
+            request,
+            "Campaña programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado.",
+        )
+    return redirect("dashboard:communications")
+
+
+@never_cache
+@require_POST
+@owner_required
+def campaign_cancel(request, public_id):
+    campaign = _campaign_or_404(request, public_id)
+    try:
+        campaigns.cancel_campaign(actor=request.user, campaign=campaign)
+    except ValidationError as exc:
+        _error(request, exc)
+    else:
+        messages.success(request, "Campaña cancelada.")
+    return redirect("dashboard:communications")
 
 
 # --- Contenido y configuración ----------------------------------------------------

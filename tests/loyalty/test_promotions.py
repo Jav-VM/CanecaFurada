@@ -207,143 +207,28 @@ class BirthdayOccurrenceTests(TestCase):
         self.assertIsNone(promotions.birthday_occurrence(dob, datetime.date(2026, 6, 23), 7))
 
 
-class BirthdayPromotionTests(PromotionTestCase):
-    def setUp(self):
-        super().setUp()
-        self.promo = make_promotion(name="Cumpleaños", kind=Promotion.Kind.BIRTHDAY, fixed_points=50, birthday_window_days=7)
-        set_birth_date(self.customer, birthday_today())
+class BirthdayPromotionAtPurchaseTests(PromotionTestCase):
+    """Desde la Fase 10 las promociones de cumpleaños no dan nada al comprar: regalan el día."""
 
-    def test_first_purchase_in_window_gets_the_bonus_once(self):
-        self.buy()
-        self.buy()
-        year = timezone.localdate().year
-        self.assertEqual(bonuses(self.customer), [("Cumpleaños", 50, year)])
-
-    def test_only_one_birthday_bonus_even_with_several_promotions(self):
-        make_promotion(name="Otro cumpleaños", kind=Promotion.Kind.BIRTHDAY, fixed_points=80)
-        self.buy()
-        self.assertEqual(len(bonuses(self.customer)), 1)
-
-    def test_outside_window_or_without_date(self):
-        set_birth_date(self.customer, birthday_today() - datetime.timedelta(days=60))
-        self.buy()
-        set_birth_date(self.customer, None)
-        self.buy()
-        self.assertEqual(bonuses(self.customer), [])
-
-    @override_settings(LOYALTY_BIRTHDAY_DOB_STABLE_DAYS=30)
-    def test_recently_changed_birth_date_is_not_eligible(self):
-        set_birth_date(self.customer, birthday_today(), changed_at=timezone.now() - datetime.timedelta(days=29))
-        self.buy()
-        self.assertEqual(bonuses(self.customer), [])
-        set_birth_date(self.customer, birthday_today(), changed_at=timezone.now() - datetime.timedelta(days=31))
-        self.buy()
-        self.assertEqual(len(bonuses(self.customer)), 1)
-
-    @override_settings(LOYALTY_BIRTHDAY_MIN_DAYS_BETWEEN_BONUSES=300)
-    def test_changing_birth_date_cannot_give_another_bonus(self):
-        """Simula un cliente que ya cobró el cumpleaños de otro año hace poco y cambia su fecha."""
-        self.buy()
-        movement = PointsTransaction.objects.get(kind=Kind.PROMOTION_BONUS)
-        last_year = timezone.localdate().year - 1
-        PointsTransaction.objects.filter(pk=movement.pk).update(
-            birthday_year=last_year, created_at=timezone.now() - datetime.timedelta(days=100)
-        )
-        self.buy()
-        self.assertEqual(PointsTransaction.objects.filter(kind=Kind.PROMOTION_BONUS).count(), 1)
-        PointsTransaction.objects.filter(pk=movement.pk).update(created_at=timezone.now() - datetime.timedelta(days=301))
-        self.buy()
-        self.assertEqual(PointsTransaction.objects.filter(kind=Kind.PROMOTION_BONUS).count(), 2)
-
-    def test_database_allows_one_birthday_per_customer_and_year(self):
-        purchase = self.buy()
-        other_promo = make_promotion(name="Otro", kind=Promotion.Kind.BIRTHDAY)
-        with self.assertRaises(IntegrityError), transaction.atomic():
-            PointsTransaction.objects.create(
-                customer=self.customer,
-                kind=Kind.PROMOTION_BONUS,
-                points=5,
-                balance_after=100,
-                purchase=purchase,
-                promotion=other_promo,
-                birthday_year=timezone.localdate().year,
-            )
-
-    def test_29_february_customer_gets_bonus_on_28_in_common_year(self):
-        set_birth_date(self.customer, datetime.date(1996, 2, 29))
-        self.promo.birthday_window_days = 0
-        self.promo.starts_at = datetime.datetime(2027, 1, 1, tzinfo=MADRID)
-        self.promo.save()
-        with mock.patch("django.utils.timezone.now", return_value=datetime.datetime(2027, 3, 1, 12, tzinfo=MADRID)):
-            self.buy()
-        self.assertEqual(bonuses(self.customer), [])
-        with mock.patch("django.utils.timezone.now", return_value=datetime.datetime(2027, 2, 28, 12, tzinfo=MADRID)):
-            self.buy()
-        self.assertEqual(bonuses(self.customer), [("Cumpleaños", 50, 2027)])
-
-
-class BirthdayRecipientsTests(TestCase):
-    def setUp(self):
-        cache.clear()
-        self.today = birthday_today()
+    def test_birthday_promotion_gives_nothing_at_purchase(self):
         make_promotion(name="Cumpleaños", kind=Promotion.Kind.BIRTHDAY, fixed_points=50)
+        set_birth_date(self.customer, birthday_today())
+        self.buy()
+        self.assertEqual(bonuses(self.customer), [])
+        self.assertEqual(ledger.balance(self.customer), 10)
 
-    def customer(self, email, *, verified=True, dob=None, **data):
-        if verified:
-            user, _ = make_customer_with_qr(email, **data)
-        else:
-            from apps.accounts import services as accounts
-            from tests.accounts.factories import registration_data
+    def test_birthday_promotion_requires_fixed_points(self):
+        promo = Promotion(
+            name="Cumpleaños doble",
+            kind=Promotion.Kind.BIRTHDAY,
+            bonus_type=Promotion.BonusType.MULTIPLIER,
+            multiplier=Decimal("2.00"),
+            starts_at=timezone.now(),
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            promo.full_clean()
+        self.assertIn("bonus_type", ctx.exception.message_dict)
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            promo.save()
 
-            user = accounts.register_customer(**registration_data(email=email, **data))
-        set_birth_date(user, dob or self.today)
-        return user
 
-    def emails(self, channel):
-        return sorted(r.customer.email for r in promotions.birthday_promotion_recipients(channel=channel))
-
-    def test_selects_only_verified_consenting_customers_with_birthday_today(self):
-        self.customer("si@example.com", promo_email_opt_in=True)
-        self.customer("sin-consentimiento@example.com")
-        self.customer("sin-verificar@example.com", verified=False, promo_email_opt_in=True)
-        self.customer("otro-dia@example.com", promo_email_opt_in=True, dob=self.today - datetime.timedelta(days=40))
-        inactive = self.customer("inactivo@example.com", promo_email_opt_in=True)
-        inactive.is_active = False
-        inactive.save(update_fields=["is_active"])
-        self.assertEqual(self.emails(promotions.Channel.EMAIL), ["si@example.com"])
-
-    def test_sms_requires_phone_consent(self):
-        self.customer("sms@example.com", phone_number=VALID_MOBILE, promo_sms_opt_in=True)
-        self.customer("solo-email@example.com", promo_email_opt_in=True)
-        self.assertEqual(self.emails(promotions.Channel.SMS), ["sms@example.com"])
-
-    def test_excludes_customers_who_already_received_it(self):
-        user = self.customer("ya@example.com", promo_email_opt_in=True)
-        token = user.qr_code.token
-        buy(make_employee(), token, "10.00")
-        self.assertEqual(self.emails(promotions.Channel.EMAIL), [])
-
-    def test_no_active_birthday_promotion_means_nobody(self):
-        self.customer("si@example.com", promo_email_opt_in=True)
-        Promotion.objects.update(status=Promotion.Status.PAUSED)
-        self.assertEqual(self.emails(promotions.Channel.EMAIL), [])
-
-    def test_29_february_on_28_in_common_years(self):
-        self.customer("bisiesto@example.com", promo_email_opt_in=True, dob=datetime.date(1996, 2, 29))
-        Promotion.objects.update(starts_at=datetime.datetime(2027, 1, 1, tzinfo=MADRID))
-        at = datetime.datetime(2027, 2, 28, 10, tzinfo=MADRID)
-        recipients = promotions.birthday_promotion_recipients(channel=promotions.Channel.EMAIL, at=at)
-        self.assertEqual([r.customer.email for r in recipients], ["bisiesto@example.com"])
-        self.assertEqual(recipients[0].birthday, datetime.date(2027, 2, 28))
-
-    def test_unknown_channel(self):
-        with self.assertRaises(ValueError):
-            promotions.birthday_promotion_recipients(channel="PALOMA")
-
-    def test_sends_nothing(self):
-        from django.core import mail
-
-        self.customer("si@example.com", promo_email_opt_in=True)
-        mail.outbox.clear()
-        promotions.birthday_promotion_recipients(channel=promotions.Channel.EMAIL)
-        self.assertEqual(mail.outbox, [])

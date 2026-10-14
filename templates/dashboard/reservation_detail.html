@@ -1,0 +1,49 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Reserva · Dashboard{% endblock %}
+{% block heading %}Reserva {% if reservation.event %}para «{{ reservation.event.title }}»{% else %}de mesa{% endif %}{% endblock %}
+{% block intro %}<p class="lead mt-2">Estado: <strong class="text-paper" data-reservation-status>{{ reservation.get_status_display }}</strong></p>{% endblock %}
+{% block body %}
+<div class="grid gap-6 lg:grid-cols-2">
+  <section class="card space-y-4" aria-labelledby="datos-reserva">
+    <h2 id="datos-reserva" class="heading-md">Datos de la reserva</h2>
+    <dl class="space-y-3 text-sm">
+      <div class="flex justify-between gap-4"><dt class="text-mist">Fecha</dt><dd class="font-semibold">{{ reservation.requested_for|date:"l j \d\e F \d\e Y, H:i" }}</dd></div>
+      <div class="flex justify-between gap-4"><dt class="text-mist">Personas</dt><dd class="font-semibold">{{ reservation.party_size }}</dd></div>
+      {% if seats_left is not None %}<div class="flex justify-between gap-4"><dt class="text-mist">Plazas libres del evento</dt><dd>{{ seats_left }}</dd></div>{% endif %}
+      <div class="flex justify-between gap-4"><dt class="text-mist">Solicitada</dt><dd>{{ reservation.created_at|date:"d/m/Y H:i" }}</dd></div>
+      {% if reservation.status_changed_at %}<div class="flex justify-between gap-4"><dt class="text-mist">Último cambio</dt><dd>{{ reservation.status_changed_at|date:"d/m/Y H:i" }}{% if reservation.status_changed_by %} · {{ reservation.status_changed_by.get_full_name }}{% endif %}</dd></div>{% endif %}
+      {% if reservation.notes %}<div><dt class="text-mist">Comentarios del cliente</dt><dd class="mt-1">{{ reservation.notes|linebreaksbr }}</dd></div>{% endif %}
+      {% if reservation.owner_message %}<div><dt class="text-mist">Mensaje enviado al cliente</dt><dd class="mt-1">{{ reservation.owner_message|linebreaksbr }}</dd></div>{% endif %}
+    </dl>
+  </section>
+  <section class="card space-y-4" aria-labelledby="contacto">
+    <h2 id="contacto" class="heading-md">Contacto del cliente</h2>
+    <dl class="space-y-3 text-sm" data-contact>
+      <div class="flex justify-between gap-4"><dt class="text-mist">Nombre</dt><dd class="font-semibold">{{ reservation.customer.get_full_name }}</dd></div>
+      <div class="flex justify-between gap-4"><dt class="text-mist">Email</dt><dd class="break-all">{{ reservation.customer.email }}</dd></div>
+      <div class="flex justify-between gap-4"><dt class="text-mist">Teléfono</dt><dd>{{ phone|default:"No indicado" }}</dd></div>
+    </dl>
+    <p class="note">Úsalos solo para gestionar esta reserva. Esta consulta queda registrada.</p>
+  </section>
+</div>
+
+{% if can_confirm or can_reject or can_cancel or can_complete %}
+  <section class="card mt-6 max-w-2xl" aria-labelledby="acciones">
+    <h2 id="acciones" class="heading-md mb-4">Cambiar estado</h2>
+    <form method="post" action="{% url 'dashboard:reservation_action' reservation.public_id %}" class="space-y-4" data-loading>
+      {% csrf_token %}
+      {% include "accounts/_field.html" with field=form.mensaje %}
+      <div class="flex flex-wrap gap-2">
+        {% if can_confirm %}<button type="submit" name="accion" value="confirmar" class="btn btn-primary btn-sm">Confirmar</button>{% endif %}
+        {% if can_reject %}<button type="submit" name="accion" value="rechazar" class="btn btn-secondary btn-sm">Rechazar</button>{% endif %}
+        {% if can_cancel %}<button type="submit" name="accion" value="cancelar" class="btn btn-secondary btn-sm">Cancelar</button>{% endif %}
+        {% if can_complete %}<button type="submit" name="accion" value="completar" class="btn btn-secondary btn-sm">Marcar como completada</button>{% endif %}
+      </div>
+    </form>
+    <p class="note mt-3">Confirmar, rechazar o cancelar envía un email al cliente. «Completada» solo a partir del día de la reserva.</p>
+  </section>
+{% else %}
+  <p class="note mt-6">Esta reserva está {{ reservation.get_status_display|lower }}: ya no admite cambios.</p>
+{% endif %}
+<p class="mt-6 text-sm"><a class="link" href="{% url 'dashboard:reservations' %}">← Volver a reservas</a></p>
+{% endblock %}

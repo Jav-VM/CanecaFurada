@@ -37,6 +37,8 @@ LOCAL_APPS = [
     "apps.loyalty",
     "apps.purchases",
     "apps.rewards",
+    "apps.notifications",
+    "apps.events",
     "apps.staff",
     "apps.dashboard",
     "apps.web",
@@ -172,6 +174,34 @@ REWARDS_CODE_VALIDITY_DAYS = 30
 # antes de tener que esperar.
 REWARDS_MAX_CODE_FAILURES = 20
 REWARDS_CODE_FAILURE_WINDOW_SECONDS = 15 * 60
+
+# --- Eventos y reservas (Fase 10) ----------------------------------------------
+
+# Reservas de mesa: antelación mínima (horas) y máxima (días). Las de eventos
+# usan la hora del evento. Pendientes de confirmar por el propietario.
+EVENTS_RESERVATION_MIN_NOTICE_HOURS = 2
+EVENTS_RESERVATION_MAX_DAYS_AHEAD = 90
+# Personas por reserva (el modelo admite hasta 50) y reservas activas por cliente.
+EVENTS_RESERVATION_MAX_PARTY_SIZE = 20
+EVENTS_MAX_ACTIVE_RESERVATIONS_PER_CUSTOMER = 3
+# Solicitudes de reserva por cliente y hora (anti-abuso).
+EVENTS_RESERVATION_MAX_REQUESTS_PER_HOUR = 10
+
+# --- Notificaciones (Fase 10) ---------------------------------------------------
+
+# SMS opcional: ruta a una clase con `send(*, to, body)` que hable con un
+# proveedor real. Vacío = SMS desactivado (no hay proveedor integrado).
+SMS_BACKEND = env("SMS_BACKEND", default="")
+# Reintentos de las notificaciones de la cola: intentos máximos y espera base
+# (se duplica en cada intento: 5, 10, 20, 40 minutos).
+NOTIFICATIONS_MAX_ATTEMPTS = 5
+NOTIFICATIONS_RETRY_BASE_MINUTES = 5
+# Notificaciones que envía cada ejecución de `process_notifications`.
+NOTIFICATIONS_BATCH_SIZE = env.int("NOTIFICATIONS_BATCH_SIZE", default=200)
+# Una notificación "enviando" más tiempo que esto se considera interrumpida.
+NOTIFICATIONS_STALE_SENDING_MINUTES = 30
+# Validez del enlace de baja de las comunicaciones promocionales.
+NOTIFICATIONS_UNSUBSCRIBE_MAX_AGE_DAYS = 365
 
 # --- Sesiones y cookies -----------------------------------------------------
 

@@ -1,38 +1,40 @@
 """
 Emails transaccionales de cuentas.
 
-Los enlaces se construyen con `SITE_BASE_URL`, nunca con la cabecera Host de la
-petición. Los fallos de envío se registran sin destinatario, token ni enlace.
-Ninguna de estas funciones envía comunicaciones promocionales.
+Desde la Fase 10 se envían a través de `apps.notifications.services.send_immediately`,
+que deja constancia de cada envío (enviado o fallido) sin guardar el
+destinatario, el enlace ni el token. Los enlaces se construyen con
+`SITE_BASE_URL`, nunca con la cabecera Host de la petición. Ninguna de estas
+funciones envía comunicaciones promocionales.
 """
-import logging
-
 from django.conf import settings
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.urls import reverse
 
-logger = logging.getLogger(__name__)
+from apps.notifications import services as notifications
+from apps.notifications.models import Notification
+
+Kind = Notification.Kind
 
 
-def _send(*, to, template, context):
-    context = {"site_base_url": settings.SITE_BASE_URL, **context}
-    subject = render_to_string(f"emails/{template}_subject.txt", context).strip()
-    body = render_to_string(f"emails/{template}_body.txt", context)
-    try:
-        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [to])
-    except Exception as exc:  # noqa: BLE001 - un fallo del SMTP no debe romper el flujo
-        logger.error("No se pudo enviar el email '%s' (%s).", template, type(exc).__name__)
-        return False
-    return True
+def _send(*, kind, user, to, template, context):
+    return notifications.send_immediately(
+        kind=kind,
+        recipient=user,
+        to=to,
+        subject_template=f"emails/{template}_subject.txt",
+        body_template=f"emails/{template}_body.txt",
+        context=context,
+    )
 
 
 def verification_url(raw_token):
     return settings.SITE_BASE_URL + reverse("accounts:verify_email", args=[raw_token])
 
 
-def send_verification_email(*, to, first_name, raw_token, ttl_hours, is_email_change):
+def send_verification_email(*, user, to, first_name, raw_token, ttl_hours, is_email_change):
     return _send(
+        kind=Kind.EMAIL_CHANGE if is_email_change else Kind.EMAIL_VERIFICATION,
+        user=user,
         to=to,
         template="email_change" if is_email_change else "verify_email",
         context={
@@ -43,15 +45,35 @@ def send_verification_email(*, to, first_name, raw_token, ttl_hours, is_email_ch
     )
 
 
-def send_email_changed_notice(*, to, first_name):
+def send_email_changed_notice(*, user, to, first_name):
     """Aviso de seguridad a la dirección anterior tras un cambio de email."""
-    return _send(to=to, template="email_changed_notice", context={"first_name": first_name})
+    return _send(
+        kind=Kind.EMAIL_CHANGED_NOTICE,
+        user=user,
+        to=to,
+        template="email_changed_notice",
+        context={"first_name": first_name},
+    )
 
 
-def send_existing_account_notice(*, to):
+def send_existing_account_notice(*, user, to):
     """Se envía cuando alguien intenta registrarse con un email ya registrado."""
     return _send(
+        kind=Kind.EXISTING_ACCOUNT,
+        user=user,
         to=to,
         template="existing_account",
         context={"password_reset_url": settings.SITE_BASE_URL + reverse("accounts:password_reset")},
+    )
+
+
+def send_password_reset(*, user, to, subject_template, body_template, context):
+    """Recuperación de la cuenta (formulario nativo de Django, ver `forms.NotifyingPasswordResetForm`)."""
+    return notifications.send_immediately(
+        kind=Kind.PASSWORD_RESET,
+        recipient=user,
+        to=to,
+        subject_template=subject_template,
+        body_template=body_template,
+        context=context,
     )

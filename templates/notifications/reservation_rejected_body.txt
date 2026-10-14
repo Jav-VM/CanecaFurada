@@ -1,0 +1,10 @@
+{% autoescape off %}Hola, {{ first_name }}:
+
+Lo sentimos: no podemos confirmar tu solicitud de reserva{% if event_title %} para «{{ event_title }}»{% endif %} del {{ when }} ({{ party_size }} personas).
+{% if message %}
+Mensaje del local: {{ message }}
+{% endif %}
+Puedes hacer otra solicitud cuando quieras desde la web.
+
+Caneca Furada
+{% endautoescape %}

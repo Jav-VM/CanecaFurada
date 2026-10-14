@@ -21,7 +21,16 @@ from .models import BusinessInfo, parse_pairs
 
 CACHE_KEY = "web:business_info"
 CACHE_TIMEOUT = 300
-EDITABLE_FIELDS = ("address", "opening_hours", "email", "phone", "social_links", "about_text")
+EDITABLE_FIELDS = (
+    "address",
+    "opening_hours",
+    "email",
+    "phone",
+    "social_links",
+    "about_text",
+    "hero_text",
+    "announcement",
+)
 
 
 def _stored():
@@ -38,6 +47,8 @@ def _stored_values():
         "phone": info.phone or None,
         "social_links": tuple(parse_pairs(info.social_links)),
         "about_text": info.about_text or None,
+        "hero_text": info.hero_text or None,
+        "announcement": info.announcement or None,
     }
 
 

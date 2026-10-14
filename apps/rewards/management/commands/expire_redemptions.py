@@ -1,8 +1,8 @@
 """
 Caduca los canjes pendientes cuyo plazo ha vencido y devuelve los puntos.
 
-Pensado para ejecutarse periódicamente (la programación de tareas llega en la
-Fase 10). No es imprescindible para la seguridad: un código vencido nunca se
+Pensado para ejecutarse una vez al día con el programador del sistema (ver
+docs/fase-10-eventos-reservas-notificaciones.md). No es imprescindible para la seguridad: un código vencido nunca se
 acepta y se caduca al intentar validarlo; el comando solo devuelve antes los
 puntos de los códigos que nadie llegó a presentar.
 """

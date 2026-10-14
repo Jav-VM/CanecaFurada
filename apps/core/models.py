@@ -43,6 +43,11 @@ class AuditEvent(models.Model):
         REDEMPTION_VALIDATED = "REDEMPTION_VALIDATED", "Canje validado"
         CUSTOMER_DATA_VIEWED = "CUSTOMER_DATA_VIEWED", "Ficha de cliente consultada"
         SITE_CONTENT_UPDATED = "SITE_CONTENT_UPDATED", "Contenido del local modificado"
+        EVENT_SAVED = "EVENT_SAVED", "Evento creado o modificado"
+        RESERVATION_STATUS_CHANGED = "RESERVATION_STATUS_CHANGED", "Estado de reserva modificado"
+        RESERVATION_DATA_VIEWED = "RESERVATION_DATA_VIEWED", "Reserva consultada con datos de contacto"
+        CAMPAIGN_UPDATED = "CAMPAIGN_UPDATED", "Campaña promocional modificada"
+        BIRTHDAY_PROMOTIONS_RUN = "BIRTHDAY_PROMOTIONS_RUN", "Promociones de cumpleaños procesadas"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

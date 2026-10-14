@@ -1,5 +1,5 @@
 """
-Contenido del local editable por el propietario (Fase 9).
+Contenido del local editable por el propietario (Fase 9; textos del inicio, Fase 10).
 
 Una sola fila (`BusinessInfo`, id = 1, también restringido en la BD). Los
 campos vacíos significan "pendiente de aportar": la web pública sigue
@@ -57,6 +57,9 @@ class BusinessInfo(models.Model):
         help_text="Una línea por red: «Nombre | https://…». Solo enlaces https.",
     )
     about_text = models.TextField("presentación de la cervecería", blank=True, max_length=2000)
+    # Fase 10: textos principales del inicio.
+    hero_text = models.CharField("texto de bienvenida del inicio", max_length=300, blank=True)
+    announcement = models.CharField("aviso destacado", max_length=200, blank=True)
     updated_at = models.DateTimeField("actualizado", auto_now=True)
 
     class Meta:
@@ -77,6 +80,8 @@ class BusinessInfo(models.Model):
         self.phone = normalize_text(self.phone)
         self.email = (self.email or "").strip().lower()
         self.about_text = (self.about_text or "").strip()
+        self.hero_text = normalize_text(self.hero_text)
+        self.announcement = normalize_text(self.announcement)
         errors = {}
         if self.phone and not _PHONE_RE.match(self.phone):
             errors["phone"] = "Teléfono no válido: solo números, espacios y un + inicial."

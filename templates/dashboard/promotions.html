@@ -1,7 +1,7 @@
 {% extends "dashboard/_layout.html" %}
 {% block title %}Promociones · Dashboard{% endblock %}
 {% block heading %}Promociones{% endblock %}
-{% block intro %}<p class="lead mt-2">Puntos extra al registrar una compra. Esta fase no envía avisos a los clientes.</p>{% endblock %}
+{% block intro %}<p class="lead mt-2">Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales).</p>{% endblock %}
 {% block body %}
 <div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'admin:loyalty_promotion_add' %}">Nueva promoción</a></div>
 {% if promotions %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with eyebrow="Evento" title=event.title intro=event.summary %}
+<section class="container-page py-12">
+  <div class="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+    <div class="space-y-6">
+      {% if event.image %}
+        <img src="{{ event.image.url }}" alt="" {% if event.image_width %}width="{{ event.image_width }}" height="{{ event.image_height }}"{% endif %} class="h-auto w-full rounded-xl object-cover">
+      {% endif %}
+      {% if event.description %}<div class="prose-site"><p>{{ event.description|linebreaksbr }}</p></div>{% endif %}
+    </div>
+    <aside class="card space-y-5" aria-labelledby="evento-datos">
+      <h2 id="evento-datos" class="heading-md">Cuándo</h2>
+      <dl class="space-y-3 text-sm">
+        <div class="flex justify-between gap-4"><dt class="text-mist">Empieza</dt><dd class="font-semibold"><time datetime="{{ event.starts_at|date:'c' }}">{{ event.starts_at|date:"l j \d\e F, H:i" }}</time></dd></div>
+        {% if event.ends_at %}<div class="flex justify-between gap-4"><dt class="text-mist">Termina</dt><dd class="font-semibold">{{ event.ends_at|date:"l j \d\e F, H:i" }}</dd></div>{% endif %}
+        {% if event.accepts_reservations and seats_left is not None %}<div class="flex justify-between gap-4"><dt class="text-mist">Plazas libres</dt><dd class="font-semibold" data-seats-left>{{ seats_left }}</dd></div>{% endif %}
+      </dl>
+      {% if own_reservation %}
+        <p class="alert alert-info">Tienes una reserva {{ own_reservation.get_status_display|lower }} para este evento.</p>
+        <a class="btn btn-secondary btn-block" href="{% url 'events:reservation_detail' own_reservation.public_id %}">Ver mi reserva</a>
+      {% elif bookable %}
+        {% if seats_left == 0 %}
+          <p class="alert alert-info">No quedan plazas libres.</p>
+        {% elif is_customer or not user.is_authenticated %}
+          <a class="btn btn-primary btn-block" href="{% url 'events:event_reservation_new' event.public_id %}" data-reserve-event>Solicitar reserva</a>
+          <p class="note">Necesitas una cuenta con el email verificado. La reserva queda pendiente hasta que el local la confirma.</p>
+        {% endif %}
+      {% elif event.accepts_reservations %}
+        <p class="note">Las reservas para este evento están cerradas.</p>
+      {% else %}
+        <p class="note">Este evento no necesita reserva.</p>
+      {% endif %}
+    </aside>
+  </div>
+  <p class="mt-10"><a class="link" href="{% url 'web:events' %}">← Todos los eventos</a></p>
+</section>
+{% endblock %}

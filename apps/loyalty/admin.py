@@ -63,7 +63,8 @@ class PromotionAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("name", "description", "kind", "status")}),
         ("Bonificación", {"fields": ("bonus_type", "fixed_points", "multiplier")}),
-        ("Condiciones", {"fields": ("min_purchase_amount", "birthday_window_days")}),
+        # `birthday_window_days` no se usa desde la Fase 10 (el regalo es el día del cumpleaños).
+        ("Condiciones", {"fields": ("min_purchase_amount",)}),
         ("Fechas", {"fields": ("starts_at", "ends_at")}),
         ("Límites", {"fields": ("max_uses_per_customer", "max_total_uses", "uses")}),
         ("Referencia", {"fields": ("public_id",)}),
@@ -73,7 +74,9 @@ class PromotionAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     def uses(self, obj):
         if obj.pk is None:
             return 0
-        return obj.points_transactions.filter(kind=PointsTransaction.Kind.PROMOTION_BONUS).count()
+        return obj.points_transactions.filter(
+            kind__in=[PointsTransaction.Kind.PROMOTION_BONUS, PointsTransaction.Kind.BIRTHDAY_GIFT]
+        ).count()
 
     def save_model(self, request, obj, form, change):
         promotions.save_promotion(actor=request.user, promotion=obj, changed_fields=form.changed_data)

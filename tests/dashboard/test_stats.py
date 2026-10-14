@@ -58,11 +58,12 @@ class BusinessStatsTests(DashboardTestCase):
         self.assertNotContains(response, "Facturación total")
         self.assertIsNone(response.context["purchases"].business_revenue)
 
-    def test_events_and_reservations_are_not_invented(self):
+    def test_events_and_reservations_show_real_figures(self):
+        """Fase 10: cifras reales (0 sin datos), nunca el aviso de fase pendiente."""
         response = self.home()
-        self.assertContains(response, 'data-stat="reservations">—<', html=False)
-        self.assertContains(response, 'data-stat="events">—<', html=False)
-        self.assertContains(response, "Disponible en la Fase 10")
+        self.assertContains(response, 'data-stat="reservations">0<', html=False)
+        self.assertContains(response, 'data-stat="events">0<', html=False)
+        self.assertNotContains(response, "Disponible en la Fase 10")
 
     def test_period_filter_excludes_older_purchases(self):
         old = Purchase.objects.filter(status=Purchase.Status.COMPLETED).order_by("id").first()

@@ -1,0 +1,164 @@
+"""
+Consultas de eventos y reservas (Fase 10).
+
+- Públicas: solo eventos publicados que no han terminado.
+- Cliente: siempre filtradas por el usuario autenticado; una reserva ajena
+  devuelve `None` (la vista responde 404 y no revela si existe).
+- Propietario: exigen el rol en el servidor. Los listados no cargan datos de
+  contacto; el detalle sí (y la vista audita la consulta).
+"""
+import datetime
+from dataclasses import dataclass
+
+from django.core.exceptions import PermissionDenied
+from django.db.models import Count, Q, Sum
+from django.db.models.functions import Coalesce
+from django.utils import timezone
+
+from apps.accounts.permissions import is_owner
+
+from .models import Event, Reservation
+
+Status = Reservation.Status
+FEATURED_LIMIT = 3
+
+
+def _require_owner(actor):
+    if not is_owner(actor):
+        raise PermissionDenied("Solo el propietario puede ver los eventos y las reservas.")
+
+
+# Un evento sin hora de fin se da por terminado a las 6 horas de empezar.
+DEFAULT_DURATION = datetime.timedelta(hours=6)
+
+
+def _not_finished(now):
+    return Q(ends_at__gt=now) | Q(ends_at__isnull=True, starts_at__gt=now - DEFAULT_DURATION)
+
+
+# --- Público ---------------------------------------------------------------------
+
+
+def public_events(now=None):
+    now = now or timezone.now()
+    return Event.objects.filter(_not_finished(now), status=Event.Status.PUBLISHED).order_by("starts_at", "id")
+
+
+def featured_events(now=None):
+    events = public_events(now)
+    featured = list(events.filter(is_featured=True)[:FEATURED_LIMIT])
+    return featured or list(events[:FEATURED_LIMIT])
+
+
+def public_event(public_id, now=None):
+    return public_events(now).filter(public_id=public_id).first()
+
+
+def is_bookable(event, now=None):
+    now = now or timezone.now()
+    return event.status == Event.Status.PUBLISHED and event.accepts_reservations and not event.has_started(now)
+
+
+def seats_left(event):
+    if event.capacity is None:
+        return None
+    taken = event.reservations.filter(status=Status.CONFIRMED).aggregate(total=Coalesce(Sum("party_size"), 0))["total"]
+    return max(event.capacity - taken, 0)
+
+
+# --- Cliente ---------------------------------------------------------------------
+
+
+def customer_reservations(customer):
+    return Reservation.objects.filter(customer=customer).select_related("event").order_by("-requested_for", "-id")
+
+
+def customer_reservation(customer, public_id):
+    return Reservation.objects.filter(customer=customer, public_id=public_id).select_related("event").first()
+
+
+def active_reservation_for_event(customer, event):
+    return Reservation.objects.filter(customer=customer, event=event, status__in=Reservation.ACTIVE_STATUSES).first()
+
+
+# --- Propietario -----------------------------------------------------------------
+
+
+def events_for_management(*, actor, status=""):
+    _require_owner(actor)
+    queryset = Event.objects.annotate(
+        pending=Count("reservations", filter=Q(reservations__status=Status.PENDING)),
+        confirmed_people=Coalesce(Sum("reservations__party_size", filter=Q(reservations__status=Status.CONFIRMED)), 0),
+    )
+    if status:
+        queryset = queryset.filter(status=status)
+    return queryset.order_by("-starts_at", "-id")
+
+
+def event_for_owner(*, actor, public_id):
+    _require_owner(actor)
+    return Event.objects.filter(public_id=public_id).first()
+
+
+def reservations_for_management(*, actor, status="", start=None, end=None, event=None):
+    """Listado sin datos de contacto: nombre del cliente, fecha, personas, evento y estado."""
+    _require_owner(actor)
+    queryset = Reservation.objects.select_related("event", "customer").only(
+        "public_id",
+        "requested_for",
+        "party_size",
+        "status",
+        "created_at",
+        "event__title",
+        "event__public_id",
+        "customer__first_name",
+        "customer__last_name",
+    )
+    if status:
+        queryset = queryset.filter(status=status)
+    if start is not None:
+        queryset = queryset.filter(requested_for__gte=start)
+    if end is not None:
+        queryset = queryset.filter(requested_for__lt=end)
+    if event is not None:
+        queryset = queryset.filter(event=event)
+    return queryset.order_by("requested_for", "id")
+
+
+def reservation_for_owner(*, actor, public_id):
+    _require_owner(actor)
+    return (
+        Reservation.objects.select_related("event", "customer", "customer__customer_profile", "status_changed_by")
+        .filter(public_id=public_id)
+        .first()
+    )
+
+
+@dataclass(frozen=True)
+class ReservationStats:
+    requested: int
+    confirmed: int
+    pending_now: int
+    upcoming_confirmed: int
+    upcoming_events: int
+
+
+def reservation_stats(*, actor, start=None, end=None, now=None):
+    """Reservas solicitadas en el periodo (por fecha de solicitud) y situación actual."""
+    _require_owner(actor)
+    now = now or timezone.now()
+    period = Reservation.objects.all()
+    if start is not None:
+        period = period.filter(created_at__gte=start)
+    if end is not None:
+        period = period.filter(created_at__lt=end)
+    totals = period.aggregate(
+        requested=Count("id"), confirmed=Count("id", filter=Q(status__in=[Status.CONFIRMED, Status.COMPLETED]))
+    )
+    return ReservationStats(
+        requested=totals["requested"],
+        confirmed=totals["confirmed"],
+        pending_now=Reservation.objects.filter(status=Status.PENDING, requested_for__gte=now).count(),
+        upcoming_confirmed=Reservation.objects.filter(status=Status.CONFIRMED, requested_for__gte=now).count(),
+        upcoming_events=public_events(now).filter(starts_at__gte=now).count(),
+    )

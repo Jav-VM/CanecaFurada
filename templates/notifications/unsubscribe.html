@@ -1,0 +1,22 @@
+{% extends "accounts/_layout.html" %}
+{% block title %}Darse de baja{% endblock %}
+{% block eyebrow %}Comunicaciones{% endblock %}
+{% block heading %}{% if invalid %}Enlace no válido{% elif done %}Baja completada{% else %}Darse de baja{% endif %}{% endblock %}
+{% block body %}
+<div class="card space-y-6 p-6 sm:p-8">
+  {% if invalid %}
+    <div class="alert alert-error"><p>Este enlace de baja no es válido o ha caducado.</p></div>
+    <p>Puedes retirar tus preferencias en cualquier momento desde tu perfil, en «Preferencias de comunicación».</p>
+    <a class="btn btn-primary btn-block" href="{% url 'accounts:profile' %}#preferencias">Ir a mi perfil</a>
+  {% elif done %}
+    <div class="alert alert-success" role="status"><p>Ya no recibirás comunicaciones promocionales por {{ channel_label }}.</p></div>
+    <p class="note">Seguirás recibiendo los mensajes necesarios de tu cuenta y de tus reservas. Puedes volver a activarlas desde tu perfil.</p>
+  {% else %}
+    <p>¿Quieres dejar de recibir comunicaciones promocionales de Caneca Furada por {{ channel_label }}?</p>
+    <form method="post" data-loading>
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-block" data-loading-text="Guardando…">Darme de baja</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -114,9 +114,11 @@ class Promotion(TimeStampedModel):
     Promoción configurable que da puntos extra al registrar una compra.
 
     - `PURCHASE`: cualquier compra que cumpla las condiciones dentro de las fechas.
-    - `BIRTHDAY`: la primera compra dentro de la ventana del cumpleaños del
-      cliente; como máximo una promoción de cumpleaños por cliente y año
-      (restricción única en el ledger), aunque cambie su fecha de nacimiento.
+    - `BIRTHDAY`: desde la Fase 10, regalo de puntos fijos el día del
+      cumpleaños (comando `run_birthday_promotions`, movimiento `BIRTHDAY_GIFT`),
+      sin necesidad de comprar; como máximo una promoción de cumpleaños por
+      cliente y año (restricción única en el ledger), aunque cambie su fecha de
+      nacimiento. Solo admite puntos fijos.
 
     Las reglas de aplicación están en `promotions.py`; aquí solo los datos y
     sus invariantes (también en BD).
@@ -186,7 +188,7 @@ class Promotion(TimeStampedModel):
         "días de margen alrededor del cumpleaños",
         default=7,
         validators=[MaxValueValidator(MAX_BIRTHDAY_WINDOW_DAYS)],
-        help_text="Solo cumpleaños: la compra cuenta si se hace hasta N días antes o después.",
+        help_text="Sin uso desde la Fase 10: el regalo de cumpleaños se concede el mismo día.",
     )
     status = models.CharField(
         "estado", max_length=8, choices=Status.choices, default=Status.DRAFT, db_index=True
@@ -241,6 +243,10 @@ class Promotion(TimeStampedModel):
             models.CheckConstraint(
                 condition=Q(birthday_window_days__lte=31), name="loyalty_promo_birthday_window_range"
             ),
+            models.CheckConstraint(
+                condition=~Q(kind="BIRTHDAY") | Q(bonus_type="FIXED_POINTS"),
+                name="loyalty_promo_birthday_fixed_points",
+            ),
         ]
 
     def __str__(self):
@@ -259,6 +265,8 @@ class Promotion(TimeStampedModel):
                 errors["multiplier"] = "Indica el multiplicador."
             if self.fixed_points is not None:
                 errors["fixed_points"] = "Deja vacíos los puntos fijos en una promoción con multiplicador."
+        if self.kind == self.Kind.BIRTHDAY and self.bonus_type != self.BonusType.FIXED_POINTS:
+            errors["bonus_type"] = "Las promociones de cumpleaños regalan puntos fijos: no admiten multiplicador."
         if self.starts_at and self.ends_at and self.ends_at <= self.starts_at:
             errors["ends_at"] = "La fecha de fin debe ser posterior a la de inicio."
         if errors:
@@ -282,6 +290,8 @@ class PointsTransaction(models.Model):
         REVERSAL = "REVERSAL", "Compensación"
         # Canje de una recompensa (Fase 7, `ledger.spend_points`).
         REDEMPTION = "REDEMPTION", "Canje"
+        # Regalo de cumpleaños sin compra (Fase 10, `ledger.grant_birthday_gift`).
+        BIRTHDAY_GIFT = "BIRTHDAY_GIFT", "Regalo de cumpleaños"
 
     public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
     customer = models.ForeignKey(
@@ -354,7 +364,9 @@ class PointsTransaction(models.Model):
         indexes = [models.Index(fields=["customer", "created_at"])]
         constraints = [
             models.CheckConstraint(
-                condition=Q(kind__in=["EARN_PURCHASE", "PROMOTION_BONUS", "ADJUSTMENT", "REVERSAL", "REDEMPTION"]),
+                condition=Q(
+                    kind__in=["EARN_PURCHASE", "PROMOTION_BONUS", "ADJUSTMENT", "REVERSAL", "REDEMPTION", "BIRTHDAY_GIFT"]
+                ),
                 name="loyalty_points_kind_valid",
             ),
             models.CheckConstraint(condition=~Q(points=0), name="loyalty_points_nonzero"),
@@ -381,8 +393,13 @@ class PointsTransaction(models.Model):
                 condition=~Q(kind="REDEMPTION") | Q(points__lt=0), name="loyalty_points_redemption_negative"
             ),
             models.CheckConstraint(
-                condition=Q(birthday_year__isnull=True) | Q(kind="PROMOTION_BONUS"),
+                condition=Q(birthday_year__isnull=True) | Q(kind__in=["PROMOTION_BONUS", "BIRTHDAY_GIFT"]),
                 name="loyalty_points_birthday_only_promotion",
+            ),
+            models.CheckConstraint(
+                condition=~Q(kind="BIRTHDAY_GIFT")
+                | Q(purchase__isnull=True, promotion__isnull=False, birthday_year__isnull=False, points__gt=0),
+                name="loyalty_points_birthday_gift_shape",
             ),
             # Una compra genera como máximo un movimiento de puntos base...
             models.UniqueConstraint(

@@ -1,0 +1,17 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}{% if campaign.pk %}Editar campaña{% else %}Nueva campaña{% endif %} · Dashboard{% endblock %}
+{% block heading %}{% if campaign.pk %}Editar campaña{% else %}Nueva campaña{% endif %}{% endblock %}
+{% block intro %}<p class="lead mt-2">Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales.</p>{% endblock %}
+{% block body %}
+<div class="max-w-2xl">
+  {% if not sms_available %}<p class="alert alert-info mb-4">No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar.</p>{% endif %}
+  {% include "components/form_errors.html" %}
+  <form method="post" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    <p class="note">No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja.</p>
+    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar borrador</button>
+  </form>
+  <p class="mt-4 text-sm"><a class="link" href="{% url 'dashboard:communications' %}">← Volver a comunicaciones</a></p>
+</div>
+{% endblock %}

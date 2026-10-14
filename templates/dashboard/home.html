@@ -18,8 +18,8 @@
     <div class="stat"><dt class="stat-label">Puntos emitidos</dt><dd class="stat-value" data-stat="issued">{{ points.issued }}</dd><dd class="stat-sub">Saldo pendiente total: {{ points.outstanding }}</dd></div>
     <div class="stat"><dt class="stat-label">Puntos canjeados</dt><dd class="stat-value" data-stat="used">{{ points.used }}</dd><dd class="stat-sub">Descontadas las devoluciones</dd></div>
     <div class="stat"><dt class="stat-label">Recompensas utilizadas</dt><dd class="stat-value" data-stat="redemptions">{{ redemptions.used }}</dd><dd class="stat-sub">{{ redemptions.pending_now }} pendientes de recoger</dd></div>
-    <div class="stat"><dt class="stat-label">Reservas</dt><dd class="stat-value text-mist" data-stat="reservations">—</dd><dd class="stat-sub">Disponible en la Fase 10</dd></div>
-    <div class="stat"><dt class="stat-label">Eventos</dt><dd class="stat-value text-mist" data-stat="events">—</dd><dd class="stat-sub">Disponible en la Fase 10</dd></div>
+    <div class="stat"><dt class="stat-label">Reservas solicitadas</dt><dd class="stat-value" data-stat="reservations">{{ reservations.requested }}</dd><dd class="stat-sub">{{ reservations.confirmed }} confirmadas · <a class="link" href="{% url 'dashboard:reservations' %}?estado=PENDING">{{ reservations.pending_now }} pendientes</a></dd></div>
+    <div class="stat"><dt class="stat-label">Próximos eventos</dt><dd class="stat-value" data-stat="events">{{ reservations.upcoming_events }}</dd><dd class="stat-sub">Publicados · {{ reservations.upcoming_confirmed }} reservas confirmadas por venir</dd></div>
   </dl>
   <p class="note mt-3" data-not-revenue><strong class="text-paper">{{ purchases.label }}.</strong> {{ purchases.note }}</p>
 </section>

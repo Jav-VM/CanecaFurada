@@ -18,7 +18,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 7 — Recompensas y canjes | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar el plazo de recogida) |
 | 8 — Panel de empleados | **Completa** (pendiente probar en móviles y tablets físicos) |
 | 9 — Dashboard del propietario y estadísticas | **Completa** (pendiente revisión visual en navegador y validar en PostgreSQL) |
-| 10–11 | Pendientes (10 eventos y reservas, 11 API, auditoría, seguridad y preparación para la app) |
+| 10 — Eventos, reservas, contenido y notificaciones | **Completa** (pendiente SMTP real, programar las tareas, proveedor de SMS y validar en PostgreSQL) |
+| 11 — API, auditoría, seguridad y preparación para la app | Pendiente |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -54,10 +55,12 @@ python manage.py runserver
 ```
 
 Rutas disponibles:
-- Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Recompensas muestra el catálogo real; Eventos, un estado vacío hasta su fase.
+- Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/` y `/eventos/<id>/`) y Contacto (`/contacto/`).
+- Reservas del cliente (email verificado) en `/cuenta/reservas/`: pedir mesa, reservar plaza en un evento, ver el estado y cancelar.
+- Baja de comunicaciones promocionales desde el enlace de cada mensaje (`/comunicaciones/baja/<token>/`).
 - QR personal del cliente (email verificado) en `/cuenta/mi-qr/`, sus puntos (saldo, movimientos y compras) en `/cuenta/puntos/` y sus canjes en `/cuenta/canjes/`.
 - Panel del personal (empleados y propietarios) en `/panel/`: inicio, registrar compras (`/panel/compras/`), validar canjes (`/panel/canjes/`), consultar sus resultados (`/panel/resultados/`) y su perfil (`/panel/perfil/`).
-- Dashboard del propietario en `/dashboard/`: resumen, clientes (con estadísticas geográficas), empleados, compras, puntos, recompensas, carta, cervezas, promociones, contenido del local y configuración. Eventos y reservas llegan en la Fase 10.
+- Dashboard del propietario en `/dashboard/`: resumen, clientes (con estadísticas geográficas), empleados, compras, puntos, recompensas, carta, cervezas, eventos, reservas, promociones, comunicaciones (campañas y registro de envíos), contenido del local y configuración.
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
 
@@ -81,11 +84,17 @@ Al entrar, el propietario llega a `/dashboard/`. Ve cifras reales del periodo qu
 
 ## Puntos y promociones
 
-Cada compra registrada suma puntos (por defecto 1 punto por euro, redondeando hacia abajo) en un ledger inmutable, en la misma transacción que la compra. El propietario cambia la conversión y crea promociones (puntos fijos o multiplicador, con fechas, condiciones, límites y estado, incluidas las de cumpleaños) en el admin, sección **Fidelización**. Esta fase no envía promociones. Reglas completas, anti-abuso de cumpleaños, API prevista y pruebas: [docs/fase-06-fidelizacion.md](docs/fase-06-fidelizacion.md).
+Cada compra registrada suma puntos (por defecto 1 punto por euro, redondeando hacia abajo) en un ledger inmutable, en la misma transacción que la compra. El propietario cambia la conversión y crea promociones (puntos fijos o multiplicador, con fechas, condiciones, límites y estado) en el admin, sección **Fidelización**. Las de cumpleaños regalan puntos fijos el día del cumpleaños desde la Fase 10. Reglas completas, anti-abuso de cumpleaños, API prevista y pruebas: [docs/fase-06-fidelizacion.md](docs/fase-06-fidelizacion.md).
 
 ## Recompensas y canjes
 
 El propietario crea recompensas (coste en puntos, imagen, estado, fechas y unidades opcionales) en el admin, sección **Recompensas**. El cliente canjea desde `/recompensas/`: los puntos se descuentan en el ledger en la misma transacción y recibe un código de un solo uso (QR y texto) que enseña en la barra. El personal lo valida en `/panel/canjes/`; un código usado no vuelve a servir. Si el cliente cancela o el código caduca (30 días por defecto), recupera los puntos. `python manage.py expire_redemptions` caduca los vencidos. Proceso completo, validaciones, concurrencia, API prevista y pruebas: [docs/fase-07-recompensas-canjes.md](docs/fase-07-recompensas-canjes.md).
+
+## Eventos, reservas y notificaciones
+
+El propietario crea, edita, publica y archiva eventos en `/dashboard/eventos/` y edita los textos del inicio en `/dashboard/contenido/`. Los clientes con email verificado piden mesa o plaza en un evento; la reserva queda **pendiente** hasta que el propietario la confirma, rechaza o cancela en `/dashboard/reservas/` (cada cambio envía un email al cliente). Todo lo que envía la plataforma (verificación, recuperación de la cuenta, reservas, campañas y cumpleaños) queda en un registro con su estado real; las promociones solo llegan a quien lo ha autorizado y siempre llevan enlace de baja. El regalo de cumpleaños son puntos el mismo día (29-F → 28-F en años no bisiestos), uno por cliente y año.
+
+**Qué requiere configuración externa:** un proveedor **SMTP** (variables `EMAIL_*`) para que salga cualquier email real; programar con cron o el Programador de tareas `process_notifications` (cada 5 min), `run_birthday_promotions` y `expire_redemptions` (diarios); los **SMS no funcionan** hasta integrar un proveedor (`SMS_BACKEND`). Detalle, tabla de qué funciona, flujos, privacidad, API prevista y pruebas: [docs/fase-10-eventos-reservas-notificaciones.md](docs/fase-10-eventos-reservas-notificaciones.md).
 
 ## Estilos (Tailwind CSS)
 
@@ -118,6 +127,8 @@ apps/purchases/    registro de compras manuales, panel del personal y estadísti
 apps/rewards/      catálogo de recompensas, canjes con código de un solo uso, panel de validación y caducidad
 apps/staff/        panel del personal: inicio, perfil del empleado y consulta de resultados (solo presentación)
 apps/dashboard/    dashboard del propietario: secciones de gestión y estadísticas (solo presentación)
+apps/events/       eventos y reservas: modelos, transiciones de estado, aforo, vistas públicas y del cliente
+apps/notifications/ registro y envío de notificaciones (email, SMS opcional), campañas, baja y process_notifications
 apps/web/          páginas públicas, contenido del local (editable desde el dashboard) y context processor
 templates/         plantilla base, componentes, páginas públicas, de cuenta, del panel del personal, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
@@ -142,3 +153,4 @@ requirements/      dependencias por entorno
 - [Fase 7 — Recompensas y canjes](docs/fase-07-recompensas-canjes.md): proceso de canje, validaciones del servidor, código de un solo uso, estados, ledger, concurrencia, panel del personal, API prevista, tests y pendientes.
 - [Fase 8 — Panel de empleados](docs/fase-08-panel-empleados.md): flujo del empleado, rutas, diseño móvil, seguridad y privacidad, endpoints previstos, tests y pendientes.
 - [Fase 9 — Dashboard del propietario](docs/fase-09-dashboard-propietario.md): secciones, definiciones de las estadísticas, estadísticas geográficas, privacidad, contenido editable, endpoints previstos, tests y pendientes.
+- [Fase 10 — Eventos, reservas, contenido y notificaciones](docs/fase-10-eventos-reservas-notificaciones.md): estados de las reservas, privacidad, notificaciones que funcionan y las que requieren configuración, preferencias y baja, cumpleaños, tareas programadas, API prevista, tests y pendientes.

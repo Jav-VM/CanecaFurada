@@ -1,0 +1,54 @@
+{% extends "dashboard/_layout.html" %}
+{% block title %}Eventos · Dashboard{% endblock %}
+{% block heading %}Eventos{% endblock %}
+{% block intro %}<p class="lead mt-2">Crea, edita, publica y archiva los eventos del local. Solo los publicados se ven en la web.</p>{% endblock %}
+{% block body %}
+<div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+  <form method="get" class="filters" aria-label="Filtrar eventos">
+    <div class="field">
+      <label for="e-estado">Estado</label>
+      <select name="estado" id="e-estado">{% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+    </div>
+    <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+  </form>
+  <a class="btn btn-primary btn-sm" href="{% url 'dashboard:event_create' %}">Nuevo evento</a>
+</div>
+{% if page.object_list %}
+  <div class="table-wrap">
+    <table class="data-table" data-event-list>
+      <thead><tr><th scope="col">Evento</th><th scope="col">Empieza</th><th scope="col">Estado</th><th scope="col">Reservas</th><th scope="col" class="num">Pendientes</th><th scope="col" class="num">Personas confirmadas</th><th scope="col">Acciones</th></tr></thead>
+      <tbody>
+        {% for event in page %}
+          <tr>
+            <td class="font-semibold">{{ event.title }}{% if event.is_featured %} <span class="badge">Destacado</span>{% endif %}</td>
+            <td class="whitespace-nowrap">{{ event.starts_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ event.get_status_display }}</td>
+            <td>{% if event.accepts_reservations %}Sí{% if event.capacity %} · {{ event.capacity }} plazas{% endif %}{% else %}No{% endif %}</td>
+            <td class="num">{% if event.pending %}<a class="link" href="{% url 'dashboard:reservations' %}?estado=PENDING">{{ event.pending }}</a>{% else %}0{% endif %}</td>
+            <td class="num">{{ event.confirmed_people }}</td>
+            <td>
+              <form method="post" action="{% url 'dashboard:event_status' event.public_id %}" class="flex flex-wrap gap-2">
+                {% csrf_token %}
+                {% if event.status == "DRAFT" %}
+                  <button type="submit" name="estado" value="PUBLISHED" class="btn btn-secondary btn-sm">Publicar</button>
+                  <button type="submit" name="estado" value="ARCHIVED" class="btn btn-secondary btn-sm">Archivar</button>
+                {% elif event.status == "PUBLISHED" %}
+                  <button type="submit" name="estado" value="DRAFT" class="btn btn-secondary btn-sm">Retirar de la web</button>
+                  <button type="submit" name="estado" value="ARCHIVED" class="btn btn-secondary btn-sm">Archivar</button>
+                {% else %}
+                  <button type="submit" name="estado" value="DRAFT" class="btn btn-secondary btn-sm">Recuperar como borrador</button>
+                {% endif %}
+                <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:event_edit' event.public_id %}">Editar</a>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "dashboard/_pagination.html" %}
+{% else %}
+  <p class="pending">Todavía no hay eventos{% if status %} con este estado{% endif %}.</p>
+{% endif %}
+<p class="note mt-3">Los eventos no se borran: se archivan. Solo se publica un evento que aún no ha empezado. Archivar o retirar un evento no cancela sus reservas: revísalas en Reservas.</p>
+{% endblock %}
