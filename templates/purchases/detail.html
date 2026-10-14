@@ -1,0 +1,18 @@
+{% extends "accounts/_layout.html" %}
+{% block title %}Compra registrada{% endblock %}
+{% block eyebrow %}Panel del personal{% endblock %}
+{% block heading %}Compra {{ purchase.get_status_display|lower }}{% endblock %}
+{% block body %}
+<div class="card space-y-6 p-6 sm:p-8">
+  <p class="text-center text-4xl font-extrabold text-gold">{{ purchase.amount|floatformat:2 }} €</p>
+  <dl class="space-y-3 text-sm">
+    <div class="flex justify-between gap-4"><dt class="text-mist">Cliente</dt><dd class="font-semibold">{{ customer_name }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">Fecha y hora</dt><dd class="font-semibold">{{ purchase.created_at|date:"d/m/Y H:i" }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">Origen</dt><dd class="font-semibold">{{ purchase.get_source_display }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">Estado</dt><dd><span class="badge">{{ purchase.get_status_display }}</span></dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">Registrada por</dt><dd class="font-semibold">{{ purchase.registered_by.get_short_name }}</dd></div>
+    <div class="flex flex-col gap-1"><dt class="text-mist">Identificador</dt><dd class="break-all font-mono text-xs">{{ purchase.public_id }}</dd></div>
+  </dl>
+  <a href="{% url 'purchases:scan' %}" class="btn btn-primary btn-block">Registrar otra compra</a>
+</div>
+{% endblock %}

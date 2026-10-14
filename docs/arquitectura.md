@@ -21,8 +21,8 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 | `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
 | `apps.web` | Páginas públicas, contenido del local (`content.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 | Existe |
 | `apps.catalog` | Carta: categorías, estilos, productos (fijos y cervezas), imagen de la carta de grifos, selectores públicos y servicios de publicación/disponibilidad | 4 | Existe |
-| `apps.loyalty` | Ledger de puntos, configuración de conversión y token QR | 5 | Pendiente |
-| `apps.purchases` | Registro de compras y panel de empleado (genera puntos mediante `loyalty`) | 6 | Pendiente |
+| `apps.loyalty` | Token QR del cliente (Fase 5); ledger de puntos y configuración de conversión (Fase 6) | 5–6 | Existe (QR) |
+| `apps.purchases` | Registro de compras manuales y panel del personal; punto de extensión `on_purchase_registered` para los puntos | 5 | Existe |
 | `apps.rewards` | Catálogo de recompensas y canjes | 7 | Pendiente |
 | `apps.events` | Eventos y reservas | 8 | Pendiente |
 | `apps.dashboard` | Panel del propietario y estadísticas (solo presentación) | 9 | Pendiente |
@@ -65,7 +65,7 @@ Límites conocidos:
 ### Identificadores estables
 - Toda entidad expuesta fuera del backend se identifica por un `public_id` UUID no secuencial (ya existe en `User`). La PK interna (`id`) no aparece en URLs, API, QR ni auditoría.
 - El email no es un identificador: puede cambiar.
-- El QR del cliente (Fase 5) usará un token opaco y rotable propio, no el `public_id` ni datos personales.
+- El QR del cliente (Fase 5) usa un token opaco y rotable propio (`CF1:<token>`), no el `public_id` ni datos personales. Identifica, pero no autoriza: las operaciones exigen una sesión de personal y las validaciones de `apps/purchases/services.py`. Ver [Fase 5](fase-05-qr-compras.md).
 - El perfil de cliente no tiene identificador propio: se accede siempre a través de su usuario (`/me/profile` en la API), nunca por ID, lo que evita IDOR.
 
 ### Independencia de las plantillas

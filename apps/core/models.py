@@ -34,6 +34,7 @@ class AuditEvent(models.Model):
         PROFILE_UPDATED = "PROFILE_UPDATED", "Perfil modificado"
         PRODUCT_STATUS_CHANGED = "PRODUCT_STATUS_CHANGED", "Publicación de producto modificada"
         PRODUCT_AVAILABILITY_CHANGED = "PRODUCT_AVAILABILITY_CHANGED", "Disponibilidad de producto modificada"
+        QR_ROTATED = "QR_ROTATED", "QR personal renovado"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -9,8 +9,8 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 2 | Autenticación, registro, perfiles, verificación de email y permisos | **Completa** ([detalle](fase-02-registro-perfil-verificacion.md)) |
 | 3 | Sistema de diseño y web pública | **Completa** ([detalle](fase-03-sistema-diseno-web-publica.md)) |
 | 4 | Carta y cervezas | **Completa** ([detalle](fase-04-carta.md)) |
-| 5 | Fidelización: ledger de puntos y QR personal | Pendiente |
-| 6 | Panel de empleado y registro de compras | Pendiente |
+| 5 | QR personal y registro de compras manuales | **Completa** ([detalle](fase-05-qr-compras.md)) |
+| 6 | Fidelización: ledger de puntos | Pendiente |
 | 7 | Recompensas y canjes | Pendiente |
 | 8 | Eventos y reservas | Pendiente |
 | 9 | Dashboard del propietario y estadísticas | Pendiente |
@@ -52,18 +52,20 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** validación de precios e imágenes; solo OWNER gestiona; productos archivados no se borran.
 - **Ajuste (2026-10-14, decidido por el usuario):** en lugar de modelar 14 grifos, el propietario sube una imagen de la carta de grifos (`TapMenu`) y la Carta reserva su hueco hasta entonces. Un único precio por producto; las cervezas agotadas se muestran como "Agotada"; la gestión se hace en el admin de Django.
 
-## Fase 5 — Fidelización: ledger de puntos y QR personal
-- **Depende de:** Fase 2.
-- **Incluye:** ledger auditable de movimientos (saldo derivado), configuración de conversión importe→puntos, token QR opaco y aleatorio (sin datos personales), rotación del token, vista del cliente con saldo, historial y QR.
+> **Reordenación (2026-10-14, decidida por el usuario):** el prompt de la Fase 5 pidió el QR personal y el registro de compras manuales, sin puntos. Las compras (antes Fase 6) pasan a la Fase 5 y el ledger de puntos (antes en la Fase 5) pasa a la Fase 6.
+
+## Fase 5 — QR personal y registro de compras manuales
+- **Depende de:** Fases 2–3.
+- **Incluye:** token QR opaco y aleatorio (sin datos personales) con rotación, vista del cliente con su QR, panel del personal (empleados y propietarios) con escaneo desde el navegador (nativo + jsQR local) o código tecleado, servicio transaccional e idempotente de compras manuales, resultados de sus operaciones, preparación para TPV futuro sin simularlo.
+- **Criterios:** validación de personal, permisos, cliente activo, token, importe, idempotencia y estado; datos personales mínimos visibles; token fuera de logs; tests de QR, permisos, importe, duplicados, cliente inactivo y fallos transaccionales.
+
+## Fase 6 — Fidelización: ledger de puntos
+- **Depende de:** Fase 5.
+- **Incluye:** ledger auditable de movimientos (saldo derivado), configuración de conversión importe→puntos, generación de puntos en `purchases.services.on_purchase_registered` (misma transacción que la compra), vista del cliente con saldo e historial.
 - **Criterios:** puntos solo calculados en backend; movimientos inmutables con compensaciones; tests de concurrencia e idempotencia.
 
-## Fase 6 — Panel de empleado y registro de compras
-- **Depende de:** Fase 5.
-- **Incluye:** panel de empleado (perfil, escaneo de QR, registro manual de importe, resultados de sus operaciones), servicio transaccional e idempotente de compras que genera puntos, preparación para TPV futuro.
-- **Criterios:** validación de empleado, cliente activo, token, importe e idempotencia; datos personales mínimos visibles; tests de doble envío y permisos.
-
 ## Fase 7 — Recompensas y canjes
-- **Depende de:** Fases 5–6.
+- **Depende de:** Fases 5–6 (compras y ledger).
 - **Incluye:** catálogo de recompensas gestionado por el propietario, solicitud de canje por el cliente, código de un solo uso, validación por empleado, movimientos de puntos y auditoría.
 - **Criterios:** protección frente a doble consumo y concurrencia; tests de saldo insuficiente, código usado/caducado.
 

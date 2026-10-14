@@ -9,7 +9,7 @@
     <div><dt class="text-mist">Email</dt><dd class="break-all font-semibold">{{ user.email }}</dd></div>
     <div><dt class="text-mist">Rol</dt><dd class="font-semibold">{{ user.get_role_display }}</dd></div>
   </dl>
-  <p class="pending">El panel de empleado estará disponible en una fase posterior.</p>
+  <a href="{% url 'purchases:scan' %}" class="btn btn-primary btn-block">Registrar compra</a>
   <ul class="space-y-2 border-t border-line pt-4 text-sm">
     <li><a class="link" href="{% url 'accounts:email_change' %}">Cambiar email</a></li>
     <li><a class="link" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></li>

@@ -4,6 +4,7 @@ Configuración común a todos los entornos.
 Los valores sensibles o dependientes del entorno se leen de variables de entorno
 (o de un fichero `.env` local no versionado). Ver `.env.example`.
 """
+from decimal import Decimal
 from pathlib import Path
 
 import environ
@@ -33,6 +34,8 @@ LOCAL_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.catalog",
+    "apps.loyalty",
+    "apps.purchases",
     "apps.web",
 ]
 
@@ -129,6 +132,19 @@ LOGIN_FAILURE_WINDOW_SECONDS = 15 * 60
 
 # Límite de registros y reenvíos públicos por IP y hora.
 PUBLIC_FORM_MAX_PER_IP_PER_HOUR = 20
+
+# --- QR personal y compras -------------------------------------------------
+
+# Renovaciones del QR que puede hacer un cliente al día.
+LOYALTY_QR_MAX_ROTATIONS_PER_DAY = 5
+
+# Compras manuales: importe máximo por operación, orígenes habilitados (el TPV
+# no lo está hasta que exista la integración) y límite de códigos QR no
+# válidos seguidos por miembro del personal.
+PURCHASES_MAX_AMOUNT = Decimal("1000.00")
+PURCHASES_ENABLED_SOURCES = ("MANUAL",)
+PURCHASES_MAX_QR_FAILURES = 20
+PURCHASES_QR_FAILURE_WINDOW_SECONDS = 15 * 60
 
 # --- Sesiones y cookies -----------------------------------------------------
 

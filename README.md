@@ -13,7 +13,8 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 2 — Autenticación, registro, perfiles, verificación de email y permisos | **Completa** (pendiente validar en PostgreSQL y con SMTP real) |
 | 3 — Sistema de diseño y web pública | **Completa** (contenidos del local pendientes de aportar por el propietario) |
 | 4 — Carta y cervezas | **Completa** (pendiente almacenamiento de imágenes en producción y validar en PostgreSQL) |
-| 5–12 | Pendientes |
+| 5 — QR personal y registro de compras manuales | **Completa** (pendiente probar el escaneo en dispositivos físicos y la concurrencia en PostgreSQL) |
+| 6–12 | Pendientes |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -50,6 +51,8 @@ python manage.py runserver
 
 Rutas disponibles:
 - Web pública: Inicio (`/`), La cervecería (`/la-cerveceria/`), Carta (`/carta/`), Recompensas (`/recompensas/`), Eventos (`/eventos/`) y Contacto (`/contacto/`). Recompensas y Eventos muestran un estado vacío hasta sus fases.
+- QR personal del cliente (email verificado) en `/cuenta/mi-qr/`.
+- Panel del personal (empleados y propietarios) para registrar compras en `/panel/compras/`.
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
 
@@ -58,6 +61,10 @@ Rutas disponibles:
 El propietario crea estilos, categorías y productos en el admin, publica, archiva o marca como agotado con las acciones de la lista y sube la imagen de la carta de grifos. Nada se borra: los productos se archivan. Las imágenes subidas solo se sirven en desarrollo hasta la Fase 12. Guía paso a paso: [docs/fase-04-carta.md](docs/fase-04-carta.md#4-gestión-de-la-carta-guía-para-el-propietario).
 
 En desarrollo los emails (verificación, recuperación de contraseña…) se imprimen en la consola de `runserver`. En Windows, si aparece `UnicodeEncodeError` al enviar un email, arranca con `$env:PYTHONUTF8=1`. Configuración del correo y de producción: [docs/fase-02-registro-perfil-verificacion.md](docs/fase-02-registro-perfil-verificacion.md#6-configuración-del-correo-y-variables-de-entorno).
+
+## Probar el registro de compras
+
+Crea un empleado desde el admin y un cliente con el registro público; verifica su email con el enlace que aparece en la consola. El cliente abre *Mi código QR* y el empleado, en *Registrar compra*, lo escanea con la cámara (solo en `localhost` o HTTPS) o teclea el código que aparece bajo el QR, confirma el nombre e introduce el importe. Guía completa y casos de prueba: [docs/fase-05-qr-compras.md](docs/fase-05-qr-compras.md#5-cómo-probar-el-flujo-de-compra).
 
 ## Estilos (Tailwind CSS)
 
@@ -85,10 +92,12 @@ config/            settings por entorno (base, dev, test, prod), urls, wsgi/asgi
 apps/core/         modelos base, auditoría y limitador de intentos
 apps/accounts/     usuario, roles, perfil de cliente, registro, verificación de email, preferencias, servicios, permisos, vistas de cuenta
 apps/catalog/      carta: categorías, estilos, productos, carta de grifos, selectores públicos, servicios y admin
+apps/loyalty/      QR personal del cliente (token opaco, identificación, renovación)
+apps/purchases/    registro de compras manuales y panel del personal
 apps/web/          páginas públicas, contenido del local y context processor
 templates/         plantilla base, componentes, páginas públicas, de cuenta, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
-static/            CSS compilado, JS de mejora progresiva y recursos gráficos oficiales (img/brand/)
+static/            CSS compilado, JS de mejora progresiva (menú, lector QR), jsQR incluido (vendor/) y recursos gráficos oficiales (img/brand/)
 scripts/           tailwind.py (descarga verificada y compilación del CSS)
 tests/             pruebas por app
 docs/              plan de fases y documentación de cada fase
@@ -104,3 +113,4 @@ requirements/      dependencias por entorno
 - [Fase 2 — Registro, perfiles y verificación de email](docs/fase-02-registro-perfil-verificacion.md): campos del registro, modelo de datos, flujo de verificación, configuración del correo, preferencias de comunicación, permisos, tests y pendientes.
 - [Fase 3 — Sistema de diseño y web pública](docs/fase-03-sistema-diseno-web-publica.md): paleta y contraste, componentes, páginas, formulario de registro, accesibilidad, Tailwind, tests y contenido pendiente.
 - [Fase 4 — Carta y cervezas](docs/fase-04-carta.md): modelo de datos, reglas de visibilidad y disponibilidad, guía de gestión para el propietario, validación de imágenes, API prevista, tests y pendientes.
+- [Fase 5 — QR personal y registro de compras](docs/fase-05-qr-compras.md): token QR, escaneo, validaciones e idempotencia, cómo probar el flujo, TPV y API previstos, tests y pendientes.

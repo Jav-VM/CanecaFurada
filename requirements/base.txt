@@ -4,3 +4,4 @@ psycopg[binary]>=3.2,<4
 django-environ>=0.12,<0.13
 phonenumbers>=9.0,<10
 Pillow>=12.0,<13  # ImageField: validación de imágenes de la carta
+segno>=1.6,<2  # QR personal del cliente (SVG generado en el servidor)

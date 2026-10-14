@@ -8,7 +8,9 @@ admin.site.site_title = "Caneca Furada"
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    path("cuenta/mi-qr/", include("apps.loyalty.urls")),
     path("cuenta/", include("apps.accounts.urls")),
+    path("panel/compras/", include("apps.purchases.urls")),
     path("", include("apps.web.urls")),
 ]
 
