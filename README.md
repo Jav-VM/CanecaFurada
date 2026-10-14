@@ -2,7 +2,7 @@
 
 Plataforma de la cervecería artesanal Caneca Furada (A Coruña): web pública, programa de fidelización, panel de empleados, dashboard del propietario y backend preparado para una futura app móvil.
 
-Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y una API REST prevista para la app móvil.
+Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y una API REST v1 (Django REST Framework) para la futura app móvil.
 
 ## Estado
 
@@ -19,7 +19,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 8 — Panel de empleados | **Completa** (pendiente probar en móviles y tablets físicos) |
 | 9 — Dashboard del propietario y estadísticas | **Completa** (pendiente revisión visual en navegador y validar en PostgreSQL) |
 | 10 — Eventos, reservas, contenido y notificaciones | **Completa** (pendiente SMTP real, programar las tareas, proveedor de SMS y validar en PostgreSQL) |
-| 11 — API, auditoría, seguridad y preparación para la app | Pendiente |
+| 11 — API, auditoría, seguridad y preparación para la app | **Completa** (pendiente validar en PostgreSQL y el despliegue) |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -63,6 +63,7 @@ Rutas disponibles:
 - Dashboard del propietario en `/dashboard/`: resumen, clientes (con estadísticas geográficas), empleados, compras, puntos, recompensas, carta, cervezas, eventos, reservas, promociones, comunicaciones (campañas y registro de envíos), contenido del local y configuración.
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
+- API REST v1 para la app móvil en `/api/v1/` (JSON y JWT); documentación interactiva en `/api/v1/docs/` (en desarrollo sin sesión; en producción solo el propietario).
 
 ## Gestionar la carta
 
@@ -95,6 +96,16 @@ El propietario crea recompensas (coste en puntos, imagen, estado, fechas y unida
 El propietario crea, edita, publica y archiva eventos en `/dashboard/eventos/` y edita los textos del inicio en `/dashboard/contenido/`. Los clientes con email verificado piden mesa o plaza en un evento; la reserva queda **pendiente** hasta que el propietario la confirma, rechaza o cancela en `/dashboard/reservas/` (cada cambio envía un email al cliente). Todo lo que envía la plataforma (verificación, recuperación de la cuenta, reservas, campañas y cumpleaños) queda en un registro con su estado real; las promociones solo llegan a quien lo ha autorizado y siempre llevan enlace de baja. El regalo de cumpleaños son puntos el mismo día (29-F → 28-F en años no bisiestos), uno por cliente y año.
 
 **Qué requiere configuración externa:** un proveedor **SMTP** (variables `EMAIL_*`) para que salga cualquier email real; programar con cron o el Programador de tareas `process_notifications` (cada 5 min), `run_birthday_promotions` y `expire_redemptions` (diarios); los **SMS no funcionan** hasta integrar un proveedor (`SMS_BACKEND`). Detalle, tabla de qué funciona, flujos, privacidad, API prevista y pruebas: [docs/fase-10-eventos-reservas-notificaciones.md](docs/fase-10-eventos-reservas-notificaciones.md).
+
+## API REST v1 y app móvil
+
+La API (`/api/v1/`) expone a la futura app móvil el registro, la verificación del email, el login, la recuperación de la cuenta, el perfil, las preferencias, el cambio de email, los puntos, las compras, el QR, las recompensas, los canjes, los eventos y las reservas, además de las operaciones del personal en barra y las estadísticas y reservas del propietario. Usa los mismos servicios que la web, serializadores explícitos y tokens JWT (access de 15 min y refresh rotatorio y revocable; sin cookies). Un cliente solo accede a sus propios datos.
+
+```powershell
+python manage.py spectacular --file docs/api/openapi.yaml   # regenera el esquema OpenAPI tras cambiar la API
+```
+
+Endpoints, autenticación, auditoría y seguridad: [docs/fase-11-api-auditoria.md](docs/fase-11-api-auditoria.md). Guía para el desarrollador de la app: [docs/guia-app-flutter.md](docs/guia-app-flutter.md). Despliegue, correo y tareas programadas: [docs/despliegue.md](docs/despliegue.md).
 
 ## Estilos (Tailwind CSS)
 
@@ -129,13 +140,14 @@ apps/staff/        panel del personal: inicio, perfil del empleado y consulta de
 apps/dashboard/    dashboard del propietario: secciones de gestión y estadísticas (solo presentación)
 apps/events/       eventos y reservas: modelos, transiciones de estado, aforo, vistas públicas y del cliente
 apps/notifications/ registro y envío de notificaciones (email, SMS opcional), campañas, baja y process_notifications
+apps/api/          API REST v1: autenticación JWT, permisos, serializadores, vistas y OpenAPI (solo presentación)
 apps/web/          páginas públicas, contenido del local (editable desde el dashboard) y context processor
 templates/         plantilla base, componentes, páginas públicas, de cuenta, del panel del personal, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
 static/            CSS compilado, JS de mejora progresiva (menú, lector QR), jsQR incluido (vendor/) y recursos gráficos oficiales (img/brand/)
 scripts/           tailwind.py (descarga verificada y compilación del CSS)
 tests/             pruebas por app
-docs/              plan de fases y documentación de cada fase
+docs/              plan de fases, documentación de cada fase, guías (app Flutter, despliegue) y esquema OpenAPI (api/)
 requirements/      dependencias por entorno
 ```
 
@@ -154,3 +166,7 @@ requirements/      dependencias por entorno
 - [Fase 8 — Panel de empleados](docs/fase-08-panel-empleados.md): flujo del empleado, rutas, diseño móvil, seguridad y privacidad, endpoints previstos, tests y pendientes.
 - [Fase 9 — Dashboard del propietario](docs/fase-09-dashboard-propietario.md): secciones, definiciones de las estadísticas, estadísticas geográficas, privacidad, contenido editable, endpoints previstos, tests y pendientes.
 - [Fase 10 — Eventos, reservas, contenido y notificaciones](docs/fase-10-eventos-reservas-notificaciones.md): estados de las reservas, privacidad, notificaciones que funcionan y las que requieren configuración, preferencias y baja, cumpleaños, tareas programadas, API prevista, tests y pendientes.
+- [Fase 11 — API, auditoría y seguridad](docs/fase-11-api-auditoria.md): resumen de la auditoría y correcciones, endpoints, estrategia de autenticación, revisión de seguridad, privacidad, tests y pendientes.
+- [Guía de la app Flutter](docs/guia-app-flutter.md): autenticación, renovación y revocación de tokens, errores, paginación, idempotencia y pantallas.
+- [Despliegue](docs/despliegue.md): variables de entorno, PostgreSQL, HTTPS, estáticos y multimedia, copias de seguridad, correo, tareas programadas y logs.
+- [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.

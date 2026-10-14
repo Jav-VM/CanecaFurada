@@ -8,6 +8,9 @@ DEBUG = False
 
 if not SECRET_KEY:
     raise ImproperlyConfigured("DJANGO_SECRET_KEY es obligatoria en producción.")
+# La clave firma también los JWT de la app (HS256): mínimo 32 bytes (RFC 7518).
+if len(SIMPLE_JWT.get("SIGNING_KEY", SECRET_KEY).encode("utf-8")) < 32:  # noqa: F405
+    raise ImproperlyConfigured("La clave de firma (DJANGO_SECRET_KEY o API_JWT_SIGNING_KEY) debe tener al menos 32 bytes.")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 if not ALLOWED_HOSTS:

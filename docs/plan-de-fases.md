@@ -15,7 +15,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 8 | Panel de empleados | **Completa** ([detalle](fase-08-panel-empleados.md)) |
 | 9 | Dashboard del propietario y estadísticas | **Completa** ([detalle](fase-09-dashboard-propietario.md)) |
 | 10 | Eventos, reservas, contenido y notificaciones | **Completa** ([detalle](fase-10-eventos-reservas-notificaciones.md)) |
-| 11 | API, auditoría, seguridad y preparación final para la app móvil | Pendiente |
+| 11 | API, auditoría, seguridad y preparación final para la app móvil | **Completa** ([detalle](fase-11-api-auditoria.md)) |
 | — | Endurecimiento y despliegue | Pendiente (sin número asignado tras la reordenación) |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
@@ -98,10 +98,11 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Incluye:** Django REST Framework bajo `/api/v1/`, autenticación por token apropiada para móviles, permisos DRF basados en `apps.accounts.permissions`, serializadores explícitos con campos mínimos, paginación, errores coherentes, CORS restrictivo, documentación de endpoints.
 - **Incluye además (2026-10-14):** revisión de auditoría y de seguridad y preparación final para la app móvil; los endpoints del personal previstos están en [Fase 8, §8](fase-08-panel-empleados.md#8-preparación-para-la-app).
 - **Criterios:** sin duplicar lógica (solo llama a servicios); tests de API, permisos e IDOR.
+- **Implementado (2026-10-14):** auditoría con 6 correcciones (enumeración de emails en el registro, tiempos, IP real tras proxies, auditoría de contraseñas, purga de tokens de email, texto de la portada); `apps.api` con DRF, JWT (simplejwt: access 15 min, refresh rotatorio con lista negra, revocación al cambiar la contraseña), OpenAPI (drf-spectacular), endpoints de cliente y solo las operaciones de personal y propietario justificadas. Guías: [Flutter](guia-app-flutter.md) y [despliegue](despliegue.md). Ver [fase-11-api-auditoria.md](fase-11-api-auditoria.md).
 
 
 ## Sin número — Endurecimiento y despliegue (antes Fase 12)
-- **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, rate limiting, revisión de seguridad, guía de despliegue, ejecución de tests contra PostgreSQL, proveedor SMTP real y programación de `process_notifications`, `run_birthday_promotions` y `expire_redemptions` (Fase 10).
+- **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, ejecución de tests contra PostgreSQL, caché compartida, proveedor SMTP real y programación de `process_notifications`, `run_birthday_promotions`, `expire_redemptions`, `purge_email_tokens` y `flushexpiredtokens`. La revisión de seguridad, el rate limiting de la API y la guía de despliegue se hicieron en la Fase 11 ([despliegue.md](despliegue.md)).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

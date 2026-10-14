@@ -4,6 +4,7 @@ Configuración común a todos los entornos.
 Los valores sensibles o dependientes del entorno se leen de variables de entorno
 (o de un fichero `.env` local no versionado). Ver `.env.example`.
 """
+import datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -30,6 +31,12 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "drf_spectacular",
+]
+
 LOCAL_APPS = [
     "apps.core",
     "apps.accounts",
@@ -41,10 +48,11 @@ LOCAL_APPS = [
     "apps.events",
     "apps.staff",
     "apps.dashboard",
+    "apps.api",
     "apps.web",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -138,6 +146,12 @@ LOGIN_FAILURE_WINDOW_SECONDS = 15 * 60
 # Límite de registros y reenvíos públicos por IP y hora.
 PUBLIC_FORM_MAX_PER_IP_PER_HOUR = 20
 
+# Proxies inversos de confianza delante de Django (0 = ninguno). Con N > 0 la
+# IP del cliente se toma de `X-Forwarded-For` contando N entradas desde la
+# derecha (`apps.core.http.client_ip` y el throttling de la API). Nunca debe
+# ser mayor que el número real de proxies: el cliente podría falsear su IP.
+TRUSTED_PROXY_COUNT = env.int("DJANGO_TRUSTED_PROXY_COUNT", default=0)
+
 # --- QR personal y compras -------------------------------------------------
 
 # Renovaciones del QR que puede hacer un cliente al día.
@@ -202,6 +216,73 @@ NOTIFICATIONS_BATCH_SIZE = env.int("NOTIFICATIONS_BATCH_SIZE", default=200)
 NOTIFICATIONS_STALE_SENDING_MINUTES = 30
 # Validez del enlace de baja de las comunicaciones promocionales.
 NOTIFICATIONS_UNSUBSCRIBE_MAX_AGE_DAYS = 365
+
+# --- API REST v1 (Fase 11) --------------------------------------------------------
+# Solo JSON, autenticación por JWT (sin cookies ni sesión), permiso por defecto
+# "autenticado", paginación y límites de peticiones. Ver docs/fase-11-api-auditoria.md.
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.api.authentication.JWTAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
+    "DEFAULT_PAGINATION_CLASS": "apps.api.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "apps.api.throttling.AnonThrottle",
+        "apps.api.throttling.UserThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": env("API_THROTTLE_ANON", default="60/min"),
+        "user": env("API_THROTTLE_USER", default="240/min"),
+        # Login, registro, recuperación y verificación (por IP).
+        "auth": env("API_THROTTLE_AUTH", default="10/min"),
+    },
+    # Igual que `client_ip`: sin proxies de confianza se ignora X-Forwarded-For.
+    # (Con `None`, DRF se fiaría de la cabecera completa, que el cliente puede inventar.)
+    "NUM_PROXIES": TRUSTED_PROXY_COUNT,
+    "EXCEPTION_HANDLER": "apps.api.exceptions.exception_handler",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# Tokens de la app: access corto y refresh rotatorio con lista negra. El
+# identificador del token es el `public_id` (nunca la PK interna). La firma usa
+# `SECRET_KEY` salvo que se defina `API_JWT_SIGNING_KEY`.
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=env.int("API_ACCESS_TOKEN_MINUTES", default=15)),
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=env.int("API_REFRESH_TOKEN_DAYS", default=30)),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": False,
+    "ALGORITHM": "HS256",
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "public_id",
+    "USER_ID_CLAIM": "sub",
+    "CHECK_USER_IS_ACTIVE": True,
+}
+_API_JWT_SIGNING_KEY = env("API_JWT_SIGNING_KEY", default="")
+if _API_JWT_SIGNING_KEY:
+    SIMPLE_JWT["SIGNING_KEY"] = _API_JWT_SIGNING_KEY
+
+# Documentación OpenAPI (`/api/v1/schema/` y `/api/v1/docs/`). Fuera de
+# desarrollo solo la ve el propietario salvo que `API_DOCS_PUBLIC=True`.
+API_DOCS_PUBLIC = env.bool("API_DOCS_PUBLIC", default=False)
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Caneca Furada API",
+    "DESCRIPTION": (
+        "API REST v1 para la app móvil de Caneca Furada. Autenticación con JWT "
+        "(`Authorization: Bearer <access>`). Guía: docs/guia-app-flutter.md."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SCHEMA_PATH_PREFIX": r"/api/v1",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_NAME_OVERRIDES": {
+        "PurchaseStatusEnum": "apps.purchases.models.Purchase.Status",
+        "RedemptionStatusEnum": "apps.rewards.models.Redemption.Status",
+        "ReservationStatusEnum": "apps.events.models.Reservation.Status",
+    },
+}
 
 # --- Sesiones y cookies -----------------------------------------------------
 

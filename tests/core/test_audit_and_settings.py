@@ -83,3 +83,13 @@ class ProductionSettingsTests(SimpleTestCase):
         result = self._import_prod({**self.REQUIRED, "SITE_BASE_URL": "http://www.example.com"})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("SITE_BASE_URL", result.stderr)
+
+    def test_prod_requires_signing_key_of_32_bytes(self):
+        """La clave firma también los JWT de la API (Fase 11)."""
+        result = self._import_prod({**self.REQUIRED, "DJANGO_SECRET_KEY": "x" * 20})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("32 bytes", result.stderr)
+        result = self._import_prod({**self.REQUIRED, "API_JWT_SIGNING_KEY": "corta"})
+        self.assertNotEqual(result.returncode, 0)
+        result = self._import_prod({**self.REQUIRED, "API_JWT_SIGNING_KEY": "y" * 64})
+        self.assertEqual(result.returncode, 0, result.stderr)

@@ -8,6 +8,7 @@ admin.site.site_title = "Caneca Furada"
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    path("api/v1/", include("apps.api.urls")),
     path("cuenta/", include("apps.loyalty.urls")),
     path("cuenta/", include("apps.rewards.urls")),
     path("cuenta/", include("apps.accounts.urls")),

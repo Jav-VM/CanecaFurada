@@ -12,3 +12,6 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.
 # Por defecto los correos se muestran en consola (no se envía nada real). Para
 # probar un SMTP de desarrollo (p. ej. Mailpit) define EMAIL_BACKEND en .env.
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+
+# La documentación de la API se puede consultar sin sesión en desarrollo.
+API_DOCS_PUBLIC = env.bool("API_DOCS_PUBLIC", default=True)

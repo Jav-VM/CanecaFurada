@@ -48,6 +48,9 @@ class AuditEvent(models.Model):
         RESERVATION_DATA_VIEWED = "RESERVATION_DATA_VIEWED", "Reserva consultada con datos de contacto"
         CAMPAIGN_UPDATED = "CAMPAIGN_UPDATED", "Campaña promocional modificada"
         BIRTHDAY_PROMOTIONS_RUN = "BIRTHDAY_PROMOTIONS_RUN", "Promociones de cumpleaños procesadas"
+        # Fase 11: auditoría y API.
+        PASSWORD_CHANGED = "PASSWORD_CHANGED", "Contraseña cambiada"
+        API_SESSIONS_REVOKED = "API_SESSIONS_REVOKED", "Sesiones de la app cerradas"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

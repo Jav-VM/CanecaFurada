@@ -13,7 +13,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_POST
 
-from apps.core import throttling
+from apps.core.http import ip_limited
 
 from . import services
 from .forms import (
@@ -29,17 +29,9 @@ from .forms import (
 from .models import CustomerProfile, User
 from .permissions import role_required
 
-_HOUR = 60 * 60
-
-
 def _ip_limited(request, scope):
     """Cuenta un intento por IP y devuelve True si se supera el límite horario."""
-    ip = request.META.get("REMOTE_ADDR", "-")
-    limit = settings.PUBLIC_FORM_MAX_PER_IP_PER_HOUR
-    if throttling.is_limited(scope, ip, limit):
-        return True
-    throttling.register_attempt(scope, ip, _HOUR)
-    return False
+    return ip_limited(request, scope, settings.PUBLIC_FORM_MAX_PER_IP_PER_HOUR)
 
 
 # --- Registro y verificación -----------------------------------------------------
@@ -257,11 +249,18 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     template_name = "accounts/password_reset_confirm.html"
     success_url = reverse_lazy("accounts:password_reset_complete")
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        services.record_password_change(user=form.user, via="reset", channel="web")
+        return response
+
 
 class PasswordChangeView(auth_views.PasswordChangeView):
     template_name = "accounts/password_change.html"
     success_url = reverse_lazy("accounts:home")
 
     def form_valid(self, form):
+        response = super().form_valid(form)
+        services.record_password_change(user=form.user, via="change", channel="web")
         messages.success(self.request, "Contraseña cambiada.")
-        return super().form_valid(form)
+        return response

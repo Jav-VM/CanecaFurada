@@ -2,7 +2,7 @@
 from .base import *  # noqa: F401,F403
 
 DEBUG = False
-SECRET_KEY = "test-insecure-solo-para-tests"
+SECRET_KEY = "test-insecure-solo-para-tests-0123456789abcdef"  # >= 32 bytes (firma de los JWT)
 ALLOWED_HOSTS = ["testserver", "localhost"]
 
 # Hasher rápido: solo acelera los tests, nunca se usa fuera de ellos.

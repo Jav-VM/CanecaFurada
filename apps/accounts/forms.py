@@ -8,15 +8,13 @@ campos explícitos: no existe ningún campo de rol, estado o verificación que
 pueda asignarse desde el navegador.
 """
 from django import forms
-from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
 
-from apps.core import throttling
+from apps.core.http import client_ip
 
-from . import validators
+from . import services, validators
 from .countries import COUNTRIES, DEFAULT_COUNTRY
-from .normalization import normalize_email_address
 
 _DATE_WIDGET = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -184,23 +182,15 @@ class ThrottledAuthenticationForm(AuthenticationForm):
         "throttled": "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.",
     }
 
-    def _throttle_keys(self):
-        email = normalize_email_address(self.data.get("username", "")) or "-"
-        ip = self.request.META.get("REMOTE_ADDR", "-") if self.request else "-"
-        return (
-            ("login-email", email, settings.LOGIN_MAX_FAILURES_PER_EMAIL),
-            ("login-ip", ip, settings.LOGIN_MAX_FAILURES_PER_IP),
-        )
-
     def clean(self):
-        keys = self._throttle_keys()
-        if any(throttling.is_limited(scope, ident, limit) for scope, ident, limit in keys):
+        ip = client_ip(self.request) if self.request else "-"
+        keys = services.login_throttle_keys(self.data.get("username", ""), ip)
+        if services.login_is_throttled(keys):
             raise ValidationError(self.error_messages["throttled"], code="throttled")
         try:
             return super().clean()
         except ValidationError:
-            for scope, ident, _ in keys:
-                throttling.register_attempt(scope, ident, settings.LOGIN_FAILURE_WINDOW_SECONDS)
+            services.register_login_failure(keys)
             raise
 
 

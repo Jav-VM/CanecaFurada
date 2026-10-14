@@ -69,7 +69,8 @@ class PublicPagesTests(TestCase):
                 response = self.client.get(reverse(url_name))
                 self.assertNotContains(response, "€")
         home = self.client.get(reverse("web:home"))
-        self.assertContains(home, "Próximamente")
+        # El programa de puntos funciona desde las Fases 5–7: ya no se anuncia como «Próximamente».
+        self.assertNotContains(home, "Programa de puntos <span")
         self.assertContains(home, "Pendiente de publicar")
         self.assertContains(self.client.get(reverse("web:menu")), "Estamos preparando la carta online")
         self.assertContains(self.client.get(reverse("web:events")), "No hay eventos publicados")

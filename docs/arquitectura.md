@@ -17,7 +17,7 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 
 | App | Responsabilidad | Fase | Estado |
 |---|---|---|---|
-| `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`) y limitador de intentos (`throttling`) | 0 | Existe |
+| `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`), limitador de intentos (`throttling`) e IP del cliente tras proxies de confianza (`http`, Fase 11) | 0 | Existe |
 | `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
 | `apps.web` | Páginas públicas, contenido del local (`content.py` y, desde la Fase 9, `BusinessInfo` editable con `services.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 (contenido editable: 9) | Existe |
 | `apps.catalog` | Carta: categorías, estilos, productos (fijos y cervezas), imagen de la carta de grifos, selectores públicos y servicios de publicación/disponibilidad | 4 | Existe |
@@ -27,7 +27,7 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 | `apps.staff` | Panel del personal en `/panel/`: inicio, perfil del empleado y consulta de sus resultados; layout común de las pantallas de compras y canjes. Solo presentación, sin modelos | 8 | Existe |
 | `apps.dashboard` | Dashboard del propietario en `/dashboard/`: resumen, clientes, estadísticas geográficas, empleados, compras, puntos, recompensas, carta, promociones, contenido y configuración. Solo presentación, sin modelos | 9 | Existe |
 | `apps.events` | Eventos y reservas: `services` (única vía de escritura, transiciones y aforo), `selectors` (público, cliente, propietario). Depende de `accounts` y `notifications` | 10 | Existe |
-| `apps.api` | API REST v1 (solo presentación sobre los servicios) | 11 | Pendiente |
+| `apps.api` | API REST v1 en `/api/v1/` (solo presentación sobre los servicios): JWT, permisos DRF que envuelven `accounts.permissions`, serializadores explícitos, errores, paginación, throttling y OpenAPI | 11 | Existe |
 | `apps.notifications` | Registro y envío de notificaciones (email; SMS opcional sin proveedor), cola con reintentos, campañas promocionales, enlace de baja. Infraestructura: no depende de dominios salvo `accounts` (consentimiento, importado en diferido porque `accounts` envía sus emails por aquí). El flujo de cumpleaños vive en `loyalty.birthdays` | 10 | Existe |
 
 Los nombres son los previstos. Si una fase justifica separar o unir módulos, se cambia esta tabla en la misma tarea.
@@ -95,7 +95,11 @@ Límites conocidos:
 ### Presentación web
 - Sistema de diseño (tokens, componentes, Tailwind): [Fase 3](fase-03-sistema-diseno-web-publica.md). Las plantillas solo presentan; el JavaScript (`static/js/app.js`) es mejora progresiva sin reglas de negocio.
 
-### Cómo incorporar Django REST Framework (Fase 11)
+### API REST v1 (implementada en la Fase 11)
+
+La API existe en `apps.api` y sigue las pautas de abajo. Detalle de endpoints, autenticación JWT, errores y seguridad: [fase-11-api-auditoria.md](fase-11-api-auditoria.md); guía para la app: [guia-app-flutter.md](guia-app-flutter.md). Diferencias con el plan original: la autenticación es JWT (simplejwt) con access corto, refresh rotatorio con lista negra y revocación inmediata al cambiar la contraseña; la idempotencia llega en la cabecera `Idempotency-Key`.
+
+### Cómo se incorporó Django REST Framework (pautas originales)
 1. Añadir `djangorestframework` con versión acotada a `requirements/base.txt` e incluirlo en `INSTALLED_APPS`.
 2. Crear `apps.api` con rutas bajo `/api/v1/` (versión en la URL para poder convivir con versiones anteriores de la app).
 3. Configurar `REST_FRAMEWORK` con, como mínimo: permiso por defecto `IsAuthenticated`, paginación, throttling (anónimo y por usuario) y renderizado JSON solamente.

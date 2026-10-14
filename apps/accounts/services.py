@@ -10,11 +10,14 @@ import datetime
 import secrets
 
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import validate_email
 from django.db import IntegrityError, models, transaction
 from django.utils import timezone
+from django.utils.http import urlsafe_base64_decode
 
 from apps.core import throttling
 from apps.core.models import AuditEvent
@@ -321,6 +324,46 @@ def _validate_complete_profile(profile):
         raise ValidationError(errors)
 
 
+def _validate_registration(profile, email, first_name, last_name, password):
+    """Todas las validaciones del registro salvo la unicidad del email, con todos los errores a la vez."""
+    errors = {}
+    try:
+        _validate_complete_profile(profile)
+    except ValidationError as exc:
+        errors.update(exc.message_dict)
+    candidate = User(email=email, first_name=first_name, last_name=last_name, role=Role.CUSTOMER)
+    try:
+        candidate.full_clean(exclude=["password"], validate_unique=False, validate_constraints=False)
+    except ValidationError as exc:
+        errors.update(exc.message_dict)
+    try:
+        validate_password(password, candidate)
+    except ValidationError as exc:
+        errors.setdefault("password", []).extend(exc.messages)
+    if errors:
+        raise ValidationError(errors)
+
+
+# --- Inicio de sesión ---------------------------------------------------------------
+
+
+def login_throttle_keys(email, ip):
+    """Contadores de intentos fallidos de login (web y API comparten los mismos)."""
+    return (
+        ("login-email", normalize_email_address(email or "") or "-", settings.LOGIN_MAX_FAILURES_PER_EMAIL),
+        ("login-ip", ip or "-", settings.LOGIN_MAX_FAILURES_PER_IP),
+    )
+
+
+def login_is_throttled(keys):
+    return any(throttling.is_limited(scope, ident, limit) for scope, ident, limit in keys)
+
+
+def register_login_failure(keys):
+    for scope, ident, _ in keys:
+        throttling.register_attempt(scope, ident, settings.LOGIN_FAILURE_WINDOW_SECONDS)
+
+
 def _record_preference(user, channel, opted_in, source):
     CommunicationPreferenceChange.objects.create(
         user=user, channel=channel, opted_in=opted_in, source=source
@@ -357,9 +400,7 @@ def register_customer(
     """
     with transaction.atomic():
         email = normalize_email_address(email)
-        if User.objects.filter(email=email).exists():
-            raise EmailAlreadyRegistered()
-
+        first_name, last_name = normalize_text(first_name), normalize_text(last_name)
         profile = CustomerProfile(
             promo_email_opt_in=bool(promo_email_opt_in),
             promo_sms_opt_in=bool(promo_sms_opt_in),
@@ -377,13 +418,22 @@ def register_customer(
                 "phone_number": phone_number,
             },
         )
-        _validate_complete_profile(profile)
+        _validate_registration(profile, email, first_name, last_name, password)
+
+        # Solo con todos los datos válidos se mira si el email existe: así la
+        # respuesta a datos no válidos (p. ej. una contraseña débil) no depende
+        # de que la cuenta exista.
+        if User.objects.filter(email=email).exists():
+            # Mismo coste que un alta real (el hash de la contraseña es lo más
+            # lento): el tiempo de respuesta tampoco lo revela.
+            make_password(password)
+            raise EmailAlreadyRegistered()
 
         user = _create_user(
             role=Role.CUSTOMER,
             email=email,
-            first_name=normalize_text(first_name),
-            last_name=normalize_text(last_name),
+            first_name=first_name,
+            last_name=last_name,
             password=password,
         )
         # `_create_user` ya creó (y dejó en caché) el perfil vacío; se completa
@@ -607,10 +657,88 @@ def request_email_change(*, user, new_email, password):
     _send_token_on_commit(user, new_email, raw_token, is_email_change=True)
 
 
+def purge_email_tokens(*, older_than_days=30, now=None):
+    """
+    Borra los tokens de verificación caducados hace más de `older_than_days`
+    días (usados, revocados o no). Guardan el email al que se enviaron y ya no
+    sirven para nada; la auditoría de la verificación queda en `AuditEvent`.
+    Devuelve cuántos se han borrado.
+    """
+    if older_than_days < 1:
+        raise ValueError("older_than_days debe ser al menos 1.")
+    cutoff = (now or timezone.now()) - datetime.timedelta(days=older_than_days)
+    deleted, _ = EmailVerificationToken.objects.filter(expires_at__lt=cutoff).delete()
+    return deleted
+
+
 def require_verified_email(user):
     """Para operaciones que exigen un email verificado (puntos, canjes, reservas...)."""
     if not (getattr(user, "is_authenticated", False) and user.is_active and user.is_email_verified):
         raise PermissionDenied("Debes verificar tu email para usar esta función.")
+
+
+# --- Contraseña --------------------------------------------------------------------
+
+
+def record_password_change(*, user, via, channel):
+    """
+    Deja constancia de un cambio de contraseña (`via`: "change" o "reset";
+    `channel`: "web" o "api"), sin la contraseña ni el enlace usado. Cambiar
+    la contraseña invalida además las sesiones web de otros dispositivos
+    (hash de sesión de Django) y los tokens de la app (`apps.api.tokens`).
+    """
+    record_audit_event(
+        action=AuditEvent.Action.PASSWORD_CHANGED,
+        actor=user,
+        target=user,
+        metadata={"via": via, "channel": channel},
+    )
+
+
+def _set_new_password(user, new_password):
+    try:
+        validate_password(new_password, user)
+    except ValidationError as exc:
+        raise ValidationError({"new_password": exc.messages}) from None
+    user.set_password(new_password)
+    user.save(update_fields=["password"])
+
+
+@transaction.atomic
+def change_password(*, user, current_password, new_password, channel="api"):
+    """Cambio de contraseña con la actual (la web usa el formulario nativo de Django)."""
+    user = User.objects.select_for_update().get(pk=user.pk)
+    if not user.is_active:
+        raise PermissionDenied
+    if not user.check_password(current_password or ""):
+        raise ValidationError({"current_password": "La contraseña actual no es correcta."})
+    _set_new_password(user, new_password)
+    record_password_change(user=user, via="change", channel=channel)
+    return user
+
+
+def _user_from_uidb64(uidb64):
+    try:
+        pk = urlsafe_base64_decode(uidb64 or "").decode()
+        return User.objects.select_for_update().get(pk=pk)
+    except (TypeError, ValueError, OverflowError, UnicodeDecodeError, ValidationError, User.DoesNotExist):
+        return None
+
+
+@transaction.atomic
+def reset_password_with_token(*, uidb64, token, new_password, channel="api"):
+    """
+    Restablece la contraseña con el enlace de recuperación nativo de Django
+    (`uidb64` y `token` del enlace del email). El token deja de valer en cuanto
+    la contraseña cambia, y la fila del usuario se bloquea para que dos usos
+    simultáneos del mismo enlace no tengan éxito ambos.
+    """
+    user = _user_from_uidb64(uidb64)
+    if user is None or not user.is_active or not default_token_generator.check_token(user, token or ""):
+        raise ValidationError("El enlace no es válido o ha caducado. Solicita uno nuevo.", code="invalid_token")
+    _set_new_password(user, new_password)
+    record_password_change(user=user, via="reset", channel=channel)
+    return user
 
 
 # --- Perfil ----------------------------------------------------------------------
