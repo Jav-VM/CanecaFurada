@@ -10,23 +10,24 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 |---|---|
 | 0 — Fundación del proyecto | **Completa** |
 | 1 — Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** |
-| 2 — Autenticación, registro, perfiles, verificación de email y permisos | **Completa** (pendiente validar en PostgreSQL y con SMTP real) |
+| 2 — Autenticación, registro, perfiles, verificación de email y permisos | **Completa** (pendiente validar con SMTP real) |
 | 3 — Sistema de diseño y web pública | **Completa** (contenidos del local pendientes de aportar por el propietario) |
-| 4 — Carta y cervezas | **Completa** (pendiente almacenamiento de imágenes en producción y validar en PostgreSQL) |
-| 5 — QR personal y registro de compras manuales | **Completa** (pendiente probar el escaneo en dispositivos físicos y la concurrencia en PostgreSQL) |
-| 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar la conversión por defecto) |
-| 7 — Recompensas y canjes | **Completa** (pendiente validar la concurrencia en PostgreSQL y confirmar el plazo de recogida) |
+| 4 — Carta y cervezas | **Completa** (pendiente almacenamiento de imágenes en producción) |
+| 5 — QR personal y registro de compras manuales | **Completa** (pendiente probar el escaneo en dispositivos físicos) |
+| 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** (pendiente confirmar la conversión por defecto) |
+| 7 — Recompensas y canjes | **Completa** (pendiente confirmar el plazo de recogida) |
 | 8 — Panel de empleados | **Completa** (pendiente probar en móviles y tablets físicos) |
-| 9 — Dashboard del propietario y estadísticas | **Completa** (pendiente revisión visual en navegador y validar en PostgreSQL) |
-| 10 — Eventos, reservas, contenido y notificaciones | **Completa** (pendiente SMTP real, programar las tareas, proveedor de SMS y validar en PostgreSQL) |
-| 11 — API, auditoría, seguridad y preparación para la app | **Completa** (pendiente validar en PostgreSQL y el despliegue) |
+| 9 — Dashboard del propietario y estadísticas | **Completa** (pendiente revisión visual en navegador) |
+| 10 — Eventos, reservas, contenido y notificaciones | **Completa** (pendiente SMTP real, programar las tareas y proveedor de SMS) |
+| 11 — API, auditoría, seguridad y preparación para la app | **Completa** (pendiente el despliegue) |
+| Migración a PostgreSQL (endurecimiento y despliegue) | **Completa en desarrollo**: suite completa OK en PostgreSQL 17 (pendiente el VPS) |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
 ## Requisitos
 
 - Python 3.12+ (desarrollado con 3.14).
-- PostgreSQL (recomendado; sin `DATABASE_URL` se usa SQLite solo para desarrollo).
+- PostgreSQL 14+ (probado con 17). Obligatorio en producción; sin `DATABASE_URL`, desarrollo y tests usan SQLite. Guía: [docs/migracion-postgresql.md](docs/migracion-postgresql.md).
 
 ## Instalación
 
@@ -168,6 +169,7 @@ requirements/      dependencias por entorno
 - [Fase 10 — Eventos, reservas, contenido y notificaciones](docs/fase-10-eventos-reservas-notificaciones.md): estados de las reservas, privacidad, notificaciones que funcionan y las que requieren configuración, preferencias y baja, cumpleaños, tareas programadas, API prevista, tests y pendientes.
 - [Fase 11 — API, auditoría y seguridad](docs/fase-11-api-auditoria.md): resumen de la auditoría y correcciones, endpoints, estrategia de autenticación, revisión de seguridad, privacidad, tests y pendientes.
 - [Guía de la app Flutter](docs/guia-app-flutter.md): autenticación, renovación y revocación de tokens, errores, paginación, idempotencia y pantallas.
+- [Migración a PostgreSQL](docs/migracion-postgresql.md): auditoría de compatibilidad, correcciones, configuración en desarrollo y en el VPS, resultados de la suite y copia/restauración.
 - [Despliegue](docs/despliegue.md): variables de entorno, PostgreSQL, HTTPS, estáticos y multimedia, copias de seguridad, correo, tareas programadas y logs.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.
 - [Documentación para la defensa del proyecto](docs/defensa_proyecto/README.md): memoria técnica y funcional, guion de la defensa oral, banco de preguntas del tribunal, mapa del código, limitaciones y diagramas Mermaid.

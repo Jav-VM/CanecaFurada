@@ -156,7 +156,8 @@ class PromotionValidationTests(PromotionTestCase):
             {"fixed_points": None},
             {"multiplier": Decimal("2.00")},
             {"ends_at": now - datetime.timedelta(days=1)},
-            {"status": "INVENTADO"},
+            # Cabe en el campo (8): así falla la CHECK y no la longitud (PostgreSQL).
+            {"status": "INVALIDO"},
             {"birthday_window_days": 40},
         ):
             with self.subTest(overrides=overrides), self.assertRaises(IntegrityError), transaction.atomic():

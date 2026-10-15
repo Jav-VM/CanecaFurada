@@ -18,6 +18,13 @@ if not ALLOWED_HOSTS:
 
 CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 
+# --- Base de datos ---------------------------------------------------------------
+# SQLite es solo la alternativa de desarrollo: no bloquea filas (`select_for_update`)
+# ni aplica longitudes, y las protecciones de concurrencia dependen de ello.
+
+if DATABASES["default"]["ENGINE"] != "django.db.backends.postgresql":  # noqa: F405
+    raise ImproperlyConfigured("DATABASE_URL es obligatoria en producción y debe apuntar a PostgreSQL.")
+
 # --- Email real obligatorio ----------------------------------------------------
 # En producción no se simulan envíos: se rechazan los backends de consola,
 # memoria, fichero o nulo y se exige un servidor SMTP y una URL pública HTTPS.

@@ -1,6 +1,6 @@
 # Fase 7 — Recompensas y canjes
 
-**Estado:** Completa (pendiente de validar la concurrencia con bloqueos de fila en PostgreSQL y de confirmar el plazo de recogida; ver §11).
+**Estado:** Completa (pendiente de confirmar el plazo de recogida; ver §11). La concurrencia con bloqueos de fila se validó en PostgreSQL 17 el 2026-10-15: los 3 tests de `test_concurrency.py` pasan ([migracion-postgresql.md](migracion-postgresql.md)).
 **Fecha:** 2026-10-14.
 **Depende de:** [Fase 6](fase-06-fidelizacion.md) (ledger de puntos) y [Fase 5](fase-05-qr-compras.md) (panel del personal y lector QR).
 

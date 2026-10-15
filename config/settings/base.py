@@ -95,6 +95,8 @@ DATABASES = {
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = False
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DATABASE_CONN_MAX_AGE", default=0)
+# Con conexiones persistentes (CONN_MAX_AGE > 0), comprueba que siguen vivas antes de reutilizarlas.
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = env.bool("DATABASE_CONN_HEALTH_CHECKS", default=False)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

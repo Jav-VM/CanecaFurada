@@ -39,10 +39,12 @@ class ProductionSettingsTests(SimpleTestCase):
         "DJANGO_ALLOWED_HOSTS": "example.com",
         "EMAIL_HOST": "smtp.example.com",
         "SITE_BASE_URL": "https://www.example.com",
+        # Explícita: si no, se usaría la del `.env` local. `django.setup()` no se conecta.
+        "DATABASE_URL": "postgres://usuario-ficticio:contrasena-ficticia@localhost:5432/bd_ficticia",
     }
 
     def _import_prod(self, extra_env):
-        prefixes = ("DJANGO_", "EMAIL_", "SITE_BASE_URL")
+        prefixes = ("DJANGO_", "EMAIL_", "SITE_BASE_URL", "DATABASE_")
         env = {k: v for k, v in os.environ.items() if not k.startswith(prefixes)}
         env.update(extra_env)
         env["DJANGO_SETTINGS_MODULE"] = "config.settings.prod"
@@ -93,3 +95,9 @@ class ProductionSettingsTests(SimpleTestCase):
         self.assertNotEqual(result.returncode, 0)
         result = self._import_prod({**self.REQUIRED, "API_JWT_SIGNING_KEY": "y" * 64})
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_prod_rejects_sqlite(self):
+        """Producción exige PostgreSQL: SQLite no bloquea filas (migración a PostgreSQL)."""
+        result = self._import_prod({**self.REQUIRED, "DATABASE_URL": "sqlite:///bd-ficticia.sqlite3"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("PostgreSQL", result.stderr)

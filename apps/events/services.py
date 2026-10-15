@@ -341,7 +341,14 @@ def _transition(*, reservation, to_status, actor, message="", by_customer=False)
     message = _parse_text(message, "message")
     now = timezone.now()
     with transaction.atomic():
-        locked = Reservation.objects.select_for_update().select_related("event", "customer").get(pk=reservation.pk)
+        # `of=("self",)`: solo se bloquea la reserva. PostgreSQL no admite FOR UPDATE
+        # sobre el LEFT JOIN de `event` (nulo en las reservas de mesa); el evento se
+        # bloquea aparte cuando hace falta.
+        locked = (
+            Reservation.objects.select_for_update(of=("self",))
+            .select_related("event", "customer")
+            .get(pk=reservation.pk)
+        )
         if by_customer and locked.customer_id != actor.pk:
             raise PermissionDenied
         if locked.status == to_status:

@@ -5,6 +5,10 @@ venv/
 # Base de datos local de desarrollo
 db.sqlite3
 *.sqlite3
+# Copias y volcados de BD: pueden contener datos personales y hashes.
+*.sqlite3*
+*.bak
+*.dump
 
 # Cachés y compilados de Python
 __pycache__/

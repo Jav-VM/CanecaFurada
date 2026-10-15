@@ -9,7 +9,7 @@ Revisión de la preparación para producción hecha en la [Fase 11](fase-11-api-
 | Settings de producción (`config.settings.prod`) | Listo: falla al arrancar si falta `DJANGO_SECRET_KEY` (o mide < 32 bytes), `DJANGO_ALLOWED_HOSTS`, `EMAIL_HOST`, un `SITE_BASE_URL` https o si el email/SMS es simulado. `wsgi.py` y `asgi.py` usan `prod` por defecto. |
 | `check --deploy` | Ejecutado con valores ficticios (2026-10-14): solo `security.W021` (HSTS *preload* desactivado a propósito; activarlo es irreversible en la práctica). |
 | HTTPS y cookies | Listo en código (§4). Falta el certificado y el proxy en el servidor. |
-| PostgreSQL | Soportado (`DATABASE_URL`). **Falta ejecutar la suite contra PostgreSQL.** |
+| PostgreSQL | Obligatorio en `prod` (rechaza SQLite). Suite completa OK en PostgreSQL 17 (2026-10-15). Falta instalarlo en el VPS: [migracion-postgresql.md](migracion-postgresql.md). |
 | Servidor WSGI | **Pendiente de elegir** (p. ej. Gunicorn en Linux o Waitress en Windows). No se ha añadido a `requirements/prod.txt`. |
 | Estáticos y multimedia | **Pendiente** (§5–6). |
 | Correo | Configurable por entorno (§8). Falta un proveedor SMTP real. |
@@ -36,10 +36,12 @@ Rotar `DJANGO_SECRET_KEY` invalida sesiones web, enlaces de recuperación y de b
 
 ## 3. PostgreSQL
 
-1. Crear base de datos y usuario propio con permisos solo sobre ella: `DATABASE_URL=postgres://caneca:<contraseña>@<host>:5432/caneca_furada`.
+Guía completa (rol con privilegios mínimos, ICU `es-ES`, variables y resultados): [migracion-postgresql.md](migracion-postgresql.md).
+
+1. Crear base de datos y usuario propio con permisos solo sobre ella: `DATABASE_URL=postgres://caneca:<contraseña>@<host>:5432/caneca_furada`. Sin `DATABASE_URL` de PostgreSQL, `config.settings.prod` no arranca.
 2. `python manage.py migrate --settings=config.settings.prod` (antes, `migrate --plan` para revisar). Las migraciones son pequeñas y revisadas; la Fase 11 añade `core/0009` (solo opciones) y las tablas de `token_blacklist`.
-3. **Ejecutar la suite contra PostgreSQL** antes de abrir al público: `DATABASE_URL=… python manage.py test --settings=config.settings.test` (comprueba los bloqueos de compras, canjes, reservas, notificaciones y renovación de tokens, que SQLite ignora).
-4. `DATABASE_CONN_MAX_AGE=60` reduce conexiones si el servidor lo permite.
+3. Suite contra PostgreSQL: **ejecutada en desarrollo** (803 OK, 2026-10-15). Se repite en desarrollo o en un entorno de pruebas tras cada cambio, nunca en producción (el rol de producción no puede crear la BD de test).
+4. `DATABASE_CONN_MAX_AGE=60` reduce conexiones si el servidor lo permite; con él, `DATABASE_CONN_HEALTH_CHECKS=True`.
 5. Caché compartida para los límites de intentos y el throttling de la API: `CACHE_URL=redis://…` (requiere instalar `redis`) o `CACHE_URL=dbcache://django_cache` + `python manage.py createcachetable`.
 
 ## 4. HTTPS, proxy y cookies
@@ -112,7 +114,8 @@ En Windows, el Programador de tareas ejecuta los mismos comandos con `.venv\Scri
 
 - [ ] Variables de producción definidas, sin `.env` en el servidor si se usan variables del sistema.
 - [ ] `python manage.py check --deploy --settings=config.settings.prod` sin errores.
-- [ ] `migrate` aplicado y suite ejecutada contra PostgreSQL.
+- [x] Suite ejecutada contra PostgreSQL (desarrollo).
+- [ ] `migrate` aplicado en el PostgreSQL del VPS.
 - [ ] `collectstatic` y `/static/`, `/media/` servidos.
 - [ ] HTTPS con certificado válido; `DJANGO_BEHIND_TLS_PROXY` y `DJANGO_TRUSTED_PROXY_COUNT` según la topología real.
 - [ ] `CACHE_URL` compartida.

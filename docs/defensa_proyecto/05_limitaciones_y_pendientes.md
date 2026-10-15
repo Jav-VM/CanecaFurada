@@ -8,8 +8,8 @@ Escala: **prioridad** Alta / Media / Baja · **coste aproximado** S (< 1 día) /
 
 | Elemento | Por qué no se ha verificado | Estado |
 |---|---|---|
-| Comportamiento con **PostgreSQL** (motor objetivo) | No hay una instancia; la suite se ejecutó con SQLite | Implementado, pendiente de verificación |
-| **Concurrencia real** (bloqueos de fila) | 3 tests omitidos con SQLite en memoria; con SQLite en fichero pasan, pero la BD serializa las escrituras | Implementado, pendiente de verificación |
+| Comportamiento con **PostgreSQL** (motor objetivo) | Verificado en desarrollo (PostgreSQL 17.11): 803 tests OK tras corregir un bloqueo de reservas incompatible ([migracion-postgresql.md](../migracion-postgresql.md)); falta el VPS | Verificado en desarrollo |
+| **Concurrencia real** (bloqueos de fila) | Los 3 tests con hilos pasan en PostgreSQL con bloqueos de fila reales; solo cubren canjes | Verificado en canjes (compras y reservas, por simulación) |
 | **Envío real de email** | Sin proveedor SMTP; los tests usan locmem y el desarrollo, la consola | Implementado, pendiente de verificación |
 | **Escaneo con cámara** en móviles y tablets | Requiere dispositivo y HTTPS o `localhost` | Implementado, pendiente de verificación |
 | **Aspecto visual, contraste AA y diseño responsive** | No hay pruebas automáticas; no se ha hecho una revisión visual en esta tarea | Implementado, pendiente de verificación |
@@ -53,7 +53,7 @@ Escala: **prioridad** Alta / Media / Baja · **coste aproximado** S (< 1 día) /
 
 | Riesgo | Detalle | Prioridad | Coste | Beneficio |
 |---|---|---|---|---|
-| Sin pruebas en PostgreSQL | La concurrencia depende de `SELECT FOR UPDATE` real | **Alta** | S | Alto |
+| PostgreSQL en el VPS | Validado en desarrollo (803 tests OK); falta instalarlo con privilegios mínimos en el servidor | **Alta** | S | Alto |
 | Límites por proceso | `CACHE_URL` por defecto `locmem`: con varios procesos, cada uno cuenta por separado | **Alta** | S | Alto |
 | SMTP real | Sin él no sale ningún email (verificación incluida) | **Alta** | S | Alto |
 | Infraestructura | Servidor WSGI, proxy con TLS, estáticos y medios, dominio | **Alta** | M | Alto |
