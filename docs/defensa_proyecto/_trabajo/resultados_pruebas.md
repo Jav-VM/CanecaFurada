@@ -1,6 +1,6 @@
 # Resultados reales de las comprobaciones
 
-> **Nota posterior:** registro histórico del commit `ac5903a`. Los resultados actuales (817 tests tras la auditoría previa a la Fase 12) están en [`docs/auditoria-pre-fase-12.md`](../../auditoria-pre-fase-12.md#6-pruebas-ejecutadas-y-resultados-reales-2026-10-15).
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md). Resultados de la versión congelada: [`refactorizacion-final.md` §6](../../refactorizacion-final.md).
 
 Ejecutadas el 2026-10-15 en Windows 11, Python 3.14.2, Django 5.2.18, sin `.env` (BD SQLite; la de test es SQLite en memoria).
 

@@ -1,8 +1,9 @@
 # Caneca Furada — Memoria técnica y funcional
 
-> **Versión analizada:** rama `main`, commit `ac5903a` (14-10-2026). Análisis realizado el 15-10-2026.
+> **Versión documentada:** la versión congelada para la defensa, commit `d0bac7c` (15-10-2026, refactorización final). Las líneas de código citadas son las de esa versión.
+> **Historia de este documento:** se redactó el 15-10-2026 sobre el código de la Fase 11 (commit `ac5903a` del historial anterior; hoy `eec6abc`, porque el historial se reescribió en la auditoría, P2-6). Ese mismo día se actualizó con la [migración a PostgreSQL](../migracion-postgresql.md), la [auditoría previa a la Fase 12](../auditoria-pre-fase-12.md), la [Fase 12 de despliegue](../fase-12-despliegue.md) y la [refactorización final](../refactorizacion-final.md). Las referencias `archivo:línea` se recalcularon con el diff entre ambas versiones y los bloques de código real se volvieron a comparar con el código.
 > **Fuente de verdad:** el código del repositorio. La documentación previa (`docs/`) se ha contrastado con el código y, cuando no coinciden, se indica.
-> **Comprobaciones reales ejecutadas** (detalle en [`_trabajo/resultados_pruebas.md`](_trabajo/resultados_pruebas.md)): `manage.py check` sin incidencias, `makemigrations --check` sin cambios, **802 tests ejecutados, OK, 3 omitidos**, esquema OpenAPI regenerado idéntico al versionado y `check --deploy` con variables ficticias (solo el aviso `security.W021`).
+> **Comprobaciones reales ejecutadas sobre la versión congelada** (detalle en [`refactorizacion-final.md` §6](../refactorizacion-final.md)): `manage.py check` sin incidencias, `makemigrations --check` sin cambios, **849 tests OK en PostgreSQL 17 sin omitidos** (en local y dentro del contenedor de producción), 849 OK en SQLite (18 omitidos: los de concurrencia y uno exclusivo de PostgreSQL), esquema OpenAPI regenerado idéntico al versionado y `check --deploy` con variables ficticias (solo el aviso `security.W021`). El CI de GitHub pasó en verde en la Fase 12 (commit `0589cfb`); la versión congelada no se ha subido todavía a GitHub.
 
 ## Etiquetas de estado usadas en todo el documento
 
@@ -43,7 +44,7 @@
 
 ### 1.1 Versión breve (para la introducción oral, ~1 minuto)
 
-> Caneca Furada es la plataforma web de una cervecería artesanal de A Coruña. Además de la web pública con la carta y los eventos, incluye un **programa de fidelización**: cada cliente registrado tiene un **código QR personal**; cuando consume, el empleado lo escanea en la barra, registra el importe y el sistema le suma **puntos** que puede canjear por **recompensas** con un código de un solo uso. Hay tres roles con permisos diferentes: **cliente**, **empleado** y **propietario**. El propietario tiene un **dashboard** con estadísticas, gestión de clientes, empleados, carta, eventos, reservas y campañas. Todo está construido como un **monolito modular en Django**, con la lógica de negocio en servicios, transacciones y restricciones en la base de datos para que no se puedan duplicar puntos ni canjes, y con una **API REST** preparada para una futura app móvil. El proyecto tiene **802 tests automáticos** que pasan.
+> Caneca Furada es la plataforma web de una cervecería artesanal de A Coruña. Además de la web pública con la carta y los eventos, incluye un **programa de fidelización**: cada cliente registrado tiene un **código QR personal**; cuando consume, el empleado lo escanea en la barra, registra el importe y el sistema le suma **puntos** que puede canjear por **recompensas** con un código de un solo uso. Hay tres roles con permisos diferentes: **cliente**, **empleado** y **propietario**. El propietario tiene un **dashboard** con estadísticas, gestión de clientes, empleados, carta, eventos, reservas y campañas. Todo está construido como un **monolito modular en Django**, con la lógica de negocio en servicios, transacciones y restricciones en la base de datos para que no se puedan duplicar puntos ni canjes, y con una **API REST** preparada para una futura app móvil. El proyecto tiene **849 tests automáticos** que pasan en PostgreSQL, y la pila de producción (Docker Compose con Nginx, Gunicorn, PostgreSQL y Redis) está preparada y probada en local.
 
 ### 1.2 Versión extensa
 
@@ -69,13 +70,13 @@
 **Alcance funcional implementado (resumen; detalle en el cap. 2):** cuentas, perfiles y verificación; carta; QR y compras; ledger de puntos y promociones; cumpleaños; recompensas y canjes; panel del personal; dashboard y estadísticas (también geográficas); eventos y reservas; notificaciones por email y campañas; API REST v1 con JWT; auditoría.
 
 **Fuera del alcance o no implementado (verificado):**
-- **Despliegue real** (servidor WSGI, dominio, HTTPS, PostgreSQL de producción): solo existe la configuración `config/settings/prod.py` y una guía. *Planificado.*
+- **Despliegue en el VPS real** (contratar el servidor, dominio, certificado de Let's Encrypt, SMTP real y destino externo de las copias): la pila completa está en el repositorio y se ha probado en local y en el CI (Fase 12), pero no se ha desplegado en un servidor. *Pendiente de acciones manuales.*
 - **SMS:** el canal existe, pero no hay proveedor integrado (`apps/notifications/sms.py:4-10`). *Planificado.*
 - **Anulación de compras e integración con TPV:** valores reservados `VOIDED` y `POS` sin flujo. *Planificado.*
 - **App móvil Flutter:** fuera de alcance; solo hay API y guía. *Planificado.*
 - **Facturación o caja:** el sistema **no** gestiona ventas ni pagos; registra compras para fidelización (`apps/purchases/selectors.py:1-9`).
-- **Exportación o borrado de datos a petición del interesado:** no hay ninguna funcionalidad. *No identificado.*
-- **Docker y CI/CD:** no existen en el repositorio.
+- **Exportación o borrado de datos a petición del interesado:** no hay ninguna funcionalidad. Decisión tomada en la auditoría (P2-9): al suprimir una cuenta se conservarán las compras y los movimientos de puntos. *Planificado (fase propia antes de abrir al público).*
+- **Monitorización y alertas:** no existen; es el siguiente paso tras la Fase 12. *Planificado.*
 
 **Valor frente a una web informativa.** Una web informativa solo muestra contenido. Aquí hay **estado de negocio con reglas** (saldo de puntos, canjes de un solo uso, reservas con aforo), **tres roles** con autorización en el servidor, **integridad transaccional** y **trazabilidad** (auditoría sin datos personales), además de una API reutilizable.
 
@@ -106,7 +107,7 @@
 
 | Proceso | Datos de entrada | Validaciones del servidor (archivo) | Errores posibles | Casos límite tratados |
 |---|---|---|---|---|
-| Registro | Nombre, apellidos, fecha de nacimiento, móvil opcional, dirección estructurada, país, email, contraseña ×2 y consentimientos | `validators.py`: CP por país (ES `01-52xxx`, PT `1234-567`), móvil E.164, edad ≥ 18 y ≤ 120, no futura; contraseña ≥ 10 caracteres, no común ni solo numérica (`base.py:105-113`) | Errores por campo; 20 intentos por IP y hora | Email duplicado sin revelarlo; 29 de febrero; mayúsculas en el email |
+| Registro | Nombre, apellidos, fecha de nacimiento, móvil opcional, dirección estructurada, país, email, contraseña ×2 y consentimientos | `validators.py`: CP por país (ES `01-52xxx`, PT `1234-567`), móvil E.164, edad ≥ 18 y ≤ 120, no futura; contraseña ≥ 10 caracteres, no común ni solo numérica (`base.py:109-117`) | Errores por campo; 20 intentos por IP y hora | Email duplicado sin revelarlo; 29 de febrero; mayúsculas en el email |
 | Verificación de email | Token del enlace | Hash SHA-256, sin usar, sin revocar, sin caducar (24 h), usuario activo, email coincidente | `invalid`, `expired`, `used`, `revoked`, `email_taken` | Doble clic simultáneo: UPDATE condicionado |
 | Compra | Código QR o tecleado, importe y clave de idempotencia | Personal activo, origen MANUAL, importe Decimal de 0,01 a 1000 € con 2 decimales, cliente activo y verificado | `invalid_qr`, `email_not_verified`, `amount_*`, `idempotency_conflict`, 429 | Doble envío, reintento, cliente desactivado entre pasos, nadie se registra compras a sí mismo |
 | Canje | Recompensa y clave de idempotencia | Cliente verificado, recompensa activa en fechas, stock, saldo y un pendiente por recompensa | `reward_unavailable`, `out_of_stock`, `insufficient_points`, `duplicate_pending` | Peticiones simultáneas, stock que llega a 0 |
@@ -119,27 +120,27 @@ La matriz completa, con 55 entradas, está en [`_trabajo/matriz_evidencia.md`](_
 
 | ID | Requisito | Origen | Evidencia en el código | Tests | Estado |
 |---|---|---|---|---|---|
-| RF-01 | Roles OWNER/EMPLOYEE/CUSTOMER con restricciones en BD; registro siempre como cliente | Plan F0/F2 | `apps/accounts/models.py:34-85`; `forms.py:1-9` | `tests/accounts/*` (195) | Implementado y verificado |
+| RF-01 | Roles OWNER/EMPLOYEE/CUSTOMER con restricciones en BD; registro siempre como cliente | Plan F0/F2 | `apps/accounts/models.py:34-85`; `forms.py:1-9` | `tests/accounts/*` (209) | Implementado y verificado |
 | RF-02 | Perfil de cliente 1:1 transaccional con dirección, fecha de nacimiento y móvil validados | Plan F1/F2 | `services.ensure_customer_profile`, `validators.py` | `test_customer_profile.py`, `test_profile.py` | Implementado y verificado |
-| RF-03 | Verificación de email, recuperación y cambio de email con tokens seguros | Plan F2 | `services.py:469-625` | `test_email_verification.py` (23) | Implementado y verificado; **envío SMTP real pendiente** |
+| RF-03 | Verificación de email, recuperación y cambio de email con tokens seguros | Plan F2 | `services.py:485-641` | `test_email_verification.py` (23) | Implementado y verificado; **envío SMTP real pendiente** |
 | RF-04 | Preferencias promocionales con historial y baja por enlace firmado | Plan F2/F10 | `CommunicationPreferenceChange`; `notifications/unsubscribe.py` | `test_profile.py`, `test_notifications.py` | Implementado y verificado |
 | RF-05 | Web pública con sistema de diseño | Plan F3 | `templates/`, `assets/css/input.css` | `tests/web/*` (40) | Implementado y verificado; **revisión visual y contraste pendientes** |
 | RF-06 | Carta con publicación, archivo y disponibilidad; imágenes validadas | Plan F4 | `apps/catalog/*` | `tests/catalog/*` (59) | Implementado y verificado |
-| RF-07 | QR personal y registro manual de compras idempotente | Plan F5 | `loyalty/services.py`, `purchases/services.py` | `test_qr.py` (22), `tests/purchases/*` (56) | Implementado y verificado; **escaneo con cámara en dispositivos pendiente** |
+| RF-07 | QR personal y registro manual de compras idempotente | Plan F5 | `loyalty/services.py`, `purchases/services.py` | `test_qr.py` (22), `tests/purchases/*` (58) | Implementado y verificado; **escaneo con cámara en dispositivos pendiente** |
 | RF-08 | Ledger de puntos inmutable, conversión versionada y promociones | Plan F6 | `loyalty/ledger.py`, `conversion.py`, `promotions.py` | `test_points.py` (41), `test_promotions.py` (18) | Implementado y verificado |
-| RF-09 | Regalo de cumpleaños con anti-abuso | Plan F6 + decisión F10 | `loyalty/birthdays.py`, `ledger.grant_birthday_gift` | `test_birthdays.py` (21) | Implementado y verificado; **programación diaria pendiente** |
-| RF-10 | Recompensas y canjes de un solo uso sin doble consumo | Plan F7 | `rewards/services.py` | `tests/rewards/*` (83) | Implementado y verificado; **concurrencia en PostgreSQL pendiente** |
+| RF-09 | Regalo de cumpleaños con anti-abuso | Plan F6 + decisión F10 | `loyalty/birthdays.py`, `ledger.grant_birthday_gift` | `test_birthdays.py` (21) | Implementado y verificado; programado a diario en el servicio `scheduler` (Fase 12) |
+| RF-10 | Recompensas y canjes de un solo uso sin doble consumo | Plan F7 | `rewards/services.py` | `tests/rewards/*` (84) | Implementado y verificado, también la concurrencia en PostgreSQL |
 | RF-11 | Panel del personal con datos mínimos del cliente | Plan F8 | `apps/staff/` | `test_panel.py` (31) | Implementado y verificado |
-| RF-12 | Dashboard del propietario y estadísticas reales y geográficas | Plan F9 | `apps/dashboard/`, selectores | `tests/dashboard/*` (59) | Implementado y verificado |
-| RF-13 | Eventos y reservas con transiciones y aforo | Plan F10 | `apps/events/` | `tests/events/*` (41) | Implementado y verificado |
+| RF-12 | Dashboard del propietario y estadísticas reales y geográficas | Plan F9 | `apps/dashboard/`, selectores | `tests/dashboard/*` (67) | Implementado y verificado |
+| RF-13 | Eventos y reservas con transiciones y aforo | Plan F10 | `apps/events/` | `tests/events/*` (46) | Implementado y verificado |
 | RF-14 | Notificaciones con estado real, reintentos y campañas con consentimiento | Plan F10 | `apps/notifications/` | `test_notifications.py` (30) | Implementado y verificado con un backend en memoria; **SMTP real pendiente** |
 | RF-15 | SMS | Plan F10 (opcional) | `sms.py`: sin proveedor | — | Planificado |
-| RF-16 | API REST v1 con JWT, permisos, errores coherentes y OpenAPI | Plan F11 | `apps/api/` | `tests/api/*` (72) | Implementado y verificado |
-| RF-17 | Auditoría de operaciones sensibles sin datos personales | Plan F0-F11 | `apps/core/` | `tests/core/*` (19) | Implementado y verificado |
-| RNF-01 | Atomicidad e idempotencia en puntos, compras, canjes y reservas | CLAUDE.md §4 | `transaction.atomic`, `select_for_update`, UNIQUE | Idempotencia probada; concurrencia: 3 tests omitidos en SQLite en memoria | Implementado; **concurrencia real pendiente de PostgreSQL** |
+| RF-16 | API REST v1 con JWT, permisos, errores coherentes y OpenAPI | Plan F11 | `apps/api/` | `tests/api/*` (73) | Implementado y verificado |
+| RF-17 | Auditoría de operaciones sensibles sin datos personales | Plan F0-F11 | `apps/core/` | `tests/core/*` (33) | Implementado y verificado |
+| RNF-01 | Atomicidad e idempotencia en puntos, compras, canjes y reservas | CLAUDE.md §4 | `transaction.atomic`, `select_for_update`, UNIQUE | Idempotencia probada; 17 tests de concurrencia con hilos que pasan en PostgreSQL (local, contenedor y CI) | Implementado y verificado |
 | RNF-02 | Seguridad (CSRF, XSS, IDOR, asignación masiva, abuso) | CLAUDE.md §3 | cap. 10 | Tests de IDOR, roles y API | Implementado y verificado (ver los riesgos del cap. 16) |
-| RNF-03 | Configuración de producción endurecida | Plan F11 | `config/settings/prod.py` | `tests/core/test_audit_and_settings.py:54-87` (7 tests de requisitos de `prod.py`) + `check --deploy` (solo W021) | Configuración implementada y verificada; **sin despliegue real** |
-| RNF-04 | Despliegue, backups y tareas programadas | Plan «sin número» | `docs/despliegue.md` (guía) | — | Planificado |
+| RNF-03 | Configuración de producción endurecida | Plan F11 | `config/settings/prod.py` | `tests/core/test_audit_and_settings.py:58-91` (7 tests de requisitos de `prod.py`) + `check --deploy` (solo W021) | Implementado y verificado en la pila local; **sin despliegue en el VPS** |
+| RNF-04 | Despliegue, backups y tareas programadas | Plan F12 | `Dockerfile`, `compose.yaml`, `deploy/`, `.github/workflows/ci.yml` | `tests/core/test_health.py` (8) + procedimientos probados en local (despliegue, rollback, copia y restauración) | Implementado y verificado en local y en el CI; **VPS pendiente** |
 
 ### 2.5 Requisitos originales frente a decisiones de implementación
 
@@ -149,7 +150,7 @@ La matriz completa, con 55 entradas, está en [`_trabajo/matriz_evidencia.md`](_
 | Bonificación de cumpleaños en la compra (Fase 6) | Regalo de puntos el mismo día, sin compra (`BIRTHDAY_GIFT`) | El usuario (ajuste de la Fase 10) |
 | Tareas con Celery u otra cola | Comandos de gestión y programador del sistema | El usuario (ajuste de la Fase 10) |
 | «CORS restrictivo» | Sin cabeceras CORS (una app nativa no las necesita) | Decisión de la Fase 11 documentada en `docs/fase-11-api-auditoria.md:155` |
-| Fase de notificaciones propia y Fase 12 de despliegue | Notificaciones dentro de la Fase 10; despliegue **sin número y pendiente** | El usuario (reordenación tras la Fase 7) |
+| Fase de notificaciones propia y Fase 12 de despliegue | Notificaciones dentro de la Fase 10; el despliegue quedó «sin número» y se numeró como Fase 12 el 15-10-2026 | El usuario (reordenación tras la Fase 7 y numeración final) |
 
 ---
 
@@ -163,7 +164,7 @@ La matriz completa, con 55 entradas, está en [`_trabajo/matriz_evidencia.md`](_
 |---|---|---|---|
 | Presentación | `views.py`, `forms.py`, `urls.py`, `templates/`, `apps/api/views/`, `serializers/` | Traducir HTTP ↔ Python: leer la entrada, llamar al servicio y traducir los errores a mensajes o códigos HTTP | `purchases/views.py:87-117` |
 | Dominio (escritura) | `services.py`, `ledger.py`, `promotions.py`, `campaigns.py` | Permisos, validación, transacción y auditoría | `purchases/services.py:158-194` |
-| Dominio (lectura) | `selectors.py` | Consultas con permisos (p. ej. solo el propietario) y campos mínimos | `accounts/selectors.py:55-94` |
+| Dominio (lectura) | `selectors.py` | Consultas con permisos (p. ej. solo el propietario) y campos mínimos | `accounts/selectors.py:57-93` |
 | Datos | `models.py`, `migrations/` | Esquema e invariantes en BD (CHECK, UNIQUE, PROTECT) | `loyalty/models.py:360-420` |
 
 La regla se cumple en el código: los docstrings de las vistas lo declaran (p. ej. `apps/dashboard/views.py:1-15`: «Solo presentación») y la API reutiliza los mismos servicios que la web (`apps/api/views/staff.py:1-6`). Los formularios y serializadores **solo convierten la entrada** (`apps/accounts/forms.py:1-9`) y el servicio vuelve a validar.
@@ -198,11 +199,11 @@ flowchart TB
         end
 
         ORM["Modelos + ORM<br/>21 modelos, restricciones CHECK y UNIQUE"]
-        CACHE["Caché de Django<br/>(locmem por defecto)<br/>límites de intentos, contenido"]
+        CACHE["Caché de Django<br/>(locmem en desarrollo, Redis en producción)<br/>límites de intentos, contenido"]
     end
 
     subgraph Datos["Persistencia"]
-        DB[("PostgreSQL (objetivo)<br/>SQLite en desarrollo y tests")]
+        DB[("PostgreSQL 17<br/>(SQLite opcional en desarrollo)")]
         MEDIA[("media/<br/>imágenes subidas")]
         STATIC[("static/<br/>CSS Tailwind compilado, JS, jsQR")]
     end
@@ -210,7 +211,7 @@ flowchart TB
     subgraph Externos["Servicios externos y tareas"]
         SMTP["Proveedor SMTP<br/>(configurable, no verificado)"]
         SMS["Proveedor SMS<br/>(no integrado)"]
-        CRON["Programador del sistema<br/>(cron / Programador de tareas)<br/>process_notifications, run_birthday_promotions,<br/>expire_redemptions, purge_email_tokens"]
+        CRON["scheduler (supercronic, Fase 12)<br/>process_notifications, run_birthday_promotions,<br/>expire_redemptions, purgas diarias"]
     end
 
     NAV --> URLS
@@ -228,7 +229,7 @@ flowchart TB
     CRON -.->|"comandos de gestión"| SVC
 ```
 
-> Nota de rigor: la programación con cron o con el Programador de tareas **no existe en el repositorio**. Los comandos sí existen, pero alguien tiene que programarlos al desplegar (cap. 13).
+> Desde la Fase 12, las tareas las programa el servicio `scheduler` de Docker Compose (`deploy/cron/crontab`, cap. 13). Las copias de seguridad no van ahí: se programan en el host.
 
 ### 3.3 Organización de módulos y dependencias
 
@@ -336,19 +337,19 @@ sequenceDiagram
 ```
 
 Paso a paso, con referencias:
-1. **Middleware** (`config/settings/base.py:57-66`): seguridad, sesión, idioma, CSRF, autenticación, mensajes y anti-clickjacking (`X_FRAME_OPTIONS = "DENY"`, `:293`).
-2. **Enrutado** (`config/urls.py:9-22`): por prefijos; `panel/compras/` → `apps/purchases/urls.py`.
+1. **Middleware** (`config/settings/base.py:57-68`): seguridad, sesión, idioma, CSRF, autenticación, mensajes y anti-clickjacking (`X_FRAME_OPTIONS = "DENY"`, `:297`).
+2. **Enrutado** (`config/urls.py:13-26`): por prefijos; `panel/compras/` → `apps/purchases/urls.py`.
 3. **Vista** (`apps/purchases/views.py:84-117`): los decoradores aplican la caché, el método y el rol.
 4. **Validación**: el formulario convierte el importe (`forms.py:35-36` → `services.parse_amount`) y el servicio vuelve a validar todo.
-5. **Lógica de negocio y BD**: transacción explícita (`ATOMIC_REQUESTS = False`, `base.py:96`; las transacciones están en los servicios).
+5. **Lógica de negocio y BD**: transacción explícita (`ATOMIC_REQUESTS = False`, `base.py:98`; las transacciones están en los servicios).
 6. **Respuesta**: patrón POST-redirect-GET con un mensaje (`views.py:113-117`).
 
 ### 3.5 Validación, autenticación, renderizado, acceso a datos y errores
 
 - **Validación en tres niveles:** formulario o serializador (formato) → servicio (reglas de negocio con el estado actual, dentro de la transacción) → BD (CHECK y UNIQUE). Ejemplo: el importe se valida en `parse_amount` y además `CHECK amount >= 0.01` (`apps/purchases/models.py:83`).
 - **Autenticación:** web por sesión (`LoginView` con `ThrottledAuthenticationForm`); API por JWT (`apps/api/authentication.py`). **Autorización** por rol leído siempre de la BD (`apps/accounts/permissions.py:17-23`).
-- **Renderizado:** Django Templates en `templates/` (109 plantillas), plantilla base con el CSS compilado de Tailwind y un JS de mejora progresiva. La API devuelve solo JSON (`base.py:227-228`).
-- **Acceso a datos:** ORM. Los selectores usan `select_related`, `only()` y `defer()` para cargar los campos mínimos (p. ej. `.defer("code")` en `rewards/selectors.py:111`: el propietario no ve los códigos de canje).
+- **Renderizado:** Django Templates en `templates/` (109 plantillas), plantilla base con el CSS compilado de Tailwind y un JS de mejora progresiva. La API devuelve solo JSON (`base.py:231-232`).
+- **Acceso a datos:** ORM. Los selectores usan `select_related`, `only()` y `defer()` para cargar los campos mínimos (p. ej. `.defer("code")` en `rewards/selectors.py:105`: el propietario no ve los códigos de canje).
 - **Errores:** web → mensajes (`django.contrib.messages`) y plantillas 400/403/404/500 (`templates/`); API → formato único `{code, detail, fields}` (`apps/api/exceptions.py`); los errores inesperados devuelven un 500 genérico sin trazas.
 - **Integraciones externas:** SMTP (configurable), SMS (no integrado) y CDN de Swagger UI solo en `/api/v1/docs/` (cap. 16).
 
@@ -358,24 +359,31 @@ Paso a paso, con referencias:
 
 Solo se analizan las tecnologías **confirmadas** en `requirements/*.txt`, `config/settings/base.py`, `scripts/` y `static/`. Versiones instaladas en el entorno de análisis (`pip freeze`).
 
-| Tecnología | Versión (requisito / instalada) | Uso en el proyecto | Alternativas | Por qué encaja | Limitaciones |
+| Tecnología | Versión (fijada en `requirements/`) | Uso en el proyecto | Alternativas | Por qué encaja | Limitaciones |
 |---|---|---|---|---|---|
 | **Python** | 3.12+ (README) / 3.14.2 | Lenguaje de todo el backend | Node.js, Java | Ecosistema Django y `Decimal` para el dinero | Rendimiento por petición inferior a lenguajes compilados, irrelevante a esta escala |
-| **Django** | `>=5.2.8,<5.3` / 5.2.18 | Framework: ORM, migraciones, autenticación, sesiones, CSRF, admin, plantillas, formularios y señales de seguridad | Flask, FastAPI | «Baterías incluidas»: seguridad nativa y admin gratis para el propietario; versión LTS | Monolito: escalar por partes requiere más trabajo |
-| **PostgreSQL** (objetivo) / **SQLite** (desarrollo) | psycopg `>=3.2,<4` / 3.3.6 | BD. `DATABASE_URL` decide; sin ella, SQLite | MySQL | PostgreSQL soporta `SELECT ... FOR UPDATE` real, índices parciales y CHECK | **No se ha probado con PostgreSQL** en esta revisión; SQLite no ejercita los bloqueos de fila |
-| **django-environ** | `>=0.12,<0.13` | Configuración por variables de entorno (`.env` opcional) | python-decouple | Secretos fuera del código | — |
-| **Django REST Framework** | `>=3.16,<3.17` / 3.16.1 | API v1: vistas, serializadores, permisos, throttling y paginación | Django Ninja | Estándar de facto e integración con drf-spectacular | Curva de aprendizaje |
-| **djangorestframework-simplejwt** | `>=5.5,<6` / 5.5.1 | JWT para la app: access, refresh rotatorio y lista negra | Tokens de DRF, OAuth2 | Apto para móviles (sin cookies), revocable con la lista negra | Un access ya emitido vale hasta caducar; se mitiga con 15 min y la reclamación `pwv` |
-| **drf-spectacular** | `>=0.28,<0.29` / 0.28.0 | Esquema OpenAPI y Swagger UI | drf-yasg | OpenAPI 3 actual | Swagger UI carga recursos de un CDN por defecto |
-| **Pillow** | `>=12.0,<13` / 12.3.0 | Validar las imágenes por su contenido real | — | Requisito de `ImageField` | — |
-| **segno** | `>=1.6,<2` / 1.6.6 | Generar el QR como SVG en el servidor | qrcode | Sin dependencias y SVG como data URI, sin servicios externos | — |
-| **phonenumbers** | `>=9.0,<10` / 9.0.41 | Validar y normalizar móviles a E.164 | Expresiones regulares | Reglas reales por país | — |
+| **Django** | 5.2.18 | Framework: ORM, migraciones, autenticación, sesiones, CSRF, admin, plantillas, formularios y señales de seguridad | Flask, FastAPI | «Baterías incluidas»: seguridad nativa y admin gratis para el propietario; versión LTS | Monolito: escalar por partes requiere más trabajo |
+| **PostgreSQL 17** / **SQLite** (desarrollo opcional) | psycopg 3.3.6 | BD. `DATABASE_URL` decide; sin ella, SQLite. Producción exige PostgreSQL | MySQL | PostgreSQL soporta `SELECT ... FOR UPDATE` real, índices parciales y CHECK | SQLite no ejercita los bloqueos de fila: la concurrencia se verifica en PostgreSQL (local, contenedor y CI) |
+| **django-environ** | 0.12.1 | Configuración por variables de entorno (`.env` opcional) | python-decouple | Secretos fuera del código | — |
+| **Django REST Framework** | 3.16.1 | API v1: vistas, serializadores, permisos, throttling y paginación | Django Ninja | Estándar de facto e integración con drf-spectacular | Curva de aprendizaje |
+| **djangorestframework-simplejwt** | 5.5.1 | JWT para la app: access, refresh rotatorio y lista negra | Tokens de DRF, OAuth2 | Apto para móviles (sin cookies), revocable con la lista negra | Un access ya emitido vale hasta caducar; se mitiga con 15 min y la reclamación `pwv` |
+| **drf-spectacular** | 0.28.0 | Esquema OpenAPI y Swagger UI | drf-yasg | OpenAPI 3 actual | Swagger UI carga recursos de un CDN por defecto |
+| **Pillow** | 12.3.0 | Validar las imágenes por su contenido real | — | Requisito de `ImageField` | — |
+| **segno** | 1.6.6 | Generar el QR como SVG en el servidor | qrcode | Sin dependencias y SVG como data URI, sin servicios externos | — |
+| **phonenumbers** | 9.0.41 | Validar y normalizar móviles a E.164 | Expresiones regulares | Reglas reales por país | — |
 | **Tailwind CSS** | v4.3.3, CLI standalone (`scripts/tailwind.py:19`) | Sistema de diseño; CSS compilado y versionado en `static/css/app.css` | Bootstrap, CSS propio | Sin Node: el script descarga el binario y **verifica su SHA-256** | Hay que recompilar al cambiar clases |
 | **HTML + Django Templates** | — | Todas las páginas | SPA (React) | Renderizado en el servidor: menos superficie y SEO | Interactividad limitada |
 | **JavaScript (vanilla)** | `static/js/app.js` (65 líneas), `qr-scanner.js` (136) | Menú plegable, evitar el doble envío y lector de QR | HTMX, Alpine | **Mejora progresiva**: sin JS todo funciona | — |
 | **jsQR** | `static/vendor/jsqr/` (con LICENSE) | Lectura de QR cuando el navegador no tiene `BarcodeDetector` | — | Servido localmente, sin CDN | Versión no indicada en el repositorio |
+| **Gunicorn** | 25.3.0 (`requirements/prod.txt`) | Servidor WSGI en el contenedor `web` (3 workers síncronos) | uWSGI, Waitress | Estándar para Django en Linux | No funciona en Windows (solo en el contenedor o el VPS) |
+| **Nginx** | imagen oficial | Proxy inverso con TLS, estáticos con hash, `/media` solo imágenes y límite de peticiones en el login | Caddy, Traefik | Probado y configurable; segunda capa de límites | Configuración propia que mantener |
+| **Redis** | cliente 7.4.1 | Caché compartida obligatoria en producción (límites de intentos y contenido del local) | Caché en la BD | Con varios workers, los contadores deben ser comunes | Sin persistencia ni contraseña: solo en la red interna |
+| **Docker + Docker Compose** | Docker Engine 29 / Compose 2.40 (probado) | Imagen multietapa no root y pila completa: web, db, redis, nginx, scheduler, certbot | Instalación directa en el VPS | Reproducible y con rollback por etiquetas | Un solo servidor, sin alta disponibilidad |
+| **supercronic** | 0.2.48 (SHA1 verificado) | Tareas programadas en el servicio `scheduler` | cron del sistema, Celery beat | Sin root, sin solapar ejecuciones, logs a stdout | Granularidad de minutos |
+| **restic** | 0.18.1 (contenedor) | Copias cifradas de la BD y de `media/` con retención | `pg_dump` + rsync | Cifrado en el cliente, deduplicación y varios destinos | Requiere un destino externo (pendiente en el VPS) |
+| **GitHub Actions** | `.github/workflows/ci.yml` | CI: suite en PostgreSQL 17 sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración | GitLab CI | Integrado con el repositorio | Acciones fijadas por versión principal, no por SHA |
 
-**Tecnologías NO presentes** (pese a que el prompt las mencione): **HTMX y Alpine.js** (grep sin resultados; el plan las permitía «solo si aportan algo»), **Docker / Docker Compose**, **CI/CD**, **Celery / Redis** (las tareas usan comandos de gestión; Redis aparece solo como ejemplo de `CACHE_URL` en `.env.example:72`) y **servidor WSGI** (`requirements/prod.txt` solo incluye `base.txt`).
+**Tecnologías NO presentes** (pese a que el prompt las mencione): **HTMX y Alpine.js** (grep sin resultados; el plan las permitía «solo si aportan algo»), **Celery** (las tareas son comandos de gestión programados con supercronic; Redis se usa solo como caché), **Kubernetes** y **herramientas de monitorización** (fuera del alcance de la Fase 12).
 
 ---
 
@@ -409,8 +417,11 @@ webcaneca/
 ├── assets/css/input.css         # fuente de Tailwind (tokens de la paleta)
 ├── static/                      # css/app.css (compilado), js/, vendor/jsqr/, img/brand/
 ├── scripts/tailwind.py          # descarga verificada y compilación del CSS
-├── tests/                       # una carpeta por app (802 tests)
-└── docs/                        # plan de fases, un documento por fase, arquitectura, despliegue, guía Flutter, OpenAPI
+├── tests/                       # una carpeta por app y base de concurrencia (849 tests)
+├── deploy/                      # Gunicorn, Nginx, crontab, rol de PostgreSQL y scripts de despliegue, copia y restauración
+├── Dockerfile, compose*.yaml    # imagen multietapa y pilas de producción y local (Fase 12)
+├── .github/workflows/ci.yml     # integración continua (GitHub Actions)
+└── docs/                        # plan de fases, un documento por fase, arquitectura, despliegue, auditoría, refactorización, guía Flutter, OpenAPI
 ```
 
 ### 5.2 Archivos con responsabilidad relevante
@@ -594,8 +605,8 @@ erDiagram
 
 Ejemplo: **edición del perfil del cliente**.
 1. `POST /cuenta/perfil/` → `accounts.views.profile` (`views.py:146`), solo para CUSTOMER.
-2. `ProfileForm(request.POST)` convierte los tipos (fecha, texto) y adelanta los errores de formato (`forms.py:63-79`).
-3. `services.update_customer_profile(user=request.user, ...)` (`services.py:753`): **rechaza campos desconocidos** (lista blanca `PROFILE_FIELDS`), bloquea las filas de usuario y perfil, normaliza (`_apply_profile_data`), aplica el enfriamiento de 365 días de la fecha de nacimiento, retira el SMS si se borra el teléfono, valida todo (`full_clean`) y guarda.
+2. `ProfileForm(request.POST)` convierte los tipos (fecha, texto) y adelanta los errores de formato (`forms.py:64-80`).
+3. `services.update_customer_profile(user=request.user, ...)` (`services.py:769`): **rechaza campos desconocidos** (lista blanca `PROFILE_FIELDS`), bloquea las filas de usuario y perfil, normaliza (`_apply_profile_data`), aplica el enfriamiento de 365 días de la fecha de nacimiento, retira el SMS si se borra el teléfono, valida todo (`full_clean`) y guarda.
 4. La BD aplica el CHECK «SMS solo con teléfono».
 5. `AuditEvent PROFILE_UPDATED` con **solo los nombres** de los campos cambiados.
 6. Recuperación: en el siguiente GET, `CustomerProfile.objects.filter(user=user)` → `_profile_initial` → plantilla `accounts/profile.html`.
@@ -614,8 +625,9 @@ Ejemplo: **edición del perfil del cliente**.
 | F6 (`99711bc`) | `loyalty/0002_points_ledger_promotions`; `core/0005` | Ledger, reglas y promociones |
 | F7 (`c185ff4`) | `rewards/0001_rewards_redemptions`; `core/0006` | Recompensas y canjes |
 | F9 (`70fb531`) | `web/0001_business_info`; `core/0007` | Contenido del local |
-| F10 (`a85ce95`) | `events/0001`, `notifications/0001`, `loyalty/0003_birthday_gift` (**RunPython** de comprobación), `accounts/0007`, `web/0002`; `core/0008` | Eventos, reservas, notificaciones y regalo de cumpleaños |
-| F11 (`ac5903a`) | `core/0009_audit_actions_phase11` | Nuevas acciones de auditoría |
+| F10 (`b91d8bd`) | `events/0001`, `notifications/0001`, `loyalty/0003_birthday_gift` (**RunPython** de comprobación), `accounts/0007`, `web/0002`; `core/0008` | Eventos, reservas, notificaciones y regalo de cumpleaños |
+| F11 (`eec6abc`) | `core/0009_audit_actions_phase11` | Nuevas acciones de auditoría |
+| PostgreSQL, auditoría, F12 y refactorización | Ninguna | Sin cambios de esquema (`makemigrations --check`) |
 
 Patrón observado: **cada fase añade una migración de `core`** con las nuevas acciones de auditoría (se modifican los `choices` de `AuditEvent.action`). No hay migraciones en F3 ni en F8 (no tocan modelos). `makemigrations --check` confirma que el esquema está sincronizado con los modelos.
 
@@ -662,7 +674,7 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 - **L. Tests:** `tests/catalog/` (59): modelos, selectores, servicios, validadores y permisos del admin (`test_other_roles_and_anonymous_cannot_access`).
 - **M. Ejemplo:** la IPA rotativa se agota → «Marcar como agotado» → sigue en la carta con la etiqueta «Agotada» y pasa al final de su categoría.
 - **N. Decisiones:** gestión en el admin de Django (rápida y segura) en lugar de un CRUD propio; imagen de la carta de grifos por simplicidad operativa.
-- **O. Limitaciones:** las imágenes subidas **solo se sirven en desarrollo** (`config/urls.py:24-27`); en producción falta definir el almacenamiento. No hay precios por formato (un precio por producto).
+- **O. Limitaciones:** Django solo sirve las imágenes subidas en desarrollo (`config/urls.py:28-31`); en producción las sirve Nginx desde el volumen `media` (Fase 12), que entra en las copias. No hay precios por formato (un precio por producto).
 
 **Estado:** Implementado y verificado.
 
@@ -674,22 +686,22 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 - **D. Modelos:** `User`, `CustomerProfile`, `EmailVerificationToken` y `CommunicationPreferenceChange`.
 - **E. Flujos:**
   1. **Registro:** `/cuenta/registro/` → `RegistrationForm` → `services.register_customer` (cap. 9.1) [C8.3].
-  2. **Login:** `/cuenta/entrar/` → `LoginView` + `ThrottledAuthenticationForm` (`forms.py:173-194`): límites de 5 fallos por email y 30 por IP en 15 minutos, con el mismo mensaje exista o no la cuenta. Tras entrar, `accounts:home` redirige según el rol (`views.py:126-133`).
+  2. **Login:** `/cuenta/entrar/` → `LoginView` + `ThrottledAuthenticationForm` (`forms.py:177-203`, límite en `LoginThrottleMixin`): límites de 5 fallos por email y 30 por IP en 15 minutos, con el mismo mensaje exista o no la cuenta. El login del admin técnico comparte los mismos contadores (`ThrottledAdminAuthenticationForm`, `forms.py:206-213`; añadido en la auditoría previa a la Fase 12). Tras entrar, `accounts:home` redirige según el rol (`views.py:126-133`).
   3. **Logout:** `/cuenta/salir/` es un **POST con CSRF** (formulario en `templates/base.html:42-45`; `LogoutView` de Django).
-  4. **Recuperación:** `PasswordResetView` (tokens nativos de Django, 2 h, `base.py:120`), límite por IP y enlace construido con `SITE_BASE_URL` (no con la cabecera Host, `views.py:237-240`).
+  4. **Recuperación:** `PasswordResetView` (tokens nativos de Django, 2 h, `base.py:124`), límite por IP y enlace construido con `SITE_BASE_URL` (no con la cabecera Host, `views.py:237-240`).
   5. **Verificación:** enlace `/cuenta/verificar-email/<token>/`: GET muestra un botón y POST lo consume (`views.py:71-88`) [C8.4].
   6. **Cambio de email:** `services.request_email_change` exige la contraseña; el email no cambia hasta confirmar; se avisa a la dirección antigua.
   7. **Perfil:** `services.update_customer_profile` (cap. 6.4).
 - **F. Funciones:** `_create_user`, `register_customer`, `_issue_email_token`, `confirm_email_token`, `request_email_change`, `change_password`, `reset_password_with_token`, `update_customer_profile` y `set_communication_preferences` (todas en `services.py`).
 - **G. Código:** [C8.2] permisos; [C8.3] anti-enumeración en el registro; [C8.4] consumo atómico del token; [C8.5] invariante del email.
-- **H. Reglas:** contraseña de al menos 10 caracteres, no común, no solo numérica y no parecida a los datos del usuario (`base.py:105-113`); email normalizado a minúsculas (`normalization.py`); edad mínima de 18 años; 5 emails de verificación al día y 1 por minuto; token de 24 h, de un solo uso y revocado al emitir otro.
+- **H. Reglas:** contraseña de al menos 10 caracteres, no común, no solo numérica y no parecida a los datos del usuario (`base.py:109-117`); email normalizado a minúsculas (`normalization.py`); edad mínima de 18 años; 5 emails de verificación al día y 1 por minuto; token de 24 h, de un solo uso y revocado al emitir otro.
 - **I. Seguridad:** hash de contraseñas nativo de Django (PBKDF2 por defecto; en los tests se usa MD5 **solo** para acelerarlos, `config/settings/test.py:8-9`); CSRF en todos los formularios; `never_cache` en las páginas sensibles; las vistas nunca reciben un id de usuario (`views.py:1-5`); el token no queda en los logs (errores con 200) y en la BD solo se guarda su hash.
 - **J. Interacción:** `notifications` (envío de emails y registro), `core` (auditoría y límites).
 - **K. Casos de error:** email ya registrado → la misma respuesta + aviso al titular; token caducado, usado o revocado → mensaje específico; demasiados intentos → mensaje genérico.
 - **L. Tests:** `tests/accounts/` (195), entre otros `test_registration.py:277` (`test_duplicate_email_does_not_reveal_existence`), `test_email_verification.py` (23) y `tests/core/test_phase11_audit.py:48-91`.
 - **M. Ejemplo:** Ana (datos ficticios, `ana@example.com`) se registra → recibe el enlace → mientras no lo confirma puede entrar y editar su perfil, pero `/cuenta/mi-qr/` le responde 403.
 - **N. Decisiones:** reutilizar las vistas nativas de Django (login, logout y recuperación) personalizando el formulario; verificación propia con tokens en BD (revocables y auditables) en lugar de enlaces firmados sin estado.
-- **O. Limitaciones:** el **envío real por SMTP no se ha verificado**; los contadores de intentos son por proceso con la caché por defecto (D11); no hay 2FA.
+- **O. Limitaciones:** el **envío real por SMTP no se ha verificado** (sí con Mailpit en la pila local); no hay 2FA. Los contadores de intentos son comunes a todos los workers porque producción exige una caché compartida (auditoría P1-2), y el login del admin tiene el mismo límite (P1-1).
 
 **Estado:** Implementado y verificado (el envío SMTP real, pendiente).
 
@@ -697,7 +709,7 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 
 - **A. Objetivo:** recoger solo los datos necesarios, limitar quién los ve y dejar constancia de los accesos y consentimientos.
 - **B. Requisitos:** CLAUDE.md §3, Fase 2 (política de datos) y Fase 9 (consulta auditada).
-- **C. Archivos:** `apps/accounts/models.py` y `selectors.py`, `apps/loyalty/services.py:147-150` (nombre abreviado), `apps/dashboard/views.py:149-225`, `apps/events/selectors.py:103-125`, `apps/notifications/models.py:1-20` y `apps/core/models.py:15-22`.
+- **C. Archivos:** `apps/accounts/models.py` y `selectors.py`, `apps/loyalty/services.py:147-150` (nombre abreviado), `apps/dashboard/views.py:149-225`, `apps/events/selectors.py:104-123`, `apps/notifications/models.py:1-20` y `apps/core/models.py:15-22`.
 - **D. Datos recogidos y finalidad:**
 
 | Dato | Dónde | Finalidad (según el código y los docs) | ¿Quién lo ve? |
@@ -712,17 +724,17 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 
 - **E. Flujo de acceso auditado:** `GET /dashboard/clientes/<uuid>/` → `customer_detail` → `accounts.record_customer_data_access` (`AuditEvent CUSTOMER_DATA_VIEWED` con el `public_id` del cliente, **sin los datos**).
 - **H. Reglas de minimización verificadas:**
-  - Listados del propietario con `.only(LIST_FIELDS)` (sin dirección, teléfono ni fecha de nacimiento) (`accounts/selectors.py:43, 94`).
+  - Listados del propietario con `.only(LIST_FIELDS)` (sin dirección, teléfono ni fecha de nacimiento) (`accounts/selectors.py:45, 94`).
   - El empleado ve solo «Lúa F.» (`loyalty/services.customer_display_name`).
   - La búsqueda de clientes se envía por **POST y se guarda en la sesión** para que el nombre o el email no queden en la URL ni en los logs (`dashboard/views.py:150-156`).
   - Las estadísticas geográficas solo usan las direcciones declaradas, **sin geolocalización por IP** y sin direcciones completas (`accounts/selectors.py:11-14`).
-  - La auditoría guarda los nombres de los campos cambiados, nunca sus valores (`services.py:810-817`).
+  - La auditoría guarda los nombres de los campos cambiados, nunca sus valores (`services.py:826-833`).
   - Las notificaciones no guardan ni el destinatario ni el cuerpo; los tokens de los enlaces nunca se persisten (`notifications/models.py:7-12`).
   - Los logs solo llevan `public_id` (p. ej. `purchases/services.py:101, 193`).
   - Las IPs y los emails de los contadores se guardan como hash SHA-256 en la caché (`core/throttling.py:14-16`).
 - **Preferencias promocionales:** desactivadas por defecto; **verificar el email no es consentimiento** (`services.py:825`); cada cambio queda en `CommunicationPreferenceChange`; baja con un enlace firmado y POST de confirmación (cap. 7.13); el regalo de cumpleaños **no depende** del consentimiento publicitario (`loyalty/birthdays.py:14-17`).
 - **Rectificación:** el cliente edita sus datos en `/cuenta/perfil/` (fecha de nacimiento como máximo una vez al año).
-- **Exportación y eliminación:** **no identificadas**. No hay funcionalidad de exportar los datos ni de borrar la cuenta a petición; las cuentas se **desactivan** (el admin no permite borrar, `accounts/admin.py:151-153`), lo que conserva el historial pero no implementa por sí solo el derecho de supresión.
+- **Exportación y eliminación:** **no identificadas**. No hay funcionalidad de exportar los datos ni de borrar la cuenta a petición; las cuentas se **desactivan** (el admin no permite borrar, `accounts/admin.py:149-151`), lo que conserva el historial pero no implementa por sí solo el derecho de supresión.
 - **L. Tests:** `tests/loyalty/test_points_views.py:57` (`test_never_shows_other_customers_data`), `tests/staff/test_panel.py` (sin datos personales), `tests/dashboard/test_access.py:155`, `tests/web/test_public_pages.py:109`.
 - **O. Limitaciones:** el código **no garantiza el cumplimiento del RGPD** por sí mismo (faltan textos legales, exportación y supresión, y una política de conservación más allá de la purga de tokens).
 
@@ -760,7 +772,7 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 - **H. Validaciones:** importe en `Decimal` (acepta coma o punto; **rechaza `float`**: lo convierte desde `repr`), como máximo 2 decimales, de 0,01 a 1000 €; origen habilitado (`MANUAL`); clave UUID válida; QR de un cliente activo y verificado; **todo se vuelve a comprobar dentro de la transacción** con el cliente bloqueado.
 - **Repetición:** misma clave + mismos datos → devuelve la compra existente (`created=False`, mensaje «no se ha duplicado»); misma clave con otros datos → `idempotency_conflict` [C8.7].
 - **Historial:** la compra es inmutable (el admin es de solo lectura) y está ligada a sus movimientos de puntos.
-- **Compras registradas ≠ facturación:** el sistema no conoce la caja ni el TPV; las estadísticas lo dicen explícitamente (`NOT_REVENUE_NOTE`, `selectors.py:22-25`) y `business_revenue` siempre es `None`.
+- **Compras registradas ≠ facturación:** el sistema no conoce la caja ni el TPV; las estadísticas lo dicen explícitamente (`NOT_REVENUE_NOTE`, `purchases/selectors.py:23-26`) y `business_revenue` siempre es `None`.
 - **I. Seguridad:** el código del cliente viaja por POST (nunca en la URL), `never_cache`, 404 para las compras de otro empleado (`views.py:130-132`), límite de 20 fallos y un log sin código ni datos del cliente.
 - **L. Tests:** `tests/purchases/test_services.py` (25: importes, cliente inactivo o sin verificar, doble envío, clave reutilizada, autorregistro rechazado por la BD), `test_views.py` (25), `test_stats.py` (6).
 - **M. Ejemplo:** un empleado registra 12,50 € → compra creada + movimiento `EARN_PURCHASE` de 12 puntos (conversión por defecto); vuelve a pulsar «Registrar» → «Esta compra ya estaba registrada».
@@ -804,12 +816,12 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 - **Doble uso imposible:** la validación es `UPDATE ... WHERE status='PENDING' AND expires_at > now` [C8.12]; de dos validaciones simultáneas solo una cambia la fila. Además: CHECK de coherencia de `USED` y prohibición de validar el propio canje.
 - **Errores y reversión:** cancelación del cliente o caducidad → `_close()` devuelve los puntos con un `REVERSAL` y devuelve la unidad de stock en una transacción; si alguien lo validó entre medias, `_ConcurrentChange` **deshace la devolución**.
 - **I. Seguridad:** 404 para los canjes ajenos; el código no aparece en la URL, los logs ni la auditoría; el propietario ve los listados con `.defer("code")`; límite de 20 códigos no válidos por empleado.
-- **L. Tests:** `tests/rewards/test_services.py` (54: saldo insuficiente sin efectos, stock que no baja de 0 aunque la comprobación estuviera desfasada, código usado, caducado con devolución, cancelación ajena o usada), `test_views.py` (26), `test_concurrency.py` (3; **omitidos en SQLite en memoria**; pasan con SQLite en fichero, sin ejercitar los bloqueos de fila).
+- **L. Tests:** `tests/rewards/test_services.py` (54: saldo insuficiente sin efectos, stock que no baja de 0 aunque la comprobación estuviera desfasada, código usado, caducado con devolución, cancelación ajena o usada), `test_views.py` (26), `test_concurrency.py` (4, con hilos; pasan en PostgreSQL y se omiten en SQLite en memoria).
 - **M. Ejemplo:** Lúa (ficticia) tiene 100 puntos y canjea «Pinta de la casa» (40) → saldo 60 y código `ABCD-EFGH-JKMN` → en la barra el empleado lo valida → USED. Si no lo recoge en 30 días, `expire_redemptions` lo caduca y le devuelve 40 puntos.
 - **N. Decisiones:** descontar los puntos al **solicitar** (no al recoger) para que el saldo mostrado sea real, con devolución automática si no se usa.
-- **O. Limitaciones:** el plazo de 30 días está «pendiente de confirmar»; la caducidad automática depende de programar `expire_redemptions` (aunque un código vencido nunca se acepta).
+- **O. Limitaciones:** el plazo de 30 días está «pendiente de confirmar»; `expire_redemptions` se ejecuta a diario en el servicio `scheduler` (Fase 12); aunque no se ejecutara, un código vencido nunca se acepta.
 
-**Estado:** Implementado y verificado (concurrencia real en PostgreSQL, pendiente).
+**Estado:** Implementado y verificado, también la concurrencia real en PostgreSQL (`tests/rewards/test_concurrency.py`).
 
 ### 7.9 Panel del empleado
 
@@ -859,9 +871,9 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 ### 7.12 Estadísticas y geografía
 
 - **Métricas:** cap. 7.10. **Fuentes:** selectores de cada dominio (`accounts`, `purchases`, `loyalty`, `rewards` y `events`), reutilizados por el dashboard y por la API (`owner/stats/`).
-- **Agregaciones:** `aggregate` con `Count(..., filter=Q(...))` y `Sum` + `Coalesce` (p. ej. `accounts/selectors.py:126-132`), en una sola consulta por bloque.
-- **Periodos:** `[start, end)` en medianoches locales (`dashboard/forms.py:40-60`); los canjes «utilizados» se cuentan por fecha de validación y los solicitados por fecha de creación (`rewards/selectors.py:87-100`).
-- **Geografía** (`geographic_distribution`, `accounts/selectors.py:195-244`): niveles país, provincia, localidad y CP (siempre con el país para no mezclar homónimos), agrupación sin distinguir mayúsculas (`Upper` como clave y `Max` como etiqueta), las `limit` primeras zonas + «otros» + «sin dato», porcentaje con un decimal `ROUND_HALF_UP`. Base: altas del periodo **o** clientes con compras en el periodo.
+- **Agregaciones:** `aggregate` con `Count(..., filter=Q(...))` y `Sum` + `Coalesce` (p. ej. `accounts/selectors.py:121-127`), en una sola consulta por bloque.
+- **Periodos:** `[start, end)` en medianoches locales (`dashboard/forms.py:40-60`); los canjes «utilizados» se cuentan por fecha de validación y los solicitados por fecha de creación (`rewards/selectors.py:80-93`).
+- **Geografía** (`geographic_distribution`, `accounts/selectors.py:190-235`): niveles país, provincia, localidad y CP (siempre con el país para no mezclar homónimos), agrupación sin distinguir mayúsculas (`Upper` como clave y `Max` como etiqueta), las `limit` primeras zonas + «otros» + «sin dato», porcentaje con un decimal `ROUND_HALF_UP`. Base: altas del periodo **o** clientes con compras en el periodo.
 - **Privacidad:** solo direcciones **declaradas**, sin geolocalización por IP y sin direcciones completas.
 - **Clientes registrados frente a ventas:** las cifras de compras son **compras registradas en el programa**, no la facturación (cap. 7.6).
 - **Limitaciones estadísticas:** las direcciones las declara el cliente y no se verifican; las zonas pequeñas podrían permitir identificar a alguien si se combinan filtros (riesgo bajo, solo para el propietario).
@@ -887,7 +899,7 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 - **Baja:** enlace firmado con `django.core.signing` (sal propia, caduca en 365 días, solo `public_id` y canal) + cabecera `List-Unsubscribe`; la página pide confirmar con un POST.
 - **G. Código:** [C8.16] `deliver`.
 - **Tests:** `tests/notifications/test_notifications.py` (30, incluido `test_dedup_key_prevents_duplicates`).
-- **Estado:** Implementado y verificado con backends en memoria; **SMTP real y programación de `process_notifications` pendientes**; SMS planificado.
+- **Estado:** Implementado y verificado con backends en memoria y con Mailpit en la pila local; `process_notifications` se ejecuta cada 5 minutos en el `scheduler` (Fase 12); **SMTP real pendiente**; SMS planificado.
 
 ### 7.14 API REST v1
 
@@ -918,11 +930,11 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 ## 8. Explicación del código fuente
 
 **Convenciones.**
-- Los bloques marcados como **Código real** se han copiado tal cual del repositorio (commit `ac5903a`), con la ruta y las líneas exactas. La Etapa D comprueba automáticamente que coinciden con el archivo fuente.
+- Los bloques marcados como **Código real** se han copiado tal cual del repositorio, con la ruta y las líneas exactas de la versión congelada (`d0bac7c`). El 15-10-2026 se volvieron a comparar automáticamente con el código: coinciden todos; el de C8.13 se actualizó porque la migración a PostgreSQL cambió ese fragmento.
 - Los bloques marcados como **Versión didáctica (comentarios añadidos)** **no son el código original**: añaden comentarios `# ◆` para explicar el porqué. No se deben presentar como transcripción.
 - Los ejemplos usan datos ficticios.
 
-### C8.1 Enrutado del proyecto — `config/urls.py:9-22`
+### C8.1 Enrutado del proyecto — `config/urls.py:13-26`
 
 **Objetivo:** montar cada app bajo su prefijo. **Por qué importa:** el orden decide qué patrón gana cuando varios comparten prefijo (`cuenta/` agrupa tres apps).
 
@@ -1030,7 +1042,7 @@ def role_required(*roles):                        # ◆ fábrica de decoradores:
 
 ---
 
-### C8.3 Registro sin revelar si el email existe — `apps/accounts/services.py:421-430`
+### C8.3 Registro sin revelar si el email existe — `apps/accounts/services.py:437-446`
 
 **Objetivo:** que un atacante no pueda saber si un email tiene cuenta, ni por el mensaje **ni por el tiempo de respuesta**.
 
@@ -1054,7 +1066,7 @@ def role_required(*roles):                        # ◆ fábrica de decoradores:
 
 ---
 
-### C8.4 Consumo atómico del enlace de verificación — `apps/accounts/services.py:587-605`
+### C8.4 Consumo atómico del enlace de verificación — `apps/accounts/services.py:603-621`
 
 **Código real:**
 ```python
@@ -1420,7 +1432,7 @@ def _create_redemption(customer, reward, key, now):
 
 ---
 
-### C8.12 Validación de un código sin doble consumo — `apps/rewards/services.py:378-393`
+### C8.12 Validación de un código sin doble consumo — `apps/rewards/services.py:381-396`
 
 **Código real:**
 ```python
@@ -1443,16 +1455,23 @@ def _create_redemption(customer, reward, key, now):
 ```
 
 **Explicación:** dos defensas superpuestas: (1) el bloqueo de fila (`for_update=True`) hace esperar a la segunda petición; (2) aunque el bloqueo fallara, el `UPDATE ... WHERE status='PENDING' AND expires_at > now` solo afecta a una fila una vez. Si `updated` es 0, el servicio informa de «ya se utilizó el dd/mm/aaaa hh:mm» (`:398-403`).
-**Pregunta del tribunal relacionada:** «¿Qué pasa si dos empleados validan a la vez el mismo código?» → solo uno recibe «Canje validado»; el otro, `code_used`. Lo prueba `test_same_code_validated_concurrently_is_used_once` (omitido en SQLite en memoria; pasa con SQLite en fichero; pendiente en PostgreSQL).
+**Pregunta del tribunal relacionada:** «¿Qué pasa si dos empleados validan a la vez el mismo código?» → solo uno recibe «Canje validado»; el otro, `code_used`. Lo prueba `test_same_code_validated_concurrently_is_used_once`, que pasa en PostgreSQL con bloqueos de fila reales (se omite en SQLite en memoria).
 
 ---
 
-### C8.13 Máquina de estados de las reservas — `apps/events/services.py:343-366`
+### C8.13 Máquina de estados de las reservas — `apps/events/services.py:343-373`
 
 **Código real:**
 ```python
     with transaction.atomic():
-        locked = Reservation.objects.select_for_update().select_related("event", "customer").get(pk=reservation.pk)
+        # `of=("self",)`: solo se bloquea la reserva. PostgreSQL no admite FOR UPDATE
+        # sobre el LEFT JOIN de `event` (nulo en las reservas de mesa); el evento se
+        # bloquea aparte cuando hace falta.
+        locked = (
+            Reservation.objects.select_for_update(of=("self",))
+            .select_related("event", "customer")
+            .get(pk=reservation.pk)
+        )
         if by_customer and locked.customer_id != actor.pk:
             raise PermissionDenied
         if locked.status == to_status:
@@ -1474,9 +1493,10 @@ def _create_redemption(customer, reward, key, now):
             raise _error("Una reserva solo se completa a partir de su día.", "too_early")
         if by_customer and locked.requested_for <= now:
             raise _error("La hora de la reserva ya ha pasado: ya no se puede cancelar.", "in_the_past")
+
 ```
 
-**Explicación:** las transiciones permitidas están en un diccionario declarativo (`Reservation.TRANSITIONS`, `models.py:121-124`) y `can_transition_to` lo consulta. Repetir la misma transición es idempotente (`created=False`). Confirmar **vuelve a comprobar el aforo con el evento bloqueado**: dos confirmaciones simultáneas no pueden superar la capacidad. Un cliente solo actúa sobre sus reservas (`PermissionDenied`). La API traduce `invalid_transition` y `event_full` a **409 Conflict** (`apps/api/exceptions.py:31-42`).
+**Explicación:** las transiciones permitidas están en un diccionario declarativo (`Reservation.TRANSITIONS`, `models.py:121-124`) y `can_transition_to` lo consulta. Repetir la misma transición es idempotente (`created=False`). Confirmar **vuelve a comprobar el aforo con el evento bloqueado**: dos confirmaciones simultáneas no pueden superar la capacidad. `select_for_update(of=("self",))` bloquea solo la reserva: PostgreSQL no admite `FOR UPDATE` sobre el `LEFT JOIN` del evento (nulo en las reservas de mesa). SQLite ignora `FOR UPDATE` y no lo detectó; apareció al ejecutar la suite en PostgreSQL ([migración, H2](../migracion-postgresql.md)). Un cliente solo actúa sobre sus reservas (`PermissionDenied`). La API traduce `invalid_transition` y `event_full` a **409 Conflict** (`apps/api/exceptions.py:31-42`).
 
 ---
 
@@ -1979,42 +1999,44 @@ Se distinguen los **mecanismos presentes en el código** (con evidencia) de las 
 
 | Ámbito | Control concreto | Evidencia | Verificación |
 |---|---|---|---|
-| Autenticación web | Sesión de Django; login con límites por email (5) e IP (30) en 15 min; mensaje genérico | `apps/accounts/forms.py:173-194`; `base.py:142-144` | Tests |
-| Autenticación API | JWT HS256: access de 15 min y refresh de 30 días rotatorio con lista negra; `pwv` revoca al cambiar la contraseña; `CHECK_USER_IS_ACTIVE` | `apps/api/tokens.py`, `authentication.py`; `base.py:251-262` | `tests/api/test_auth.py` (28) |
+| Autenticación web | Sesión de Django; login con límites por email (5) e IP (30) en 15 min; mensaje genérico | `apps/accounts/forms.py:177-213` (web y admin); `base.py:146-148` | Tests |
+| Autenticación API | JWT HS256: access de 15 min y refresh de 30 días rotatorio con lista negra; `pwv` revoca al cambiar la contraseña; `CHECK_USER_IS_ACTIVE` | `apps/api/tokens.py`, `authentication.py`; `base.py:255-266` | `tests/api/test_auth.py` (28) |
 | Autorización por roles | `has_role` con el rol leído de la BD; decoradores en las vistas; los servicios y selectores vuelven a comprobarlo | `apps/accounts/permissions.py`; `_ensure_active_owner` (`services.py:77-82`) | `tests/dashboard/test_access.py`, `tests/accounts/test_permissions.py` |
 | Escalada de privilegios | Registro sin campo de rol; `is_staff` e `is_superuser` derivados del rol y restringidos en la BD; rol de solo lectura en el admin; nunca se queda el sistema sin propietario activo | `models.py:71-85`; `services.py:70-74, 198-237` | `tests/accounts/test_services.py`, `test_admin.py` |
-| IDOR / BOLA | Las vistas usan `request.user`; los objetos se buscan **filtrando por el propietario** (`customer_redemption(customer, public_id)`) → 404 si son ajenos; UUID en las URLs | `rewards/selectors.py:37-39`; `events/selectors.py:76-77`; `dashboard/views.py:265` | `test_cannot_see_or_cancel_others_reservations`, `test_other_employee_gets_404`, `test_cannot_reverse_other_customers_movement_through_url` |
-| CSRF | `CsrfViewMiddleware`; `{% csrf_token %}` (también en el logout); la API sin cookies (no hay superficie CSRF); la documentación de la API acepta sesión pero solo GET | `base.py:62`; `templates/base.html:42-45`; `apps/api/urls.py:12-15` | Comportamiento por defecto de Django |
+| IDOR / BOLA | Las vistas usan `request.user`; los objetos se buscan **filtrando por el propietario** (`customer_redemption(customer, public_id)`) → 404 si son ajenos; UUID en las URLs | `rewards/selectors.py:38-40`; `events/selectors.py:77-78`; `dashboard/views.py:265` | `test_cannot_see_or_cancel_others_reservations`, `test_other_employee_gets_404`, `test_cannot_reverse_other_customers_movement_through_url` |
+| CSRF | `CsrfViewMiddleware`; `{% csrf_token %}` (también en el logout); la API sin cookies (no hay superficie CSRF); la documentación de la API acepta sesión pero solo GET | `base.py:64`; `templates/base.html:42-45`; `apps/api/urls.py:12-15` | Comportamiento por defecto de Django |
 | XSS | Autoescape de las plantillas; QR como data URI SVG generado en el servidor; SVG rechazado en las subidas; enlaces sociales solo `https` | `loyalty/views.py:31-34`; `catalog/validators.py`; `web/models.py:38-40` | Tests de validadores |
 | Inyección SQL | Solo ORM con parámetros (no se ha encontrado SQL crudo: `grep` de `raw(` y `cursor` sin resultados en `apps/`) | — | — |
 | Asignación masiva | Formularios `forms.Form` y serializadores `Serializer` con campos explícitos; listas blancas `PROFILE_FIELDS`, `EVENT_FIELDS`, `EDITABLE_FIELDS`; `save_event` rechaza campos desconocidos | `accounts/services.py:37-46, 764-766`; `events/services.py:55-65, 98-100` | `test_cannot_modify_other_profile_by_sending_identifiers` (`test_profile.py:287`) |
 | Abuso de endpoints | Límites: registro, reenvío y recuperación (20 por IP y hora), QR mal leídos (20 en 15 min por empleado), códigos de canje, rotación de QR (5 al día), reservas (10 por hora), throttling DRF (anon 60/min, user 240/min, auth 10/min); paginación con un máximo de 50 | `base.py`; `apps/api/throttling.py`; `pagination.py` | `tests/api/test_security.py:48-64` |
 | Operaciones duplicadas | Claves de idempotencia únicas (compras, canjes, reservas y ajustes), `dedup_key` en las notificaciones y UNIQUE condicionales | Cap. 6 y 8 | Tests de idempotencia (cap. 11) |
-| Contraseñas | Hash nativo de Django; validadores (≥ 10, comunes, numéricas, similitud); nunca como argumento de comando (`getpass` o variable de entorno) | `base.py:105-113`; `create_owner.py:1-9` | `test_create_owner_command.py` |
+| Contraseñas | Hash nativo de Django; validadores (≥ 10, comunes, numéricas, similitud); nunca como argumento de comando (`getpass` o variable de entorno) | `base.py:109-117`; `create_owner.py:1-9` | `test_create_owner_command.py` |
 | Gestión de secretos | Todo por entorno (`django-environ`); `.env` en `.gitignore`; `.env.example` con valores ficticios; `prod.py` falla si falta la `SECRET_KEY` o si mide menos de 32 bytes | `base.py:15-21`; `prod.py:9-13` | `check --deploy` |
-| Sesiones | HttpOnly, SameSite Lax, 14 días; Secure en producción; cambiar la contraseña invalida las otras sesiones (hash de sesión de Django) | `base.py:289-292`; `prod.py:43-44` | — |
-| Tokens de verificación | `secrets.token_urlsafe(32)`, solo el hash en la BD, caducidad, uso único atómico, revocación y purga | `accounts/services.py:469-502, 562-625, 660-671` | Tests |
+| Sesiones | HttpOnly, SameSite Lax, 14 días; Secure en producción; cambiar la contraseña invalida las otras sesiones (hash de sesión de Django) | `base.py:293-296`; `prod.py:77-78` | — |
+| Tokens de verificación | `secrets.token_urlsafe(32)`, solo el hash en la BD, caducidad, uso único atómico, revocación y purga | `accounts/services.py:485-518, 562-625, 660-671` | Tests |
 | Exposición de datos personales | Campos mínimos (`.only`, `.defer`), nombre abreviado para el personal, búsqueda por POST + sesión, auditoría de las consultas de fichas, logs solo con `public_id` | Cap. 7.4 | Tests de privacidad |
 | Protección del QR | Token opaco de 160 bits, renovable, sin datos personales, solo identifica | Cap. 7.5 | `test_qr.py` |
 | Transacciones | `transaction.atomic` en todas las escrituras de negocio; `ATOMIC_REQUESTS = False` (control explícito) | Servicios | Tests |
-| Concurrencia | `select_for_update` con un orden de bloqueo fijo; UPDATE condicionados; restricciones únicas como última barrera | Cap. 8 | Omitidos en SQLite en memoria; OK en SQLite en fichero; **PostgreSQL pendiente** |
+| Concurrencia | `select_for_update` con un orden de bloqueo fijo (también en la regla del último propietario, corregida en la refactorización final, R-1); UPDATE condicionados; restricciones únicas como última barrera | Cap. 8 | 17 tests con hilos que pasan en PostgreSQL (local, contenedor y CI); se omiten en SQLite en memoria |
 | Auditoría | `AuditEvent` (30 acciones) sin datos personales; admin de solo lectura | `apps/core/` | `tests/core/*` |
-| Producción | `DEBUG = False`, `ALLOWED_HOSTS` obligatorio, SSL redirect, HSTS de 1 año, cookies Secure, backends simulados rechazados, `SITE_BASE_URL` https, admin en una ruta configurable, `X-Frame-Options: DENY`, nosniff, Referrer-Policy | `config/settings/prod.py`; `base.py:293-295, 341` | 7 tests (`tests/core/test_audit_and_settings.py:54-87`) + `check --deploy`: solo W021 |
+| Producción | `DEBUG = False`, `ALLOWED_HOSTS` obligatorio, PostgreSQL y caché compartida obligatorios, SSL redirect, HSTS de 1 año, cookies Secure, backends simulados rechazados, `SITE_BASE_URL` https, admin en una ruta configurable y con límite de intentos, `X-Frame-Options: DENY`, nosniff, Referrer-Policy | `config/settings/prod.py`; `base.py:297-299, 341` | 7 tests (`tests/core/test_audit_and_settings.py:58-91`) + `check --deploy`: solo W021 |
 | API | Solo JSON (415 con otros tipos), `no-store`, sin CORS, errores sin trazas | `apps/api/views/base.py`; `exceptions.py` | `tests/api/test_security.py` |
 
 ### 10.2 Riesgos y recomendaciones pendientes
 
 | Riesgo | Situación actual | Recomendación |
 |---|---|---|
-| Contadores de intentos por proceso | Caché `locmem` por defecto | `CACHE_URL` compartida (Redis o BD) en producción |
-| Concurrencia sin probar en el motor real | 3 tests omitidos en SQLite en memoria | Ejecutar la suite con PostgreSQL (`DATABASE_URL`) |
+| Contadores de intentos por proceso | **Resuelto** (auditoría P1-2): `prod` exige una caché compartida; Redis en Docker Compose | — |
+| Concurrencia en el motor real | **Resuelto**: 17 tests de concurrencia pasan en PostgreSQL; la auditoría corrigió un interbloqueo en la validación de canjes (P2-1) y la refactorización final otro en la regla del último propietario (R-1) | Mantenerlos en el CI |
+| Sin monitorización ni alertas | Healthcheck (`/healthz` interno) y logs, sin avisos | Comprobador externo de disponibilidad, aviso si fallan las copias y Sentry para los errores 500 |
+| Controles de la auditoría pospuestos | Sin Content-Security-Policy, sin borrar EXIF de las imágenes, sin `List-Unsubscribe-Post` (P3) | Abordarlos antes de abrir al público |
 | No hay 2FA para el propietario | — | TOTP para la cuenta OWNER |
 | Auditoría inmutable solo por convención | Admin de solo lectura | Permisos de BD o triggers que impidan UPDATE y DELETE |
 | QR fotografiado por otra persona | Solo permite que el titular **gane** puntos | La renovación ya existe; se podría añadir caducidad periódica |
 | Clave de idempotencia que el navegador devuelve | El UNIQUE + `_replay` impiden los duplicados | Firmar la clave (HMAC) si se quisiera atarla a la sesión |
 | Swagger UI desde un CDN | Solo en `/api/v1/docs/` (pública en desarrollo; en producción, solo el propietario) | `drf-spectacular-sidecar` para servirlo localmente |
 | Cumplimiento del RGPD | Minimización y consentimiento; sin exportación ni supresión | Funciones de exportación y anonimización; textos legales |
-| Dependencias | Versiones acotadas en `requirements` | Auditoría periódica (`pip-audit`) en CI, que no existe |
+| Dependencias | Versiones exactas en `requirements/*.txt` y transitivas en `constraints.txt` (auditoría P2-4) | Añadir `pip-audit` al CI de GitHub Actions |
 
 ---
 
@@ -2022,30 +2044,38 @@ Se distinguen los **mecanismos presentes en el código** (con evidencia) de las 
 
 ### 11.1 Estrategia y herramientas
 
-- **Framework:** `django.test` (`TestCase` y `TransactionTestCase` para la concurrencia) sobre `unittest`. No se usan pytest ni coverage (no están en `requirements/dev.txt`).
+- **Framework:** `django.test` (`TestCase`, y `TransactionTestCase` para la concurrencia) sobre `unittest`. No se usan pytest ni coverage (no están en `requirements/dev.txt`).
 - **Settings de test:** `config/settings/test.py` (hasher MD5 rápido **solo en los tests**, email en memoria, sin SMS y logs de `django.request` silenciados).
-- **Estructura:** `tests/<app>/test_*.py`, una carpeta por app; **factories** propias (no factory_boy) en `tests/accounts/factories.py`, `tests/catalog/factories.py`, `tests/loyalty/factories.py`, `tests/rewards/factories.py` y `tests/events/factories.py`, y una base para la API en `tests/api/base.py`. Datos ficticios (`@example.com`).
+- **Estructura:** `tests/<app>/test_*.py`, una carpeta por app; **factories** propias (no factory_boy) en `tests/accounts/factories.py`, `tests/catalog/factories.py`, `tests/loyalty/factories.py`, `tests/rewards/factories.py` y `tests/events/factories.py`; una base para la API en `tests/api/base.py` y otra para la concurrencia con hilos en `tests/concurrency.py`. Datos ficticios (`@example.com`).
+- **Motores:** la verificación que cuenta es en **PostgreSQL 17** (`--parallel 1`), donde no se omite ningún test. Con SQLite en memoria se omiten los de concurrencia, que necesitan varias conexiones.
+- **CI:** `.github/workflows/ci.yml` ejecuta en cada push la suite en PostgreSQL 17 y falla si hay tests omitidos.
 
-### 11.2 Resultado real (2026-10-15)
+### 11.2 Resultado real (2026-10-15, versión congelada)
 
 ```text
-python manage.py test --settings=config.settings.test -v 2
-Ran 802 tests in 16.407s
-OK (skipped=3)
+python manage.py test --settings=config.settings.test --parallel 1     # DATABASE_URL de PostgreSQL 17
+Ran 849 tests in 41.909s
+OK
 ```
+
+| Entorno | Resultado |
+|---|---|
+| PostgreSQL 17.11 local | **849 OK, 0 omitidos** |
+| Dentro del contenedor de producción, contra el PostgreSQL 17 de Docker Compose | **849 OK** |
+| SQLite en memoria | 849 OK, 18 omitidos (17 de concurrencia y uno de `UPPER` no ASCII, exclusivo de PostgreSQL) |
 
 | Área | Tests | Qué cubre (ejemplos reales) |
 |---|---|---|
-| accounts | 195 | Modelos, registro (38), perfil (40), verificación (23), permisos, admin, comando `create_owner` y validadores |
-| api | 72 | Autenticación y tokens (28), cliente (15), cuenta (12), seguridad (9) y personal o propietario (8) |
+| accounts | 209 | Registro (38), perfil (40), servicios (28), verificación (23), vistas de autenticación (16), admin (15), modelos, permisos, comando `create_owner`, validadores y concurrencia del último propietario (3) |
+| api | 73 | Autenticación y tokens (28), cliente (15), cuenta (12), seguridad (9), personal o propietario (8) y rotación simultánea del refresh (1) |
 | catalog | 59 | Modelos, selectores, servicios, validadores de imagen y permisos del admin |
-| core | 19 | Auditoría, settings, IP tras proxies, anti-enumeración y purga de tokens |
-| dashboard | 59 | Acceso por rol, acciones sobre clientes y estadísticas |
-| events | 41 | Servicios de reserva y vistas |
-| loyalty | 117 | Puntos (41), QR (22), cumpleaños (21), promociones (18) y vistas (15) |
+| core | 33 | Auditoría y settings de producción (15), auditoría de la Fase 11 (10) y healthcheck (8) |
+| dashboard | 67 | Acceso por rol (13), clientes y acciones (27), estadísticas (20) y límites de periodo de los selectores (7) |
+| events | 46 | Servicios de reserva (25), vistas (16) y concurrencia (5) |
+| loyalty | 119 | Puntos (41), QR (22), cumpleaños (21), promociones (18), vistas (15) y concurrencia (2) |
 | notifications | 30 | Cola, deduplicación, consentimiento, baja y SMS en memoria |
-| purchases | 56 | Servicio (25), vistas (25) y estadísticas (6) |
-| rewards | 83 | Servicios (54), vistas (26) y concurrencia (3, **omitidos**) |
+| purchases | 58 | Servicio (25), vistas (25), estadísticas (6) y concurrencia (2) |
+| rewards | 84 | Servicios (54), vistas (26) y concurrencia (4) |
 | staff | 31 | Panel del personal |
 | web | 40 | Páginas públicas, carta y formularios |
 
@@ -2061,26 +2091,27 @@ OK (skipped=3)
 | Formularios | `tests/accounts/test_registration.py` (38) | Validación por campo y anti-enumeración |
 | Idempotencia | `tests/purchases/test_services.py:170` (C8.20) | Doble envío sin duplicado |
 | Errores de la API | `tests/api/test_security.py:36` `test_error_format` | Formato `{code, detail}` |
-| Configuración | `tests/core/test_audit_and_settings.py:54-87` (`test_prod_requires_secret_key`, `test_prod_rejects_simulated_email_backends`, `test_prod_requires_https_site_url`…) | `prod.py` no arranca con configuraciones inseguras |
-| Concurrencia | `tests/rewards/test_concurrency.py` (4 hilos con `Barrier`) | Sin doble consumo ni saldo negativo (**omitido en memoria**) |
+| Configuración | `tests/core/test_audit_and_settings.py:58-91` (`test_prod_requires_secret_key`, `test_prod_rejects_simulated_email_backends`, `test_prod_requires_https_site_url`…) | `prod.py` no arranca con configuraciones inseguras |
+| Concurrencia | `tests/*/test_concurrency.py` (17, hilos que arrancan a la vez con `Barrier`) | Sin doble consumo, duplicados ni saldo negativo; aforo respetado; un solo refresh válido; siempre queda un propietario activo y sin interbloqueos |
+| Caracterización | `tests/dashboard/test_stats_selectors.py` | Fija los límites `[inicio, fin)` de 17 cálculos antes de refactorizarlos |
+| Número de consultas | `assertNumQueries` en `test_stats_selectors.py` | Las estadísticas de canjes (1 consulta) y reservas (2) no vuelven a crecer |
 
 ### 11.4 Qué no garantizan los tests
 
-- **La concurrencia real con bloqueos de fila** (omitida; con SQLite en fichero, la BD serializa las escrituras).
-- **El comportamiento en PostgreSQL** (ninguna ejecución en este motor).
-- **El envío real** de emails (backend en memoria) y los SMS (no hay proveedor).
+- **El servidor real:** DNS, certificado, SMTP y destino de las copias (la pila se probó en local y en el CI).
+- **El envío real** de emails (backend en memoria o Mailpit) y los SMS (no hay proveedor).
 - **El JavaScript** (`qr-scanner.js`, `app.js`): no hay tests de navegador (Selenium o Playwright).
 - **Accesibilidad y diseño visual**: no hay pruebas automáticas de contraste ni de diseño responsive.
+- **Rendimiento con carga**: no hay pruebas de carga; solo se mide el número de consultas.
 - **Cobertura de código**: no se mide (no hay coverage instalado); **no se puede afirmar un porcentaje**.
 
 ### 11.5 Casos adicionales propuestos
 
-1. Ejecutar la suite completa con `DATABASE_URL` de PostgreSQL (incluidos los 3 de concurrencia).
-2. Concurrencia de **dos compras simultáneas con la misma clave** desde dos hilos (hoy se cubre con `IntegrityError` simulado).
-3. Concurrencia de `confirm_reservation` sobre un evento casi lleno.
-4. Pruebas E2E del lector de QR con Playwright (permiso de cámara simulado).
-5. Medición de cobertura (`coverage run manage.py test`) para localizar ramas sin probar.
-6. Test de que `process_notifications` lanzado dos veces en paralelo no duplica envíos.
+1. Pruebas E2E del lector de QR con Playwright (permiso de cámara simulado).
+2. Medición de cobertura (`coverage run manage.py test`) para localizar ramas sin probar.
+3. Test de que `process_notifications` lanzado dos veces en paralelo no duplica envíos (supercronic ya evita solaparlo).
+4. Pruebas de carga del registro de compras en hora punta.
+5. `pip-audit` en el CI.
 
 ---
 
@@ -2090,7 +2121,8 @@ Comandos contrastados con `README.md`, `.env.example`, `manage.py` y `scripts/ta
 
 ### 12.1 Requisitos previos
 - Python 3.12 o superior (desarrollado con 3.14).
-- Opcional: PostgreSQL (sin `DATABASE_URL` se usa SQLite `db.sqlite3`).
+- PostgreSQL 14 o superior (probado con 17), obligatorio en producción. En desarrollo es opcional: sin `DATABASE_URL` se usa SQLite `db.sqlite3`.
+- Opcional: Docker (en Windows, Docker Engine dentro de WSL) para levantar la pila completa de producción en local.
 - No hacen falta Node ni npm (el CSS compilado está versionado).
 
 ### 12.2 Pasos
@@ -2103,7 +2135,8 @@ Comandos contrastados con `README.md`, `.env.example`, `manage.py` y `scripts/ta
 | Migraciones | `python manage.py migrate` | ídem |
 | Primer propietario | `python manage.py create_owner` (interactivo, contraseña oculta) | ídem |
 | Ejecutar | `python manage.py runserver` → http://localhost:8000 | ídem |
-| Tests | `python manage.py check` · `python manage.py test --settings=config.settings.test` | ídem |
+| Tests | `python manage.py check` · `python manage.py test --settings=config.settings.test --parallel 1` (con `DATABASE_URL` de PostgreSQL) | ídem |
+| Pila completa (Docker) | — | Órdenes del README (`compose.yaml` + `compose.dev.yaml`): Mailpit en http://localhost:8025 y la web en https://localhost:8443 |
 | CSS (solo si cambias clases) | `python scripts/tailwind.py build` (o `watch`) | ídem |
 | OpenAPI (tras cambiar la API) | `python manage.py spectacular --file docs/api/openapi.yaml` | ídem |
 
@@ -2116,7 +2149,7 @@ Comandos contrastados con `README.md`, `.env.example`, `manage.py` y `scripts/ta
 | `DATABASE_URL` | PostgreSQL (p. ej. `postgres://usuario:contrasena-ficticia@localhost:5432/caneca_furada`) | SQLite |
 | `EMAIL_BACKEND`, `EMAIL_HOST`… | Correo | Consola en dev |
 | `SITE_BASE_URL` | Enlaces de los emails | `http://localhost:8000` (https obligatorio en producción) |
-| `CACHE_URL` | Caché compartida | `locmemcache://` |
+| `CACHE_URL` | Caché compartida | `locmemcache://` en desarrollo; producción exige una compartida (Redis en Compose) |
 | `DJANGO_TRUSTED_PROXY_COUNT` | IP real tras proxies | 0 |
 | `API_*` | Duración de los tokens y throttling | 15 min, 30 días, 60/240/10 por minuto |
 | `CANECA_OWNER_*` | `create_owner --noinput` | Solo durante el comando |
@@ -2124,57 +2157,67 @@ Comandos contrastados con `README.md`, `.env.example`, `manage.py` y `scripts/ta
 Los parámetros de negocio **no** son variables de entorno salvo los indicados: se cambian en `config/settings/base.py` (cap. 7, tabla de límites).
 
 ### 12.4 Correo en desarrollo
-Por defecto los emails se imprimen en la consola de `runserver` (`config/settings/dev.py:14`). Para un SMTP local (p. ej. Mailpit), ver los comentarios de `.env.example:21-25`.
+Por defecto los emails se imprimen en la consola de `runserver` (`config/settings/dev.py:14`). Para un SMTP local (p. ej. Mailpit), ver los comentarios de `.env.example:31-35`; la pila de Docker en local ya incluye Mailpit.
 
 ### 12.5 Errores frecuentes (documentados en el README)
 - `UnicodeEncodeError` al imprimir emails en Windows → arrancar con `$env:PYTHONUTF8=1`.
 - La cámara del lector de QR no funciona → solo funciona en `localhost` o con HTTPS (requisito del navegador); alternativa: teclear el código.
-- Imágenes subidas que no se ven en producción → `static()` solo sirve `media/` con `DEBUG = True` (`config/urls.py:24-27`).
+- Imágenes subidas que no se ven sin Nginx → `static()` solo sirve `media/` con `DEBUG = True` (`config/urls.py:28-31`); en producción las sirve Nginx desde el volumen `media`.
 
-**Docker:** no existe configuración Docker en el repositorio.
+**Docker:** la pila de producción se puede levantar en local con `compose.yaml` y `compose.dev.yaml` (certificado autofirmado, Mailpit y un servicio de tests). Órdenes en el README y en [`docs/despliegue.md`](../despliegue.md).
 
 ---
 
 ## 13. Despliegue y mantenimiento
 
-**Estado real: la aplicación NO está desplegada.** Hay configuración de producción y una guía (`docs/despliegue.md`); lo demás es una **propuesta**.
+**Estado real: preparado y probado en local; no desplegado en un servidor.** La Fase 12 dejó en el repositorio la imagen, la pila de producción, las copias y el CI, y todos los procedimientos se ejecutaron sobre una pila local en WSL partiendo de volúmenes vacíos. Falta contratar el VPS y hacer las acciones manuales (§13.3). Detalle completo: [`docs/fase-12-despliegue.md`](../fase-12-despliegue.md) y guía operativa en [`docs/despliegue.md`](../despliegue.md).
 
-| Elemento | Estado verificado | Evidencia |
-|---|---|---|
-| Configuración de producción | **Lista en el código**: `prod.py` falla al arrancar si falta algo crítico | `config/settings/prod.py`; `check --deploy`: solo W021 |
-| Variables de entorno | Documentadas | `.env.example`, `docs/despliegue.md:19-35` |
-| Servidor de aplicaciones | **Pendiente de elegir** (no está en `requirements/prod.txt`) | `requirements/prod.txt` = `-r base.txt` |
-| Proxy inverso y HTTPS | Soportado en el código (`DJANGO_BEHIND_TLS_PROXY`, `TRUSTED_PROXY_COUNT`, HSTS); falta el proxy y el certificado | `prod.py:42-51` |
-| Dominio | No definido | — |
-| Base de datos | PostgreSQL soportado; **suite sin ejecutar en PostgreSQL** | `base.py:93-97` |
-| Archivos estáticos | `STATIC_ROOT = staticfiles/`; falta servirlos (`collectstatic` + proxy) | `base.py:306-308` |
-| Archivos multimedia | Pendiente (almacenamiento por decidir) | `config/urls.py:24-27` |
-| Migraciones | `migrate`; 26 migraciones; 2 de datos con inversa `noop` | Cap. 6.5 |
-| Backups y restauración | **Pendiente** | `docs/despliegue.md:60` |
-| Logs | Solo consola (`StreamHandler`); sin datos personales | `base.py:346-356` |
-| Monitorización | No identificada | — |
-| Tareas programadas | Comandos listos; **sin programar** | `docs/despliegue.md:76-93` |
-
-### 13.1 Propuesta de despliegue (recomendación futura, NO implementada)
+### 13.1 Arquitectura de producción
 
 ```mermaid
 flowchart LR
-    U["Navegadores y app móvil"] -->|"HTTPS 443"| RP["Proxy inverso (propuesta)<br/>termina TLS y fija X-Forwarded-For<br/>y X-Forwarded-Proto"]
-    RP -->|"HTTP interno"| WSGI["Servidor WSGI (propuesta)<br/>config.wsgi con config.settings.prod"]
-    RP -->|"/static/"| ST[("staticfiles/<br/>collectstatic")]
-    RP -->|"/media/"| MD[("media/ o almacenamiento<br/>de objetos (por decidir)")]
-    WSGI --> PG[("PostgreSQL<br/>DATABASE_URL")]
-    WSGI --> CA[("Caché compartida<br/>CACHE_URL (Redis o BD)")]
-    WSGI --> SMTP["Proveedor SMTP<br/>EMAIL_*"]
-    CRON["Programador del sistema<br/>process_notifications cada 5 min<br/>run_birthday_promotions, expire_redemptions,<br/>purge_email_tokens y flushexpiredtokens diarios"] --> WSGI
-    PG -.-> BK[("Copias de seguridad<br/>(pg_dump programado, propuesta)")]
+    U["Navegadores y app móvil"] -->|"HTTPS 443"| NX["nginx<br/>TLS Let's Encrypt, /static con hash,<br/>/media solo imágenes, límites de login"]
+    NX -->|"HTTP interno"| WEB["web<br/>Gunicorn + Django (config.settings.prod)<br/>usuario no root, FS de solo lectura"]
+    WEB --> PG[("db<br/>PostgreSQL 17, rol sin privilegios,<br/>sin puertos publicados")]
+    WEB --> RD[("redis<br/>caché compartida, sin persistencia")]
+    WEB --> SMTP["Proveedor SMTP<br/>EMAIL_*"]
+    SCH["scheduler (supercronic)<br/>process_notifications cada 5 min;<br/>cumpleaños, caducidad de canjes<br/>y purgas diarias"] --> PG
+    CB["certbot<br/>renovación cada 12 h"] -.-> NX
+    PG -.->|"pg_dump cifrado con restic"| BK[("Destino externo de copias<br/>(S3, B2 o rest-server)")]
 ```
 
-**Procedimiento propuesto** (no ejecutado): (1) crear la BD PostgreSQL y el usuario; (2) definir las variables de entorno de `docs/despliegue.md:19-35`; (3) `pip install -r requirements/prod.txt` + un servidor WSGI (p. ej. Gunicorn); (4) `python manage.py migrate --settings=config.settings.prod`; (5) `collectstatic`; (6) `create_owner`; (7) `check --deploy`; (8) programar las tareas; (9) copias diarias con `pg_dump` y una prueba de restauración.
+| Elemento | Estado verificado | Evidencia |
+|---|---|---|
+| Configuración de producción | `prod` no arranca sin clave (≥ 32 bytes), `ALLOWED_HOSTS`, PostgreSQL, caché compartida, SMTP real o `SITE_BASE_URL` https | `config/settings/prod.py`; `check --deploy`: solo W021 |
+| Imagen | Multietapa, usuario `app` no root, sin `.env` ni secretos; estáticos con hash en la imagen de Nginx | `Dockerfile`, `.dockerignore` |
+| Servidor de aplicaciones | Gunicorn, 3 workers síncronos, `timeout` 30 s > `EMAIL_TIMEOUT` 10 s | `deploy/gunicorn.conf.py` |
+| Proxy inverso y HTTPS | Nginx con TLS, hosts desconocidos cerrados (444), `limit_req` en el login, logs sin tokens ni cadena de consulta | `deploy/nginx/templates/` |
+| Base de datos | PostgreSQL 17 con ICU `es-ES`; la app usa un rol sin privilegios | `deploy/postgres/10-app-role.sh` |
+| Caché | Redis en la red interna `backend` | `compose.yaml` |
+| Healthcheck | Middleware `/healthz` interno (`SELECT 1`); Nginx devuelve 404 desde fuera | `apps/core/middleware.py`; `tests/core/test_health.py` |
+| Tareas programadas | supercronic en el servicio `scheduler` | `deploy/cron/crontab` |
+| Copias y restauración | restic: BD y `media/` cifradas, retención 7 diarias y 4 semanales, restauración de prueba | `deploy/scripts/backup.sh`, `restore.sh` |
+| Despliegue y rollback | Etiquetas `:<commit>`, `:current` y `:previous`; copia previa; migraciones como paso único | `deploy/scripts/deploy.sh` |
+| CI | Suite en PostgreSQL sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración | `.github/workflows/ci.yml`; en verde en GitHub (commit `0589cfb`) |
+| Monitorización | **No implementada** (siguiente paso) | — |
 
-**Si una migración falla en producción:** cada migración de Django en PostgreSQL se ejecuta en una transacción (DDL transaccional): si falla, se deshace esa migración. Procedimiento recomendado: copia de seguridad previa, `migrate` en un entorno de preproducción con una copia de los datos y, para revertir, `migrate <app> <migración_anterior>` (las 2 migraciones de datos tienen una inversa `noop`, así que revertirlas no deshace los datos creados). **Ninguna de estas prácticas está automatizada en el repositorio.**
+### 13.2 Procedimientos probados en local (2026-10-15)
 
-**Actualizaciones y reversión (propuesta):** desplegar por etiquetas de Git; volver a la etiqueta anterior + migración inversa si procede; los secretos solo en el entorno; rotar `API_JWT_SIGNING_KEY` cierra todas las sesiones de la app (`.env.example:61`).
+| Paso | Resultado |
+|---|---|
+| `deploy.sh --first` y `create_owner` | Pila arrancada y propietario creado |
+| Prueba de humo por HTTPS a través de Nginx | 25/25 OK (cabeceras, estáticos, 404 en `/healthz`, registro con email en Mailpit, JWT, `limit_req`) |
+| `backup.sh run` y `restore.sh check` | Copia sin errores; recuentos idénticos tras restaurar |
+| Desastre simulado (se borran la BD y una imagen) y `restore.sh full --yes` | Datos e imagen recuperados; la portada vuelve a dar 200 |
+| `deploy.sh` con copia previa y `deploy.sh rollback` | Actualización y vuelta a la imagen anterior en segundos |
+
+**Si una migración falla en producción:** cada migración de Django en PostgreSQL se ejecuta en una transacción (DDL transaccional): si falla, se deshace. `deploy.sh` hace una copia antes de migrar. Si una versión nueva trae migraciones incompatibles con la anterior, el rollback exige restaurar esa copia y se pierde lo escrito después.
+
+**Rotación de secretos:** procedimiento en [`fase-12-despliegue.md` §8.6](../fase-12-despliegue.md). Rotar `API_JWT_SIGNING_KEY` cierra todas las sesiones de la app (`.env.example:71`).
+
+### 13.3 Acciones manuales pendientes en el VPS
+
+Contratar el VPS y endurecerlo (usuario sin root, SSH con clave, UFW, actualizaciones automáticas); DNS del dominio y SPF, DKIM y DMARC del remitente; `.env.prod` y `.env.backup` con valores reales; destino externo de restic; primer despliegue con el certificado real; comprobar la entrega por el SMTP real; programar las copias en el host; y revisión visual y de la cámara en dispositivos reales.
 
 ---
 
@@ -2182,7 +2225,8 @@ flowchart LR
 
 ### 14.1 Fuentes y fiabilidad
 
-- **Historial de Git:** 15 commits; **uno por fase** del 0 al 11 (más 3 previos de preparación). Todos del 13 y 14-10-2026. Los archivos añadidos o modificados por cada commit están en [`_trabajo/historial_fases.md`](_trabajo/historial_fases.md) (generado con `git show --name-status`).
+- **Historial de Git:** 25 commits en la versión congelada. **Uno por fase** del 0 al 11 (más 3 previos de preparación), del 13 y 14-10-2026; después, el 15-10-2026, la documentación de la defensa, la migración a PostgreSQL, la auditoría previa a la Fase 12, la Fase 12 y la refactorización final. Los archivos de cada commit hasta la Fase 11 están en [`_trabajo/historial_fases.md`](_trabajo/historial_fases.md) (generado con `git show --name-status`; usa los hashes del historial anterior a la reescritura).
+- **Reescritura del historial:** en la auditoría se reescribió el historial para eliminar `db.sqlite3.bak` (P2-6). Cambiaron los hashes desde la Fase 10: la F10 era `a85ce95` y ahora es `b91d8bd`; la F11 era `ac5903a` y ahora es `eec6abc`.
 - **Documentación de cada fase:** `docs/fase-XX-*.md`.
 - **Límite:** cada fase es un único commit, así que se conoce **qué** entró en cada fase, pero **no el orden interno** ni las iteraciones dentro de ella.
 
@@ -2199,8 +2243,8 @@ flowchart LR
 | 7. Recompensas y canjes | **F7** | `c185ff4` |
 | 8. Panel del empleado | **F8** | `1131258` |
 | 9. Panel del propietario y estadísticas | **F9** | `70fb531` |
-| 10. Eventos, reservas, contenido y notificaciones | **F10** | `a85ce95` |
-| 11. Auditoría, seguridad, API, documentación **y despliegue** | **F11** API, auditoría y seguridad. **El despliegue NO**: quedó «sin número» y pendiente | `ac5903a` |
+| 10. Eventos, reservas, contenido y notificaciones | **F10** | `b91d8bd` |
+| 11. Auditoría, seguridad, API, documentación **y despliegue** | **F11** API, auditoría y seguridad; el despliegue se hizo después como **F12**, tras la migración a PostgreSQL y una auditoría | `eec6abc`; F12: `955c1be` |
 
 Reordenaciones documentadas (`docs/plan-de-fases.md`): registro ↔ sistema de diseño (F2/F3), compras ↔ ledger (F5/F6) y la inserción del panel de empleados como F8 (desplazando eventos y API). **Los documentos de las fases 0 a 7 conservan la numeración antigua** en sus referencias.
 
@@ -2210,17 +2254,20 @@ Reordenaciones documentadas (`docs/plan-de-fases.md`): registro ↔ sistema de d
 |---|---|---|---|---|---|---|---|
 | **F0** `4d842da` (54 archivos, +1988) | Base técnica sin rehacer migraciones de usuario | `apps/accounts/models.py`, `services.py`, `permissions.py`, `create_owner`; `apps/core/models.py` y `services.py`; `config/settings/*` | Monolito modular; usuario propio con roles **antes de la primera migración**; capa de servicios; auditoría | — | `tests/accounts`, `tests/core` | Completa | — |
 | **F1** `b2cf7f6` (10 archivos) | Que todo cliente tenga perfil | `CustomerProfile` (mínimo), migración de datos `0003_backfill` | Perfil 1:1 separado de `User`; `public_id` | F0 | `test_customer_profile.py` | Completa | — |
-| **F2** `d948db7` (64 archivos, +4064) | Alta segura y datos personales | `accounts/views.py`, `forms.py`, `validators.py`, `emails.py`; `EmailVerificationToken`, `CommunicationPreferenceChange`; plantillas de cuenta y emails | Formularios que solo convierten y servicios que validan | F0-F1 | `test_registration`, `test_email_verification`, `test_profile`… | Completa | SMTP real, PostgreSQL |
+| **F2** `d948db7` (64 archivos, +4064) | Alta segura y datos personales | `accounts/views.py`, `forms.py`, `validators.py`, `emails.py`; `EmailVerificationToken`, `CommunicationPreferenceChange`; plantillas de cuenta y emails | Formularios que solo convierten y servicios que validan | F0-F1 | `test_registration`, `test_email_verification`, `test_profile`… | Completa | SMTP real |
 | **F3** `35424be` (61 archivos) | Imagen de marca y web pública | `apps/web/`, `templates/base.html`, `components/`, `assets/css/input.css`, `scripts/tailwind.py`, `static/css/app.css` | Tailwind CLI sin Node; JS de mejora progresiva | F0-F2 | `tests/web/` | Completa | Contenido del propietario; revisión visual |
 | **F4** `b035ca4` (32 archivos) | Carta gestionable | `apps/catalog/*` (Category, BeerStyle, Product, TapMenu) | Selectores con las reglas de visibilidad; admin restringido | F0-F1, F3 | `tests/catalog/` | Completa | Almacenamiento de imágenes en producción |
-| **F5** `d1c1a89` (44 archivos, +12462, incluye jsQR) | Identificar al cliente y registrar compras | `apps/loyalty/models.py` (`CustomerQRCode`), `services.py`; `apps/purchases/*`; `static/js/qr-scanner.js`, `static/vendor/jsqr/` | Idempotencia por clave; transacción con bloqueo | F2-F3 | `test_qr.py`, `tests/purchases/` | Completa | Dispositivos físicos; PostgreSQL |
+| **F5** `d1c1a89` (44 archivos, +12462, incluye jsQR) | Identificar al cliente y registrar compras | `apps/loyalty/models.py` (`CustomerQRCode`), `services.py`; `apps/purchases/*`; `static/js/qr-scanner.js`, `static/vendor/jsqr/` | Idempotencia por clave; transacción con bloqueo | F2-F3 | `test_qr.py`, `tests/purchases/` | Completa | Dispositivos físicos |
 | **F6** `99711bc` (31 archivos) | Puntos sin manipulación | `apps/loyalty/ledger.py`, `conversion.py`, `promotions.py`, `selectors.py`; `apps/purchases/selectors.py` | Ledger inmutable con saldo derivado; UNIQUE condicionales | F5 | `test_points.py`, `test_promotions.py`… | Completa | Confirmar la conversión |
-| **F7** `c185ff4` (45 archivos) | Canjear puntos sin doble consumo | `apps/rewards/*` (Reward, Redemption, codes), comando `expire_redemptions` | UPDATE condicionado; orden de bloqueo | F5-F6 | `tests/rewards/` (incluida la concurrencia) | Completa | Concurrencia en PostgreSQL; plazo de 30 días |
+| **F7** `c185ff4` (45 archivos) | Canjear puntos sin doble consumo | `apps/rewards/*` (Reward, Redemption, codes), comando `expire_redemptions` | UPDATE condicionado; orden de bloqueo | F5-F6 | `tests/rewards/` (incluida la concurrencia) | Completa | Plazo de 30 días |
 | **F8** `1131258` (38 archivos) | Herramienta de barra | `apps/staff/*`, `templates/staff/*` | App solo de presentación | F5, F7 | `tests/staff/` | Completa | Dispositivos físicos |
 | **F9** `70fb531` (55 archivos) | Gestión y cifras del propietario | `apps/dashboard/*`, `apps/accounts/selectors.py`, `apps/web/models.py` (`BusinessInfo`) | Modelo híbrido dashboard + admin; consultas auditadas | F2-F8 | `tests/dashboard/` | Completa | Revisión visual |
-| **F10** `a85ce95` (112 archivos) | Eventos, reservas, contenido y comunicaciones | `apps/events/*`, `apps/notifications/*`, `apps/loyalty/birthdays.py`, `loyalty/0003_birthday_gift` | Registro de notificaciones con estado real; tareas por comandos (sin Celery) | F2-F3, F6-F7, F9 | `tests/events/`, `tests/notifications/`, `test_birthdays.py` | Completa | SMTP, programación de tareas, SMS |
-| **F11** `ac5903a` (60 archivos, +6758) | App móvil y auditoría de seguridad | `apps/api/*` (tokens, autenticación, permisos, serializadores, vistas), `apps/core/http.py`, `purge_email_tokens`, `docs/api/openapi.yaml`, `docs/guia-app-flutter.md`, `docs/despliegue.md` | DRF + JWT reutilizando los servicios; 6 correcciones de auditoría (`docs/fase-11-api-auditoria.md` §3) | Todas | `tests/api/`, `tests/core/test_phase11_audit.py` | Completa | PostgreSQL, despliegue |
-| **Sin número** | Endurecimiento y despliegue | `docs/despliegue.md` (guía) | — | F11 | — | **Pendiente** | Todo (cap. 13) |
+| **F10** `b91d8bd` (112 archivos) | Eventos, reservas, contenido y comunicaciones | `apps/events/*`, `apps/notifications/*`, `apps/loyalty/birthdays.py`, `loyalty/0003_birthday_gift` | Registro de notificaciones con estado real; tareas por comandos (sin Celery) | F2-F3, F6-F7, F9 | `tests/events/`, `tests/notifications/`, `test_birthdays.py` | Completa | SMTP real, SMS |
+| **F11** `eec6abc` (60 archivos, +6758) | App móvil y auditoría de seguridad | `apps/api/*` (tokens, autenticación, permisos, serializadores, vistas), `apps/core/http.py`, `purge_email_tokens`, `docs/api/openapi.yaml`, `docs/guia-app-flutter.md`, `docs/despliegue.md` | DRF + JWT reutilizando los servicios; 6 correcciones de auditoría (`docs/fase-11-api-auditoria.md` §3) | Todas | `tests/api/`, `tests/core/test_phase11_audit.py` | Completa | — |
+| **PostgreSQL** `f72cbd1` (12 archivos) | Validar el motor objetivo | `config/settings/*`, `apps/events/services.py`; `docs/migracion-postgresql.md` | Suite en PostgreSQL; corregido un `FOR UPDATE` sobre un `LEFT JOIN` que solo fallaba en PostgreSQL (C8.13) | F11 | — | Completa | — |
+| **Auditoría** `eb32b52` (21 archivos) | Corregir lo que comprometiera el despliegue | `apps/accounts/forms.py` (límite del login del admin), `config/settings/prod.py` (caché compartida), `apps/rewards/services.py` (interbloqueo), `requirements/` (versiones exactas) | `tests/concurrency.py` y tests de concurrencia en compras, ajustes y reservas | PostgreSQL | `tests/*/test_concurrency.py` | Completa | P2-9 y los P3 pospuestos |
+| **F12** `955c1be` (37 archivos) | Desplegar y mantener con garantías | `Dockerfile`, `compose.yaml`, `deploy/`, `.github/workflows/ci.yml`, `apps/core/middleware.py` (healthcheck) | Contenedores, Nginx, Redis, scheduler, copias con restic y CI | Auditoría | `tests/core/test_health.py`, concurrencia | Completa en local | VPS, DNS, certificado, SMTP real |
+| **Refactorización** `d0bac7c` (16 archivos) | Mantenibilidad sin cambiar el comportamiento | `apps/core/querysets.py`, selectores, `apps/accounts/services.py` y `admin.py` | Filtro de periodo común; estadísticas con menos consultas; orden de bloqueo único en la regla del último propietario (R-1) | F12 | `tests/dashboard/test_stats_selectors.py`, `tests/accounts/test_concurrency.py` | Completa | — |
 
 > Nota: la atribución de archivos a cada fase sale de `git show`, no de su nombre. Algunos archivos se modificaron en varias fases (p. ej. `apps/core/models.py` en todas, para añadir acciones de auditoría).
 
@@ -2239,9 +2286,11 @@ Para cada decisión se distingue la **justificación técnica** (razonable por e
 | D5 | Ledger de puntos inmutable con saldo derivado | Trazabilidad y corrección sin borrar | Campo `saldo` editable | + Auditable y reconstruible / − Coste de `SUM` (mejorable) | Plan F6 | «Como un libro contable: se corrige con un apunte contrario» |
 | D6 | `Decimal` + `ROUND_DOWN` | Exactitud monetaria | `float` | + Sin errores binarios; nunca se regalan puntos | `conversion.py:1-11` | «El dinero nunca se calcula con float» |
 | D7 | Idempotencia con clave única + replay | Doble clic, reintentos de red y de la app | Bloqueo del botón solo en el cliente | + Garantía en el servidor y la BD | Plan F5 | «El JS evita el doble envío, pero la garantía real la da la base de datos» |
-| D8 | `select_for_update` + UPDATE condicionados + UNIQUE | Concurrencia | Bloqueo optimista con versión | + Simple y correcto en PostgreSQL / − No se ha probado en el motor real | Docstrings de los servicios | «Tres capas: bloqueo, condición en el UPDATE y restricción única» |
+| D8 | `select_for_update` + UPDATE condicionados + UNIQUE, con un orden de bloqueo fijo | Concurrencia | Bloqueo optimista con versión | + Simple y correcto; verificado con 17 tests de hilos en PostgreSQL / − Hay que respetar el orden en cada servicio (dos interbloqueos corregidos: P2-1 y R-1) | Docstrings de los servicios | «Tres capas: bloqueo, condición en el UPDATE y restricción única; y siempre se bloquea en el mismo orden» |
 | D9 | Puntos del canje descontados al **solicitarlo** | Saldo real y no prometer dos veces | Descontar al validar | + El saldo visible es real / − Requiere devolver en la caducidad | Plan F7 | «Si no se recoge, se devuelve automáticamente» |
-| D10 | Tareas con comandos + programador del sistema (sin Celery) | Simplicidad | Celery + Redis | + Sin infraestructura extra / − Granularidad de minutos | Ajuste de la F10 (decisión del usuario) | «Para el volumen de un local basta; los comandos son idempotentes» |
+| D10 | Tareas con comandos + programador (supercronic en el servicio `scheduler`, sin Celery) | Simplicidad | Celery + Redis | + Sin infraestructura extra / − Granularidad de minutos | Ajuste de la F10 (decisión del usuario); F12 | «Para el volumen de un local basta; los comandos son idempotentes y supercronic no solapa ejecuciones» |
+| D17 | Docker Compose en un único VPS | Desplegar y recuperar con garantías a bajo coste | Instalación directa; PaaS; Kubernetes | + Reproducible, rollback por etiquetas, copias probadas / − Sin alta disponibilidad | Decisión del usuario (2026-10-14), `docs/fase-12-despliegue.md` | «Para un local, un servidor con copias cifradas y restauración probada es suficiente y barato» |
+| D18 | Refactorizar solo con tests de caracterización previos y mediciones | No romper nada al mejorar el código | Refactorizar sin red | + Comportamiento fijado antes de tocar / − Más tests que mantener | `docs/refactorizacion-final.md` | «Primero fijé el comportamiento con tests; después cambié el código y medí las consultas» |
 | D11 | Admin de Django para las fichas completas + dashboard para las acciones rápidas | Productividad | CRUD propio completo | + Menos código / − Interfaz menos guiada | Decisión de la F9 | «El admin es seguro y está probado; el dashboard cubre el día a día» |
 | D12 | JWT con refresh rotatorio + lista negra + `pwv` | App móvil sin cookies | Tokens de DRF; sesión | + Revocable, sin CSRF / − Más piezas | `docs/fase-11-api-auditoria.md` §5 | «Un access corto y la revocación inmediata al cambiar la contraseña» |
 | D13 | Sin CORS en la API | Solo una app nativa | `django-cors-headers` con lista blanca | + Ninguna web ajena lee las respuestas | `docs/fase-11-api-auditoria.md:155` | «Si mañana hay una web cliente en otro dominio, se añade con lista blanca» |
@@ -2256,9 +2305,9 @@ Para cada decisión se distingue la **justificación técnica** (razonable por e
 Resumen; la lista completa con prioridad, coste y beneficio está en [05_limitaciones_y_pendientes.md](05_limitaciones_y_pendientes.md).
 
 - **Limitaciones actuales (alcance deliberado):** no hay facturación, caja ni TPV; no hay SMS; no hay app móvil; las reservas de mesa no tienen aforo; un precio por producto.
-- **Funcionalidades incompletas:** anulación de compras (`VOIDED` reservado), integración con TPV (`POS` reservado), exportación y supresión de datos personales, tareas sin programar, campo `birthday_window_days` sin uso, `CancelReservationForm` sin uso.
-- **Riesgos antes de producción:** pruebas en PostgreSQL (incluida la concurrencia), caché compartida, SMTP real, servidor WSGI, HTTPS, estáticos y medios, copias de seguridad y monitorización.
-- **Mejoras a medio plazo:** saldo materializado, 2FA para el propietario, CI con tests y `pip-audit`, cobertura, tests E2E del QR, Swagger UI local y auditoría con inmutabilidad en la BD.
+- **Funcionalidades incompletas:** anulación de compras (`VOIDED` reservado), integración con TPV (`POS` reservado), exportación y supresión de datos personales (decisión tomada, P2-9), campo `birthday_window_days` sin uso, `CancelReservationForm` sin uso.
+- **Pendiente antes de producción:** las acciones manuales en el VPS (DNS, certificado, SMTP real, destino de copias), monitorización y alertas, y los controles pospuestos de la auditoría (CSP, EXIF).
+- **Mejoras a medio plazo:** saldo materializado, 2FA para el propietario, `pip-audit` en el CI, cobertura, tests E2E del QR, Swagger UI local y auditoría con inmutabilidad en la BD.
 - **Ampliaciones futuras:** app Flutter (la API ya existe), integración con TPV, anulación de compras con compensación en el ledger y proveedor de SMS.
 
 ---
@@ -2308,11 +2357,13 @@ Resumen; la lista completa con prioridad, coste y beneficio está en [05_limitac
 | **OpenAPI** | Especificación estándar que describe una API | `docs/api/openapi.yaml` |
 | **Entorno virtual** | Instalación aislada de Python y sus paquetes | `.venv/` |
 | **Variable de entorno** | Configuración externa al código | `DJANGO_SECRET_KEY`, `DATABASE_URL` |
-| **Contenedor** | Paquete aislado con la app y sus dependencias (Docker) | **No usado** en el proyecto |
-| **Proxy inverso** | Servidor delante de la app que recibe las peticiones (TLS, estáticos) | Propuesta del cap. 13; `TRUSTED_PROXY_COUNT` |
+| **Contenedor** | Paquete aislado con la app y sus dependencias (Docker) | Servicios `web`, `db`, `redis`, `nginx`, `scheduler` y `certbot` de `compose.yaml` |
+| **Proxy inverso** | Servidor delante de la app que recibe las peticiones (TLS, estáticos) | Nginx (cap. 13); `TRUSTED_PROXY_COUNT = 1` |
+| **Interbloqueo (deadlock)** | Dos transacciones que esperan cada una un bloqueo de la otra; la BD aborta una | R-1: dos propietarios retirándose mutuamente; se evita bloqueando siempre en el mismo orden |
+| **Test de caracterización** | Test que fija el comportamiento actual antes de cambiar el código | `tests/dashboard/test_stats_selectors.py` |
 | **HSTS** | Cabecera que obliga al navegador a usar HTTPS | `SECURE_HSTS_SECONDS` = 1 año en producción |
-| **Backup** | Copia de seguridad restaurable | **Pendiente** (`pg_dump` propuesto) |
-| **CI/CD** | Integración y despliegue continuos automatizados | **No existe** en el repositorio |
+| **Backup** | Copia de seguridad restaurable | `deploy/scripts/backup.sh` (restic, cifrada) y `restore.sh` |
+| **CI/CD** | Integración y despliegue continuos automatizados | CI en GitHub Actions (`.github/workflows/ci.yml`); el despliegue es manual con `deploy.sh` |
 | **Mejora progresiva** | Funcionar sin JS y mejorar con JS si está disponible | Lector de QR: cámara si se puede, si no, código tecleado |
 | **Singleton (modelo)** | Tabla con una sola fila | `BusinessInfo` (`id = 1`) |
 | **Data URI** | Imagen incrustada en el HTML como texto | El QR en SVG de `my_qr` |
@@ -2322,16 +2373,16 @@ Resumen; la lista completa con prioridad, coste y beneficio está en [05_limitac
 
 ## 20. Conclusiones y valoración técnica
 
-**Qué se ha construido realmente.** Una aplicación Django completa y probada (802 tests que pasan, 3 omitidos por limitación del motor de pruebas) que cubre la web pública, el programa de fidelización de punta a punta (registro verificado → QR → compra → puntos → canje → validación), el panel del personal, el dashboard del propietario con estadísticas reales y geográficas, eventos y reservas, notificaciones con consentimiento y una API REST v1 documentada con OpenAPI.
+**Qué se ha construido realmente.** Una aplicación Django completa y probada (849 tests que pasan en PostgreSQL 17 sin omitidos, también dentro del contenedor de producción) que cubre la web pública, el programa de fidelización de punta a punta (registro verificado → QR → compra → puntos → canje → validación), el panel del personal, el dashboard del propietario con estadísticas reales y geográficas, eventos y reservas, notificaciones con consentimiento y una API REST v1 documentada con OpenAPI. Está preparada para producción con Docker Compose (Nginx, Gunicorn, PostgreSQL, Redis, tareas programadas, copias cifradas y CI), probada de extremo a extremo en local.
 
 **Qué necesidades satisface.** Fidelizar sin tarjetas físicas, operar rápido en la barra, impedir abusos (puntos duplicados, canjes repetidos, autorregistro de compras) y dar al propietario información útil sin exponer datos personales al resto del personal.
 
-**Qué conocimientos técnicos demuestra.** Arquitectura en capas en Django (vistas finas, servicios, selectores); modelado relacional con invariantes en la BD (CHECK, UNIQUE condicionales, PROTECT); control de concurrencia (`select_for_update`, UPDATE condicionados) e idempotencia; seguridad aplicada (autorización por rol en varias capas, anti-enumeración, IDOR, tokens con hash, JWT revocables, IP tras proxies); privacidad por diseño (minimización, consultas auditadas, consentimiento con historial); pruebas automatizadas amplias; y documentación por fases.
+**Qué conocimientos técnicos demuestra.** Arquitectura en capas en Django (vistas finas, servicios, selectores); modelado relacional con invariantes en la BD (CHECK, UNIQUE condicionales, PROTECT); control de concurrencia (`select_for_update`, UPDATE condicionados) e idempotencia; seguridad aplicada (autorización por rol en varias capas, anti-enumeración, IDOR, tokens con hash, JWT revocables, IP tras proxies); privacidad por diseño (minimización, consultas auditadas, consentimiento con historial); pruebas automatizadas amplias, también de concurrencia real; despliegue con contenedores, copias y CI; refactorización controlada con tests de caracterización y mediciones; y documentación por fases.
 
 **Decisiones más importantes.** El ledger inmutable con saldo derivado, la idempotencia con clave única, el modelo de usuario con roles desde la primera migración, la separación del perfil personal y la reutilización de los mismos servicios en la web y en la API.
 
-**Limitaciones presentes.** No hay despliegue; no se ha ejecutado en PostgreSQL (la concurrencia real está sin verificar); el SMTP, el SMS y las tareas programadas no están configurados; no hay exportación ni supresión de datos; no hay CI ni mediciones de cobertura; JS y accesibilidad sin pruebas automáticas.
+**Limitaciones presentes.** No está desplegada en un servidor real; el SMTP real y el SMS no están configurados; no hay exportación ni supresión de datos; no hay monitorización ni medición de cobertura; JS y accesibilidad sin pruebas automáticas.
 
-**Condiciones antes de producción.** (1) Ejecutar la suite con PostgreSQL, incluida la concurrencia; (2) caché compartida; (3) proveedor SMTP real y programación de las tareas; (4) servidor WSGI, proxy con TLS, estáticos y medios; (5) copias de seguridad probadas; (6) revisión de los textos legales y de los derechos de los interesados; (7) revisión visual y de accesibilidad en dispositivos reales.
+**Condiciones antes de producción.** (1) Contratar y endurecer el VPS, con DNS y certificado; (2) proveedor SMTP real con SPF, DKIM y DMARC; (3) destino externo de las copias y su programación en el host; (4) monitorización y alertas; (5) revisión de los textos legales y de los derechos de los interesados (P2-9); (6) revisión visual y de accesibilidad en dispositivos reales. Ya están resueltas la validación en PostgreSQL con concurrencia, la caché compartida, el servidor WSGI con proxy TLS, la programación de las tareas y las copias con restauración probada.
 
 **Posibilidades de evolución.** App Flutter sobre la API ya existente, integración con TPV (el modelo ya reserva `POS` y `external_reference`), anulación de compras con compensación en el ledger, SMS con un proveedor real y 2FA para el propietario.

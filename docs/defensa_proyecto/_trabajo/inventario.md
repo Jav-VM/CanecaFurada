@@ -1,5 +1,7 @@
 # Inventario del repositorio (Etapa A)
 
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md).
+
 Estado del repositorio analizado: rama `main`, commit `ac5903a` (2026-10-14), árbol limpio salvo `docs/prompt_funcionamiento.md` (sin versionar). Herramientas: Python 3.14.2 y Django 5.2.18 (versiones instaladas en `.venv`).
 
 ## Cifras verificadas

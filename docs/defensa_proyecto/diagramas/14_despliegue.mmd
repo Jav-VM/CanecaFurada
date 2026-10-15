@@ -1,0 +1,13 @@
+%% Despliegue de producción (Fase 12): compose.yaml. Implementado y probado en local y en el CI; pendiente el VPS real.
+%% Detalle: docs/fase-12-despliegue.md.
+flowchart LR
+    U["Navegadores y app móvil"] -->|"HTTPS 443"| NX["nginx<br/>TLS Let's Encrypt, /static con hash,<br/>/media solo imágenes, limit_req en el login"]
+    NX -->|"HTTP interno"| WEB["web<br/>Gunicorn + Django (config.settings.prod)<br/>no root, FS de solo lectura"]
+    WEB --> PG[("db<br/>PostgreSQL 17, rol sin privilegios,<br/>sin puertos publicados")]
+    WEB --> RD[("redis<br/>caché compartida")]
+    WEB --> SMTP["Proveedor SMTP<br/>EMAIL_* (pendiente en el VPS)"]
+    SCH["scheduler (supercronic)<br/>process_notifications cada 5 min;<br/>run_birthday_promotions, expire_redemptions,<br/>purge_email_tokens, flushexpiredtokens<br/>y clearsessions diarias"] --> PG
+    SCH --> SMTP
+    CB["certbot<br/>renovación cada 12 h"] -.-> NX
+    HOST["Cron del host<br/>backup.sh run diario,<br/>restore.sh check semanal"] -.-> BK[("restic: BD y media/<br/>cifrados en un destino externo")]
+    PG -.-> BK

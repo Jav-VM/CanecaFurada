@@ -1,5 +1,7 @@
 # Notas de lectura del código (evidencia para la memoria)
 
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md).
+
 Notas de trabajo tomadas al leer el código. Las líneas citadas son de `HEAD` (`ac5903a`). Cada bloque indica qué archivos se han leído completos.
 
 ## core (leído: models.py, services.py, throttling.py, http.py, admin.py)

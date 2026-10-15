@@ -1,6 +1,6 @@
 # Caneca Furada — Banco de preguntas del tribunal (cap. 18)
 
-Respuestas basadas en el código del commit `ac5903a`. Dificultad: 🟢 básica · 🟡 media · 🔴 difícil. Cuando un control **no existe**, se dice y se propone una solución.
+Respuestas basadas en el código de la versión congelada (commit `d0bac7c`, 15-10-2026), que incluye la migración a PostgreSQL, la auditoría previa a la Fase 12, la Fase 12 y la refactorización final. Dificultad: 🟢 básica · 🟡 media · 🔴 difícil. Cuando un control **no existe**, se dice y se propone una solución.
 
 ---
 
@@ -16,7 +16,7 @@ Visitantes anónimos y tres roles definidos en el enumerado `User.Role` (`apps/a
 Estado de negocio con reglas (saldo, canjes de un solo uso, reservas con aforo), autorización por rol, integridad transaccional y trazabilidad. Una web informativa solo muestra contenido.
 
 **4. 🟡 ¿Qué queda fuera del alcance?**
-Facturación y caja (las compras registradas **no** son la facturación, `apps/purchases/selectors.py:1-9`), SMS (sin proveedor), TPV y anulación de compras (reservados), app móvil, despliegue y exportación o borrado de datos a petición.
+Facturación y caja (las compras registradas **no** son la facturación, `apps/purchases/selectors.py:1-9`), SMS (sin proveedor), TPV y anulación de compras (reservados), app móvil, monitorización y exportación o borrado de datos a petición. El despliegue está preparado y probado en local, pero no hecho en un servidor real.
 
 ## B. Arquitectura
 
@@ -44,13 +44,13 @@ Navegador → middleware (sesión, CSRF, autenticación) → `config/urls.py` �
 Por sus «baterías incluidas»: ORM, migraciones, autenticación, CSRF, admin y plantillas; versión 5.2 LTS; seguridad por defecto. El admin le da al propietario una gestión completa sin programar.
 
 **12. 🟡 ¿Para qué sirve `select_related` y dónde lo usas?**
-Hace un JOIN para no lanzar una consulta por cada objeto (el problema N+1). P. ej. `purchases/selectors.py:124` carga el cliente y el empleado de cada compra del listado.
+Hace un JOIN para no lanzar una consulta por cada objeto (el problema N+1). P. ej. `purchases/selectors.py:113` carga el cliente y el empleado de cada compra del listado.
 
 **13. 🟡 ¿Qué hace `select_for_update`?**
 `SELECT ... FOR UPDATE`: bloquea las filas hasta el final de la transacción. Lo uso para serializar las operaciones del mismo cliente (`ledger._lock_customer`, `ledger.py:63-64`) y para que dos validaciones del mismo canje no se pisen. En SQLite no hay bloqueo de fila real (bloquea la BD entera); por eso hace falta probar con PostgreSQL.
 
 **14. 🟡 ¿Por qué `ATOMIC_REQUESTS = False`?**
-Para controlar las transacciones explícitamente en los servicios (`base.py:96`): solo se abren donde hacen falta y con el alcance justo (p. ej. enviar el email **después** del commit con `on_commit`).
+Para controlar las transacciones explícitamente en los servicios (`base.py:98`): solo se abren donde hacen falta y con el alcance justo (p. ej. enviar el email **después** del commit con `on_commit`).
 
 **15. 🔴 ¿Para qué el `atomic()` anidado en `register_purchase`?**
 Es un savepoint: si `Purchase.objects.create` falla por el UNIQUE de la clave (otra petición ganó la carrera), se captura el `IntegrityError` sin invalidar la transacción externa y se devuelve la compra existente (`_replay`) (`purchases/services.py:175-189`).
@@ -107,7 +107,7 @@ No se elige: el registro público siempre crea un CUSTOMER (`register_customer` 
 Cada token lleva `pwv` = HMAC del hash de la contraseña (`apps/api/tokens.py:43-49`); `JWTAuthentication.get_user` lo compara en cada petición. Si cambia la contraseña por cualquier vía, todos los tokens dejan de valer al momento. Además, `PasswordChangeView` añade todos los refresh a la lista negra.
 
 **31. 🟡 ¿Por qué no se puede quedar el sistema sin propietario?**
-`change_role` y `set_user_active` bloquean los propietarios activos y rechazan quitar el último (`services.py:212-219, 251-258`). En el dashboard, además, nadie puede desactivarse ni cambiarse el rol a sí mismo.
+`change_role` y `set_user_active` bloquean primero los propietarios activos, en orden de pk, y después al usuario afectado; con los bloqueos tomados comprueban que quien actúa sigue siendo propietario activo y rechazan quitar el último (`accounts/services.py:85-109, 233-240, 269-274`). El orden único evita interbloqueos si dos propietarios se retiran mutuamente a la vez (corrección R-1, [refactorización final](../refactorizacion-final.md)); lo prueban `tests/accounts/test_concurrency.py` en PostgreSQL. En el dashboard, además, nadie puede desactivarse ni cambiarse el rol a sí mismo.
 
 ## G. Seguridad y privacidad
 
@@ -127,13 +127,13 @@ Acceder a un objeto ajeno cambiando su id. Las vistas no reciben ids de usuario 
 Minimización (listados con `.only()`, el empleado ve «Lúa F.»), consultas auditadas (ficha del cliente, reserva con teléfono), búsqueda por POST guardada en la sesión (no queda en la URL ni en los logs), estadísticas geográficas solo con direcciones declaradas, logs y auditoría sin datos personales, notificaciones sin destinatario ni cuerpo guardados, IPs como hash en la caché. **Lo que falta:** exportación y supresión a petición del interesado y textos legales; el código no garantiza por sí mismo el cumplimiento del RGPD.
 
 **37. 🟡 ¿Cómo evitas que alguien averigüe si un email está registrado?**
-El registro, el reenvío y la recuperación responden igual exista o no la cuenta; con un email existente se calcula igualmente un hash de la contraseña para igualar los tiempos (`services.py:426-430`), y se avisa por email al titular.
+El registro, el reenvío y la recuperación responden igual exista o no la cuenta; con un email existente se calcula igualmente un hash de la contraseña para igualar los tiempos (`accounts/services.py:442-446`), y se avisa por email al titular.
 
 **38. 🟡 ¿Cómo limitas los ataques de fuerza bruta?**
 Login: 5 fallos por email y 30 por IP en 15 minutos; formularios públicos: 20 por IP y hora; QR o códigos de canje no válidos: 20 en 15 minutos por empleado; throttling DRF. Las claves se guardan como hash SHA-256. **Limitación:** con la caché por defecto (`locmem`), los contadores son **por proceso**; en producción hace falta Redis o caché en la BD.
 
 **39. 🔴 Si pongo un proxy delante, ¿un atacante puede falsear su IP con `X-Forwarded-For`?**
-No si `TRUSTED_PROXY_COUNT` es correcto: `client_ip` toma la N-ésima entrada por la derecha (la que añadió el proxy propio) y sin proxies ignora la cabecera (`apps/core/http.py:18-27`). Si se configurara un número mayor que el real, sí podría; está advertido en `base.py:149-152`.
+No si `TRUSTED_PROXY_COUNT` es correcto: `client_ip` toma la N-ésima entrada por la derecha (la que añadió el proxy propio) y sin proxies ignora la cabecera (`apps/core/http.py:18-27`). Si se configurara un número mayor que el real, sí podría; está advertido en `base.py:153-156`.
 
 ## H. QR
 
@@ -175,7 +175,7 @@ Reenviar el **registro** con la misma clave devuelve la compra existente. Pero s
 ## J. Recompensas y canjes
 
 **51. 🔴 ¿Qué ocurriría si dos empleados intentaran canjear simultáneamente la misma recompensa (validar el mismo código)?**
-`validate_redemption` bloquea la fila del canje (`select_for_update`) y hace `UPDATE ... SET status='USED' WHERE status='PENDING' AND expires_at > now` (`rewards/services.py:384-386`). Solo una petición actualiza 1 fila; la otra obtiene 0 y recibe «Este código ya se utilizó el …». Lo prueba `test_same_code_validated_concurrently_is_used_once` con 4 hilos: **omitido** con SQLite en memoria; **pasa** con SQLite en fichero (que serializa las escrituras); **pendiente en PostgreSQL**.
+`validate_redemption` bloquea la fila del canje (`select_for_update`) y hace `UPDATE ... SET status='USED' WHERE status='PENDING' AND expires_at > now` (`rewards/services.py:387-389`). Solo una petición actualiza 1 fila; la otra obtiene 0 y recibe «Este código ya se utilizó el …». Lo prueba `test_same_code_validated_concurrently_is_used_once` con 4 hilos: **omitido** con SQLite en memoria; **pasa** con SQLite en fichero (que serializa las escrituras); **pendiente en PostgreSQL**.
 
 **52. 🔴 ¿Y si un cliente pide cuatro canjes a la vez sin saldo para todos?**
 Cada solicitud bloquea al cliente y recalcula el saldo dentro de la transacción; las que no alcanzan reciben `insufficient_points`. Test `test_concurrent_requests_never_overspend`: como mucho uno con saldo 60 y canjes de 40, y el saldo nunca negativo (CHECK en la BD).
@@ -195,10 +195,10 @@ No: la resta es `UPDATE reward SET stock = stock - 1 WHERE stock >= 1` (`rewards
 Todo está en un `transaction.atomic()`: si falla la creación de un movimiento de puntos, se deshace también la compra. Nunca queda una compra sin puntos ni puntos sin compra.
 
 **57. 🔴 ¿Cómo evitas interbloqueos (deadlocks)?**
-Bloqueando siempre en el mismo orden: cliente → recompensa → canje (docstring de `rewards/services.py:21-22`, aplicado en `_create_redemption` y en `_close`).
+Bloqueando siempre en el mismo orden: cliente → recompensa → canje (docstring de `rewards/services.py:21-22`, aplicado en `_create_redemption` y en `_close`). Probarlo en PostgreSQL destapó dos casos que no lo respetaban y que SQLite no detectaba: `validate_redemption` bloqueaba canje, cliente y recompensa a la vez (auditoría P2-1, se corrigió con `of=("self",)`) y la regla del último propietario bloqueaba primero al usuario y luego a los propietarios (R-1, refactorización final). Ambos tienen ahora un test de concurrencia.
 
 **58. 🔴 ¿Qué pasa si falla el envío de un correo después de crear una cuenta?**
-El email se envía con `transaction.on_commit`: la cuenta ya está guardada. `send_immediately` captura el error, marca la notificación como `FAILED` (sin guardar el enlace) y no rompe el flujo. El cliente puede pedir otro enlace desde `/cuenta/verificar-email/reenviar/` (con límites). En las notificaciones de la cola (reservas), el fallo se reintenta con espera creciente hasta 5 veces si `process_notifications` está programado.
+El email se envía con `transaction.on_commit`: la cuenta ya está guardada. `send_immediately` captura el error, marca la notificación como `FAILED` (sin guardar el enlace) y no rompe el flujo. El cliente puede pedir otro enlace desde `/cuenta/verificar-email/reenviar/` (con límites). En las notificaciones de la cola (reservas), el fallo se reintenta con espera creciente hasta 5 veces: `process_notifications` se ejecuta cada 5 minutos en el servicio `scheduler`.
 
 **59. 🟡 ¿Puede `process_notifications` enviar dos veces el mismo mensaje si se lanza dos veces a la vez?**
 No en condiciones normales: cada notificación se «reclama» con `UPDATE ... WHERE status='PENDING'` (`notifications/services.py:270-274`). Excepción reconocida en el código: si un proceso muere después de que el proveedor aceptara el mensaje, `recover_stale` lo reencola y podría duplicarlo.
@@ -206,13 +206,13 @@ No en condiciones normales: cada notificación se «reclama» con `UPDATE ... WH
 ## L. Pruebas
 
 **60. 🟢 ¿Cuántos tests hay y pasan?**
-802; resultado real del 15-10-2026: `OK (skipped=3)` en unos 16 s. Los 3 omitidos son de concurrencia y necesitan una BD con varias conexiones.
+849, y pasan todos en PostgreSQL 17 sin omitir ninguno (unos 42 s), también dentro del contenedor de producción y en el CI de GitHub. Con SQLite en memoria se omiten 18: los 17 de concurrencia, que necesitan varias conexiones, y uno exclusivo de PostgreSQL.
 
 **61. 🟡 ¿Qué tipos de prueba tienes?**
-De reglas (redondeo, validadores), de integración servicio + BD, de restricciones de BD (forzando `UPDATE` directos), de permisos y escalada, de IDOR, de formularios, de idempotencia, de seguridad de la API (sin CORS, `no-store`, solo JSON, paginación limitada, throttling) y de concurrencia con hilos.
+De reglas (redondeo, validadores), de integración servicio + BD, de restricciones de BD (forzando `UPDATE` directos), de permisos y escalada, de IDOR, de formularios, de idempotencia, de seguridad de la API (sin CORS, `no-store`, solo JSON, paginación limitada, throttling), de concurrencia con hilos (17), de caracterización antes de refactorizar y de número de consultas (`assertNumQueries`).
 
 **62. 🔴 ¿Qué NO garantizan tus tests?**
-El comportamiento en PostgreSQL y los bloqueos de fila reales, el envío real de correo, el JavaScript del lector de QR, la accesibilidad y el diseño visual. Tampoco hay medición de cobertura, así que no puedo dar un porcentaje.
+El servidor real (DNS, certificado, SMTP), el envío real de correo, el JavaScript del lector de QR, la accesibilidad, el diseño visual y el rendimiento con carga. Tampoco hay medición de cobertura, así que no puedo dar un porcentaje.
 
 **63. 🟡 ¿Por qué en los tests se usa MD5 para las contraseñas?**
 Solo en `config/settings/test.py` para acelerar los tests; nunca fuera de ellos. En desarrollo y producción se usa el hasher por defecto de Django.
@@ -220,21 +220,21 @@ Solo en `config/settings/test.py` para acelerar los tests; nunca fuera de ellos.
 ## M. Rendimiento
 
 **64. 🔴 ¿Qué parte del sistema cambiarías si aumentara mucho el número de clientes?**
-(1) **El saldo del ledger:** materializarlo (o usar `balance_after` del último movimiento) en lugar de `SUM` de todos los movimientos. (2) **La caché:** compartida (Redis) para los límites y el contenido. (3) **Las notificaciones y campañas:** `dispatch_queued` crea una notificación por destinatario en una transacción por campaña; con decenas de miles convendría hacerlo por lotes o con una cola (Celery). (4) **El conteo de usos de las promociones** (`uses.count()` en cada compra) → contadores. (5) Varios procesos WSGI + PostgreSQL con pool de conexiones (`DATABASE_CONN_MAX_AGE`).
+(1) **El saldo del ledger:** materializarlo (o usar `balance_after` del último movimiento) en lugar de `SUM` de todos los movimientos. (2) **Más workers o servidores:** la caché ya es compartida (Redis), así que los límites siguen siendo correctos con varios procesos. (3) **Las notificaciones y campañas:** `dispatch_queued` crea una notificación por destinatario en una transacción por campaña; con decenas de miles convendría hacerlo por lotes o con una cola (Celery). (4) **El conteo de usos de las promociones** (`uses.count()` en cada compra) → contadores. (5) Varios procesos WSGI + PostgreSQL con pool de conexiones (`DATABASE_CONN_MAX_AGE`).
 
 **65. 🟡 ¿Qué has hecho para evitar consultas N+1?**
-`select_related` y `prefetch_related` en los selectores (p. ej. `public_menu` con `Prefetch(... to_attr="public_products")`), agregaciones condicionales en una sola consulta (`Count(filter=...)`) y `only()` o `defer()` para cargar menos columnas.
+`select_related` y `prefetch_related` en los selectores (p. ej. `public_menu` con `Prefetch(... to_attr="public_products")`), agregaciones condicionales en una sola consulta (`Count(filter=...)`) y `only()` o `defer()` para cargar menos columnas. Lo medí en la refactorización final: el número de consultas de cada página no crece con los datos, y unificar las estadísticas de canjes y reservas bajó el resumen del dashboard de 17 a 12 consultas.
 
 ## N. Despliegue
 
 **66. 🟢 ¿Está desplegada la aplicación?**
-No. Hay una configuración de producción (`config/settings/prod.py`, que falla al arrancar si falta algo crítico, con 7 tests) y una guía (`docs/despliegue.md`); faltan el servidor WSGI, el proxy con TLS, PostgreSQL, el SMTP, los estáticos y medios, las copias de seguridad y la programación de las tareas.
+En un servidor real, todavía no. Está **lista y probada en local**: la Fase 12 dejó una imagen Docker y una pila Compose (Nginx con TLS, Gunicorn, PostgreSQL 17, Redis, tareas programadas y certbot), scripts de despliegue, rollback, copia y restauración, y un CI en GitHub. Todo se probó desde volúmenes vacíos, incluido un desastre simulado con restauración. Faltan las acciones manuales en el VPS: contratarlo, DNS, certificado, SMTP real y destino de las copias.
 
 **67. 🔴 ¿Qué sucede si una migración falla en producción?**
-En PostgreSQL, cada migración de Django se ejecuta en una transacción (DDL transaccional): si falla, se deshace esa migración y el esquema queda en el estado anterior. Procedimiento recomendado (no automatizado en el repositorio): copia de seguridad previa, ensayo en preproducción con una copia de los datos y reversión con `migrate <app> <anterior>`. Las dos migraciones de datos tienen una inversa `noop`, así que revertirlas no deshace los datos creados.
+En PostgreSQL, cada migración de Django se ejecuta en una transacción (DDL transaccional): si falla, se deshace esa migración y el esquema queda en el estado anterior. `deploy.sh` hace una copia antes de aplicar las migraciones, que se ejecutan una sola vez en un contenedor aparte. Si hay que volver atrás, `deploy.sh rollback` cambia a la imagen anterior en segundos; si la versión nueva traía migraciones incompatibles, además hay que restaurar la copia y se pierde lo escrito después. Las dos migraciones de datos tienen una inversa `noop`, así que revertirlas no deshace los datos creados.
 
 **68. 🟡 ¿Qué tareas hay que programar?**
-`process_notifications` (cada 5 min), `run_birthday_promotions`, `expire_redemptions`, `purge_email_tokens` y `flushexpiredtokens` (diarias). Hoy no están programadas.
+`process_notifications` (cada 5 min), `run_birthday_promotions`, `expire_redemptions`, `purge_email_tokens`, `flushexpiredtokens` y `clearsessions` (diarias). Las ejecuta supercronic en el servicio `scheduler` de Docker Compose (`deploy/cron/crontab`), sin solapar ejecuciones. Las copias se programan aparte, en el host.
 
 ## O. Decisiones de diseño
 
@@ -242,7 +242,7 @@ En PostgreSQL, cada migración de Django se ejecuta en una transacción (DDL tra
 La CLI standalone evita la cadena npm; `scripts/tailwind.py` descarga la v4.3.3 y **verifica su SHA-256** antes de usarla. El CSS compilado está versionado: no hace falta compilar para ejecutar.
 
 **70. 🟡 ¿Por qué no Celery para las tareas?**
-Por simplicidad operativa a esta escala (decisión del usuario en la F10): comandos idempotentes y el programador del sistema. Se cambiaría con volumen alto o si se necesitara inmediatez.
+Por simplicidad operativa a esta escala (decisión del usuario en la F10): comandos idempotentes programados con supercronic. Se cambiaría con volumen alto o si se necesitara inmediatez.
 
 **71. 🟡 ¿Por qué el regalo de cumpleaños no exige aceptar publicidad?**
 Para que el consentimiento publicitario sea libre: condicionar un beneficio a aceptarlo podría invalidarlo. El regalo exige el email verificado (requisito del programa) y el aviso solo se envía si hay consentimiento (`loyalty/birthdays.py:14-21`).
@@ -253,10 +253,27 @@ Porque su cliente previsto es una app nativa, que no lo necesita, y sin cabecera
 ## P. Limitaciones y mejoras
 
 **73. 🟢 ¿Qué es lo primero que harías antes de producción?**
-Ejecutar toda la suite con PostgreSQL (incluida la concurrencia), configurar la caché compartida y el SMTP real, y programar las tareas.
+Las acciones manuales del VPS (servidor endurecido, DNS, certificado), el SMTP real con SPF, DKIM y DMARC, el destino externo de las copias y la monitorización con alertas. Lo que antes estaba aquí (PostgreSQL, caché compartida, tareas programadas) ya está hecho.
 
 **74. 🟡 ¿Qué funcionalidades están a medias?**
 Anulación de compras (`VOIDED`) y TPV (`POS`, `external_reference`): reservados en el modelo, sin flujo. SMS: canal sin proveedor. `birthday_window_days`: campo sin uso. `CancelReservationForm`: definido y sin usar.
 
 **75. 🟡 ¿Qué mejoras de seguridad añadirías?**
-2FA para el propietario, auditoría inmutable en la BD, Swagger UI servido localmente, `pip-audit` en un CI, exportación y supresión de datos, y firmar la clave de idempotencia.
+2FA para el propietario, Content-Security-Policy, borrar los metadatos EXIF de las imágenes, auditoría inmutable en la BD, Swagger UI servido localmente, `pip-audit` en el CI, exportación y supresión de datos, y firmar la clave de idempotencia.
+
+## Q. PostgreSQL, despliegue, auditoría y refactorización (añadidas el 15-10-2026)
+
+**76. 🔴 ¿Qué encontraste al pasar de SQLite a PostgreSQL?**
+Que SQLite ignora `SELECT ... FOR UPDATE`, así que algunos errores no aparecían. El más claro: los cambios de estado de una reserva bloqueaban la reserva con un `JOIN` al evento, que es nulo en las reservas de mesa, y PostgreSQL no admite `FOR UPDATE` en el lado nulo de un `LEFT JOIN`. Fallaban 15 tests. Se corrigió con `select_for_update(of=("self",))` (C8.13). Por eso la verificación que cuenta se hace en PostgreSQL y el CI falla si se omite algún test.
+
+**77. 🔴 ¿Cómo has desplegado la aplicación y por qué así?**
+Con Docker Compose en un único VPS: Nginx (TLS, estáticos con hash, límites en el login), Gunicorn con Django, PostgreSQL 17 con un rol sin privilegios, Redis como caché compartida, supercronic para las tareas y certbot. Los contenedores de la app no son root y tienen el sistema de ficheros de solo lectura; la BD y Redis no publican puertos. Para un local es reproducible, barato y con rollback rápido; no tiene alta disponibilidad, que a esta escala no compensa (D17).
+
+**78. 🟡 ¿Cómo haces las copias de seguridad y cómo sabes que funcionan?**
+Con restic: un volcado de PostgreSQL y `media/`, cifrados en el cliente y enviados a un destino externo, con retención de 7 diarias y 4 semanales. El volcado nunca queda sin cifrar en el disco del servidor. Funcionan porque se ha restaurado: `restore.sh check` restaura en una BD aparte y compara recuentos, y en local se simuló un desastre (BD e imágenes borradas) y se recuperó todo.
+
+**79. 🔴 ¿Qué hiciste en la refactorización final y cómo garantizas que no rompiste nada?**
+Primero ejecuté la suite (833 OK) y escribí tests de caracterización para las zonas que iba a tocar, que pasaron con el código original. Después cambié el código por grupos pequeños, con la suite completa tras cada uno: un helper de periodo común (sustituye unas 9 copias), estadísticas con agregados condicionales (resumen del dashboard de 17 a 12 consultas, medido) y la regla del último propietario en un solo sitio. Al final pasé la suite en PostgreSQL, en SQLite y en el contenedor, `check --deploy` y la comparación del esquema OpenAPI (`docs/refactorizacion-final.md`).
+
+**80. 🔴 ¿Encontraste algún error durante la refactorización?**
+Sí, uno que ya existía: si dos propietarios se desactivaban mutuamente a la vez, PostgreSQL detectaba un interbloqueo y una operación terminaba en error 500 (la regla de no quedarse sin propietario sí se cumplía). Lo reproduje con un test de hilos, lo documenté como R-1 y, con aprobación, lo corregí: ahora siempre se bloquea a los propietarios antes que al usuario afectado y, con los bloqueos tomados, se vuelve a comprobar que quien actúa sigue siendo propietario. Ese segundo detalle cerraba otro caso: un propietario recién desactivado podía completar una operación que había quedado esperando.

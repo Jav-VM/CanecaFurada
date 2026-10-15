@@ -1,5 +1,7 @@
 # Discrepancias, hallazgos y puntos no verificables
 
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md).
+
 Registro de la Etapa B. Cada entrada indica la evidencia que la sostiene y cómo se tratará en la documentación final.
 
 | # | Tipo | Hallazgo | Evidencia | Tratamiento |

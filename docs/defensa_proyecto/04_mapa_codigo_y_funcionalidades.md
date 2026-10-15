@@ -1,6 +1,6 @@
 # Caneca Furada — Mapa de código y funcionalidades
 
-Índice para localizar rápidamente el código de cada funcionalidad. Las rutas URL se han obtenido con `get_resolver()` (volcado completo en [`_trabajo/volcado_urls.md`](_trabajo/volcado_urls.md)) y las líneas son las del commit `ac5903a`. Abreviaturas: `acc` = `apps/accounts`, `loy` = `apps/loyalty`, `pur` = `apps/purchases`, `rew` = `apps/rewards`, `evt` = `apps/events`, `ntf` = `apps/notifications`, `dash` = `apps/dashboard`, `T` = `templates/`.
+Índice para localizar rápidamente el código de cada funcionalidad. Las rutas URL se han obtenido con `get_resolver()` (volcado completo en [`_trabajo/volcado_urls.md`](_trabajo/volcado_urls.md)) y las líneas son las de la versión congelada (commit `d0bac7c`, 15-10-2026), recalculadas desde la primera versión del documento (commit `ac5903a` del historial anterior). Abreviaturas: `acc` = `apps/accounts`, `loy` = `apps/loyalty`, `pur` = `apps/purchases`, `rew` = `apps/rewards`, `evt` = `apps/events`, `ntf` = `apps/notifications`, `dash` = `apps/dashboard`, `T` = `templates/`.
 
 ## 1. Funcionalidad → URL → vista → servicio o selector → modelo → plantilla → tests
 
@@ -76,7 +76,7 @@
 
 ## 2. Comandos de gestión
 
-| Comando | Archivo | Servicio | Frecuencia prevista |
+| Comando | Archivo | Servicio | Frecuencia (`deploy/cron/crontab`) |
 |---|---|---|---|
 | `create_owner [--noinput]` | `acc/management/commands/create_owner.py` | `accounts.services.create_owner` | Una vez |
 | `purge_email_tokens [--days N]` | `acc/management/commands/purge_email_tokens.py` | `purge_email_tokens` | Diaria |
@@ -84,18 +84,19 @@
 | `expire_redemptions` | `rew/management/commands/expire_redemptions.py` | `rewards.services.expire_pending_redemptions` | Diaria |
 | `process_notifications [--limit N]` | `ntf/management/commands/process_notifications.py` | `campaigns.dispatch_queued` + `services.process_due` | Cada 5 min |
 | `flushexpiredtokens` | simplejwt | — | Diaria |
+| `clearsessions` | Django | — | Diaria (añadida en la Fase 12) |
 
 ## 3. Clases y funciones clave por módulo
 
 | Módulo | Elementos clave (archivo:línea) |
 |---|---|
-| core | `TimeStampedModel` `models.py:5`; `AuditEvent` `:15`; `record_audit_event` `services.py:4`; `is_limited` `throttling.py:19`; `register_attempt` `throttling.py:23`; `client_ip` `http.py:18`; `ip_limited` `:30` |
-| accounts | `User` `models.py:21`; `CustomerProfile` `:157`; `EmailVerificationToken` `:262`; `CommunicationPreferenceChange` `:308`; `UserManager` `managers.py:6`; `has_role` `permissions.py:17`; `role_required` `:35`; `verified_email_required` `:55`; `RoleRequiredMixin` `:72`; `_create_user` `services.py:96`; `change_role` `:198`; `set_user_active` `:241`; `register_customer` `:373`; `_issue_email_token` `:469`; `confirm_email_token` `:562`; `update_customer_profile` `:753`; `can_receive_promotional_email` `:885`; `geographic_distribution` `selectors.py:195`; `ThrottledAuthenticationForm` `forms.py:173` |
+| core | `TimeStampedModel` `models.py:5`; `AuditEvent` `:15`; `record_audit_event` `services.py:4`; `is_limited` `throttling.py:19`; `register_attempt` `throttling.py:23`; `client_ip` `http.py:18`; `ip_limited` `:30`; `HealthCheckMiddleware` `middleware.py:8`; `period_q` `querysets.py:5` |
+| accounts | `User` `models.py:21`; `CustomerProfile` `:157`; `EmailVerificationToken` `:262`; `CommunicationPreferenceChange` `:308`; `UserManager` `managers.py:6`; `has_role` `permissions.py:17`; `role_required` `:35`; `verified_email_required` `:55`; `RoleRequiredMixin` `:72`; `_create_user` `services.py:122`; `change_role` `:224`; `set_user_active` `:262`; `register_customer` `:389`; `_issue_email_token` `:485`; `confirm_email_token` `:578`; `update_customer_profile` `:769`; `can_receive_promotional_email` `:901`; `geographic_distribution` `selectors.py:190`; `LoginThrottleMixin` `forms.py:177`; `ThrottledAuthenticationForm` `:196`; `_lock_active_owners` `services.py:85` |
 | catalog | `Product` `models.py:89`; `public_menu` `selectors.py:31`; `set_product_status` `services.py:27`; `validate_image_file` `validators.py:29`; `OwnerOnlyAdminMixin` `admin.py:22` |
-| loyalty | `CustomerQRCode` `models.py:15`; `LoyaltyRule` `:56`; `Promotion` `:112`; `PointsTransaction` `:276`; `generate_token` `services.py:54`; `identify_customer` `:127`; `balance` `ledger.py:58`; `_append` `:67`; `award_points_for_purchase` `:75`; `adjust_points` `:182`; `reverse_movement` `:250`; `spend_points` `:291`; `grant_birthday_gift` `:319`; `calculate_points` `conversion.py:43`; `bonuses_for_purchase` `promotions.py:107`; `birthday_year_for` `:77`; `run_birthday_promotions` `birthdays.py:69`; `points_summary` `selectors.py:49` |
-| purchases | `Purchase` `models.py:21`; `parse_amount` `services.py:63`; `register_purchase` `:158`; `_replay` `:140`; `registered_purchases_stats` `selectors.py:49` |
-| rewards | `Reward` `models.py:36`; `Redemption` `:133`; `generate_code` `codes.py:26`; `_create_redemption` `services.py:176`; `request_redemption` `:213`; `_close` `:246`; `validate_redemption` `:370`; `redemption_stats` `selectors.py:87` |
-| events | `Event` `models.py:42`; `Reservation` `:112` (`TRANSITIONS` `:121`); `save_event` `services.py:95`; `_create` `:267`; `request_reservation` `:307`; `_transition` `:340`; `public_events` `selectors.py:42` |
+| loyalty | `CustomerQRCode` `models.py:15`; `LoyaltyRule` `:56`; `Promotion` `:112`; `PointsTransaction` `:276`; `generate_token` `services.py:54`; `identify_customer` `:127`; `balance` `ledger.py:58`; `_append` `:67`; `award_points_for_purchase` `:75`; `adjust_points` `:182`; `reverse_movement` `:250`; `spend_points` `:291`; `grant_birthday_gift` `:319`; `calculate_points` `conversion.py:43`; `bonuses_for_purchase` `promotions.py:107`; `birthday_year_for` `:77`; `run_birthday_promotions` `birthdays.py:69`; `points_summary` `selectors.py:50` |
+| purchases | `Purchase` `models.py:21`; `parse_amount` `services.py:63`; `register_purchase` `:158`; `_replay` `:140`; `registered_purchases_stats` `selectors.py:50` |
+| rewards | `Reward` `models.py:36`; `Redemption` `:133`; `generate_code` `codes.py:26`; `_create_redemption` `services.py:176`; `request_redemption` `:213`; `_close` `:246`; `validate_redemption` `:373`; `redemption_stats` `selectors.py:80` |
+| events | `Event` `models.py:42`; `Reservation` `:112` (`TRANSITIONS` `:121`); `save_event` `services.py:95`; `_create` `:267`; `request_reservation` `:307`; `_transition` `:340`; `public_events` `selectors.py:43` |
 | notifications | `Campaign` `models.py:36`; `Notification` `:80`; `send_immediately` `services.py:130`; `enqueue` `:165`; `deliver` `:264`; `dispatch_queued` `campaigns.py:127`; `make_token` `unsubscribe.py:25`; `read_token` `unsubscribe.py:33` |
 | web | `BusinessInfo` `models.py:43`; `business_info` `services.py:55`; `site` `context_processors.py:4` |
 | api | `JWTAuthentication` `authentication.py:16`; `password_version` `tokens.py:43`; `rotate_refresh_token` `:85`; `HasRole` `permissions.py:15`; `exception_handler` `exceptions.py:103`; `PageNumberPagination` `pagination.py:4` |
@@ -118,4 +119,19 @@
 | Roles y permisos | [diagramas/11_roles_permisos.mmd](diagramas/11_roles_permisos.mmd) |
 | Flujo de una reserva | [diagramas/12_reserva_flujo.mmd](diagramas/12_reserva_flujo.mmd) |
 | Estados de una notificación | [diagramas/13_notificaciones.mmd](diagramas/13_notificaciones.mmd) |
-| Despliegue (propuesta) | [diagramas/14_despliegue_propuesta.mmd](diagramas/14_despliegue_propuesta.mmd) |
+| Despliegue (Fase 12) | [diagramas/14_despliegue.mmd](diagramas/14_despliegue.mmd) |
+
+## 5. Despliegue y operación (Fase 12)
+
+| Pieza | Archivo | Qué hace |
+|---|---|---|
+| Imagen | `Dockerfile` | Multietapa: imagen de la app (no root) e imagen de Nginx con los estáticos de la misma versión |
+| Pila de producción | `compose.yaml` | web, db, redis, nginx, scheduler, certbot; migrate, backup y restore-media bajo demanda |
+| Pila local | `compose.dev.yaml`, `deploy/dev.env` | Misma definición con certificado autofirmado, Mailpit y un servicio de tests |
+| Gunicorn | `deploy/gunicorn.conf.py` | Workers, timeouts y logs |
+| Nginx | `deploy/nginx/templates/*.template` | TLS, cabeceras, estáticos, `/media`, `limit_req`, logs sin tokens |
+| Rol de la BD | `deploy/postgres/10-app-role.sh` | Rol `caneca` sin privilegios |
+| Tareas | `deploy/cron/crontab` | Programación de los comandos de la sección 2 |
+| Scripts | `deploy/scripts/deploy.sh`, `backup.sh`, `restore.sh` | Despliegue con copia previa y rollback; copias con restic; restauración de prueba o completa |
+| CI | `.github/workflows/ci.yml` | Suite en PostgreSQL sin omitidos, `check --deploy`, OpenAPI, build, pila, prueba de humo y copia/restauración |
+| Healthcheck | `apps/core/middleware.py` | `/healthz` interno con `SELECT 1` |

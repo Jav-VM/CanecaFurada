@@ -1,5 +1,7 @@
 # Historial de Git por fase (generado con git log / git show --name-status)
 
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md).
+
 Cada fase corresponde a **un único commit**. Todos son del 13 y 14-10-2026, así que el orden *dentro* de cada fase no se puede reconstruir. A = añadido, M = modificado, D = borrado.
 
 ## `40faf00` — 2026-10-13 · Creacion de carpeta con venv y gitignore y creacion de repositorio(primer commit)

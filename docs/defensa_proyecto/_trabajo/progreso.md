@@ -1,5 +1,7 @@
 # Progreso de la documentación de la defensa
 
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md).
+
 **Léelo primero al retomar la tarea.** Plan aprobado: `C:\Users\jvmsp\.claude\plans\pasted-content-id-cda0-quiero-preparar-hashed-valley.md`. Requisitos: `docs/prompt_funcionamiento.md`.
 
 Decisiones del usuario: solo Markdown en `docs/defensa_proyecto/`, diagramas en Mermaid y no mencionar un archivo concreto del repositorio que el usuario pidió ignorar.

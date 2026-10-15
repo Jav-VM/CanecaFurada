@@ -1,5 +1,7 @@
 # Volcado de URLs (generado con get_resolver(), settings dev)
 
+> **Registro histórico.** Evidencia de la primera versión de la documentación de la defensa, sobre la Fase 11 (commit `ac5903a` del historial anterior, hoy `eec6abc`). No se ha actualizado: el estado de la versión congelada (commit `d0bac7c`, 849 tests) está en la [memoria](../01_memoria_tecnica_funcional.md) y en [`05_limitaciones_y_pendientes.md`](../05_limitaciones_y_pendientes.md).
+
 Total: 236 patrones (ADMIN_URL por defecto).
 
 | Patrón | Nombre | Vista | Fuente |
