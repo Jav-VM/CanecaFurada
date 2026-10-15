@@ -47,6 +47,11 @@ class PublicPagesTests(TestCase):
         self.assertContains(response, "img/brand/bannerknk.jpeg")
         self.assertContains(response, 'href="#contenido"')
         self.assertContains(response, 'aria-controls="menu-principal"')
+        # El logo de la cabecera y el del pie enlazan al inicio.
+        self.assertContains(response, 'aria-label="Caneca Furada, ir al inicio"', count=2)
+        self.assertContains(
+            response, f'<a href="{reverse("web:home")}" class="rounded-2xl" aria-label="Caneca Furada, ir al inicio">', html=False
+        )
 
     def test_home_has_all_sections(self):
         response = self.client.get(reverse("web:home"))

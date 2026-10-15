@@ -1,6 +1,6 @@
 # Caneca Furada — Memoria técnica y funcional
 
-> **Versión documentada:** la versión congelada para la defensa, commit `d0bac7c` (15-10-2026, refactorización final). Las líneas de código citadas son las de esa versión.
+> **Versión documentada:** la versión congelada para la defensa (commit `d0bac7c`, 15-10-2026, refactorización final, etiqueta `v1.0-defensa`) más el ajuste posterior de la cabecera y el pie del mismo día ([fase-03 §14](../fase-03-sistema-diseno-web-publica.md#14-ajuste-de-la-cabecera-2026-10-15)). Ese ajuste solo cambia las plantillas `base.html` y `footer.html` y el CSS, así que el resto de líneas citadas no varía.
 > **Historia de este documento:** se redactó el 15-10-2026 sobre el código de la Fase 11 (commit `ac5903a` del historial anterior; hoy `eec6abc`, porque el historial se reescribió en la auditoría, P2-6). Ese mismo día se actualizó con la [migración a PostgreSQL](../migracion-postgresql.md), la [auditoría previa a la Fase 12](../auditoria-pre-fase-12.md), la [Fase 12 de despliegue](../fase-12-despliegue.md) y la [refactorización final](../refactorizacion-final.md). Las referencias `archivo:línea` se recalcularon con el diff entre ambas versiones y los bloques de código real se volvieron a comparar con el código.
 > **Fuente de verdad:** el código del repositorio. La documentación previa (`docs/`) se ha contrastado con el código y, cuando no coinciden, se indica.
 > **Comprobaciones reales ejecutadas sobre la versión congelada** (detalle en [`refactorizacion-final.md` §6](../refactorizacion-final.md)): `manage.py check` sin incidencias, `makemigrations --check` sin cambios, **849 tests OK en PostgreSQL 17 sin omitidos** (en local y dentro del contenedor de producción), 849 OK en SQLite (18 omitidos: los de concurrencia y uno exclusivo de PostgreSQL), esquema OpenAPI regenerado idéntico al versionado y `check --deploy` con variables ficticias (solo el aviso `security.W021`). El CI de GitHub Actions pasó en verde en GitHub con la versión congelada (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860), commit `decff8f`): suite en PostgreSQL 17 sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo por HTTPS y copia con restauración.
@@ -687,7 +687,7 @@ Cada módulo sigue la estructura **A–O** del prompt: A objetivo · B requisito
 - **E. Flujos:**
   1. **Registro:** `/cuenta/registro/` → `RegistrationForm` → `services.register_customer` (cap. 9.1) [C8.3].
   2. **Login:** `/cuenta/entrar/` → `LoginView` + `ThrottledAuthenticationForm` (`forms.py:177-203`, límite en `LoginThrottleMixin`): límites de 5 fallos por email y 30 por IP en 15 minutos, con el mismo mensaje exista o no la cuenta. El login del admin técnico comparte los mismos contadores (`ThrottledAdminAuthenticationForm`, `forms.py:206-213`; añadido en la auditoría previa a la Fase 12). Tras entrar, `accounts:home` redirige según el rol (`views.py:126-133`).
-  3. **Logout:** `/cuenta/salir/` es un **POST con CSRF** (formulario en `templates/base.html:42-45`; `LogoutView` de Django).
+  3. **Logout:** `/cuenta/salir/` es un **POST con CSRF** (formulario en `templates/base.html:43-46`; `LogoutView` de Django).
   4. **Recuperación:** `PasswordResetView` (tokens nativos de Django, 2 h, `base.py:124`), límite por IP y enlace construido con `SITE_BASE_URL` (no con la cabecera Host, `views.py:237-240`).
   5. **Verificación:** enlace `/cuenta/verificar-email/<token>/`: GET muestra un botón y POST lo consume (`views.py:71-88`) [C8.4].
   6. **Cambio de email:** `services.request_email_change` exige la contraseña; el email no cambia hasta confirmar; se avisa a la dirección antigua.
@@ -1037,7 +1037,7 @@ def role_required(*roles):                        # ◆ fábrica de decoradores:
 | `PermissionDenied` | Respuesta con rol incorrecto | 403: un empleado que teclea `/dashboard/` no ve nada |
 
 **Relación:** `purchases/views.py:25` define `staff_required = role_required(User.Role.OWNER, User.Role.EMPLOYEE)`; `dashboard/views.py:76`, `owner_required = role_required(User.Role.OWNER)`.
-**Seguridad:** ocultar el botón «Dashboard» en la plantilla (`templates/base.html:39`) es cosmético; el control real es este decorador, **y además** cada servicio vuelve a comprobar el rol (defensa en profundidad).
+**Seguridad:** mostrar u ocultar los botones de la cabecera según el rol (`templates/base.html:41-42`: «Mi cuenta», que lleva al propietario a su dashboard, y «Panel») es cosmético; el control real es este decorador, **y además** cada servicio vuelve a comprobar el rol (defensa en profundidad).
 **Explicación oral:** «Un decorador comprueba en el servidor que el usuario está autenticado, activo y tiene el rol permitido; si no, login o 403. Los servicios vuelven a comprobarlo por si alguien llama a la lógica desde otro sitio».
 
 ---

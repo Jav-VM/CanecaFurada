@@ -1,5 +1,7 @@
 # Fase 9 — Dashboard del propietario y estadísticas
 
+> **Nota (2026-10-15):** el propietario ya no tiene el botón «Dashboard» en la cabecera: entra con «Mi cuenta», que lo redirige al dashboard. Ver [fase-03 §14](fase-03-sistema-diseno-web-publica.md#14-ajuste-de-la-cabecera-2026-10-15).
+
 > **Nota (Fase 10, 2026-10-14):** las secciones Eventos y Reservas, las cifras del resumen y la sección Comunicaciones ya son reales; el contenido editable añade los textos del inicio. Ver [fase-10-eventos-reservas-notificaciones.md](fase-10-eventos-reservas-notificaciones.md).
 
 **Estado:** Completa (pendiente de revisión visual en navegador y de validar en PostgreSQL; ver §11).

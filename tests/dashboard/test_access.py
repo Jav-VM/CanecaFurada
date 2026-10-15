@@ -86,9 +86,29 @@ class AccessTests(DashboardTestCase):
         response = self.client.get(reverse("dashboard:home"))
         self.assertEqual(response.status_code, 302)
 
-    def test_owner_lands_on_dashboard_and_sees_link(self):
+    def test_owner_lands_on_dashboard_and_header_has_account_panel_logout(self):
+        # «Mi cuenta» (/cuenta/) lleva al propietario a su dashboard, así que no hay botón «Dashboard».
         self.assertRedirects(self.client.get(reverse("accounts:home")), reverse("dashboard:home"))
-        self.assertContains(self.client.get(reverse("web:home")), reverse("dashboard:home"))
+
+        def header(user):
+            self.client.force_login(user)
+            html = self.client.get(reverse("web:home")).content.decode()
+            return html[html.index("<header"):html.index("</header>")]
+
+        owner = header(self.owner)
+        account = f'href="{reverse("accounts:home")}" class="btn btn-secondary">Mi cuenta</a>'
+        panel = f'href="{reverse("staff:home")}" class="btn btn-secondary">Panel</a>'
+        logout = 'class="btn btn-ghost">Salir</button>'
+        for fragment in (account, panel, logout):
+            self.assertIn(fragment, owner)
+        self.assertLess(owner.index(account), owner.index(panel))
+        self.assertLess(owner.index(panel), owner.index(logout))
+        self.assertNotIn("Dashboard", owner)
+        self.assertNotIn(reverse("dashboard:home"), owner)
+        # El cliente conserva «Mi cuenta» y no tiene «Panel».
+        customer = header(self.customer)
+        self.assertIn(account, customer)
+        self.assertNotIn(reverse("staff:home"), customer)
 
     def test_employee_header_has_no_dashboard_link(self):
         self.client.force_login(self.employee)

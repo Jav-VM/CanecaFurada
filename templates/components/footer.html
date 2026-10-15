@@ -1,9 +1,14 @@
 {% load static %}
 <footer class="mt-24 border-t border-line bg-coal">
   <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="space-y-4 sm:col-span-2 lg:col-span-1">
-      <img src="{% static 'img/brand/logoknk.jpeg' %}" alt="Caneca Furada" width="2048" height="2048" loading="lazy" class="size-32 rounded-2xl">
-      <p class="text-sm text-mist">{{ tagline }}.</p>
+    <div class="sm:col-span-2 lg:col-span-1">
+      {# Logo (enlace al inicio) y lema centrados entre sí: el bloque mide lo que el más ancho de los dos. #}
+      <div class="flex w-fit flex-col items-center gap-4 text-center">
+        <a href="{% url 'web:home' %}" class="rounded-2xl" aria-label="Caneca Furada, ir al inicio">
+          <img src="{% static 'img/brand/logoknk.jpeg' %}" alt="" width="2048" height="2048" loading="lazy" class="size-32 rounded-2xl">
+        </a>
+        <p class="text-sm text-mist">{{ tagline }}.</p>
+      </div>
     </div>
 
     <nav aria-label="Pie: secciones">

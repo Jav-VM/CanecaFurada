@@ -190,3 +190,44 @@ Modificado: `tests/accounts/test_registration.py` (títulos de sección sin el p
 - Rellenar `categories` en `MenuView` y `featured_beers` en `HomeView` desde servicios de `apps.catalog`. Las plantillas ya tienen el bucle y el estado vacío; sustituir el contenido provisional del `<li class="card">` por un componente `beer_card`.
 - Usar los componentes existentes (`card`, `badge`, `page_header`, `section_heading`, `empty_state`) y recompilar el CSS tras añadir clases.
 - Los precios se mostrarán con el formato que defina la Fase 4. Cuando existan precios reales habrá que ajustar el test `test_no_invented_business_data` (que comprueba que no aparece "€").
+
+## 14. Ajuste de la cabecera (2026-10-15)
+
+Pedido por el usuario después de la versión `v1.0-defensa`.
+
+**Problema:** con una ventana de unos 1180 px, «La cervecería» se partía en dos líneas y los botones del propietario se montaban en dos filas.
+
+**Cambios** (`templates/base.html`, `assets/css/input.css` y `static/css/app.css` recompilado):
+- **Propietario:** se quita el botón «Dashboard». Quedan **Mi cuenta · Panel · Salir**, en ese orden. «Mi cuenta» (`/cuenta/`) ya lleva al propietario a su dashboard (`apps/accounts/views.py`, `home`). Cliente y empleado conservan sus botones.
+- **Una sola línea:**
+  - `.nav-link` no admite saltos de línea («La cervecería» va en una línea);
+  - el bloque de botones no se parte ni se comprime, y sus botones no cortan el texto.
+- **Cabecera más ancha:** usa `max-w-7xl` (1280 px) en lugar de `container-page` (1152 px), con 24 px de margen lateral. El resto de la página no cambia.
+- **Punto de corte propio `nav` (69 rem = 1104 px)** en `@theme`, en lugar de `lg` (1024 px):
+  - desde ese ancho, cabecera en línea;
+  - por debajo, el botón «Menú» desplegable de siempre.
+- **Espacios en el modo en línea:** 8 px a los lados de cada enlace (antes 12), 16 px de relleno en los botones con fondo o borde (antes 24) y 16 px entre el logo y el menú (antes 24). Tamaño de letra y logo, sin cambios.
+
+**Medición** (Chrome sin interfaz, ancho mínimo de ventana para una sola línea):
+
+| Rol | Ancho mínimo |
+|---|---|
+| Propietario | 1098 px |
+| Visitante | 1053 px |
+| Cliente | 1009 px |
+| Empleado | 972 px |
+
+El punto de corte (1104 px) cubre el caso más ancho.
+
+**Verificación:**
+- Capturas de los cuatro roles a 1024, 1104, 1134, 1181 y 1440 px: todo en una línea desde 1104 px; a 1024 px, el botón «Menú»; el menú desplegado, correcto.
+- Test: `tests/dashboard/test_access.py::test_owner_lands_on_dashboard_and_header_has_account_panel_logout` (botones y orden del propietario, sin «Dashboard»; el cliente conserva «Mi cuenta»).
+- Suite en PostgreSQL 17: **849 OK**.
+
+**Pie** (`templates/components/footer.html`):
+- el logo es un enlace al inicio (`aria-label="Caneca Furada, ir al inicio"`);
+- logo y lema van centrados entre sí.
+
+Lo comprueba `tests/web/test_public_pages.py::test_layout_includes_brand_assets_and_skip_link`, y está verificado con captura a 1280 px.
+
+**Documentación de la defensa:** actualizada. La memoria (C8.2 y el logout del cap. 7.3) y el README de la defensa recogen la cabecera nueva y las líneas actuales de `base.html`.

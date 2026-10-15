@@ -25,6 +25,9 @@
 
   --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --tracking-brand: 0.14em;
+  /* Ancho desde el que la cabecera va en una sola línea: 1104 px. El caso más ancho, el
+     propietario (Mi cuenta · Panel · Salir), necesita 1098 px (medido con Chrome). */
+  --breakpoint-nav: 69rem;
 }
 
 /* --- Base ------------------------------------------------------------------ */
@@ -154,8 +157,8 @@
   .optional-mark { @apply ml-1 text-xs font-normal uppercase tracking-wider text-mist; }
 
   /* Navegación principal: plegable en móvil solo si hay JavaScript */
-  .js .nav-panel:not(.is-open) { @apply hidden lg:flex; }
-  .nav-link { @apply block rounded-lg px-3 py-2 text-sm font-semibold uppercase tracking-wider text-mist no-underline hover:text-paper; }
+  .js .nav-panel:not(.is-open) { @apply hidden nav:flex; }
+  .nav-link { @apply block whitespace-nowrap rounded-lg px-3 py-2 nav:px-2 text-sm font-semibold uppercase tracking-wider text-mist no-underline hover:text-paper; }
   .nav-link[aria-current="page"] { @apply text-gold; }
 
   /* El logo es JPEG sobre negro puro: "lighten" lo funde con el negro de marca */
