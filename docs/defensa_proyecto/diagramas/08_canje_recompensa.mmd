@@ -1,0 +1,38 @@
+%% Solicitud de canje por el cliente y validación en barra (rewards.services).
+sequenceDiagram
+    autonumber
+    actor CL as Cliente (email verificado)
+    actor E as Empleado
+    participant R as rewards.services
+    participant L as loyalty.ledger
+    participant DB as Base de datos
+
+    CL->>R: POST /cuenta/recompensas/id/canjear/ con idempotency_key
+    R->>DB: BEGIN y busca Redemption por clave FOR UPDATE (si existe, _replay)
+    R->>L: lock_customer (orden de bloqueo: cliente, recompensa, canje)
+    R->>DB: SELECT Reward FOR UPDATE: ACTIVE y dentro de sus fechas
+    R->>DB: ¿ya hay un PENDING de esta recompensa? (también UNIQUE parcial en BD)
+    R->>DB: UPDATE reward SET stock = stock - 1 WHERE stock mayor o igual que 1 (si tiene stock)
+    R->>L: spend_points: recalcula el saldo, InsufficientPoints si no alcanza
+    L->>DB: INSERT PointsTransaction REDEMPTION (puntos negativos)
+    R->>DB: INSERT Redemption PENDING, código de 12 caracteres, caduca en 30 días
+    R->>DB: COMMIT
+    R-->>CL: detalle con QR (CFR1:código) y código ABCD-EFGH-JKMN
+
+    CL->>E: enseña el código en la barra
+    E->>R: POST /panel/canjes/consultar/ (lookup_redemption: vista previa sin datos personales)
+    E->>R: POST /panel/canjes/validar/
+    R->>DB: BEGIN y SELECT Redemption FOR UPDATE por código
+    R->>R: impide validar el propio canje
+    alt ha caducado
+        R->>R: _close_safely(EXPIRED): devuelve los puntos (REVERSAL) y el stock
+        R-->>E: Este código ha caducado
+    else vigente
+        R->>DB: UPDATE redemption SET status USED WHERE status PENDING AND expires_at posterior a now
+        alt 1 fila actualizada
+            R->>DB: AuditEvent REDEMPTION_VALIDATED y COMMIT
+            R-->>E: Canje validado. Entrega la recompensa
+        else 0 filas (otro empleado se adelantó)
+            R-->>E: Este código ya se utilizó el día dd/mm/aaaa hh:mm
+        end
+    end

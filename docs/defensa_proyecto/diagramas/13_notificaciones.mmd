@@ -1,0 +1,13 @@
+%% Estados de una notificación (notifications.models.Notification.Status) y procesos que los cambian.
+stateDiagram-v2
+    [*] --> SENDING : send_immediately (verificación, cambio de email, recuperación, avisos de cuenta)
+    [*] --> PENDING : enqueue (reservas, campañas, cumpleaños) con dedup_key única
+    PENDING --> SENDING : deliver() UPDATE condicionado (on_commit o process_notifications)
+    SENDING --> SENT : el proveedor acepta el mensaje (sent_at)
+    SENDING --> SKIPPED : cuenta inactiva, sin consentimiento vigente, SMS sin proveedor o teléfono no válido
+    SENDING --> PENDING : fallo del proveedor, reintento en 5, 10, 20 o 40 min
+    SENDING --> FAILED : 5 intentos agotados o mensaje de cuentas que falla
+    SENDING --> PENDING : recover_stale, más de 30 min en SENDING (solo los de la cola)
+    SENT --> [*]
+    SKIPPED --> [*]
+    FAILED --> [*]

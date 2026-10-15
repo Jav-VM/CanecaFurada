@@ -1,0 +1,10 @@
+%% Estados de un canje (rewards.models.Redemption.Status) y quién provoca cada transición.
+%% Todas las transiciones son UPDATE condicionados a status = PENDING (rewards/services.py).
+stateDiagram-v2
+    [*] --> PENDING : request_redemption (cliente), movimiento REDEMPTION y stock - 1
+    PENDING --> USED : validate_redemption (personal), guarda validated_by y validated_at
+    PENDING --> CANCELLED : cancel_redemption (cliente), REVERSAL y stock + 1
+    PENDING --> EXPIRED : expire_redemptions o validación fuera de plazo, REVERSAL y stock + 1
+    USED --> [*]
+    CANCELLED --> [*]
+    EXPIRED --> [*]

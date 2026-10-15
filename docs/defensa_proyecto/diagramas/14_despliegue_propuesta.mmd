@@ -1,0 +1,12 @@
+%% PROPUESTA de despliegue (NO implementada). Basada en config/settings/prod.py y docs/despliegue.md.
+%% Elementos que el repositorio no incluye: servidor WSGI en requirements/prod.txt, configuración del proxy, Docker y CI/CD.
+flowchart LR
+    U["Navegadores y app móvil"] -->|"HTTPS 443"| RP["Proxy inverso (propuesta)<br/>termina TLS y fija X-Forwarded-For<br/>y X-Forwarded-Proto"]
+    RP -->|"HTTP interno"| WSGI["Servidor WSGI (propuesta)<br/>config.wsgi con config.settings.prod"]
+    RP -->|"/static/"| ST[("staticfiles/<br/>collectstatic")]
+    RP -->|"/media/"| MD[("media/ o almacenamiento<br/>de objetos (por decidir)")]
+    WSGI --> PG[("PostgreSQL<br/>DATABASE_URL")]
+    WSGI --> CA[("Caché compartida<br/>CACHE_URL (Redis o BD)")]
+    WSGI --> SMTP["Proveedor SMTP<br/>EMAIL_*"]
+    CRON["Programador del sistema<br/>process_notifications cada 5 min<br/>run_birthday_promotions, expire_redemptions,<br/>purge_email_tokens y flushexpiredtokens diarios"] --> WSGI
+    PG -.-> BK[("Copias de seguridad<br/>(pg_dump programado, propuesta)")]

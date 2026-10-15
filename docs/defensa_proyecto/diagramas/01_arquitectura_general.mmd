@@ -1,0 +1,54 @@
+%% Arquitectura general de Caneca Furada (componentes verificados en el código, commit ac5903a)
+flowchart TB
+    subgraph Clientes["Clientes"]
+        NAV["Navegador web<br/>(cliente, empleado, propietario)"]
+        APP["Futura app móvil Flutter<br/>(no desarrollada)"]
+    end
+
+    subgraph Django["Monolito modular Django 5.2 (config/)"]
+        URLS["config/urls.py<br/>enrutado por prefijos"]
+        MW["Middleware<br/>Security, Session, Locale, Common,<br/>CSRF, Auth, Messages, XFrame"]
+
+        subgraph Presentacion["Capa de presentación"]
+            WEB["Vistas web + Django Templates<br/>web, accounts, loyalty, purchases,<br/>rewards, events, notifications"]
+            PANEL["Panel del personal<br/>apps.staff (/panel/)"]
+            DASH["Dashboard del propietario<br/>apps.dashboard (/dashboard/)"]
+            API["API REST v1 (DRF + JWT)<br/>apps.api (/api/v1/)"]
+            ADMIN["Admin técnico<br/>(solo propietario)"]
+        end
+
+        subgraph Dominio["Capa de dominio: servicios y selectores"]
+            SVC["services.py / ledger.py / campaigns.py<br/>escrituras: permisos, validación,<br/>transacción y auditoría"]
+            SEL["selectors.py<br/>lecturas con permisos"]
+            PERM["accounts.permissions<br/>has_role, role_required"]
+        end
+
+        ORM["Modelos + ORM<br/>21 modelos, restricciones CHECK y UNIQUE"]
+        CACHE["Caché de Django<br/>(locmem por defecto)<br/>límites de intentos, contenido"]
+    end
+
+    subgraph Datos["Persistencia"]
+        DB[("PostgreSQL (objetivo)<br/>SQLite en desarrollo y tests")]
+        MEDIA[("media/<br/>imágenes subidas")]
+        STATIC[("static/<br/>CSS Tailwind compilado, JS, jsQR")]
+    end
+
+    subgraph Externos["Servicios externos y tareas"]
+        SMTP["Proveedor SMTP<br/>(configurable, no verificado)"]
+        SMS["Proveedor SMS<br/>(no integrado)"]
+        CRON["Programador del sistema<br/>(cron / Programador de tareas)<br/>process_notifications, run_birthday_promotions,<br/>expire_redemptions, purge_email_tokens"]
+    end
+
+    NAV --> URLS
+    APP -.-> URLS
+    URLS --> MW --> WEB & PANEL & DASH & API & ADMIN
+    WEB & PANEL & DASH & API & ADMIN --> SVC & SEL
+    SVC --> PERM
+    SEL --> PERM
+    SVC & SEL --> ORM --> DB
+    SVC --> CACHE
+    ORM -.-> MEDIA
+    NAV -.-> STATIC
+    SVC -->|"notifications.services"| SMTP
+    SVC -.->|"SMS_BACKEND vacío"| SMS
+    CRON -.->|"comandos de gestión"| SVC

@@ -1,0 +1,42 @@
+%% Ciclo de una petición web típica: POST /panel/compras/registrar/ (registrar una compra).
+%% Nombres reales: config/urls.py, apps/purchases/urls.py, views.register, services.register_purchase.
+sequenceDiagram
+    autonumber
+    actor E as Empleado (navegador)
+    participant MW as Middleware de Django
+    participant U as URLconf (config/urls.py)
+    participant V as purchases.views.register
+    participant F as PurchaseForm
+    participant S as purchases.services
+    participant L as loyalty.ledger
+    participant DB as Base de datos
+    participant T as Plantilla / redirección
+
+    E->>MW: POST /panel/compras/registrar/ (cookie de sesión + csrfmiddlewaretoken)
+    MW->>MW: SessionMiddleware carga la sesión, CsrfViewMiddleware valida el token, AuthenticationMiddleware pone request.user
+    MW->>U: resolve("panel/compras/registrar/")
+    U->>V: purchases:register
+    V->>V: never_cache, require_POST, role_required(OWNER, EMPLOYEE)
+    alt sin sesión
+        V-->>E: 302 al login
+    else rol no permitido
+        V-->>E: 403
+    end
+    V->>F: PurchaseForm(request.POST).is_valid()
+    F->>S: parse_amount(importe) (Decimal, 2 decimales, 0,01 a 1000)
+    V->>S: register_purchase(staff, qr_code, amount, idempotency_key)
+    S->>S: ensure_can_register_purchases, origen habilitado, clave UUID, límite de fallos
+    S->>DB: BEGIN (transaction.atomic)
+    S->>DB: SELECT ... FOR UPDATE de Purchase por idempotency_key
+    alt la clave ya existe
+        S->>S: _replay: mismos datos o idempotency_conflict
+    else nueva
+        S->>DB: SELECT ... FOR UPDATE del cliente por token QR
+        S->>DB: INSERT Purchase
+        S->>L: on_purchase_registered llama a award_points_for_purchase
+        L->>DB: SELECT FOR UPDATE del cliente, SUM(points), INSERT PointsTransaction(s)
+    end
+    S->>DB: COMMIT (o ROLLBACK de todo si algo falla)
+    S-->>V: RegistrationResult(purchase, created)
+    V->>T: messages + redirect a purchases:detail
+    T-->>E: 302 y luego 200 con la plantilla purchases/detail.html

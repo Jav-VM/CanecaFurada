@@ -1,0 +1,49 @@
+%% Dependencias entre apps calculadas a partir de los "from apps.X import" del código (sin migraciones).
+%% Las flechas indican "importa de". Las dependencias mutuas (accounts <-> notifications y loyalty <-> purchases)
+%% se resuelven con importaciones diferidas o referencias por cadena a los modelos.
+flowchart LR
+    core["core<br/>AuditEvent, throttling, client_ip"]
+    accounts["accounts<br/>User, perfil, permisos"]
+    catalog["catalog<br/>carta"]
+    loyalty["loyalty<br/>QR, ledger, promociones"]
+    purchases["purchases<br/>compras"]
+    rewards["rewards<br/>recompensas, canjes"]
+    events["events<br/>eventos, reservas"]
+    notifications["notifications<br/>envíos, campañas"]
+    web["web<br/>páginas públicas"]
+    staff["staff<br/>panel del personal"]
+    dashboard["dashboard<br/>propietario"]
+    api["api<br/>REST v1"]
+
+    accounts --> core
+    accounts -.->|"emails"| notifications
+    notifications --> accounts
+    notifications --> core
+    catalog --> accounts
+    catalog --> core
+    loyalty --> accounts
+    loyalty --> core
+    loyalty --> notifications
+    loyalty -.->|"vista my_points"| purchases
+    purchases --> loyalty
+    purchases --> accounts
+    purchases --> core
+    rewards --> loyalty
+    rewards --> accounts
+    rewards --> catalog
+    rewards --> core
+    events --> accounts
+    events --> notifications
+    events --> catalog
+    events --> core
+    web --> catalog
+    web --> events
+    web --> rewards
+    web --> accounts
+    web --> core
+    staff --> purchases
+    staff --> rewards
+    staff --> loyalty
+    staff --> accounts
+    dashboard --> accounts & catalog & events & loyalty & notifications & purchases & rewards & web
+    api --> accounts & core & events & loyalty & purchases & rewards

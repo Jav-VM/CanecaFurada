@@ -1,0 +1,11 @@
+%% Estados de una reserva (events.models.Reservation.TRANSITIONS), validados con la fila bloqueada en events/services.py::_transition.
+stateDiagram-v2
+    [*] --> PENDING : request_reservation (cliente verificado), avisos al cliente y a los propietarios
+    PENDING --> CONFIRMED : confirm_reservation (propietario), fecha futura y aforo comprobado con el evento bloqueado
+    PENDING --> REJECTED : reject_reservation (propietario)
+    PENDING --> CANCELLED : propietario, o el cliente antes de la hora
+    CONFIRMED --> CANCELLED : propietario, o el cliente antes de la hora
+    CONFIRMED --> COMPLETED : complete_reservation (propietario), solo desde el día de la reserva
+    REJECTED --> [*]
+    CANCELLED --> [*]
+    COMPLETED --> [*]

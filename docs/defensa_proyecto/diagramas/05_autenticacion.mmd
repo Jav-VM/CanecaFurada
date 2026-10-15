@@ -1,0 +1,46 @@
+%% Autenticación: sesión web (Django) y JWT de la API (simplejwt + reclamación pwv).
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant W as Web /cuenta/entrar/ (LoginView)
+    participant TF as ThrottledAuthenticationForm
+    participant A as API /api/v1/auth/login/
+    participant S as accounts.services
+    participant C as Caché (contadores con hash)
+    participant T as api.tokens
+    participant DB as Base de datos
+
+    rect rgb(240, 240, 240)
+    note over U,DB: Web (sesión con cookie HttpOnly y SameSite Lax, CSRF activo)
+    U->>W: POST email + contraseña + csrfmiddlewaretoken
+    W->>TF: clean()
+    TF->>S: login_throttle_keys(email, client_ip)
+    S->>C: is_limited(login-email 5 / login-ip 30 en 15 min)
+    alt bloqueado
+        TF-->>U: Demasiados intentos fallidos (mismo mensaje exista o no la cuenta)
+    else permitido
+        TF->>DB: authenticate (UserManager.get_by_natural_key normaliza el email)
+        alt credenciales incorrectas
+            TF->>C: register_login_failure
+            TF-->>U: Email o contraseña incorrectos
+        else correctas
+            W-->>U: Set-Cookie sessionid y redirección a accounts:home (según el rol)
+        end
+    end
+    end
+
+    rect rgb(230, 240, 250)
+    note over U,DB: API (sin cookies, sin CSRF: cabecera Authorization Bearer)
+    U->>A: POST JSON email + password
+    A->>S: mismos contadores que la web
+    A->>DB: authenticate
+    A->>T: issue_tokens(user)
+    T-->>A: access (15 min) + refresh (30 días) con sub = public_id y pwv = HMAC del hash de la contraseña
+    A-->>U: 200 access, refresh, user
+    U->>A: GET /api/v1/me/ con Authorization Bearer access
+    A->>T: JWTAuthentication.get_user: firma, caducidad, cuenta activa y pwv
+    A-->>U: 200 (o 401 token_revoked si la contraseña cambió)
+    U->>A: POST /auth/token/refresh/ con refresh
+    A->>T: rotate_refresh_token: SELECT FOR UPDATE de OutstandingToken, lista negra del usado y par nuevo
+    A-->>U: 200 par nuevo (401 token_not_valid si estaba revocado)
+    end

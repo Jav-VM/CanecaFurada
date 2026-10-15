@@ -1,0 +1,38 @@
+%% Identificación por QR, registro de compra y asignación de puntos (purchases.services + loyalty.ledger).
+sequenceDiagram
+    autonumber
+    actor CL as Cliente
+    actor E as Empleado
+    participant Q as loyalty (QR)
+    participant P as purchases.services
+    participant L as loyalty.ledger
+    participant CV as loyalty.conversion
+    participant PR as loyalty.promotions
+    participant DB as Base de datos
+
+    CL->>E: enseña /cuenta/mi-qr/ (QR SVG con CF1:token, o el código tecleable)
+    E->>P: POST /panel/compras/identificar/ con code
+    P->>P: is_staff_member, límite de 20 fallos en 15 min por empleado
+    P->>Q: identify_customer(code): normaliza y busca el token
+    alt no existe, inactivo o no es cliente
+        Q-->>E: El código no es válido (mensaje genérico)
+    else email sin verificar
+        Q-->>E: El cliente tiene que verificar su email
+    else válido
+        P-->>E: solo el nombre corto (Lúa F.) + formulario con code y una idempotency_key nueva
+    end
+    E->>P: POST /panel/compras/registrar/ con importe
+    P->>P: parse_amount (Decimal, 0,01 a 1000 €), clave UUID
+    P->>DB: BEGIN y busca Purchase por idempotency_key FOR UPDATE
+    P->>Q: identify_customer(code, for_update=True) (vuelve a comprobarlo todo con el cliente bloqueado)
+    P->>DB: INSERT Purchase (CHECK customer distinto de registered_by)
+    P->>L: on_purchase_registered(purchase) en la MISMA transacción
+    L->>DB: SELECT User FOR UPDATE (serializa al cliente)
+    L->>CV: current_rate(purchase.created_at)
+    CV-->>L: LoyaltyRule vigente o 1,00 punto por euro por defecto
+    L->>CV: calculate_points(importe, tasa) con ROUND_DOWN
+    L->>DB: INSERT PointsTransaction EARN_PURCHASE (UNIQUE: una por compra)
+    L->>PR: bonuses_for_purchase (promociones ACTIVE, FOR UPDATE, límites)
+    L->>DB: INSERT PointsTransaction PROMOTION_BONUS (UNIQUE por promoción y compra)
+    P->>DB: COMMIT (compra y puntos, o nada)
+    P-->>E: 302 al detalle: Compra registrada, o ya estaba registrada si es un reintento

@@ -170,3 +170,4 @@ requirements/      dependencias por entorno
 - [Guía de la app Flutter](docs/guia-app-flutter.md): autenticación, renovación y revocación de tokens, errores, paginación, idempotencia y pantallas.
 - [Despliegue](docs/despliegue.md): variables de entorno, PostgreSQL, HTTPS, estáticos y multimedia, copias de seguridad, correo, tareas programadas y logs.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.
+- [Documentación para la defensa del proyecto](docs/defensa_proyecto/README.md): memoria técnica y funcional, guion de la defensa oral, banco de preguntas del tribunal, mapa del código, limitaciones y diagramas Mermaid.

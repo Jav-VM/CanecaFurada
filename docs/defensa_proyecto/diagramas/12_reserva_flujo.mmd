@@ -1,0 +1,25 @@
+%% Creación y confirmación de una reserva de evento (events.services) con sus notificaciones.
+sequenceDiagram
+    autonumber
+    actor CL as Cliente verificado
+    actor PO as Propietario
+    participant ES as events.services
+    participant NS as notifications.services
+    participant DB as Base de datos
+    participant M as SMTP
+
+    CL->>ES: POST /cuenta/reservas/evento/id/ (personas, notas, idempotency_key)
+    ES->>ES: ensure_can_reserve, _parse_party_size (1 a 20), _parse_text (300), límite de 10 por hora
+    ES->>DB: BEGIN y SELECT FOR UPDATE de la clave, el cliente y el evento
+    ES->>ES: evento PUBLISHED, admite reservas y no ha empezado
+    ES->>ES: una activa por evento, plazas confirmadas + personas no superan el aforo, como máximo 3 activas
+    ES->>DB: INSERT Reservation PENDING
+    ES->>NS: enqueue RESERVATION_RECEIVED y RESERVATION_OWNER_ALERT (dedup_key, deliver_on_commit)
+    ES->>DB: COMMIT
+    NS->>M: deliver() al confirmar la transacción (UPDATE PENDING a SENDING)
+    PO->>ES: POST /dashboard/reservas/id/estado/ accion=confirmar
+    ES->>DB: SELECT Reservation FOR UPDATE, can_transition_to(CONFIRMED)
+    ES->>DB: SELECT Event FOR UPDATE y vuelve a comprobar el aforo
+    ES->>DB: UPDATE status CONFIRMED, status_changed_at, by y AuditEvent (sin notas)
+    ES->>NS: enqueue RESERVATION_CONFIRMED (deliver_on_commit)
+    NS->>M: email al cliente (sin notas, teléfonos ni direcciones)

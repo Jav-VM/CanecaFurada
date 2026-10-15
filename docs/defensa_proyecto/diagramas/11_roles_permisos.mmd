@@ -1,0 +1,27 @@
+%% Roles y permisos. El rol se lee SIEMPRE de la base de datos (request.user o el usuario del JWT), nunca de datos del cliente.
+flowchart TB
+    ANON["Anónimo"]
+    CUSU["Cliente con email sin verificar"]
+    CUS["Cliente verificado<br/>(role = CUSTOMER)"]
+    EMP["Empleado<br/>(role = EMPLOYEE)"]
+    OWN["Propietario<br/>(role = OWNER, is_staff = True)"]
+
+    PUB["Web pública: inicio, carta, recompensas,<br/>eventos y contacto<br/>API: GET rewards/ y events/"]
+    REG["Registro, login, recuperación,<br/>verificación y baja de comunicaciones"]
+    PERF["Perfil, preferencias,<br/>cambio de email y contraseña<br/>role_required(CUSTOMER)"]
+    FID["QR, puntos, canjes y reservas<br/>verified_email_required / IsVerifiedCustomer"]
+    PAN["Panel /panel/: registrar compras,<br/>validar canjes, resultados propios<br/>role_required(OWNER, EMPLOYEE) / IsStaffMember"]
+    DSH["Dashboard /dashboard/ (14 secciones),<br/>API owner/, admin técnico<br/>role_required(OWNER) / IsOwner / is_staff"]
+
+    ANON --> PUB & REG
+    CUSU --> PUB & PERF
+    CUS --> PUB & PERF & FID
+    EMP --> PUB & PAN
+    OWN --> PUB & PAN & DSH
+
+    subgraph Defensa["Defensa en profundidad"]
+        D1["1. Decorador o permiso DRF en la vista"]
+        D2["2. El servicio o selector vuelve a comprobar<br/>(is_owner, is_staff_member, _ensure_active_owner en BD)"]
+        D3["3. Restricción en la BD<br/>(CHECK is_staff solo OWNER, compra no autorregistrada,<br/>canje no autovalidado)"]
+        D1 --> D2 --> D3
+    end

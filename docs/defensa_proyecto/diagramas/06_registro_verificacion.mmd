@@ -1,0 +1,40 @@
+%% Registro de un cliente y verificación del email (accounts.views.register, services.register_customer, confirm_email_token).
+sequenceDiagram
+    autonumber
+    actor C as Visitante
+    participant V as views.register (/cuenta/registro/)
+    participant F as RegistrationForm
+    participant S as accounts.services
+    participant DB as Base de datos
+    participant N as notifications.send_immediately
+    participant M as Proveedor SMTP
+
+    C->>V: POST datos personales, dirección, email, contraseña y consentimientos
+    V->>F: is_valid() (formato, CP por país, móvil E.164, edad, contraseñas iguales)
+    V->>V: ip_limited(register-ip, 20 por hora)
+    V->>S: register_customer(**datos) (sin campo de rol)
+    S->>DB: BEGIN
+    S->>S: normaliza y valida TODO (perfil, usuario y contraseña) antes de mirar el email
+    alt el email ya existe
+        S->>S: make_password(password) para igualar el tiempo de respuesta
+        S-->>V: EmailAlreadyRegistered
+        V->>S: notify_existing_account (como máximo 1 al día y avisa al titular)
+        V-->>C: 302 a registro enviado (misma respuesta que un alta correcta)
+    else email nuevo
+        S->>DB: INSERT User (rol CUSTOMER) y CustomerProfile
+        S->>DB: INSERT 2 CommunicationPreferenceChange (REGISTRATION)
+        S->>DB: revoca los tokens pendientes e INSERT EmailVerificationToken (solo el hash SHA-256, caduca en 24 h)
+        S->>DB: COMMIT
+        S->>N: on_commit: envía el enlace SITE_BASE_URL/cuenta/verificar-email/token/
+        N->>DB: Notification SENDING (sin contexto ni destinatario)
+        N->>M: EmailMessage.send()
+        N->>DB: SENT o FAILED (un fallo no rompe el registro)
+        V-->>C: 302 a registro enviado
+    end
+    C->>V: GET /cuenta/verificar-email/token/ (muestra un botón de confirmación)
+    C->>V: POST de confirmación (los analizadores de enlaces no gastan el token)
+    V->>S: confirm_email_token(token)
+    S->>DB: SELECT FOR UPDATE por hash, comprobaciones de usado, revocado y caducado
+    S->>DB: UPDATE token SET used_at WHERE used_at IS NULL AND revoked_at IS NULL
+    S->>DB: UPDATE user SET email_verified_at y AuditEvent EMAIL_VERIFIED
+    V-->>C: 200 Email verificado (los errores también con 200 para no dejar el token en los logs de 4xx)

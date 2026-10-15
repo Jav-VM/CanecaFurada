@@ -1,0 +1,197 @@
+%% Diagrama entidad-relación de los 21 modelos concretos (volcado de _meta, commit ac5903a).
+%% Solo se muestran los campos clave. Los nombres son los de la tabla Django (app_modelo).
+erDiagram
+    USER {
+        bigint id PK
+        uuid public_id UK
+        string email UK "único sin distinguir mayúsculas"
+        string role "OWNER / EMPLOYEE / CUSTOMER"
+        bool is_active
+        datetime email_verified_at
+        bool is_staff "solo OWNER (CHECK)"
+    }
+    CUSTOMER_PROFILE {
+        bigint id PK
+        bigint user_id FK, UK
+        string postal_code
+        string city
+        string province
+        string country "ISO 3166-1"
+        date date_of_birth
+        string phone_number "E.164"
+        bool promo_email_opt_in
+        bool promo_sms_opt_in "CHECK: exige teléfono"
+    }
+    EMAIL_VERIFICATION_TOKEN {
+        bigint id PK
+        bigint user_id FK
+        string purpose "VERIFY / CHANGE"
+        string token_hash UK "SHA-256"
+        datetime expires_at
+        datetime used_at
+        datetime revoked_at
+    }
+    COMMUNICATION_PREFERENCE_CHANGE {
+        bigint id PK
+        bigint user_id FK
+        string channel "EMAIL / SMS"
+        bool opted_in
+        string source
+    }
+    AUDIT_EVENT {
+        bigint id PK
+        bigint actor_id FK "SET_NULL"
+        string action
+        uuid target_public_id
+        json metadata
+    }
+    CATEGORY {
+        bigint id PK
+        string slug UK
+        bool is_published
+    }
+    BEER_STYLE {
+        bigint id PK
+        string name UK
+    }
+    PRODUCT {
+        bigint id PK
+        uuid public_id UK
+        bigint category_id FK
+        bigint style_id FK
+        string kind
+        decimal price "mayor o igual que 0,01"
+        string status "DRAFT / PUBLISHED / ARCHIVED"
+        bool is_available
+    }
+    TAP_MENU {
+        bigint id PK
+        string image
+        bool is_published
+    }
+    CUSTOMER_QR_CODE {
+        bigint id PK
+        bigint user_id FK, UK
+        string token UK "32 caracteres base32"
+    }
+    LOYALTY_RULE {
+        bigint id PK
+        decimal points_per_euro
+        datetime valid_from
+        bigint created_by_id FK
+    }
+    PROMOTION {
+        bigint id PK
+        uuid public_id UK
+        string kind "PURCHASE / BIRTHDAY"
+        string bonus_type
+        string status
+    }
+    POINTS_TRANSACTION {
+        bigint id PK
+        uuid public_id UK
+        bigint customer_id FK
+        string kind
+        int points "distinto de 0"
+        int balance_after "mayor o igual que 0"
+        bigint purchase_id FK
+        bigint promotion_id FK
+        bigint reverses_id FK, UK "compensa a"
+        bigint rule_id FK
+        int birthday_year
+        uuid idempotency_key UK
+    }
+    PURCHASE {
+        bigint id PK
+        uuid public_id UK
+        bigint customer_id FK
+        bigint registered_by_id FK "distinto del cliente (CHECK)"
+        decimal amount
+        string status "COMPLETED / VOIDED"
+        uuid idempotency_key UK
+    }
+    REWARD {
+        bigint id PK
+        uuid public_id UK
+        int points_cost
+        string status
+        int stock "null = ilimitado"
+    }
+    REDEMPTION {
+        bigint id PK
+        uuid public_id UK
+        bigint customer_id FK
+        bigint reward_id FK
+        string code UK "12 caracteres"
+        string status "PENDING / USED / EXPIRED / CANCELLED"
+        bigint spend_movement_id FK, UK
+        bigint refund_movement_id FK, UK
+        bigint validated_by_id FK
+        uuid idempotency_key UK
+    }
+    EVENT {
+        bigint id PK
+        uuid public_id UK
+        datetime starts_at
+        string status
+        bool accepts_reservations
+        int capacity
+    }
+    RESERVATION {
+        bigint id PK
+        uuid public_id UK
+        bigint customer_id FK
+        bigint event_id FK "null = mesa"
+        datetime requested_for
+        int party_size
+        string status
+        uuid idempotency_key UK
+    }
+    CAMPAIGN {
+        bigint id PK
+        uuid public_id UK
+        string channel
+        string status
+        bigint created_by_id FK
+    }
+    NOTIFICATION {
+        bigint id PK
+        uuid public_id UK
+        bigint recipient_id FK
+        bigint campaign_id FK
+        string kind
+        string category "derivada del tipo (CHECK)"
+        string status
+        string dedup_key UK
+    }
+    BUSINESS_INFO {
+        int id PK "siempre 1 (singleton)"
+        string address
+        text opening_hours
+    }
+
+    USER ||--o| CUSTOMER_PROFILE : "tiene (solo clientes)"
+    USER ||--o{ EMAIL_VERIFICATION_TOKEN : "recibe"
+    USER ||--o{ COMMUNICATION_PREFERENCE_CHANGE : "historial de consentimiento"
+    USER |o--o{ AUDIT_EVENT : "actor"
+    CATEGORY ||--o{ PRODUCT : "agrupa (PROTECT)"
+    BEER_STYLE |o--o{ PRODUCT : "estilo (PROTECT)"
+    USER ||--o| CUSTOMER_QR_CODE : "QR personal"
+    USER |o--o{ LOYALTY_RULE : "creada por"
+    USER ||--o{ POINTS_TRANSACTION : "movimientos (PROTECT)"
+    PURCHASE |o--o{ POINTS_TRANSACTION : "genera"
+    PROMOTION |o--o{ POINTS_TRANSACTION : "bonifica"
+    LOYALTY_RULE |o--o{ POINTS_TRANSACTION : "tasa aplicada"
+    POINTS_TRANSACTION |o--o| POINTS_TRANSACTION : "compensa (1:1)"
+    USER ||--o{ PURCHASE : "cliente"
+    USER ||--o{ PURCHASE : "registrada por"
+    USER ||--o{ REDEMPTION : "cliente"
+    REWARD ||--o{ REDEMPTION : "se canjea en (PROTECT)"
+    POINTS_TRANSACTION ||--o| REDEMPTION : "movimiento del canje"
+    POINTS_TRANSACTION |o--o| REDEMPTION : "devolución"
+    USER |o--o{ REDEMPTION : "validado por"
+    USER ||--o{ RESERVATION : "cliente"
+    EVENT |o--o{ RESERVATION : "para el evento"
+    USER ||--o{ CAMPAIGN : "creada por"
+    CAMPAIGN |o--o{ NOTIFICATION : "reparte"
+    USER ||--o{ NOTIFICATION : "destinatario (CASCADE)"
