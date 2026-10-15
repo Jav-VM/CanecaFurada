@@ -14,7 +14,7 @@ Guía operativa de Caneca Furada en un VPS Linux (Ubuntu LTS) con **Docker Compo
 | Settings de producción | Listos. No arrancan sin clave (≥ 32 bytes), `ALLOWED_HOSTS`, PostgreSQL, caché compartida, SMTP real o `SITE_BASE_URL` https. |
 | `check --deploy` | Solo `security.W021` (HSTS *preload* desactivado a propósito) |
 | Suite | 833 OK en PostgreSQL 17 (local y en contenedor, 0 omitidos) y en SQLite |
-| CI (GitHub Actions) | Workflow listo; **pendiente** de su primera ejecución en GitHub |
+| CI (GitHub Actions) | **en verde en GitHub** (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38737894875), commit `0589cfb`) |
 | VPS, DNS, certificado, SMTP real, destino de copias | **Pendiente** ([Fase 12 §13](fase-12-despliegue.md#13-acciones-manuales-pendientes-en-el-vps)) |
 
 ## 2. Variables de entorno
@@ -145,7 +145,7 @@ Ejecución manual: `dc exec scheduler python manage.py <comando>`.
 - [x] Imagen sin `.env`, `*.sqlite3*`, `media/`, `.venv/` ni `.tools/` (`.dockerignore`, comprobado).
 - [x] Suite contra PostgreSQL (local, contenedor) y `check --deploy` (solo W021).
 - [x] Copia y restauración probadas en local.
-- [ ] CI en verde en GitHub.
+- [x] CI en verde en GitHub.
 - [ ] VPS endurecido; DNS apuntando.
 - [ ] `.env.prod` y `.env.backup` reales (`chmod 600`); `RESTIC_PASSWORD` guardada también fuera del servidor.
 - [ ] `deploy.sh --first`, certificado de Let's Encrypt y `create_owner`, sin dejar sus variables en ningún fichero.

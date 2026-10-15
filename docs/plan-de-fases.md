@@ -16,7 +16,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 9 | Dashboard del propietario y estadísticas | **Completa** ([detalle](fase-09-dashboard-propietario.md)) |
 | 10 | Eventos, reservas, contenido y notificaciones | **Completa** ([detalle](fase-10-eventos-reservas-notificaciones.md)) |
 | 11 | API, auditoría, seguridad y preparación final para la app móvil | **Completa** ([detalle](fase-11-api-auditoria.md)) |
-| 12 | Despliegue y endurecimiento | **Completa en local** ([detalle](fase-12-despliegue.md)); pendientes el VPS y la primera ejecución del CI |
+| 12 | Despliegue y endurecimiento | **Completa en local** ([detalle](fase-12-despliegue.md)); CI en verde; pendiente el VPS |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -115,7 +115,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
   - CI;
   - tests de concurrencia de tokens y reservas, y de `UPPER` no ASCII en PostgreSQL.
   - **833 tests OK** en PostgreSQL (local y en contenedor) y en SQLite.
-- **Pendiente:** acciones manuales en el VPS (DNS, certificado, SMTP real, destino de copias) y la primera ejecución del CI en GitHub. Ver [fase-12-despliegue.md](fase-12-despliegue.md).
+- **Pendiente:** acciones manuales en el VPS (DNS, certificado, SMTP real, destino de copias) (el CI ya pasa en GitHub). Ver [fase-12-despliegue.md](fase-12-despliegue.md).
 
 **Historial de la fase antes de numerarla:**
 - **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, ejecución de tests contra PostgreSQL, caché compartida, proveedor SMTP real y programación de `process_notifications`, `run_birthday_promotions`, `expire_redemptions`, `purge_email_tokens` y `flushexpiredtokens`. La revisión de seguridad, el rate limiting de la API y la guía de despliegue se hicieron en la Fase 11 ([despliegue.md](despliegue.md)).

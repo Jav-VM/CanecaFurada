@@ -1,8 +1,6 @@
 # Fase 12 — Despliegue y endurecimiento
 
-**Estado:** **Completa en local y en el repositorio.** La pila completa se ha construido, desplegado, copiado y restaurado en un Docker local (WSL Ubuntu 26.04). **Pendientes:**
-- las acciones manuales en el VPS (§13);
-- la primera ejecución del CI en GitHub (§10).
+**Estado:** **Completa en local y en el repositorio.** La pila completa se ha construido, desplegado, copiado y restaurado en un Docker local (WSL Ubuntu 26.04). El CI pasa **en verde en GitHub** (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38737894875), commit `0589cfb`). **Pendientes:** las acciones manuales en el VPS (§13).
 
 Fecha: 2026-10-15. Antes figuraba en el [plan de fases](plan-de-fases.md) como «Sin número — Endurecimiento y despliegue». Parte del estado que dejaron la [migración a PostgreSQL](migracion-postgresql.md) y la [auditoría previa](auditoria-pre-fase-12.md). El procedimiento operativo está en [despliegue.md](despliegue.md). Todos los valores de ejemplo son ficticios.
 
@@ -294,6 +292,7 @@ Entornos:
 | Prueba de humo por HTTPS a través de Nginx (script fuera del repositorio, datos `@example.com`) | **25/25 OK.** Cubre:<ul><li>redirección 80→443 y cabeceras de seguridad;</li><li>CSS con hash e `immutable`;</li><li>`/healthz` y `/media/*.php` dan 404, y no hay listado;</li><li>hosts desconocidos cerrados;</li><li>registro por la API con el email recibido en Mailpit y un enlace `https`;</li><li>verificación, login, `/me`, rotación del refresh y rechazo del reutilizado;</li><li>cookie CSRF `Secure`;</li><li>`limit_req` devuelve 429.</li></ul> |
 | Logs de Nginx | Una línea por petición, sin cadena de consulta y con `/cuenta/verificar-email/[token]/` |
 | Procedimientos completos sobre la pila local (desde volúmenes vacíos) | Ver la tabla siguiente |
+| CI de GitHub Actions: suite en PostgreSQL 17 sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración | **en verde en GitHub** (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38737894875), commit `0589cfb`). La primera ejecución falló antes de empezar por un error de sintaxis YAML del workflow (`--only-binary=:all:` sin comillas), corregido en `0589cfb` |
 | Scheduler | `process_notifications` lanzado por supercronic a las 14:40:00 (Europe/Madrid): «job succeeded». El log solo contiene recuentos. |
 
 Detalle de los procedimientos sobre la pila local:
@@ -319,7 +318,6 @@ Detalle de los procedimientos sobre la pila local:
 - `tests/dashboard/test_stats.py` (+1): `UPPER` no ASCII, solo en PostgreSQL.
 
 **No ejecutado aquí:**
-- **El CI de GitHub Actions.** No hay `gh` en este equipo y la rama no se ha subido. El workflow repite lo que se ha probado en local (mismos comandos e imágenes), pero hasta que pase en GitHub no está verificado.
 - **Lo que necesita el VPS real:** DNS, el certificado de Let's Encrypt, un SMTP real (§11) y un destino externo de restic (en local se usó un repositorio en disco).
 - **La revisión visual en navegador y la cámara en dispositivos:** sigue pendiente desde la auditoría.
 
@@ -381,7 +379,7 @@ Se documenta en lugar de automatizarlo porque depende del proveedor y se hace un
 - [ ] Primer despliegue, certificado y propietario (§8.1).
 - [ ] Registro de prueba que confirme la entrega por el SMTP real.
 - [ ] Programar `backup.sh run` (diaria) y `restore.sh check` (semanal) en el host (§8.4).
-- [ ] Subir la rama y comprobar que el CI pasa en GitHub.
+- [x] Subir la rama y comprobar que el CI pasa en GitHub.
 - [ ] Revisión visual y de la cámara en dispositivos reales.
 
 ## 14. Limitaciones, riesgos y siguientes pasos
@@ -414,6 +412,6 @@ Se documenta en lugar de automatizarlo porque depende del proveedor y se hace un
 | Tareas programadas sin solapes y sin datos personales en los logs | **Completo** (verificado en local) |
 | Copia cifrada, retención, destino configurable, restauración probada | **Completo** en local (destino externo pendiente del VPS) |
 | SMTP por variables; SPF, DKIM y DMARC documentados | **Completo** (envío real sin verificar) |
-| Workflow de CI | **Completo en el repositorio**; **pendiente** de su primera ejecución en GitHub |
+| Workflow de CI | **Completo**: en verde en GitHub |
 | Endurecimiento del VPS y procedimientos documentados | **Completo** |
 | Despliegue real en el VPS | **Pendiente** (§13) |
