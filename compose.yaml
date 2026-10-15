@@ -1,0 +1,205 @@
+# Caneca Furada — producción en un VPS (Fase 12). Ver docs/fase-12-despliegue.md.
+#
+#   Internet ─80/443─► nginx ─► web (Gunicorn + Django) ─► db (PostgreSQL 17)
+#                                                       └─► redis (caché compartida)
+#   scheduler: tareas programadas (misma imagen y variables que web)
+#   certbot:   renovación de Let's Encrypt · migrate / backup / restore-media: bajo demanda
+#
+# Uso (siempre con el fichero de variables, que NO se versiona):
+#   docker compose --env-file .env.prod <orden>
+# o mejor deploy/scripts/deploy.sh, que fija ese fichero y el orden de los pasos.
+
+name: caneca
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-hardening: &hardening
+  security_opt:
+    - no-new-privileges:true
+  logging: *logging
+
+# Servicios Python: misma imagen, mismas variables, sistema de ficheros de solo lectura.
+x-app: &app
+  <<: *hardening
+  image: ${CANECA_IMAGE:-caneca-furada}:${IMAGE_TAG:-current}
+  env_file:
+    - path: ${CANECA_ENV_FILE:-.env.prod}
+      required: true
+  environment:
+    # Fijadas por la topología de este Compose (no dependen del fichero de variables).
+    DATABASE_URL: postgres://${APP_DB_USER:?}:${APP_DB_PASSWORD:?}@db:5432/${APP_DB_NAME:?}
+    CACHE_URL: redis://redis:6379/1
+    DJANGO_BEHIND_TLS_PROXY: "True"    # Nginx termina TLS y fija X-Forwarded-Proto
+    DJANGO_TRUSTED_PROXY_COUNT: "1"    # Nginx es el único proxy
+    TZ: Europe/Madrid
+    # Mínimo privilegio: la aplicación no recibe la contraseña del superusuario.
+    POSTGRES_SUPERUSER_PASSWORD: ""
+  volumes:
+    - media:/app/media
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  networks:
+    - backend
+    - egress   # SMTP saliente
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *app
+    build:
+      context: .
+      target: app
+    pull_policy: never   # nunca se descarga ni se reconstruye al arrancar: solo con deploy.sh
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # Paso explícito del despliegue, uno solo y antes de levantar web:
+  #   docker compose --env-file .env.prod run --rm migrate
+  migrate:
+    <<: *app
+    pull_policy: never
+    command: ["python", "manage.py", "migrate", "--noinput"]
+    restart: "no"
+    profiles: ["deploy"]
+
+  scheduler:
+    <<: *app
+    pull_policy: never
+    command: ["supercronic", "/app/deploy/cron/crontab"]
+
+  db:
+    <<: *hardening
+    image: postgres:17-trixie
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?}
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=es-ES --encoding=UTF8"
+      APP_DB_NAME: ${APP_DB_NAME:?}
+      APP_DB_USER: ${APP_DB_USER:?}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/postgres/10-app-role.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
+    shm_size: 256mb
+    networks:
+      - backend
+    healthcheck:
+      # Por TCP: durante la inicialización el servidor temporal solo escucha en el socket local.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$APP_DB_NAME\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    <<: *hardening
+    image: redis:7.4-alpine
+    # Solo caché (límites de intentos, throttling, contenido del local): sin persistencia.
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    read_only: true
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  nginx:
+    <<: *hardening
+    image: ${CANECA_IMAGE:-caneca-furada}-nginx:${IMAGE_TAG:-current}
+    build:
+      context: .
+      target: nginx
+    pull_policy: never   # nunca se descarga ni se reconstruye al arrancar: solo con deploy.sh
+    environment:
+      NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:?}
+      DJANGO_ADMIN_URL: ${DJANGO_ADMIN_URL:?}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - media:/srv/media:ro
+      - certs:/etc/letsencrypt:ro
+      - acme:/var/www/certbot:ro
+    networks:
+      - egress
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Renueva los certificados cada 12 h (Nginx los vuelve a cargar cada 6 h).
+  # El primero se pide a mano (docs/fase-12-despliegue.md, «Certificados»).
+  certbot:
+    <<: *hardening
+    image: certbot/certbot:v4.2.0
+    entrypoint: ["/bin/sh", "-c", "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"]
+    volumes:
+      - certs:/etc/letsencrypt
+      - acme:/var/www/certbot
+    networks:
+      - egress
+    restart: unless-stopped
+
+  # Copias cifradas con restic (deploy/scripts/backup.sh y restore.sh).
+  # Variables de restic en un fichero aparte, que no reciben los demás servicios.
+  backup:
+    <<: *hardening
+    image: restic/restic:0.18.1
+    env_file:
+      - path: ${CANECA_BACKUP_ENV_FILE:-.env.backup}
+        required: false
+    volumes:
+      - media:/backup/media:ro
+      - restic-cache:/root/.cache/restic
+    networks:
+      - egress
+    restart: "no"
+    profiles: ["backup"]
+
+  restore-media:
+    <<: *hardening
+    image: restic/restic:0.18.1
+    env_file:
+      - path: ${CANECA_BACKUP_ENV_FILE:-.env.backup}
+        required: false
+    volumes:
+      - media:/backup/media
+      - restic-cache:/root/.cache/restic
+    networks:
+      - egress
+    restart: "no"
+    profiles: ["restore"]
+
+volumes:
+  pgdata:
+  media:
+  certs:
+  acme:
+  restic-cache:
+
+networks:
+  # Sin salida a Internet: solo BD y caché.
+  backend:
+    internal: true
+  egress: {}

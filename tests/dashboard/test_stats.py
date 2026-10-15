@@ -1,7 +1,9 @@
 """Dashboard (Fase 9): estadísticas de negocio, geográficas y filtros por periodo."""
 import datetime
 from decimal import Decimal
+from unittest import skipUnless
 
+from django.db import connection
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -168,6 +170,15 @@ class GeographicStatsTests(DashboardTestCase):
         self.assertEqual(result.unknown_count, 1)
         self.assertEqual(result.rows[0].percent, Decimal("40.0"))
         self.assertNotIn("lugo", counts)
+
+    @skipUnless(connection.vendor == "postgresql", "SQLite no pasa a mayúsculas las letras no ASCII")
+    def test_groups_non_ascii_letters_ignoring_case_in_postgresql(self):
+        """«A CORUÑA» y «a coruña» son la misma zona (en SQLite, UPPER no convierte la ñ)."""
+        make_verified_customer("c5@example.com", city="A CORUÑA", province="A CORUÑA", postal_code="15003")
+        counts = {row.label.lower(): row.count for row in self.geo("localidad").rows}
+        self.assertEqual(counts, {"a coruña": 3, "santiago de compostela": 1, "porto": 1})
+        provinces = {row.label.lower(): row.count for row in self.geo("provincia").rows}
+        self.assertEqual(provinces, {"a coruña": 4, "porto": 1})
 
     def test_groups_by_country_province_and_postal_code(self):
         countries = {row.label: row.count for row in self.geo("pais").rows}

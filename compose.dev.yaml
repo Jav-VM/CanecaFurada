@@ -1,0 +1,75 @@
+# Caneca Furada — pila completa en local para probar la imagen de producción (Fase 12).
+# Se aplica ENCIMA de compose.yaml: mismos servicios, con estos cambios:
+#   - proyecto aparte (caneca-dev) y variables ficticias de deploy/dev.env;
+#   - Nginx con certificado autofirmado en https://localhost:8443 (sin certbot);
+#   - Mailpit recoge todos los emails (http://localhost:8025);
+#   - PostgreSQL en 127.0.0.1:5433 (no choca con un PostgreSQL local en 5432);
+#   - servicio `tests` para ejecutar la suite contra el PostgreSQL del contenedor.
+#
+#   docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env up -d --build --wait
+#   docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env run --rm migrate
+#   docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env run --rm tests
+
+name: caneca-dev
+
+services:
+  web:
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  # Docker no publica puertos de un contenedor que solo está en una red `internal`.
+  db:
+    ports: !override
+      - "127.0.0.1:5433:5432"
+    networks:
+      - backend
+      - egress
+
+  nginx:
+    ports: !override
+      - "127.0.0.1:8080:80"
+      - "127.0.0.1:8443:443"
+
+  certbot:
+    profiles: ["prod-only"]
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:8025:8025"
+    networks:
+      - backend
+      - egress
+    restart: unless-stopped
+
+  # Suite completa contra PostgreSQL. Monta el código (con los tests) en solo
+  # lectura y se conecta como superusuario: Django crea y borra la BD de test.
+  tests:
+    image: ${CANECA_IMAGE:-caneca-furada}:${IMAGE_TAG:-current}
+    pull_policy: never
+    user: "10001"
+    working_dir: /src
+    command: ["python", "manage.py", "test", "--settings=config.settings.test", "--parallel", "1", "--noinput"]
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.test
+      DATABASE_URL: postgres://${POSTGRES_SUPERUSER:-postgres}:${POSTGRES_SUPERUSER_PASSWORD:?}@db:5432/${APP_DB_NAME:?}
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - .:/src:ro
+    tmpfs:
+      - /tmp
+    networks:
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["test"]
+
+  # Repositorio de restic local para probar copia y restauración.
+  backup:
+    volumes:
+      - ./backups/restic-dev:/repo
+  restore-media:
+    volumes:
+      - ./backups/restic-dev:/repo

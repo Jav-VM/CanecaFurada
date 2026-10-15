@@ -60,6 +60,17 @@ if SMS_BACKEND in {"apps.notifications.sms.LocmemSmsBackend"}:  # noqa: F405
 if not SITE_BASE_URL.startswith("https://"):  # noqa: F405
     raise ImproperlyConfigured("SITE_BASE_URL es obligatoria en producción y debe usar https://.")
 
+# --- Estáticos (Fase 12) -------------------------------------------------------
+# Nombres con hash del contenido (`app.3f2a1c.css`): Nginx los sirve con caché
+# larga y cada versión publica nombres nuevos, sin CSS o JS antiguos en el
+# navegador. `collectstatic` se ejecuta al construir la imagen y falla si una
+# hoja de estilos referencia un fichero que no existe.
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},  # media/ (volumen)
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"},
+}
+
 # --- HTTPS y cookies seguras -------------------------------------------------
 
 SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)

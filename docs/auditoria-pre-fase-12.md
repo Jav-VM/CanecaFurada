@@ -32,21 +32,21 @@ No se encontró ningún P0.
 |---|---|---|---|
 | P1-1 | El login del admin (`/<DJANGO_ADMIN_URL>/login/`) no tenía límite de intentos; el propietario es superusuario | D | **Corregido** |
 | P1-2 | Caché local por proceso (`locmem`) admitida en producción: con varios workers, los límites de intentos y el throttling se multiplican y la caché del contenido del local queda desfasada | D | **Corregido** (producción exige una caché compartida) |
-| P1-3 | Sin copias de seguridad ni restauración en el VPS | D | Pendiente (Fase 12) |
+| P1-3 | Sin copias de seguridad ni restauración en el VPS | D | **Resuelto en la [Fase 12](fase-12-despliegue.md)** (restic; restauración probada en local) |
 | P2-1 | `validate_redemption` bloqueaba canje, cliente y recompensa a la vez (`select_for_update` sobre el JOIN), fuera del orden de `_close`: posible interbloqueo | S | **Corregido** (`of=("self",)`), con test verificado en PostgreSQL |
 | P2-2 | Solo había tests de concurrencia con hilos para los canjes | D | **Corregido** (compras, ajustes y reservas), verificado en PostgreSQL |
-| P2-3 | El SMTP se llama dentro de la petición: bloquea workers y el tiempo de respuesta de la recuperación de contraseña puede revelar si un email existe | D / S | **Riesgo aceptado** (§5); los timeouts quedan para la Fase 12 |
+| P2-3 | El SMTP se llama dentro de la petición: bloquea workers y el tiempo de respuesta de la recuperación de contraseña puede revelar si un email existe | D / S | **Riesgo aceptado** (§5). Timeouts configurados en la [Fase 12](fase-12-despliegue.md): Gunicorn 30 s > SMTP 10 s |
 | P2-4 | Dependencias con rangos, sin `gunicorn` ni `redis` | D | **Corregido** |
-| P2-5 | `manage.py` usa `config.settings.dev` por defecto (`DEBUG=True`) | D | Pendiente (Fase 12: `DJANGO_SETTINGS_MODULE` en la imagen) |
+| P2-5 | `manage.py` usa `config.settings.dev` por defecto (`DEBUG=True`) | D | **Resuelto en la Fase 12** (`DJANGO_SETTINGS_MODULE=config.settings.prod` en la imagen) |
 | P2-6 | `db.sqlite3.bak` sigue en el historial de Git (hashes de cuentas de desarrollo) | D | **Corregido** (historial reescrito y publicado, §11) |
-| P2-7 | Sin monitorización, alertas, healthcheck ni CI | D | Pendiente (Fase 12) |
+| P2-7 | Sin monitorización, alertas, healthcheck ni CI | D | Healthcheck y CI **resueltos en la Fase 12**; monitorización y alertas, pendientes (siguiente paso) |
 | P2-8 | `despliegue.md` hablaba de «Gunicorn o Waitress», systemd y un cron con `.venv` | D | **Corregido** (§4) |
 | P2-9 | Sin exportación ni supresión de datos personales | D | **Decisión (2026-10-15): al suprimir una cuenta se conservan las compras y los movimientos de puntos.** Pendiente de implementar en una fase propia, antes de abrir al público (§12) |
 | P3-1 | `is_limited` + `register_attempt` no es atómico | D | Pospuesto |
 | P3-2 | `create_owner` sin actor no serializa dos ejecuciones simultáneas del comando (`select_for_update` sobre un conjunto vacío) | D | Pospuesto |
 | P3-3 | Orden de bloqueo opuesto entre `save_event` (evento → reservas) y confirmar una reserva (reserva → evento) | S | Pospuesto |
 | P3-4 | Si el proceso muere entre el regalo de cumpleaños y su aviso, el aviso no se recupera | S | Pospuesto |
-| P3-5 | `clearsessions` no está en las tareas programadas | D | Pendiente (Fase 12) |
+| P3-5 | `clearsessions` no está en las tareas programadas | D | **Resuelto en la Fase 12** (diario, 04:45) |
 | P3-6 | Sin Content-Security-Policy | D | Pospuesto |
 | P3-7 | No se eliminan los metadatos EXIF de las imágenes | D | Pospuesto |
 | P3-8 | Sin `List-Unsubscribe-Post` (baja en un clic) | D | Pospuesto |
@@ -181,7 +181,7 @@ python manage.py test --settings=config.settings.test --parallel 1
 - [x] Producción no arranca con caché local (con test).
 - [x] Dependencias fijadas (`pip install` real en la imagen Linux: Fase 12).
 - [x] Esquema OpenAPI idéntico a `docs/api/openapi.yaml`.
-- [ ] `.dockerignore` que excluya `.env`, `*.sqlite3*`, `media/`, `.venv/` y `.tools/` (Fase 12).
+- [x] `.dockerignore` que excluya `.env`, `*.sqlite3*`, `media/`, `.venv/` y `.tools/` (Fase 12, comprobado en la imagen).
 - [x] Decidido P2-3 (riesgo aceptado, §5).
 - [x] Prueba de humo por HTTP sobre PostgreSQL (§6.1). Falta la revisión visual y de la cámara en dispositivos.
 

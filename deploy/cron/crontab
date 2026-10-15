@@ -1,0 +1,18 @@
+# Tareas programadas de Caneca Furada (Fase 12). Las ejecuta supercronic en el
+# servicio `scheduler` (misma imagen y variables que `web`), con TZ=Europe/Madrid.
+# supercronic no lanza una tarea si la ejecución anterior sigue en marcha.
+# Las órdenes solo registran recuentos y public_id, nunca datos personales.
+#
+# min  hora  día  mes  día-semana  orden
+
+# Cola de notificaciones: avisos de reservas, campañas y reintentos.
+*/5    *     *    *    *    python manage.py process_notifications
+
+# Regalos de cumpleaños y, a continuación, sus avisos.
+0      9     *    *    *    python manage.py run_birthday_promotions && python manage.py process_notifications
+
+# Canjes vencidos: caducan y devuelven los puntos.
+30     4     *    *    *    python manage.py expire_redemptions
+
+# Limpieza: tokens de verificación caducados, refresh de la app caducados y sesiones web caducadas.
+45     4     *    *    *    python manage.py purge_email_tokens && python manage.py flushexpiredtokens && python manage.py clearsessions

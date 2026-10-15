@@ -20,6 +20,11 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!.env.prod.example
+!.env.backup.example
+
+# Copias de seguridad locales (repositorio de restic de pruebas, volcados)
+backups/
 
 # Binarios de herramientas descargadas (Tailwind CLI)
 .tools/

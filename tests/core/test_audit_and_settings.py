@@ -119,3 +119,41 @@ class ProductionSettingsTests(SimpleTestCase):
     def test_prod_accepts_database_cache(self):
         result = self._import_prod({**self.REQUIRED, "CACHE_URL": "dbcache://django_cache"})
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def _prod_values(self, extra_env, *names):
+        """Valores de `config.settings.prod` (repr, uno por línea) con las variables dadas."""
+        prefixes = ("DJANGO_", "EMAIL_", "SITE_BASE_URL", "DATABASE_", "CACHE_")
+        env = {k: v for k, v in os.environ.items() if not k.startswith(prefixes)}
+        env.update({**self.REQUIRED, **extra_env, "DJANGO_SETTINGS_MODULE": "config.settings.prod"})
+        code = "import django; django.setup(); from django.conf import settings as s; " + "; ".join(
+            f"print(repr({name}))" for name in names
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code], cwd=BASE_DIR, env=env, capture_output=True, text=True
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout.splitlines()
+
+    def test_prod_uses_hashed_static_files(self):
+        """Fase 12: Nginx sirve /static con caché larga; los nombres cambian en cada versión."""
+        (backend,) = self._prod_values({}, 's.STORAGES["staticfiles"]["BACKEND"]')
+        self.assertEqual(backend, repr("django.contrib.staticfiles.storage.ManifestStaticFilesStorage"))
+
+    def test_prod_behind_tls_proxy_as_deployed(self):
+        """Valores de `.env.prod.example`: Nginx termina TLS y es el único proxy de confianza."""
+        values = self._prod_values(
+            {"DJANGO_BEHIND_TLS_PROXY": "True", "DJANGO_TRUSTED_PROXY_COUNT": "1"},
+            "s.SECURE_PROXY_SSL_HEADER",
+            "s.TRUSTED_PROXY_COUNT",
+            's.REST_FRAMEWORK["NUM_PROXIES"]',
+            "s.SECURE_SSL_REDIRECT",
+            "s.MIDDLEWARE[0]",
+        )
+        self.assertEqual(
+            values,
+            [repr(("HTTP_X_FORWARDED_PROTO", "https")), "1", "1", "True", repr("apps.core.middleware.HealthCheckMiddleware")],
+        )
+
+    def test_prod_ignores_forwarded_proto_without_proxy(self):
+        (header,) = self._prod_values({}, "getattr(s, 'SECURE_PROXY_SSL_HEADER', None)")
+        self.assertEqual(header, "None")

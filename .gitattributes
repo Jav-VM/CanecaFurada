@@ -1,0 +1,7 @@
+# Ficheros que se ejecutan o leen dentro de contenedores Linux: siempre LF,
+# aunque el clon sea de Windows con core.autocrlf=true (un CRLF rompe los scripts).
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+compose*.yaml   text eol=lf
+deploy/**       text eol=lf
+.github/**      text eol=lf

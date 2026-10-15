@@ -16,7 +16,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 9 | Dashboard del propietario y estadísticas | **Completa** ([detalle](fase-09-dashboard-propietario.md)) |
 | 10 | Eventos, reservas, contenido y notificaciones | **Completa** ([detalle](fase-10-eventos-reservas-notificaciones.md)) |
 | 11 | API, auditoría, seguridad y preparación final para la app móvil | **Completa** ([detalle](fase-11-api-auditoria.md)) |
-| — | Endurecimiento y despliegue | Pendiente (sin número asignado tras la reordenación) |
+| 12 | Despliegue y endurecimiento | **Completa en local** ([detalle](fase-12-despliegue.md)); pendientes el VPS y la primera ejecución del CI |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -101,7 +101,23 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Implementado (2026-10-14):** auditoría con 6 correcciones (enumeración de emails en el registro, tiempos, IP real tras proxies, auditoría de contraseñas, purga de tokens de email, texto de la portada); `apps.api` con DRF, JWT (simplejwt: access 15 min, refresh rotatorio con lista negra, revocación al cambiar la contraseña), OpenAPI (drf-spectacular), endpoints de cliente y solo las operaciones de personal y propietario justificadas. Guías: [Flutter](guia-app-flutter.md) y [despliegue](despliegue.md). Ver [fase-11-api-auditoria.md](fase-11-api-auditoria.md).
 
 
-## Sin número — Endurecimiento y despliegue (antes Fase 12)
+## Fase 12 — Despliegue y endurecimiento
+- **Numeración:** antes «Sin número — Endurecimiento y despliegue». Pasó a ser la Fase 12 por decisión del usuario el 2026-10-15.
+- **Decisiones:**
+  - VPS Ubuntu LTS con Docker Compose y multimedia en un volumen servido por Nginx;
+  - CI en GitHub Actions con PostgreSQL real;
+  - PostgreSQL 17, Python 3.14 y copias con restic.
+- **Resultado (2026-10-15):**
+  - imagen multietapa no root;
+  - Compose de producción (Nginx con TLS, Gunicorn, PostgreSQL 17 con un rol sin privilegios, Redis, scheduler con supercronic, certbot) y pila local con Mailpit;
+  - `/healthz` y estáticos con hash;
+  - scripts de despliegue, rollback, copia cifrada y restauración, probados en local desde cero;
+  - CI;
+  - tests de concurrencia de tokens y reservas, y de `UPPER` no ASCII en PostgreSQL.
+  - **833 tests OK** en PostgreSQL (local y en contenedor) y en SQLite.
+- **Pendiente:** acciones manuales en el VPS (DNS, certificado, SMTP real, destino de copias) y la primera ejecución del CI en GitHub. Ver [fase-12-despliegue.md](fase-12-despliegue.md).
+
+**Historial de la fase antes de numerarla:**
 - **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, ejecución de tests contra PostgreSQL, caché compartida, proveedor SMTP real y programación de `process_notifications`, `run_birthday_promotions`, `expire_redemptions`, `purge_email_tokens` y `flushexpiredtokens`. La revisión de seguridad, el rate limiting de la API y la guía de despliegue se hicieron en la Fase 11 ([despliegue.md](despliegue.md)).
 - **Migración a PostgreSQL (2026-10-15):** completa en desarrollo ([migracion-postgresql.md](migracion-postgresql.md)).
 - **Auditoría previa (2026-10-15, completa):** destino VPS Linux con Docker Compose, PostgreSQL, Redis, Gunicorn y Nginx. Corregidos el límite del login del admin, la caché compartida obligatoria en producción, un bloqueo de canjes y las versiones de las dependencias; añadidos tests de concurrencia. 817 tests OK en PostgreSQL 17. Ver [auditoria-pre-fase-12.md](auditoria-pre-fase-12.md).

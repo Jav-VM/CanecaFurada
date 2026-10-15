@@ -12,16 +12,17 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 1 — Proyecto base: perfil de cliente, módulos y preparación para la app | **Completa** |
 | 2 — Autenticación, registro, perfiles, verificación de email y permisos | **Completa** (pendiente validar con SMTP real) |
 | 3 — Sistema de diseño y web pública | **Completa** (contenidos del local pendientes de aportar por el propietario) |
-| 4 — Carta y cervezas | **Completa** (pendiente almacenamiento de imágenes en producción) |
+| 4 — Carta y cervezas | **Completa** (imágenes servidas por Nginx en producción, Fase 12) |
 | 5 — QR personal y registro de compras manuales | **Completa** (pendiente probar el escaneo en dispositivos físicos) |
 | 6 — Fidelización: ledger de puntos, promociones y base de cumpleaños | **Completa** (pendiente confirmar la conversión por defecto) |
 | 7 — Recompensas y canjes | **Completa** (pendiente confirmar el plazo de recogida) |
 | 8 — Panel de empleados | **Completa** (pendiente probar en móviles y tablets físicos) |
 | 9 — Dashboard del propietario y estadísticas | **Completa** (pendiente revisión visual en navegador) |
-| 10 — Eventos, reservas, contenido y notificaciones | **Completa** (pendiente SMTP real, programar las tareas y proveedor de SMS) |
-| 11 — API, auditoría, seguridad y preparación para la app | **Completa** (pendiente el despliegue) |
+| 10 — Eventos, reservas, contenido y notificaciones | **Completa** (tareas programadas en la Fase 12; pendientes el SMTP real y el proveedor de SMS) |
+| 11 — API, auditoría, seguridad y preparación para la app | **Completa** |
 | Migración a PostgreSQL (endurecimiento y despliegue) | **Completa en desarrollo**: suite completa OK en PostgreSQL 17 (pendiente el VPS) |
 | Auditoría previa a la Fase 12 (endurecimiento y despliegue) | **Completa**: 817 tests OK en PostgreSQL 17 y en SQLite; los pendientes de despliegue van a la Fase 12 |
+| 12 — Despliegue y endurecimiento | **Completa en local**: Docker Compose (Nginx, Gunicorn, PostgreSQL 17, Redis, scheduler), copias con restic, CI. 833 tests OK. **Pendiente**: VPS, DNS, certificado, SMTP real y la primera ejecución del CI |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -69,7 +70,7 @@ Rutas disponibles:
 
 ## Gestionar la carta
 
-El propietario crea estilos, categorías y productos en el admin, publica, archiva o marca como agotado con las acciones de la lista y sube la imagen de la carta de grifos. Nada se borra: los productos se archivan. Las imágenes subidas solo se sirven en desarrollo hasta la fase de despliegue (antes Fase 12, hoy sin número asignado). Guía paso a paso: [docs/fase-04-carta.md](docs/fase-04-carta.md#4-gestión-de-la-carta-guía-para-el-propietario).
+El propietario crea estilos, categorías y productos en el admin, publica, archiva o marca como agotado con las acciones de la lista y sube la imagen de la carta de grifos. Nada se borra: los productos se archivan. En producción, Nginx sirve las imágenes subidas desde el volumen `media` (Fase 12). Guía paso a paso: [docs/fase-04-carta.md](docs/fase-04-carta.md#4-gestión-de-la-carta-guía-para-el-propietario).
 
 En desarrollo los emails (verificación, recuperación de contraseña…) se imprimen en la consola de `runserver`. En Windows, si aparece `UnicodeEncodeError` al enviar un email, arranca con `$env:PYTHONUTF8=1`. Configuración del correo y de producción: [docs/fase-02-registro-perfil-verificacion.md](docs/fase-02-registro-perfil-verificacion.md#6-configuración-del-correo-y-variables-de-entorno).
 
@@ -97,7 +98,7 @@ El propietario crea recompensas (coste en puntos, imagen, estado, fechas y unida
 
 El propietario crea, edita, publica y archiva eventos en `/dashboard/eventos/` y edita los textos del inicio en `/dashboard/contenido/`. Los clientes con email verificado piden mesa o plaza en un evento; la reserva queda **pendiente** hasta que el propietario la confirma, rechaza o cancela en `/dashboard/reservas/` (cada cambio envía un email al cliente). Todo lo que envía la plataforma (verificación, recuperación de la cuenta, reservas, campañas y cumpleaños) queda en un registro con su estado real; las promociones solo llegan a quien lo ha autorizado y siempre llevan enlace de baja. El regalo de cumpleaños son puntos el mismo día (29-F → 28-F en años no bisiestos), uno por cliente y año.
 
-**Qué requiere configuración externa:** un proveedor **SMTP** (variables `EMAIL_*`) para que salga cualquier email real; programar con cron o el Programador de tareas `process_notifications` (cada 5 min), `run_birthday_promotions` y `expire_redemptions` (diarios); los **SMS no funcionan** hasta integrar un proveedor (`SMS_BACKEND`). Detalle, tabla de qué funciona, flujos, privacidad, API prevista y pruebas: [docs/fase-10-eventos-reservas-notificaciones.md](docs/fase-10-eventos-reservas-notificaciones.md).
+**Qué requiere configuración externa:** un proveedor **SMTP** (variables `EMAIL_*`) para que salga cualquier email real. Las tareas `process_notifications` (cada 5 min), `run_birthday_promotions` y `expire_redemptions` (diarias) ya las programa el servicio `scheduler` de Docker Compose (Fase 12); los **SMS no funcionan** hasta integrar un proveedor (`SMS_BACKEND`). Detalle, tabla de qué funciona, flujos, privacidad, API prevista y pruebas: [docs/fase-10-eventos-reservas-notificaciones.md](docs/fase-10-eventos-reservas-notificaciones.md).
 
 ## API REST v1 y app móvil
 
@@ -108,6 +109,28 @@ python manage.py spectacular --file docs/api/openapi.yaml   # regenera el esquem
 ```
 
 Endpoints, autenticación, auditoría y seguridad: [docs/fase-11-api-auditoria.md](docs/fase-11-api-auditoria.md). Guía para el desarrollador de la app: [docs/guia-app-flutter.md](docs/guia-app-flutter.md). Despliegue, correo y tareas programadas: [docs/despliegue.md](docs/despliegue.md).
+
+## Despliegue (Docker Compose)
+
+Producción en un VPS: `compose.yaml` con Nginx (TLS), Gunicorn y Django, PostgreSQL 17, Redis, tareas programadas y certbot. Las variables van en `.env.prod` (plantilla [.env.prod.example](.env.prod.example), nunca en Git).
+
+```bash
+deploy/scripts/deploy.sh --first     # primer despliegue; después: deploy.sh / deploy.sh rollback
+deploy/scripts/backup.sh run         # copia cifrada con restic (BD + media)
+deploy/scripts/restore.sh check      # restauración de prueba
+```
+
+Pila completa en local, con la imagen de producción, Mailpit (http://localhost:8025) y https://localhost:8443. Requiere Docker; en Windows vale Docker Engine dentro de WSL:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env build web nginx
+docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env up -d --wait db redis mailpit
+docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env run --rm migrate
+docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env up -d --wait
+docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env --profile test run --rm tests   # suite en PostgreSQL
+```
+
+Guía operativa: [docs/despliegue.md](docs/despliegue.md). Diseño, procedimientos (primer despliegue, actualización, rollback, restauración, rotación de secretos), endurecimiento del VPS y resultados: [docs/fase-12-despliegue.md](docs/fase-12-despliegue.md).
 
 ## Estilos (Tailwind CSS)
 
@@ -123,8 +146,15 @@ Paleta, componentes y datos del local (`apps/web/content.py`): [docs/fase-03-sis
 
 ```powershell
 python manage.py check
-python manage.py test --settings=config.settings.test
+python manage.py test --settings=config.settings.test                 # SQLite o la DATABASE_URL del .env
 ```
+
+Con `DATABASE_URL` de PostgreSQL se ejecutan también los tests de concurrencia (`--parallel 1`); con SQLite en memoria se omiten. El CI (`.github/workflows/ci.yml`) ejecuta en cada push y pull request:
+- `check` y `makemigrations --check`;
+- la validación del esquema OpenAPI;
+- la suite contra PostgreSQL 17 sin tests omitidos;
+- `check --deploy`;
+- el build de la imagen, el arranque de la pila y una copia con restauración.
 
 ## Estructura
 
@@ -151,6 +181,9 @@ scripts/           tailwind.py (descarga verificada y compilación del CSS)
 tests/             pruebas por app
 docs/              plan de fases, documentación de cada fase, guías (app Flutter, despliegue) y esquema OpenAPI (api/)
 requirements/      dependencias por entorno
+deploy/            Gunicorn, Nginx, crontab, rol de PostgreSQL, variables ficticias de la pila local y scripts (deploy, backup, restore)
+Dockerfile, compose.yaml, compose.dev.yaml   imagen y pilas de producción y local (Fase 12)
+.github/workflows/ CI (GitHub Actions)
 ```
 
 ## Documentación
@@ -172,6 +205,7 @@ requirements/      dependencias por entorno
 - [Guía de la app Flutter](docs/guia-app-flutter.md): autenticación, renovación y revocación de tokens, errores, paginación, idempotencia y pantallas.
 - [Migración a PostgreSQL](docs/migracion-postgresql.md): auditoría de compatibilidad, correcciones, configuración en desarrollo y en el VPS, resultados de la suite y copia/restauración.
 - [Auditoría previa a la Fase 12](docs/auditoria-pre-fase-12.md): hallazgos priorizados (P0-P3), correcciones, riesgo aceptado del envío de correo, pruebas y lista de comprobación antes del despliegue.
-- [Despliegue](docs/despliegue.md): variables de entorno, PostgreSQL, HTTPS, estáticos y multimedia, copias de seguridad, correo, tareas programadas y logs.
+- [Fase 12 — Despliegue y endurecimiento](docs/fase-12-despliegue.md): arquitectura Docker Compose, decisiones, procedimientos (primer despliegue, actualización, rollback, restauración, rotación de secretos), copias, CI, endurecimiento del VPS, pruebas y pendientes.
+- [Despliegue](docs/despliegue.md): guía operativa con variables, órdenes habituales, HTTPS, estáticos y multimedia, copias, correo, tareas programadas, logs y lista de comprobación.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.
 - [Documentación para la defensa del proyecto](docs/defensa_proyecto/README.md): memoria técnica y funcional, guion de la defensa oral, banco de preguntas del tribunal, mapa del código, limitaciones y diagramas Mermaid.

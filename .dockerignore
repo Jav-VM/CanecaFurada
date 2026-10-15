@@ -1,0 +1,48 @@
+# Fuera de la imagen: secretos, bases de datos, datos subidos y entornos locales.
+# Lista de exclusión conservadora: ante la duda, no entra.
+
+.git
+.github
+.gitignore
+.dockerignore
+
+# Secretos y configuración local (incluido .env.prod en el VPS)
+.env
+.env.*
+*.pem
+*.key
+
+# Bases de datos, copias y volcados (datos personales y hashes)
+*.sqlite3*
+*.bak
+*.dump
+*.sql
+backups/
+
+# Ficheros subidos por usuarios (van en el volumen `media`)
+media/
+
+# Entornos, cachés y herramientas locales
+.venv/
+venv/
+.tools/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+staticfiles/
+node_modules/
+.vscode/
+.idea/
+.claude/
+*.log
+*.tmp
+
+# No necesarios para ejecutar la aplicación
+tests/
+docs/
+assets/
+README.md
+CLAUDE.md
+compose*.yaml
+Dockerfile

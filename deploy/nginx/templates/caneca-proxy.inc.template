@@ -1,0 +1,15 @@
+# Proxy a Gunicorn. Nginx es el único proxy de confianza (DJANGO_TRUSTED_PROXY_COUNT=1):
+# X-Forwarded-For se SUSTITUYE por la IP real, sin conservar lo que mande el cliente.
+# Con DJANGO_BEHIND_TLS_PROXY=True, Django confía en X-Forwarded-Proto, que fija Nginx.
+proxy_pass http://caneca_web;
+proxy_http_version 1.1;
+proxy_set_header Connection "";
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Host "";
+proxy_set_header X-Real-IP "";
+proxy_redirect off;
+# Por encima del timeout de Gunicorn (30 s).
+proxy_read_timeout 35s;
+proxy_send_timeout 35s;

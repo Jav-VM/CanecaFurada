@@ -1,0 +1,128 @@
+# Integración continua de Caneca Furada (Fase 12). Ver docs/fase-12-despliegue.md §CI.
+# Sin secretos: todas las variables son ficticias y solo existen en el runner.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.14"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  tests:
+    name: Comprobaciones y suite en PostgreSQL 17
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-trixie
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-contrasena-ficticia
+          POSTGRES_DB: caneca_ci
+          POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=es-ES --encoding=UTF8"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U ci -d caneca_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://ci:ci-contrasena-ficticia@localhost:5432/caneca_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements/*.txt
+
+      - name: Dependencias (las de producción incluyen las comunes)
+        run: pip install --only-binary=:all: -r requirements/prod.txt
+
+      - name: manage.py check
+        run: python manage.py check
+
+      - name: Migraciones al día
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Esquema OpenAPI válido e igual a docs/api/openapi.yaml
+        run: |
+          python manage.py spectacular --validate --fail-on-warn --file "$RUNNER_TEMP/openapi.yaml"
+          diff -u docs/api/openapi.yaml "$RUNNER_TEMP/openapi.yaml"
+
+      - name: Suite completa contra PostgreSQL (sin tests omitidos)
+        run: |
+          python manage.py test --settings=config.settings.test --parallel 1 --noinput 2>&1 | tee "$RUNNER_TEMP/tests.log"
+          # En PostgreSQL no se omite ninguno: tampoco los de concurrencia.
+          if grep -qE '^(OK|FAILED) \(.*skipped=' "$RUNNER_TEMP/tests.log"; then
+            echo "::error::Hay tests omitidos en PostgreSQL"; exit 1
+          fi
+
+      - name: check --deploy con variables ficticias (solo se acepta W021)
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.prod
+          DJANGO_SECRET_KEY: ci-clave-ficticia-solo-para-check-deploy-0123456789abcdefghijkl
+          DJANGO_ALLOWED_HOSTS: www.example.com
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://www.example.com
+          DJANGO_BEHIND_TLS_PROXY: "True"
+          DJANGO_TRUSTED_PROXY_COUNT: "1"
+          EMAIL_HOST: smtp.example.com
+          SITE_BASE_URL: https://www.example.com
+          CACHE_URL: redis://localhost:6379/1
+        run: |
+          out="$(python manage.py check --deploy --fail-level ERROR 2>&1)"
+          echo "$out"
+          if echo "$out" | grep -E '\((security|[a-z_]+)\.[WE][0-9]+\)' | grep -v 'security.W021'; then
+            echo "::error::check --deploy da avisos distintos de W021"; exit 1
+          fi
+
+  docker:
+    name: Imagen, pila Compose y copia/restauración
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      COMPOSE_FILES: compose.yaml compose.dev.yaml
+      CANECA_ENV_FILE: deploy/dev.env
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compose válido (producción y local)
+        run: |
+          docker compose -f compose.yaml --env-file deploy/dev.env config --quiet
+          docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env config --quiet
+
+      - name: Primer despliegue en la pila local (build, migrate, arranque)
+        run: bash deploy/scripts/deploy.sh --first
+
+      - name: Prueba de humo por HTTPS a través de Nginx
+        run: |
+          set -x
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/)" = 301
+          test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost:8443/)" = 200
+          test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost:8443/healthz)" = 404
+          test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost:8443/media/x.php)" = 404
+          css="$(curl -sk https://localhost:8443/ | grep -oE '/static/[^"]+\.[0-9a-f]{12}\.css' | head -n1)"
+          curl -sk -D - -o /dev/null "https://localhost:8443$css" | grep -i 'cache-control: .*immutable'
+          code="$(curl -sk -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' \
+            -d '{"email":"nadie@example.com","password":"Contrasena-Ficticia-2026"}' https://localhost:8443/api/v1/auth/login/)"
+          test "$code" = 401
+
+      - name: Copia de seguridad y restauración de prueba
+        run: |
+          bash deploy/scripts/backup.sh init
+          bash deploy/scripts/backup.sh run
+          bash deploy/scripts/backup.sh check
+          bash deploy/scripts/restore.sh check
+
+      - name: Logs si algo falla
+        if: failure()
+        run: docker compose -f compose.yaml -f compose.dev.yaml --env-file deploy/dev.env logs --no-color --tail 200

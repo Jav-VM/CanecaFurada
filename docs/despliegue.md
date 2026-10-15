@@ -1,130 +1,154 @@
-# Despliegue, correo y tareas programadas
+# Despliegue y operación
 
-Revisión de la preparación para producción hecha en la [Fase 11](fase-11-api-auditoria.md) y actualizada en la [auditoría previa a la Fase 12](auditoria-pre-fase-12.md). Destino previsto: VPS Linux (Ubuntu LTS) con **Docker Compose, PostgreSQL, Redis, Gunicorn y Nginx**. Recoge lo que ya está configurado en el código, lo que hay que hacer en el servidor y lo que queda pendiente para la fase de despliegue (sin número). **No incluye secretos reales:** todos los valores son de ejemplo.
+Guía operativa de Caneca Furada en un VPS Linux (Ubuntu LTS) con **Docker Compose**. Servicios: Nginx, Gunicorn y Django, PostgreSQL 17, Redis, scheduler y certbot.
+- Diseño, decisiones y resultados de las pruebas: [Fase 12](fase-12-despliegue.md).
+- Origen: la revisión de la [Fase 11](fase-11-api-auditoria.md) y la [auditoría previa](auditoria-pre-fase-12.md).
+
+**Sin secretos reales:** todos los valores son de ejemplo.
 
 ## 1. Estado
 
 | Elemento | Estado |
 |---|---|
-| Settings de producción (`config.settings.prod`) | Listo: falla al arrancar si falta `DJANGO_SECRET_KEY` (o mide < 32 bytes), `DJANGO_ALLOWED_HOSTS`, `EMAIL_HOST`, un `SITE_BASE_URL` https o si el email/SMS es simulado. `wsgi.py` y `asgi.py` usan `prod` por defecto. |
-| `check --deploy` | Ejecutado con valores ficticios (2026-10-14): solo `security.W021` (HSTS *preload* desactivado a propósito; activarlo es irreversible en la práctica). |
-| HTTPS y cookies | Listo en código (§4). Falta el certificado y el proxy en el servidor. |
-| PostgreSQL | Obligatorio en `prod` (rechaza SQLite). Suite completa OK en PostgreSQL 17 (2026-10-15). Falta instalarlo en el VPS: [migracion-postgresql.md](migracion-postgresql.md). |
-| Servidor WSGI | **Gunicorn** (`requirements/prod.txt`, versión fijada). Su configuración en el contenedor es parte de la Fase 12. |
-| Dependencias | Versiones exactas en `requirements/` y transitivas en `requirements/constraints.txt`. |
-| Caché compartida | **Obligatoria**: `config.settings.prod` no arranca con una caché local (`locmem`, `dummy`, `filebased`). Redis (`redis` en `requirements/prod.txt`). |
-| Login del admin | Mismo límite de intentos que la web y la API (auditoría previa a la Fase 12). |
-| Estáticos y multimedia | **Pendiente** (§5–6). |
-| Correo | Configurable por entorno (§8). Falta un proveedor SMTP real. |
-| Tareas programadas | Comandos listos (§9). Falta programarlos. |
-| Copias de seguridad | **Pendiente** (§7). |
+| Imagen (`Dockerfile`), Compose de producción y local, Nginx, scheduler, copias, CI | **Listos y probados en local** (2026-10-15) |
+| Settings de producción | Listos. No arrancan sin clave (≥ 32 bytes), `ALLOWED_HOSTS`, PostgreSQL, caché compartida, SMTP real o `SITE_BASE_URL` https. |
+| `check --deploy` | Solo `security.W021` (HSTS *preload* desactivado a propósito) |
+| Suite | 833 OK en PostgreSQL 17 (local y en contenedor, 0 omitidos) y en SQLite |
+| CI (GitHub Actions) | Workflow listo; **pendiente** de su primera ejecución en GitHub |
+| VPS, DNS, certificado, SMTP real, destino de copias | **Pendiente** ([Fase 12 §13](fase-12-despliegue.md#13-acciones-manuales-pendientes-en-el-vps)) |
 
 ## 2. Variables de entorno
 
-Lista completa con valores ficticios en [.env.example](../.env.example). En producción las variables llegan del entorno del servicio (no de un `.env` en el repositorio).
+- `.env.prod`: plantilla [.env.prod.example](../.env.prod.example). La reciben Compose y los contenedores de la app.
+- `.env.backup`: plantilla [.env.backup.example](../.env.backup.example). Solo la recibe restic.
+
+Las dos con `chmod 600`, nunca en Git ni en la imagen. Lista y efecto de cada grupo:
 
 | Grupo | Variables |
 |---|---|
-| Django | `DJANGO_SETTINGS_MODULE=config.settings.prod`, `DJANGO_SECRET_KEY` (≥ 50 caracteres aleatorios), `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `DJANGO_ADMIN_URL` (ruta no obvia), `DJANGO_LOG_LEVEL` |
-| HTTPS y proxy | `DJANGO_SECURE_SSL_REDIRECT`, `DJANGO_SECURE_HSTS_SECONDS`, `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_SECURE_HSTS_PRELOAD`, `DJANGO_BEHIND_TLS_PROXY`, `DJANGO_TRUSTED_PROXY_COUNT` |
-| Base de datos y caché | `DATABASE_URL`, `DATABASE_CONN_MAX_AGE`, `DATABASE_CONN_HEALTH_CHECKS`, `CACHE_URL` (obligatoria en producción) |
-| Correo | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`/`EMAIL_USE_SSL`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SITE_BASE_URL` |
-| Notificaciones | `SMS_BACKEND` (vacío = desactivado), `NOTIFICATIONS_BATCH_SIZE` |
-| Cuentas | `EMAIL_VERIFICATION_TOKEN_TTL_HOURS`, `ACCOUNTS_MIN_CUSTOMER_AGE` |
-| API (Fase 11) | `API_ACCESS_TOKEN_MINUTES`, `API_REFRESH_TOKEN_DAYS`, `API_JWT_SIGNING_KEY` (opcional, ≥ 32 bytes), `API_THROTTLE_ANON`, `API_THROTTLE_USER`, `API_THROTTLE_AUTH`, `API_DOCS_PUBLIC` |
+| Dominio | `NGINX_SERVER_NAME`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `SITE_BASE_URL` (los cuatro con el mismo dominio), `DJANGO_ADMIN_URL` |
+| Django | `DJANGO_SECRET_KEY`, `DJANGO_LOG_LEVEL`, `DJANGO_SECURE_HSTS_*`, `DJANGO_SECURE_SSL_REDIRECT` |
+| Base de datos | `POSTGRES_SUPERUSER(_PASSWORD)`, `APP_DB_NAME`, `APP_DB_USER`, `APP_DB_PASSWORD`, `DATABASE_CONN_MAX_AGE=60`, `DATABASE_CONN_HEALTH_CHECKS=True` |
+| Fijadas por `compose.yaml` | `DATABASE_URL`, `CACHE_URL=redis://redis:6379/1`, `DJANGO_BEHIND_TLS_PROXY=True`, `DJANGO_TRUSTED_PROXY_COUNT=1`, `TZ=Europe/Madrid`, `DJANGO_SETTINGS_MODULE=config.settings.prod` (imagen) |
+| Correo | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`/`EMAIL_USE_SSL`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL` |
+| Gunicorn | `GUNICORN_WORKERS` (3), `GUNICORN_TIMEOUT` (30, siempre > `EMAIL_TIMEOUT`) |
+| API | `API_ACCESS_TOKEN_MINUTES`, `API_REFRESH_TOKEN_DAYS`, `API_JWT_SIGNING_KEY`, `API_THROTTLE_*`, `API_DOCS_PUBLIC` |
+| Otras | `SMS_BACKEND` (vacío), `NOTIFICATIONS_BATCH_SIZE`, `EMAIL_VERIFICATION_TOKEN_TTL_HOURS`, `ACCOUNTS_MIN_CUSTOMER_AGE` |
+| Copias (`.env.backup`) | `RESTIC_REPOSITORY`, `RESTIC_PASSWORD` y las credenciales del destino; en el host, `BACKUP_KEEP_DAILY` (7) y `BACKUP_KEEP_WEEKLY` (4) |
 
-`manage.py` usa `config.settings.dev` por defecto (con `DEBUG=True`): en el servidor, ejecuta los comandos con `DJANGO_SETTINGS_MODULE=config.settings.prod` o `--settings=config.settings.prod`. En la imagen Docker, define `ENV DJANGO_SETTINGS_MODULE=config.settings.prod`.
+`manage.py` usa `config.settings.dev` por defecto, pero dentro de la imagen `DJANGO_SETTINGS_MODULE` es `prod`. Los comandos de gestión se lanzan siempre en el contenedor: `dc exec web python manage.py …` o `dc run --rm web python manage.py …`.
 
-Rotar `DJANGO_SECRET_KEY` invalida sesiones web, enlaces de recuperación y de baja pendientes y, si no hay `API_JWT_SIGNING_KEY`, todos los tokens de la app.
+## 3. Órdenes habituales
 
-## 3. PostgreSQL
+```bash
+alias dc='docker compose --env-file .env.prod'    # en el directorio del clon
 
-Guía completa (rol con privilegios mínimos, ICU `es-ES`, variables y resultados): [migracion-postgresql.md](migracion-postgresql.md).
+deploy/scripts/deploy.sh --first      # primer despliegue (sin copia previa)
+deploy/scripts/deploy.sh              # actualizar: copia → build → migrate → arranque
+deploy/scripts/deploy.sh rollback     # volver a las imágenes anteriores (no deshace migraciones)
+deploy/scripts/backup.sh init|run|check
+deploy/scripts/restore.sh check       # restauración de prueba en una BD temporal
+deploy/scripts/restore.sh full --yes  # restaurar de verdad (sustituye BD y media)
 
-1. Crear base de datos y usuario propio con permisos solo sobre ella: `DATABASE_URL=postgres://caneca:<contraseña>@<host>:5432/caneca_furada`. Sin `DATABASE_URL` de PostgreSQL, `config.settings.prod` no arranca.
-2. `python manage.py migrate --settings=config.settings.prod` (antes, `migrate --plan` para revisar). Las migraciones son pequeñas y revisadas; la Fase 11 añade `core/0009` (solo opciones) y las tablas de `token_blacklist`.
-3. Suite contra PostgreSQL: **ejecutada en desarrollo** (803 OK, 2026-10-15). Se repite en desarrollo o en un entorno de pruebas tras cada cambio, nunca en producción (el rol de producción no puede crear la BD de test).
-4. `DATABASE_CONN_MAX_AGE=60` reduce conexiones si el servidor lo permite; con él, `DATABASE_CONN_HEALTH_CHECKS=True`.
-5. Caché compartida (**obligatoria** en `prod`) para los límites de intentos, el throttling de la API y la caché del contenido del local: `CACHE_URL=redis://redis:6379/1` (servicio de Compose; el cliente `redis` ya está en `requirements/prod.txt`) o, sin Redis, `CACHE_URL=dbcache://django_cache` + `python manage.py createcachetable`.
+dc ps                                  # estado y healthchecks
+dc logs -f --tail 100 web nginx        # logs (rotados: 10 MB × 5 por servicio)
+dc exec web python manage.py check --deploy
+```
+
+Procedimientos paso a paso ([Fase 12 §8](fase-12-despliegue.md#8-procedimientos)):
+- primer despliegue, con el certificado y `create_owner`;
+- actualización con migraciones;
+- rollback;
+- copias programadas en el host;
+- restauración;
+- rotación de secretos y sus efectos.
 
 ## 4. HTTPS, proxy y cookies
 
-- Ya en `prod`: `SECURE_SSL_REDIRECT`, HSTS (1 año), `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, cookies `HttpOnly` y `SameSite=Lax`, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: same-origin`.
-- Detrás de un proxy que termina TLS (Nginx, Caddy, balanceador): `DJANGO_BEHIND_TLS_PROXY=True` **solo** si el proxy fija `X-Forwarded-Proto`, y `DJANGO_TRUSTED_PROXY_COUNT=1` (o el número real de proxies) para que los límites por IP usen la IP del cliente. Con un valor mayor que el real, un cliente podría falsear su IP.
-- `DJANGO_CSRF_TRUSTED_ORIGINS=https://www.example.com`.
-- La API no usa cookies; los tokens viajan en `Authorization`. Asegúrate de que el proxy no registra esa cabecera.
+- Nginx termina TLS (Let's Encrypt por webroot) y redirige 80→443. Además:
+  - sustituye `X-Forwarded-For` por la IP real y fija `X-Forwarded-Proto`;
+  - cierra las peticiones a hosts desconocidos.
+- Django, ya en `prod`:
+  - HSTS de 1 año sin *preload*;
+  - `SESSION_COOKIE_SECURE` y `CSRF_COOKIE_SECURE`;
+  - `SameSite=Lax`, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: same-origin`.
+- `DJANGO_TRUSTED_PROXY_COUNT=1` es correcto mientras **Nginx sea el único proxy**. Si se añade un CDN o un balanceador delante, hay que subirlo y configurar Nginx para que confíe en él (`real_ip`).
+- Límite de Nginx (30/min por IP) en login, registro, recuperación y reenvíos de la web, el admin y la API, además de los límites de Django.
 
-## 5. Archivos estáticos
+## 5. Estáticos y multimedia
 
-`python manage.py collectstatic --settings=config.settings.prod` copia todo a `STATIC_ROOT` (`staticfiles/`). Django no sirve estáticos con `DEBUG=False`: hay que servir `/static/` desde el proxy web o añadir WhiteNoise (pendiente de decidir). El CSS de Tailwind ya está compilado y versionado. La documentación Swagger (`/api/v1/docs/`) carga su JavaScript desde jsDelivr.
+- **Estáticos:**
+  - `collectstatic` se ejecuta al construir la imagen, con nombres con hash (`ManifestStaticFilesStorage`);
+  - van dentro de la imagen de Nginx, en `/static/`, con caché de un año (`immutable`);
+  - cada versión lleva los suyos, también en un rollback.
+- **Multimedia:**
+  - volumen `media`, que escribe `web` y lee Nginx;
+  - Nginx solo sirve `/media/*.{jpg,jpeg,png,webp}`, con `nosniff` y `Content-Security-Policy: default-src 'none'; sandbox`; cualquier otra ruta da 404;
+  - `client_max_body_size 6m`, con `CATALOG_IMAGE_MAX_BYTES` en 5 MB;
+  - las imágenes conservan sus metadatos EXIF (P3-7, pospuesto).
 
-## 6. Archivos multimedia
+## 6. Copias de seguridad
 
-Imágenes de la carta, recompensas y eventos en `MEDIA_ROOT` (`media/`). En producción `static()` no las sirve: servir `/media/` desde el proxy (con `Content-Disposition` y tipos restringidos a imagen) o usar almacenamiento de objetos. Incluir `media/` en las copias de seguridad. Las imágenes no se recodifican (los metadatos EXIF se conservan, ver Fase 4).
+restic cifra la BD (`pg_dump -Fc`) y `media/` y las envía a un destino externo, con una retención de 7 diarias y 4 semanales. El volcado nunca queda sin cifrar en el disco del servidor.
+- **Programación:** en el host, una copia diaria y una prueba de restauración semanal ([Fase 12 §8.4](fase-12-despliegue.md#84-copias-programadas-host)).
+- **Datos protegidos:** la BD contiene datos personales, hashes de contraseñas y los refresh tokens de la app. Las copias requieren la misma protección.
+- **`RESTIC_PASSWORD`:** se guarda además fuera del servidor. Sin ella no hay restauración.
 
-## 7. Copias de seguridad (pendiente)
+## 7. Correo
 
-- Base de datos: `pg_dump --format=custom` diario, con retención (p. ej. 7 diarias + 4 semanales), cifrado y fuera del servidor.
-- `media/`: copia diaria sincronizada.
-- La BD contiene datos personales, hashes de contraseñas y los refresh tokens de la app (`token_blacklist_outstandingtoken`): las copias requieren el mismo nivel de protección que la BD.
-- **Probar la restauración** periódicamente en un entorno aparte.
+- Proveedor SMTP con TLS, configurado solo por variables. `DEFAULT_FROM_EMAIL` usa el dominio propio.
+- SPF, DKIM y DMARC: [Fase 12 §11](fase-12-despliegue.md#11-correo-smtp-real).
+- Emails que envía la plataforma:
+  - verificación y cambio de email, y aviso al email anterior;
+  - intento de registro con un email existente;
+  - recuperación de contraseña;
+  - avisos de reservas, campañas y cumpleaños (cola con reintentos).
 
-## 8. Correo
+  Las promociones solo van a clientes con consentimiento y siempre con enlace de baja. Detalle: [Fase 10](fase-10-eventos-reservas-notificaciones.md).
+- **Riesgo aceptado (P2-3):** el SMTP se llama dentro de la petición. Está mitigado con el timeout de Gunicorn (30 s), que supera a `EMAIL_TIMEOUT` (10 s), y con 3 workers. [Auditoría, §5](auditoria-pre-fase-12.md#5-riesgo-aceptado-envío-de-correo-dentro-de-la-petición-p2-3).
+- SMS desactivado (`SMS_BACKEND` vacío). Sin push.
 
-- Cualquier proveedor SMTP con TLS: `EMAIL_HOST`, `EMAIL_PORT=587`, `EMAIL_USE_TLS=True`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` (solo en el entorno del servidor), `DEFAULT_FROM_EMAIL=no-reply@<dominio>`.
-- Configurar SPF, DKIM y DMARC del dominio remitente para que los emails no acaben en spam.
-- `SITE_BASE_URL=https://<dominio>`: con él se construyen los enlaces de verificación, recuperación y baja (nunca con la cabecera `Host`).
-- Emails que envía la plataforma: verificación y cambio de email, aviso al email anterior, intento de registro con email existente, recuperación de contraseña (al momento y sin guardar el enlace); avisos de reservas, campañas y cumpleaños (cola con reintentos). Las promociones solo a clientes con consentimiento y siempre con enlace de baja. Detalle: [Fase 10](fase-10-eventos-reservas-notificaciones.md).
-- SMS: desactivado hasta integrar un proveedor (`SMS_BACKEND`).
-- **Riesgo aceptado (P2-3):** el SMTP se llama dentro de la petición. Un proveedor lento bloquea el worker y, en la recuperación de contraseña, el tiempo de respuesta puede revelar si un email está registrado. Configura el `--timeout` de Gunicorn por encima de `EMAIL_TIMEOUT` y suficientes workers. Detalle: [auditoría previa a la Fase 12, §5](auditoria-pre-fase-12.md#5-riesgo-aceptado-envío-de-correo-dentro-de-la-petición-p2-3).
-- Push en la app: no implementado.
+## 8. Tareas programadas
 
-## 9. Tareas programadas
+Servicio `scheduler` (supercronic, `deploy/cron/crontab`, `TZ=Europe/Madrid`). No hay solapes y los logs solo llevan recuentos.
 
-| Comando | Frecuencia | Qué hace |
-|---|---|---|
-| `process_notifications` | Cada 5 min | Envía la cola de notificaciones, campañas y reintentos. |
-| `run_birthday_promotions` | Diario (09:00) | Regalos y avisos de cumpleaños. |
-| `expire_redemptions` | Diario | Caduca canjes vencidos y devuelve puntos. |
-| `purge_email_tokens` (Fase 11) | Diario | Borra los tokens de verificación caducados hace más de 30 días (`--days`). |
-| `flushexpiredtokens` (simplejwt) | Diario | Borra de la lista negra los refresh ya caducados. |
+| Comando | Cuándo |
+|---|---|
+| `process_notifications` | Cada 5 min |
+| `run_birthday_promotions` y después `process_notifications` | 09:00 |
+| `expire_redemptions` | 04:30 |
+| `purge_email_tokens`, `flushexpiredtokens` y `clearsessions` | 04:45 |
 
-```cron
-*/5 * * * * cd /srv/caneca && .venv/bin/python manage.py process_notifications --settings=config.settings.prod
-0 9 * * *   cd /srv/caneca && .venv/bin/python manage.py run_birthday_promotions --settings=config.settings.prod && .venv/bin/python manage.py process_notifications --settings=config.settings.prod
-30 4 * * *  cd /srv/caneca && .venv/bin/python manage.py expire_redemptions --settings=config.settings.prod
-45 4 * * *  cd /srv/caneca && .venv/bin/python manage.py purge_email_tokens --settings=config.settings.prod && .venv/bin/python manage.py flushexpiredtokens --settings=config.settings.prod
-```
+Ejecución manual: `dc exec scheduler python manage.py <comando>`.
 
-El ejemplo usa un entorno virtual en el servidor. Con Docker Compose (destino previsto) los mismos comandos se lanzan con `docker compose run --rm web python manage.py <comando>` (o desde un servicio programador); la adaptación es parte de la Fase 12, que añadirá además `clearsessions` (diario). En Windows, el Programador de tareas ejecuta los mismos comandos con `.venv\Scripts\python.exe`. Las variables de producción deben estar disponibles para la tarea.
+## 9. Logs y privacidad
 
-## 10. Logs
+- **Django y Gunicorn:** solo a la consola del contenedor. No registran contraseñas, tokens, códigos de canje, contenido del QR, emails ni direcciones; solo `public_id` y tipos de error.
+- **Nginx:** registra IP, fecha, método, ruta **sin cadena de consulta**, estado, tamaño, tiempo y user-agent. Las rutas con token (`/cuenta/verificar-email/`, `/cuenta/contrasena/restablecer/`, `/comunicaciones/baja/`) aparecen como `[token]`. No registra `Authorization`, cookies, cuerpos ni Referer.
+- **Rotación:** Docker la hace con `json-file` (10 MB × 5 por servicio). Así queda limitada la retención de las IPs, que son dato personal.
 
-- Solo consola (`LOGGING` en `base.py`), nivel con `DJANGO_LOG_LEVEL`. El gestor de servicios (systemd, etc.) los recoge.
-- El código no registra contraseñas, tokens, códigos de canje, contenido del QR, emails ni direcciones: solo `public_id` y tipos de error.
-- Revisa que el proxy no registre la cabecera `Authorization` ni cuerpos de petición. Las rutas `/cuenta/verificar-email/<token>/` y `/comunicaciones/baja/<token>/` llevan un token en la URL: si el proxy guarda URLs completas, limita la retención de esos logs.
-
-## 11. Dependencias externas
+## 10. Dependencias externas
 
 | Dependencia | Necesaria | Notas |
 |---|---|---|
-| PostgreSQL | Sí | |
-| Proveedor SMTP | Sí (para cualquier email) | Credenciales solo en el entorno. |
-| Redis (o caché en BD) | Recomendable con varios procesos | Límites de intentos y throttling. |
-| Proveedor de SMS | No (opcional) | Sin integrar. |
-| CDN jsDelivr | Solo para `/api/v1/docs/` | El resto de la web no carga recursos de terceros. |
+| VPS con Docker | Sí | Ubuntu LTS, endurecido según [Fase 12 §12](fase-12-despliegue.md#12-endurecimiento-del-servidor-no-automatizado) |
+| Dominio y DNS | Sí | A/AAAA, SPF, DKIM y DMARC |
+| Let's Encrypt | Sí | Renovación automática (certbot) |
+| Proveedor SMTP | Sí | Credenciales solo en `.env.prod` |
+| Destino de copias (S3, B2 o rest-server) | Sí | Credenciales solo en `.env.backup` |
+| Docker Hub | Al construir | Imágenes base fijadas por etiqueta |
+| CDN jsDelivr | Solo para `/api/v1/docs/` | |
+| Proveedor de SMS | No | Sin integrar |
 
-## 12. Lista de comprobación del despliegue
+## 11. Lista de comprobación del despliegue
 
-- [ ] Variables de producción definidas, sin `.env` en el servidor si se usan variables del sistema.
-- [ ] `python manage.py check --deploy --settings=config.settings.prod` sin errores.
-- [x] Suite ejecutada contra PostgreSQL (desarrollo).
-- [ ] `migrate` aplicado en el PostgreSQL del VPS.
-- [ ] `collectstatic` y `/static/`, `/media/` servidos.
-- [ ] HTTPS con certificado válido; `DJANGO_BEHIND_TLS_PROXY` y `DJANGO_TRUSTED_PROXY_COUNT` según la topología real.
-- [ ] `CACHE_URL` compartida (Redis); sin ella `prod` no arranca.
-- [ ] Imagen sin `.env`, `*.sqlite3*`, `media/`, `.venv/` ni `.tools/` (`.dockerignore`).
-- [ ] SMTP real probado (registro → email de verificación).
-- [ ] Tareas programadas activas.
-- [ ] Copias de seguridad y restauración probadas.
-- [ ] Primer propietario creado con `create_owner` y variables `CANECA_OWNER_*` eliminadas después.
+- [x] Imagen sin `.env`, `*.sqlite3*`, `media/`, `.venv/` ni `.tools/` (`.dockerignore`, comprobado).
+- [x] Suite contra PostgreSQL (local, contenedor) y `check --deploy` (solo W021).
+- [x] Copia y restauración probadas en local.
+- [ ] CI en verde en GitHub.
+- [ ] VPS endurecido; DNS apuntando.
+- [ ] `.env.prod` y `.env.backup` reales (`chmod 600`); `RESTIC_PASSWORD` guardada también fuera del servidor.
+- [ ] `deploy.sh --first`, certificado de Let's Encrypt y `create_owner`, sin dejar sus variables en ningún fichero.
+- [ ] `dc exec web python manage.py check --deploy` en el VPS.
+- [ ] SMTP real probado (registro → email de verificación, SPF/DKIM/DMARC en `pass`).
+- [ ] `backup.sh init`, primera copia y programación diaria; `restore.sh check` semanal.

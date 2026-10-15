@@ -1,6 +1,6 @@
 # Migración de SQLite a PostgreSQL
 
-**Estado:** Completa en desarrollo (PostgreSQL 17.11 local, 2026-10-15). **Pendiente** la instalación en el VPS, que forma parte de la fase de despliegue (§8).
+**Estado:** Completa en desarrollo (PostgreSQL 17.11 local, 2026-10-15). En el VPS, PostgreSQL 17 va en un contenedor de Docker Compose ([Fase 12](fase-12-despliegue.md)); pendiente de instalar en el VPS real.
 
 Forma parte de la fase sin número «Endurecimiento y despliegue» del [plan de fases](plan-de-fases.md). Todos los valores de ejemplo son ficticios.
 
@@ -98,7 +98,9 @@ Ejemplos ficticios en [.env.example](../.env.example).
 
 No hay migraciones nuevas: `makemigrations --check` no detecta cambios.
 
-## 8. VPS Linux (pendiente: fase de despliegue)
+## 8. VPS Linux
+
+> **Actualización (Fase 12):** en el VPS, PostgreSQL 17 corre en el contenedor `db` de [compose.yaml](../compose.yaml). `deploy/postgres/10-app-role.sh` aplica automáticamente los puntos 2 a 4: rol sin privilegios, ICU `es-ES` y `REVOKE … FROM PUBLIC`. El contenedor no publica puertos. Las variables van en `.env.prod`, no en un `EnvironmentFile` de systemd. Las copias se hacen con restic (`deploy/scripts/backup.sh`). Lo que sigue es la referencia para una instalación sin Docker.
 
 1. PostgreSQL 16 o superior (paquete de la distribución o repositorio PGDG) en el mismo servidor. Django 5.2 requiere PostgreSQL 14 o superior.
 2. `listen_addresses = 'localhost'`; en `pg_hba.conf` solo conexiones locales con `scram-sha-256`.
