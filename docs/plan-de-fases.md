@@ -122,5 +122,17 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Migración a PostgreSQL (2026-10-15):** completa en desarrollo ([migracion-postgresql.md](migracion-postgresql.md)).
 - **Auditoría previa (2026-10-15, completa):** destino VPS Linux con Docker Compose, PostgreSQL, Redis, Gunicorn y Nginx. Corregidos el límite del login del admin, la caché compartida obligatoria en producción, un bloqueo de canjes y las versiones de las dependencias; añadidos tests de concurrencia. 817 tests OK en PostgreSQL 17. Ver [auditoria-pre-fase-12.md](auditoria-pre-fase-12.md).
 
+## Refactorización final controlada
+- **Objetivo:** mejorar la mantenibilidad, la consistencia y la eficiencia sin cambiar el comportamiento, antes de congelar la versión de la memoria técnica.
+- **Resultado (2026-10-15):**
+  - tests de caracterización previos;
+  - `apps.core.querysets.period_q`, que sustituye unas 9 copias del filtro de periodo;
+  - estadísticas de canjes y reservas con agregados condicionales (resumen del dashboard de 17 a 12 consultas, API de estadísticas de 12 a 7);
+  - bloqueo de la regla del último propietario en un único helper.
+  - Sin cambios en migraciones, permisos ni contratos.
+  - Corregido, con aprobación del usuario, el interbloqueo previo R-1: orden de bloqueo único y nueva comprobación del actor con los bloqueos tomados.
+  - **849 tests OK** en PostgreSQL (local y en contenedor) y en SQLite.
+- **Pendiente:** actualizar las cifras de la documentación de la defensa. Ver [refactorizacion-final.md](refactorizacion-final.md).
+
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

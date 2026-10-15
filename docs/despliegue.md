@@ -13,7 +13,7 @@ Guía operativa de Caneca Furada en un VPS Linux (Ubuntu LTS) con **Docker Compo
 | Imagen (`Dockerfile`), Compose de producción y local, Nginx, scheduler, copias, CI | **Listos y probados en local** (2026-10-15) |
 | Settings de producción | Listos. No arrancan sin clave (≥ 32 bytes), `ALLOWED_HOSTS`, PostgreSQL, caché compartida, SMTP real o `SITE_BASE_URL` https. |
 | `check --deploy` | Solo `security.W021` (HSTS *preload* desactivado a propósito) |
-| Suite | 833 OK en PostgreSQL 17 (local y en contenedor, 0 omitidos) y en SQLite |
+| Suite | 849 OK en PostgreSQL 17 (local y en contenedor, 0 omitidos) y en SQLite, tras la [refactorización final](refactorizacion-final.md) |
 | CI (GitHub Actions) | **en verde en GitHub** (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38737894875), commit `0589cfb`) |
 | VPS, DNS, certificado, SMTP real, destino de copias | **Pendiente** ([Fase 12 §13](fase-12-despliegue.md#13-acciones-manuales-pendientes-en-el-vps)) |
 

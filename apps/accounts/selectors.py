@@ -20,6 +20,8 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Max, Q
 from django.db.models.functions import Upper
 
+from apps.core.querysets import period_q
+
 from .countries import COUNTRY_NAMES
 from .models import CustomerProfile, User
 from .permissions import is_owner
@@ -77,10 +79,7 @@ def search_customers(
         queryset = queryset.filter(email_verified_at__isnull=not verified)
     if active is not None:
         queryset = queryset.filter(is_active=active)
-    if start is not None:
-        queryset = queryset.filter(date_joined__gte=start)
-    if end is not None:
-        queryset = queryset.filter(date_joined__lt=end)
+    queryset = queryset.filter(period_q("date_joined", start, end))
     if country:
         queryset = queryset.filter(customer_profile__country=country)
     if province:
@@ -117,11 +116,7 @@ class CustomerCounts:
 def customer_counts(*, actor, start=None, end=None):
     """Clientes registrados (cuentas activas) y altas del periodo `[start, end)`."""
     _require_owner(actor)
-    period = Q()
-    if start is not None:
-        period &= Q(date_joined__gte=start)
-    if end is not None:
-        period &= Q(date_joined__lt=end)
+    period = period_q("date_joined", start, end)
     active = Q(is_active=True)
     totals = customers().aggregate(
         total=Count("id"),
@@ -206,11 +201,7 @@ def geographic_distribution(*, actor, level, start=None, end=None, customer_ids=
     _require_owner(actor)
     if level not in GEO_LEVELS:
         raise ValueError(f"Nivel geográfico desconocido: {level}")
-    base = customers().filter(is_active=True)
-    if start is not None:
-        base = base.filter(date_joined__gte=start)
-    if end is not None:
-        base = base.filter(date_joined__lt=end)
+    base = customers().filter(period_q("date_joined", start, end), is_active=True)
     if customer_ids is not None:
         base = base.filter(pk__in=customer_ids)
     if country:

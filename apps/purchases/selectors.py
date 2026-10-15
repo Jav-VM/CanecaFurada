@@ -15,6 +15,7 @@ from django.db.models import Count, Sum
 from django.db.models.functions import Coalesce
 
 from apps.accounts.permissions import is_owner
+from apps.core.querysets import period_q
 
 from .models import Purchase
 
@@ -50,11 +51,7 @@ def registered_purchases_stats(*, actor, start=None, end=None):
     """Totales de compras registradas vigentes (no anuladas) en `[start, end)`. Solo propietario."""
     if not is_owner(actor):
         raise PermissionDenied("Solo el propietario puede ver las estadísticas.")
-    purchases = Purchase.objects.filter(status=Purchase.Status.COMPLETED)
-    if start is not None:
-        purchases = purchases.filter(created_at__gte=start)
-    if end is not None:
-        purchases = purchases.filter(created_at__lt=end)
+    purchases = Purchase.objects.filter(period_q("created_at", start, end), status=Purchase.Status.COMPLETED)
     totals = purchases.aggregate(
         count=Count("id"),
         customers=Count("customer", distinct=True),
@@ -104,18 +101,10 @@ def _require_owner(actor):
         raise PermissionDenied("Solo el propietario puede ver todas las compras.")
 
 
-def _in_period(queryset, start, end, field="created_at"):
-    if start is not None:
-        queryset = queryset.filter(**{f"{field}__gte": start})
-    if end is not None:
-        queryset = queryset.filter(**{f"{field}__lt": end})
-    return queryset
-
-
 def all_purchases(*, actor, start=None, end=None, registered_by=None, status=None):
     """Todas las compras registradas (solo propietario), con sus puntos, cliente y empleado."""
     _require_owner(actor)
-    queryset = _in_period(Purchase.objects.all(), start, end)
+    queryset = Purchase.objects.filter(period_q("created_at", start, end))
     if registered_by is not None:
         queryset = queryset.filter(registered_by=registered_by)
     if status:
@@ -135,7 +124,7 @@ def all_purchases(*, actor, start=None, end=None, registered_by=None, status=Non
 def purchases_by_staff(*, actor, start=None, end=None):
     """Número e importe de compras vigentes por miembro del personal en el periodo."""
     _require_owner(actor)
-    queryset = _in_period(Purchase.objects.filter(status=Purchase.Status.COMPLETED), start, end)
+    queryset = Purchase.objects.filter(period_q("created_at", start, end), status=Purchase.Status.COMPLETED)
     rows = (
         queryset.values("registered_by")
         .annotate(count=Count("id"), amount=Coalesce(Sum("amount"), Decimal("0.00")))
@@ -147,5 +136,5 @@ def purchases_by_staff(*, actor, start=None, end=None):
 def customer_ids_with_purchases(*, actor, start=None, end=None):
     """Clientes con al menos una compra vigente en el periodo (para filtrar estadísticas)."""
     _require_owner(actor)
-    queryset = _in_period(Purchase.objects.filter(status=Purchase.Status.COMPLETED), start, end)
+    queryset = Purchase.objects.filter(period_q("created_at", start, end), status=Purchase.Status.COMPLETED)
     return queryset.values("customer").distinct()

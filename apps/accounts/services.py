@@ -82,6 +82,32 @@ def _ensure_active_owner(actor):
         raise PermissionDenied("Operación reservada al propietario.")
 
 
+def _lock_active_owners(actor):
+    """
+    Bloquea las filas de los propietarios activos, comprueba que `actor` sigue
+    siendo uno de ellos y devuelve cuántos hay.
+
+    Serializa los cambios de rol y de activación concurrentes: dos
+    propietarios no pueden retirarse a la vez y dejar el sistema sin ninguno.
+    Debe llamarse **antes** de bloquear la fila del usuario afectado, y las
+    filas se bloquean en orden de pk: con un único orden de bloqueo, dos
+    operaciones simultáneas esperan su turno en lugar de interbloquearse.
+
+    El actor se vuelve a comprobar con los bloqueos tomados: si otro
+    propietario lo retiró mientras esperaba, ya no está autorizado.
+    (`count()` no admite `SELECT ... FOR UPDATE`; por eso se materializan los ids.)
+    """
+    owner_ids = list(
+        User.objects.select_for_update()
+        .filter(role=Role.OWNER, is_active=True)
+        .order_by("pk")
+        .values_list("pk", flat=True)
+    )
+    if actor.pk not in owner_ids:
+        raise PermissionDenied("Operación reservada al propietario.")
+    return len(owner_ids)
+
+
 def ensure_customer_profile(user):
     """
     Devuelve el perfil del cliente y lo crea si no existe. Es idempotente.
@@ -204,19 +230,14 @@ def change_role(*, actor, user, new_role):
     if new_role not in Role.values:
         raise ValidationError({"role": "Rol no válido."})
 
+    active_owners = _lock_active_owners(actor)
     target = User.objects.select_for_update().get(pk=user.pk)
     old_role = target.role
     if old_role == new_role:
         return target
 
-    if old_role == Role.OWNER:
-        active_owners = list(
-            User.objects.select_for_update()
-            .filter(role=Role.OWNER, is_active=True)
-            .values_list("pk", flat=True)
-        )
-        if target.is_active and len(active_owners) <= 1:
-            raise ValidationError("No se puede retirar el rol al último propietario activo.")
+    if old_role == Role.OWNER and target.is_active and active_owners <= 1:
+        raise ValidationError("No se puede retirar el rol al último propietario activo.")
 
     target.role = new_role
     _apply_role_flags(target)
@@ -245,17 +266,12 @@ def set_user_active(*, actor, user, is_active):
     activos. Una cuenta desactivada no puede iniciar sesión.
     """
     _ensure_active_owner(actor)
+    active_owners = _lock_active_owners(actor)
     target = User.objects.select_for_update().get(pk=user.pk)
     if target.is_active == is_active:
         return target
-    if not is_active and target.role == Role.OWNER:
-        active_owners = list(
-            User.objects.select_for_update()
-            .filter(role=Role.OWNER, is_active=True)
-            .values_list("pk", flat=True)
-        )
-        if len(active_owners) <= 1:
-            raise ValidationError("No se puede desactivar al último propietario activo.")
+    if not is_active and target.role == Role.OWNER and active_owners <= 1:
+        raise ValidationError("No se puede desactivar al último propietario activo.")
     target.is_active = is_active
     target.save(update_fields=["is_active"])
     record_audit_event(

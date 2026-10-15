@@ -165,3 +165,48 @@ class ChangeRoleTests(TestCase):
     def test_same_role_is_noop_without_audit(self):
         services.change_role(actor=self.owner, user=self.customer, new_role=User.Role.CUSTOMER)
         self.assertFalse(AuditEvent.objects.exists())
+
+    def test_inactive_owner_can_be_demoted_with_a_single_active_owner(self):
+        inactive = make_user(email="inactivo@example.com", role=User.Role.OWNER, is_active=False)
+        services.change_role(actor=self.owner, user=inactive, new_role=User.Role.EMPLOYEE)
+        inactive.refresh_from_db()
+        self.assertEqual(inactive.role, User.Role.EMPLOYEE)
+
+    def test_last_owner_message_is_kept(self):
+        with self.assertRaisesMessage(ValidationError, "No se puede retirar el rol al último propietario activo."):
+            services.change_role(actor=self.owner, user=self.owner, new_role=User.Role.EMPLOYEE)
+
+
+class SetUserActiveTests(TestCase):
+    """La regla del último propietario se comprueba en el servicio, no solo en el admin."""
+
+    def setUp(self):
+        self.owner = make_user(email="dueno@example.com", role=User.Role.OWNER)
+
+    def test_last_active_owner_cannot_be_deactivated(self):
+        with self.assertRaisesMessage(ValidationError, "No se puede desactivar al último propietario activo."):
+            services.set_user_active(actor=self.owner, user=self.owner, is_active=False)
+        self.owner.refresh_from_db()
+        self.assertTrue(self.owner.is_active)
+        self.assertFalse(AuditEvent.objects.exists())
+
+    def test_owner_can_be_deactivated_if_another_active_owner_exists(self):
+        other = make_user(email="otro@example.com", role=User.Role.OWNER)
+        services.set_user_active(actor=self.owner, user=other, is_active=False)
+        other.refresh_from_db()
+        self.assertFalse(other.is_active)
+        event = AuditEvent.objects.get()
+        self.assertEqual(event.action, AuditEvent.Action.ACCOUNT_DEACTIVATED)
+        self.assertEqual(event.metadata, {"role": "OWNER"})
+
+    def test_inactive_owner_can_be_reactivated(self):
+        other = make_user(email="otro@example.com", role=User.Role.OWNER, is_active=False)
+        services.set_user_active(actor=self.owner, user=other, is_active=True)
+        other.refresh_from_db()
+        self.assertTrue(other.is_active)
+        self.assertEqual(AuditEvent.objects.get().action, AuditEvent.Action.ACCOUNT_ACTIVATED)
+
+    def test_same_state_is_noop_without_audit(self):
+        employee = make_user(email="e@example.com", role=User.Role.EMPLOYEE)
+        services.set_user_active(actor=self.owner, user=employee, is_active=True)
+        self.assertFalse(AuditEvent.objects.exists())

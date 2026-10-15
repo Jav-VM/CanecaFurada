@@ -11,6 +11,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 
 from apps.accounts.permissions import is_owner
+from apps.core.querysets import period_q
 
 from .models import Redemption, Reward
 
@@ -68,14 +69,6 @@ def _require_owner(actor):
         raise PermissionDenied("Solo el propietario puede ver todos los canjes.")
 
 
-def _in_period(queryset, field, start, end):
-    if start is not None:
-        queryset = queryset.filter(**{f"{field}__gte": start})
-    if end is not None:
-        queryset = queryset.filter(**{f"{field}__lt": end})
-    return queryset
-
-
 @dataclass(frozen=True)
 class RedemptionStats:
     requested: int
@@ -88,22 +81,23 @@ def redemption_stats(*, actor, start=None, end=None):
     """
     Canjes del periodo (solo propietario): solicitados, **utilizados**
     (validados en barra en el periodo) y cancelados o caducados; más los
-    pendientes de recoger ahora mismo, sin filtrar por fechas.
+    pendientes de recoger ahora mismo, sin filtrar por fechas. Una sola consulta.
     """
     _require_owner(actor)
     Status = Redemption.Status
-    return RedemptionStats(
-        requested=_in_period(Redemption.objects.all(), "created_at", start, end).count(),
-        used=_in_period(Redemption.objects.filter(status=Status.USED), "validated_at", start, end).count(),
-        closed=_in_period(Redemption.objects.filter(status__in=Redemption.CLOSED_STATUSES), "closed_at", start, end).count(),
-        pending_now=Redemption.objects.filter(status=Status.PENDING).count(),
+    totals = Redemption.objects.aggregate(
+        requested=Count("id", filter=period_q("created_at", start, end)),
+        used=Count("id", filter=Q(status=Status.USED) & period_q("validated_at", start, end)),
+        closed=Count("id", filter=Q(status__in=Redemption.CLOSED_STATUSES) & period_q("closed_at", start, end)),
+        pending_now=Count("id", filter=Q(status=Status.PENDING)),
     )
+    return RedemptionStats(**totals)
 
 
 def all_redemptions(*, actor, start=None, end=None, status=None):
     """Canjes solicitados en el periodo (solo propietario). Sin el código: nunca se muestra."""
     _require_owner(actor)
-    queryset = _in_period(Redemption.objects.all(), "created_at", start, end)
+    queryset = Redemption.objects.filter(period_q("created_at", start, end))
     if status:
         queryset = queryset.filter(status=status)
     return (
@@ -126,5 +120,5 @@ def rewards_overview(*, actor):
 def validations_by_staff(*, actor, start=None, end=None):
     """Canjes validados por cada miembro del personal en el periodo: `{user_id: número}`."""
     _require_owner(actor)
-    queryset = _in_period(Redemption.objects.filter(status=Redemption.Status.USED), "validated_at", start, end)
+    queryset = Redemption.objects.filter(period_q("validated_at", start, end), status=Redemption.Status.USED)
     return {row["validated_by"]: row["count"] for row in queryset.values("validated_by").annotate(count=Count("id")).order_by()}

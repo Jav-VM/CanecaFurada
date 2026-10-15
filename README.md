@@ -23,6 +23,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | Migración a PostgreSQL (endurecimiento y despliegue) | **Completa en desarrollo**: suite completa OK en PostgreSQL 17 (pendiente el VPS) |
 | Auditoría previa a la Fase 12 (endurecimiento y despliegue) | **Completa**: 817 tests OK en PostgreSQL 17 y en SQLite; los pendientes de despliegue van a la Fase 12 |
 | 12 — Despliegue y endurecimiento | **Completa en local**: Docker Compose (Nginx, Gunicorn, PostgreSQL 17, Redis, scheduler), copias con restic, CI. 833 tests OK. CI en verde en GitHub. **Pendiente**: VPS, DNS, certificado y SMTP real |
+| Refactorización final controlada | **Completa**: helper de periodo común, estadísticas con menos consultas (resumen del dashboard 17 → 12; API de estadísticas 12 → 7) y regla del último propietario sin duplicar. Corregido además el interbloqueo previo R-1 de la regla del último propietario. **849 tests OK** en PostgreSQL 17 (local y en contenedor) y en SQLite |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -162,7 +163,7 @@ Arquitectura, mapa de módulos y preparación para la app móvil: [docs/arquitec
 
 ```text
 config/            settings por entorno (base, dev, test, prod), urls, wsgi/asgi
-apps/core/         modelos base, auditoría y limitador de intentos
+apps/core/         modelos base, auditoría, limitador de intentos y utilidades de consulta (periodo `[start, end)`)
 apps/accounts/     usuario, roles, perfil de cliente, registro, verificación de email, preferencias, servicios, permisos, vistas de cuenta
 apps/catalog/      carta: categorías, estilos, productos, carta de grifos, selectores públicos, servicios y admin
 apps/loyalty/      QR personal del cliente; ledger de puntos, conversión, promociones y cumpleaños
@@ -206,6 +207,7 @@ Dockerfile, compose.yaml, compose.dev.yaml   imagen y pilas de producción y loc
 - [Migración a PostgreSQL](docs/migracion-postgresql.md): auditoría de compatibilidad, correcciones, configuración en desarrollo y en el VPS, resultados de la suite y copia/restauración.
 - [Auditoría previa a la Fase 12](docs/auditoria-pre-fase-12.md): hallazgos priorizados (P0-P3), correcciones, riesgo aceptado del envío de correo, pruebas y lista de comprobación antes del despliegue.
 - [Fase 12 — Despliegue y endurecimiento](docs/fase-12-despliegue.md): arquitectura Docker Compose, decisiones, procedimientos (primer despliegue, actualización, rollback, restauración, rotación de secretos), copias, CI, endurecimiento del VPS, pruebas y pendientes.
+- [Refactorización final](docs/refactorizacion-final.md): línea base, diagnóstico, cambios por grupos, mediciones de consultas, pruebas antes y después, corrección del interbloqueo R-1 y lo que se decidió no refactorizar.
 - [Despliegue](docs/despliegue.md): guía operativa con variables, órdenes habituales, HTTPS, estáticos y multimedia, copias, correo, tareas programadas, logs y lista de comprobación.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.
 - [Documentación para la defensa del proyecto](docs/defensa_proyecto/README.md): memoria técnica y funcional, guion de la defensa oral, banco de preguntas del tribunal, mapa del código, limitaciones y diagramas Mermaid.

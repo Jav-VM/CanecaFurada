@@ -17,7 +17,7 @@ Es provisional y se revisa al empezar cada fase ([plan de fases](plan-de-fases.m
 
 | App | Responsabilidad | Fase | Estado |
 |---|---|---|---|
-| `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`), limitador de intentos (`throttling`) e IP del cliente tras proxies de confianza (`http`, Fase 11) | 0 | Existe |
+| `apps.core` | Modelos base (`TimeStampedModel`), auditoría (`AuditEvent`), limitador de intentos (`throttling`) e IP del cliente tras proxies de confianza (`http`, Fase 11); condición de periodo `[start, end)` común a los selectores (`querysets.period_q`, refactorización final) | 0 | Existe |
 | `apps.accounts` | Usuario, roles, `CustomerProfile`, registro, verificación y cambio de email, preferencias de comunicación, login y contraseñas, servicios, permisos, `create_owner` | 0 (perfil: Fase 1; registro y datos: Fase 2) | Existe |
 | `apps.web` | Páginas públicas, contenido del local (`content.py` y, desde la Fase 9, `BusinessInfo` editable con `services.py`) y context processor común; la plantilla base, los componentes y las páginas de error están en `templates/` | 3 (contenido editable: 9) | Existe |
 | `apps.catalog` | Carta: categorías, estilos, productos (fijos y cervezas), imagen de la carta de grifos, selectores públicos y servicios de publicación/disponibilidad | 4 | Existe |

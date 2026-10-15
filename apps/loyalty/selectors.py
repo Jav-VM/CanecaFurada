@@ -21,6 +21,7 @@ from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 
 from apps.accounts.permissions import is_owner
+from apps.core.querysets import period_q
 
 from .models import PointsTransaction, Promotion
 
@@ -87,12 +88,7 @@ def points_stats(*, actor, start=None, end=None):
     """
     if not is_owner(actor):
         raise PermissionDenied("Solo el propietario puede ver las estadísticas.")
-    movements = PointsTransaction.objects.all()
-    if start is not None:
-        movements = movements.filter(created_at__gte=start)
-    if end is not None:
-        movements = movements.filter(created_at__lt=end)
-    period = movements.aggregate(**_totals())
+    period = PointsTransaction.objects.filter(period_q("created_at", start, end)).aggregate(**_totals())
     overall = PointsTransaction.objects.aggregate(
         outstanding=Coalesce(Sum("points"), 0), customers=Count("customer", distinct=True)
     )
@@ -112,11 +108,7 @@ def all_movements(*, actor, start=None, end=None, kind=None):
     """Movimientos del ledger de todos los clientes (solo propietario), del más reciente al más antiguo."""
     if not is_owner(actor):
         raise PermissionDenied("Solo el propietario puede ver todos los movimientos de puntos.")
-    movements = PointsTransaction.objects.all()
-    if start is not None:
-        movements = movements.filter(created_at__gte=start)
-    if end is not None:
-        movements = movements.filter(created_at__lt=end)
+    movements = PointsTransaction.objects.filter(period_q("created_at", start, end))
     if kind:
         movements = movements.filter(kind=kind)
     return movements.select_related("customer", "promotion", "created_by").order_by("-created_at", "-id")

@@ -16,6 +16,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from apps.accounts.permissions import is_owner
+from apps.core.querysets import period_q
 
 from .models import Event, Reservation
 
@@ -116,10 +117,7 @@ def reservations_for_management(*, actor, status="", start=None, end=None, event
     )
     if status:
         queryset = queryset.filter(status=status)
-    if start is not None:
-        queryset = queryset.filter(requested_for__gte=start)
-    if end is not None:
-        queryset = queryset.filter(requested_for__lt=end)
+    queryset = queryset.filter(period_q("requested_for", start, end))
     if event is not None:
         queryset = queryset.filter(event=event)
     return queryset.order_by("requested_for", "id")
@@ -144,21 +142,18 @@ class ReservationStats:
 
 
 def reservation_stats(*, actor, start=None, end=None, now=None):
-    """Reservas solicitadas en el periodo (por fecha de solicitud) y situación actual."""
+    """
+    Reservas solicitadas en el periodo (por fecha de solicitud) y situación
+    actual. Una consulta para las reservas y otra para los eventos.
+    """
     _require_owner(actor)
     now = now or timezone.now()
-    period = Reservation.objects.all()
-    if start is not None:
-        period = period.filter(created_at__gte=start)
-    if end is not None:
-        period = period.filter(created_at__lt=end)
-    totals = period.aggregate(
-        requested=Count("id"), confirmed=Count("id", filter=Q(status__in=[Status.CONFIRMED, Status.COMPLETED]))
+    period = period_q("created_at", start, end)
+    upcoming = Q(requested_for__gte=now)
+    totals = Reservation.objects.aggregate(
+        requested=Count("id", filter=period),
+        confirmed=Count("id", filter=period & Q(status__in=[Status.CONFIRMED, Status.COMPLETED])),
+        pending_now=Count("id", filter=upcoming & Q(status=Status.PENDING)),
+        upcoming_confirmed=Count("id", filter=upcoming & Q(status=Status.CONFIRMED)),
     )
-    return ReservationStats(
-        requested=totals["requested"],
-        confirmed=totals["confirmed"],
-        pending_now=Reservation.objects.filter(status=Status.PENDING, requested_for__gte=now).count(),
-        upcoming_confirmed=Reservation.objects.filter(status=Status.CONFIRMED, requested_for__gte=now).count(),
-        upcoming_events=public_events(now).filter(starts_at__gte=now).count(),
-    )
+    return ReservationStats(**totals, upcoming_events=public_events(now).filter(starts_at__gte=now).count())

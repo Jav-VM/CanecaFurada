@@ -129,14 +129,12 @@ class UserAdmin(DjangoUserAdmin):
     def save_model(self, request, obj, form, change):
         if change:
             # Si cambia el email, el modelo anula la verificación (User.save).
-            # La activación/desactivación pasa por el servicio, que audita.
-            active_changed = "is_active" in form.changed_data
-            new_active = obj.is_active
-            if active_changed:
-                obj.is_active = not new_active
+            # La activación/desactivación pasa por el servicio, que audita. Va
+            # antes de guardar el resto de campos para bloquear en el orden
+            # común (propietarios activos y después el usuario; ver R-1).
+            if "is_active" in form.changed_data:
+                services.set_user_active(actor=request.user, user=obj, is_active=obj.is_active)
             super().save_model(request, obj, form, change)
-            if active_changed:
-                services.set_user_active(actor=request.user, user=obj, is_active=new_active)
             return
         services.create_user_by_owner(
             actor=request.user,
