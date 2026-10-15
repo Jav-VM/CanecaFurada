@@ -13,7 +13,7 @@ Documentación técnica y funcional del proyecto final, elaborada a partir del *
 | La misma suite con SQLite en memoria | 849 OK, 18 omitidos (concurrencia y una prueba exclusiva de PostgreSQL) |
 | `spectacular --validate --fail-on-warn` + `diff` con `docs/api/openapi.yaml` | Sin errores; **idéntico** |
 | `check --deploy` (`config.settings.prod`, variables ficticias) | Solo `security.W021` (HSTS preload desactivado a propósito) |
-| CI de GitHub Actions | En verde en la Fase 12 (commit `0589cfb`); la versión congelada aún no se ha subido |
+| CI de GitHub Actions (suite en PostgreSQL, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración) | **En verde** con la versión congelada ([ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860), commit `decff8f`) |
 
 Detalle: [`refactorizacion-final.md` §6](../refactorizacion-final.md) y [`fase-12-despliegue.md` §10](../fase-12-despliegue.md). Los resultados de la primera versión (802 tests sobre la Fase 11) quedan como registro histórico en [`_trabajo/resultados_pruebas.md`](_trabajo/resultados_pruebas.md).
 

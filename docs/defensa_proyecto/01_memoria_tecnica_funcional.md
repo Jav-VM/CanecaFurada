@@ -3,7 +3,7 @@
 > **Versión documentada:** la versión congelada para la defensa, commit `d0bac7c` (15-10-2026, refactorización final). Las líneas de código citadas son las de esa versión.
 > **Historia de este documento:** se redactó el 15-10-2026 sobre el código de la Fase 11 (commit `ac5903a` del historial anterior; hoy `eec6abc`, porque el historial se reescribió en la auditoría, P2-6). Ese mismo día se actualizó con la [migración a PostgreSQL](../migracion-postgresql.md), la [auditoría previa a la Fase 12](../auditoria-pre-fase-12.md), la [Fase 12 de despliegue](../fase-12-despliegue.md) y la [refactorización final](../refactorizacion-final.md). Las referencias `archivo:línea` se recalcularon con el diff entre ambas versiones y los bloques de código real se volvieron a comparar con el código.
 > **Fuente de verdad:** el código del repositorio. La documentación previa (`docs/`) se ha contrastado con el código y, cuando no coinciden, se indica.
-> **Comprobaciones reales ejecutadas sobre la versión congelada** (detalle en [`refactorizacion-final.md` §6](../refactorizacion-final.md)): `manage.py check` sin incidencias, `makemigrations --check` sin cambios, **849 tests OK en PostgreSQL 17 sin omitidos** (en local y dentro del contenedor de producción), 849 OK en SQLite (18 omitidos: los de concurrencia y uno exclusivo de PostgreSQL), esquema OpenAPI regenerado idéntico al versionado y `check --deploy` con variables ficticias (solo el aviso `security.W021`). El CI de GitHub pasó en verde en la Fase 12 (commit `0589cfb`); la versión congelada no se ha subido todavía a GitHub.
+> **Comprobaciones reales ejecutadas sobre la versión congelada** (detalle en [`refactorizacion-final.md` §6](../refactorizacion-final.md)): `manage.py check` sin incidencias, `makemigrations --check` sin cambios, **849 tests OK en PostgreSQL 17 sin omitidos** (en local y dentro del contenedor de producción), 849 OK en SQLite (18 omitidos: los de concurrencia y uno exclusivo de PostgreSQL), esquema OpenAPI regenerado idéntico al versionado y `check --deploy` con variables ficticias (solo el aviso `security.W021`). El CI de GitHub Actions pasó en verde en GitHub con la versión congelada (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860), commit `decff8f`): suite en PostgreSQL 17 sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo por HTTPS y copia con restauración.
 
 ## Etiquetas de estado usadas en todo el documento
 
@@ -2198,7 +2198,7 @@ flowchart LR
 | Tareas programadas | supercronic en el servicio `scheduler` | `deploy/cron/crontab` |
 | Copias y restauración | restic: BD y `media/` cifradas, retención 7 diarias y 4 semanales, restauración de prueba | `deploy/scripts/backup.sh`, `restore.sh` |
 | Despliegue y rollback | Etiquetas `:<commit>`, `:current` y `:previous`; copia previa; migraciones como paso único | `deploy/scripts/deploy.sh` |
-| CI | Suite en PostgreSQL sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración | `.github/workflows/ci.yml`; en verde en GitHub (commit `0589cfb`) |
+| CI | Suite en PostgreSQL sin omitidos, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración | `.github/workflows/ci.yml`; en verde en GitHub con la versión congelada (2026-10-15, [ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860), commit `decff8f`) |
 | Monitorización | **No implementada** (siguiente paso) | — |
 
 ### 13.2 Procedimientos probados en local (2026-10-15)

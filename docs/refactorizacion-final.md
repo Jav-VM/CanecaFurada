@@ -124,6 +124,7 @@ Mantenibilidad:
 | `spectacular --validate --fail-on-warn` y diff con `docs/api/openapi.yaml` | Válido e idéntico |
 | `check --deploy` con las variables ficticias del CI | Solo `security.W021` |
 | Pila Compose local: `migrate`, `up --wait`, portada y carta por HTTPS (8443) | Todos los servicios *healthy*; `/` y `/carta/` responden 200 |
+| CI de GitHub Actions tras el merge en `main` (los dos trabajos: suite en PostgreSQL con `check --deploy` y OpenAPI; imagen, pila Compose, prueba de humo y copia/restauración) | **En verde** ([ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860), commit `decff8f`) |
 
 `check --deploy` dentro del contenedor de la pila **local** da `security.W004` porque `deploy/dev.env` desactiva HSTS a propósito (el navegador lo recordaría para `localhost`). Con las variables de producción solo queda W021, como en la Fase 12.
 

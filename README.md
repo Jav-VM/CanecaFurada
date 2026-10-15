@@ -23,7 +23,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | Migración a PostgreSQL (endurecimiento y despliegue) | **Completa en desarrollo**: suite completa OK en PostgreSQL 17 (pendiente el VPS) |
 | Auditoría previa a la Fase 12 (endurecimiento y despliegue) | **Completa**: 817 tests OK en PostgreSQL 17 y en SQLite; los pendientes de despliegue van a la Fase 12 |
 | 12 — Despliegue y endurecimiento | **Completa en local**: Docker Compose (Nginx, Gunicorn, PostgreSQL 17, Redis, scheduler), copias con restic, CI. 833 tests OK. CI en verde en GitHub. **Pendiente**: VPS, DNS, certificado y SMTP real |
-| Refactorización final controlada | **Completa**: helper de periodo común, estadísticas con menos consultas (resumen del dashboard 17 → 12; API de estadísticas 12 → 7) y regla del último propietario sin duplicar. Corregido además el interbloqueo previo R-1 de la regla del último propietario. **849 tests OK** en PostgreSQL 17 (local y en contenedor) y en SQLite |
+| Refactorización final controlada | **Completa**: helper de periodo común, estadísticas con menos consultas (resumen del dashboard 17 → 12; API de estadísticas 12 → 7) y regla del último propietario sin duplicar. Corregido además el interbloqueo previo R-1 de la regla del último propietario. **849 tests OK** en PostgreSQL 17 (local y en contenedor) y en SQLite. CI en verde en GitHub ([ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860)) |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
