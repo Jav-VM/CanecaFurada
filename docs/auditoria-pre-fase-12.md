@@ -38,7 +38,7 @@ No se encontró ningún P0.
 | P2-3 | El SMTP se llama dentro de la petición: bloquea workers y el tiempo de respuesta de la recuperación de contraseña puede revelar si un email existe | D / S | **Riesgo aceptado** (§5); los timeouts quedan para la Fase 12 |
 | P2-4 | Dependencias con rangos, sin `gunicorn` ni `redis` | D | **Corregido** |
 | P2-5 | `manage.py` usa `config.settings.dev` por defecto (`DEBUG=True`) | D | Pendiente (Fase 12: `DJANGO_SETTINGS_MODULE` en la imagen) |
-| P2-6 | `db.sqlite3.bak` sigue en el historial de Git (hashes de cuentas de desarrollo) | D | **Corregido en local** (historial reescrito, §11); pendiente el `push --force` |
+| P2-6 | `db.sqlite3.bak` sigue en el historial de Git (hashes de cuentas de desarrollo) | D | **Corregido** (historial reescrito y publicado, §11) |
 | P2-7 | Sin monitorización, alertas, healthcheck ni CI | D | Pendiente (Fase 12) |
 | P2-8 | `despliegue.md` hablaba de «Gunicorn o Waitress», systemd y un cron con `.venv` | D | **Corregido** (§4) |
 | P2-9 | Sin exportación ni supresión de datos personales | D | **Decisión (2026-10-15): al suprimir una cuenta se conservan las compras y los movimientos de puntos.** Pendiente de implementar en una fase propia, antes de abrir al público (§12) |
@@ -222,16 +222,16 @@ python manage.py test --settings=config.settings.test --parallel 1
 
 Cambian los identificadores de los commits desde «Fase 10 completada». Las referencias a commits concretos en documentos anteriores (p. ej. `a85ce95`, `4cf6f79`, `ac5903a`, `2057dd3`) apuntan al historial anterior.
 
-### Pendiente (lo ejecuta el usuario)
+### Publicación y pasos posteriores
 
-5. Publicar el historial nuevo. Solo se sobrescribe el remoto si sigue en el commit conocido (`4cf6f79`):
+5. **Hecho (2026-10-15, confirmado por el usuario):** historial publicado. Solo se sobrescribía el remoto si seguía en el commit conocido (`4cf6f79`). Un clon espejo nuevo de GitHub tiene solo `main`, 20 commits y ningún objeto `db.sqlite3.bak`:
 
    ```powershell
    git push --force-with-lease=main:4cf6f79754663ff59193eca0006ecf1568ff63a2 origin main
    git branch -u origin/main main
    ```
 
-6. Cualquier otro clon (otro equipo, CI) debe **borrarse y volver a clonarse**. Un `git pull` mezclaría el historial antiguo con el nuevo y volvería a subir el archivo.
+6. **Pendiente del usuario:** cualquier otro clon (otro equipo, CI) debe **borrarse y volver a clonarse**. Un `git pull` mezclaría el historial antiguo con el nuevo y volvería a subir el archivo.
 7. GitHub puede conservar el objeto antiguo en caché o en referencias internas (pull requests, forks). No hay pull requests ni forks conocidos. Si los hubiera, o para una purga completa, hay que solicitarla al soporte de GitHub.
 8. Por precaución, cambia la contraseña de las cuentas de desarrollo que había en esa BD si la usas en algún otro sitio.
 9. Cuando todo esté comprobado, borra el *bundle* de copia de seguridad.
