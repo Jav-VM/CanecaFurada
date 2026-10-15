@@ -141,7 +141,7 @@ Entorno: Windows 11, Python 3.14.2, Django 5.2.18, psycopg 3.3.6, PostgreSQL 17.
 - Las credenciales solo están en el `.env` local (ignorado por Git) o en el entorno del servidor. Ningún documento ni test contiene contraseñas reales.
 - El rol de la aplicación no es superusuario. En producción tampoco tendrá `CREATEDB`.
 - Las restricciones de integridad (CHECK, únicas parciales, FK `PROTECT`) se aplican igual en PostgreSQL. Además, PostgreSQL aplica las longitudes de `varchar` y bloquea filas de verdad.
-- H1: aunque el repositorio es privado, `db.sqlite3.bak` sigue en el historial de Git. Si el repositorio se hiciera público o se compartiera, habría que reescribir el historial (por ejemplo, con `git filter-repo`) y cambiar las contraseñas de esas cuentas.
+- H1: el historial se reescribió con `git filter-repo` el 2026-10-15 y `db.sqlite3.bak` ya no está en ningún commit ([auditoría previa a la Fase 12, §11](auditoria-pre-fase-12.md#11-reescritura-del-historial-de-git-p2-6)). Los identificadores de commit citados en este documento son los del historial anterior.
 
 ## 11. Criterios de aceptación
 
@@ -161,4 +161,4 @@ Entorno: Windows 11, Python 3.14.2, Django 5.2.18, psycopg 3.3.6, PostgreSQL 17.
 - Instalar y configurar PostgreSQL en el VPS (§8), con copias de seguridad automatizadas y cifradas fuera del servidor.
 - En el VPS, la BD de test (si se usa un entorno de pruebas) heredará la collation de `template1`. Para que coincida con ICU `es-ES`, crea el clúster con `--locale-provider=icu --icu-locale=es-ES`.
 - ~~`requirements/base.txt` usa rangos de versiones~~: resuelto en la [auditoría previa a la Fase 12](auditoria-pre-fase-12.md) (versiones exactas y `requirements/constraints.txt`).
-- `db.sqlite3.bak` sigue en el historial de Git (§10).
+- ~~`db.sqlite3.bak` sigue en el historial de Git~~: historial reescrito (§10); falta publicarlo con `push --force`.

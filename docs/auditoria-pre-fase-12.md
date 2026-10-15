@@ -16,8 +16,9 @@ Fecha: 2026-10-15. Forma parte de la fase «Endurecimiento y despliegue» del [p
 **Excluye:**
 - Lo que corresponde a la propia Fase 12: Dockerfile y Compose, Nginx, copias de seguridad, timeouts de Gunicorn, healthcheck, CI y programación de tareas.
 - Los hallazgos P3.
-- Reescribir el historial de Git (P2-6).
-- Los derechos del interesado (P2-9), que son una decisión legal.
+- La implementación de los derechos del interesado (P2-9): se ha registrado la decisión sobre la conservación, pero la funcionalidad irá en una fase propia.
+
+La reescritura del historial (P2-6) se añadió después, autorizada expresamente por el usuario (§11).
 
 No se cambian reglas de negocio ni contratos de la API, no hay migraciones nuevas y no se ha tocado `db.sqlite3`.
 
@@ -37,10 +38,10 @@ No se encontró ningún P0.
 | P2-3 | El SMTP se llama dentro de la petición: bloquea workers y el tiempo de respuesta de la recuperación de contraseña puede revelar si un email existe | D / S | **Riesgo aceptado** (§5); los timeouts quedan para la Fase 12 |
 | P2-4 | Dependencias con rangos, sin `gunicorn` ni `redis` | D | **Corregido** |
 | P2-5 | `manage.py` usa `config.settings.dev` por defecto (`DEBUG=True`) | D | Pendiente (Fase 12: `DJANGO_SETTINGS_MODULE` en la imagen) |
-| P2-6 | `db.sqlite3.bak` sigue en el historial de Git (hashes de cuentas de desarrollo) | D | Pendiente (requiere autorización expresa) |
+| P2-6 | `db.sqlite3.bak` sigue en el historial de Git (hashes de cuentas de desarrollo) | D | **Corregido en local** (historial reescrito, §11); pendiente el `push --force` |
 | P2-7 | Sin monitorización, alertas, healthcheck ni CI | D | Pendiente (Fase 12) |
 | P2-8 | `despliegue.md` hablaba de «Gunicorn o Waitress», systemd y un cron con `.venv` | D | **Corregido** (§4) |
-| P2-9 | Sin exportación ni supresión de datos personales | D | Pendiente (decisión legal; antes de abrir al público) |
+| P2-9 | Sin exportación ni supresión de datos personales | D | **Decisión (2026-10-15): al suprimir una cuenta se conservan las compras y los movimientos de puntos.** Pendiente de implementar en una fase propia, antes de abrir al público (§12) |
 | P3-1 | `is_limited` + `register_attempt` no es atómico | D | Pospuesto |
 | P3-2 | `create_owner` sin actor no serializa dos ejecuciones simultáneas del comando (`select_for_update` sobre un conjunto vacío) | D | Pospuesto |
 | P3-3 | Orden de bloqueo opuesto entre `save_event` (evento → reservas) y confirmar una reserva (reserva → evento) | S | Pospuesto |
@@ -193,3 +194,56 @@ python manage.py test --settings=config.settings.test --parallel 1
 - Copias de seguridad y restauración probadas (P1-3).
 - Healthcheck, alertas y CI (P2-7).
 - Tareas programadas, incluido `clearsessions` (P3-5).
+
+## 11. Reescritura del historial de Git (P2-6)
+
+**Autorizada expresamente por el usuario el 2026-10-15.**
+
+### Antes de reescribir
+
+- **Revisión del historial.** El único archivo sensible que ha existido en el repositorio es `db.sqlite3.bak`: lo añadió el commit «Fase 10 completada» y lo retiró «Migracion a PostgresSQL…». Contenía cuentas de desarrollo con hashes de contraseña y sesiones.
+- **`.env.example`.** Todas sus versiones históricas solo tienen valores de ejemplo.
+- **URLs de PostgreSQL.** Las que aparecen en el historial usan la contraseña ficticia de la documentación.
+
+### Pasos ejecutados
+
+1. Copia de seguridad completa (`git bundle create … --all`, verificada con `git bundle verify`) **fuera del repositorio**: `../webcaneca-backup-antes-reescritura-2026-10-15.bundle`.
+
+   La copia **contiene el archivo eliminado**. Bórrala cuando hayas comprobado que el remoto está bien.
+
+2. `git filter-repo --invert-paths --path db.sqlite3.bak --force` (git-filter-repo 2.47.0, instalado en un entorno aparte, no en el del proyecto). Reescribe las ramas `main` y `auditoria-pre-fase-12`.
+3. Comprobaciones:
+   - ningún commit ni objeto contiene `db.sqlite3.bak`;
+   - el árbol de `main` es **idéntico** al de antes (mismo contenido);
+   - los 19 commits se conservan;
+   - `manage.py check` sin incidencias;
+   - `.env`, `db.sqlite3` y la copia local `db.sqlite3.bak` (ignorada) intactos.
+4. Se vuelve a añadir el remoto `origin` (filter-repo lo quita a propósito) **sin descargar** el historial antiguo.
+
+Cambian los identificadores de los commits desde «Fase 10 completada». Las referencias a commits concretos en documentos anteriores (p. ej. `a85ce95`, `4cf6f79`, `ac5903a`, `2057dd3`) apuntan al historial anterior.
+
+### Pendiente (lo ejecuta el usuario)
+
+5. Publicar el historial nuevo. Solo se sobrescribe el remoto si sigue en el commit conocido (`4cf6f79`):
+
+   ```powershell
+   git push --force-with-lease=main:4cf6f79754663ff59193eca0006ecf1568ff63a2 origin main
+   git branch -u origin/main main
+   ```
+
+6. Cualquier otro clon (otro equipo, CI) debe **borrarse y volver a clonarse**. Un `git pull` mezclaría el historial antiguo con el nuevo y volvería a subir el archivo.
+7. GitHub puede conservar el objeto antiguo en caché o en referencias internas (pull requests, forks). No hay pull requests ni forks conocidos. Si los hubiera, o para una purga completa, hay que solicitarla al soporte de GitHub.
+8. Por precaución, cambia la contraseña de las cuentas de desarrollo que había en esa BD si la usas en algún otro sitio.
+9. Cuando todo esté comprobado, borra el *bundle* de copia de seguridad.
+
+## 12. Decisión sobre los derechos del interesado (P2-9)
+
+**Decisión del usuario (2026-10-15):** cuando un cliente pida suprimir su cuenta, **se conservan sus compras y sus movimientos de puntos**. Son el registro de negocio y el ledger es inmutable por diseño.
+
+Queda por definir antes de implementarlo (fase propia, antes de abrir al público):
+- qué se hace con los datos personales del perfil (borrado o anonimización de nombre, email, dirección, fecha de nacimiento y teléfono) mientras se conservan esos registros;
+- los plazos de conservación;
+- el formato de la exportación de datos;
+- quién la ejecuta: el propio cliente o el propietario.
+
+El código no garantiza por sí mismo el cumplimiento del RGPD: conviene que lo revise quien lleve el asesoramiento legal.
