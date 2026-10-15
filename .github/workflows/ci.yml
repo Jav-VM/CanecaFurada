@@ -46,7 +46,8 @@ jobs:
           cache-dependency-path: requirements/*.txt
 
       - name: Dependencias (las de producción incluyen las comunes)
-        run: pip install --only-binary=:all: -r requirements/prod.txt
+        run: |
+          pip install --only-binary=:all: -r requirements/prod.txt
 
       - name: manage.py check
         run: python manage.py check
