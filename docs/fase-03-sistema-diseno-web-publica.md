@@ -226,7 +226,13 @@ El punto de corte (1104 px) cubre el caso más ancho.
 
 **Pie** (`templates/components/footer.html`):
 - el logo es un enlace al inicio (`aria-label="Caneca Furada, ir al inicio"`);
-- logo y lema van centrados entre sí.
+- logo y lema van centrados entre sí;
+- **columnas juntas y simétricas en escritorio** (`lg`):
+  - antes eran cuatro columnas de un cuarto de página cada una, con el contenido alineado a la izquierda y huecos desiguales;
+  - ahora el bloque del logo, Explora, Tu cuenta y Visítanos miden lo que su contenido y van centrados, con la misma separación entre cada par (`lg:flex lg:justify-center lg:gap-x-20`, 80 px);
+  - Visítanos tiene un ancho máximo de 240 px (`lg:max-w-60`) para que una dirección u horario largos no descuadren el conjunto;
+  - en móvil y tablet no cambia;
+  - medido con Chrome a 1280 y 1440 px, con los datos del local pendientes y con datos ficticios completos: huecos de 80, 80 y 80 px y el conjunto centrado.
 
 Lo comprueba `tests/web/test_public_pages.py::test_layout_includes_brand_assets_and_skip_link`, y está verificado con captura a 1280 px.
 

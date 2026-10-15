@@ -1,6 +1,7 @@
 {% load static %}
 <footer class="mt-24 border-t border-line bg-coal">
-  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+  {# En escritorio, los cuatro bloques miden lo que su contenido y van centrados con la misma separación entre sí. #}
+  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:flex lg:justify-center lg:gap-x-20">
     <div class="sm:col-span-2 lg:col-span-1">
       {# Logo (enlace al inicio) y lema centrados entre sí: el bloque mide lo que el más ancho de los dos. #}
       <div class="flex w-fit flex-col items-center gap-4 text-center">
@@ -34,7 +35,7 @@
       </ul>
     </nav>
 
-    <div>
+    <div class="lg:max-w-60">
       <h2 class="eyebrow mb-4">Visítanos</h2>
       {% include "components/business_info.html" with compact=True %}
     </div>
