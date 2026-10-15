@@ -103,6 +103,8 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 
 ## Sin número — Endurecimiento y despliegue (antes Fase 12)
 - **Incluye:** servidor WSGI, almacenamiento de estáticos/medios, copias de seguridad, ejecución de tests contra PostgreSQL, caché compartida, proveedor SMTP real y programación de `process_notifications`, `run_birthday_promotions`, `expire_redemptions`, `purge_email_tokens` y `flushexpiredtokens`. La revisión de seguridad, el rate limiting de la API y la guía de despliegue se hicieron en la Fase 11 ([despliegue.md](despliegue.md)).
+- **Migración a PostgreSQL (2026-10-15):** completa en desarrollo ([migracion-postgresql.md](migracion-postgresql.md)).
+- **Auditoría previa (2026-10-15, completa):** destino VPS Linux con Docker Compose, PostgreSQL, Redis, Gunicorn y Nginx. Corregidos el límite del login del admin, la caché compartida obligatoria en producción, un bloqueo de canjes y las versiones de las dependencias; añadidos tests de concurrencia. 817 tests OK en PostgreSQL 17. Ver [auditoria-pre-fase-12.md](auditoria-pre-fase-12.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

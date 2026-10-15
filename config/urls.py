@@ -3,8 +3,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from apps.accounts.forms import ThrottledAdminAuthenticationForm
+
 admin.site.site_header = "Caneca Furada — Administración"
 admin.site.site_title = "Caneca Furada"
+# Mismo límite de intentos fallidos que el login web y la API.
+admin.site.login_form = ThrottledAdminAuthenticationForm
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),

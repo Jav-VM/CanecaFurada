@@ -1,10 +1,14 @@
-# Dependencias comunes a todos los entornos
-Django>=5.2.8,<5.3
-psycopg[binary]>=3.2,<4
-django-environ>=0.12,<0.13
-phonenumbers>=9.0,<10
-Pillow>=12.0,<13  # ImageField: validación de imágenes de la carta
-segno>=1.6,<2  # QR personal del cliente (SVG generado en el servidor)
-djangorestframework>=3.16,<3.17  # API REST v1 (Fase 11)
-djangorestframework-simplejwt>=5.5,<6  # Tokens JWT de la app móvil (access + refresh con lista negra)
-drf-spectacular>=0.28,<0.29  # Esquema OpenAPI de la API
+# Dependencias comunes a todos los entornos.
+# Versiones exactas: las probadas con la suite completa (SQLite y PostgreSQL 17).
+# Las dependencias transitivas se fijan en constraints.txt. Para actualizar una,
+# cámbiala aquí (o en constraints.txt), reinstala y vuelve a pasar la suite.
+-c constraints.txt
+Django==5.2.18
+psycopg[binary]==3.3.6
+django-environ==0.12.1
+phonenumbers==9.0.41
+Pillow==12.3.0  # ImageField: validación de imágenes de la carta
+segno==1.6.6  # QR personal del cliente (SVG generado en el servidor)
+djangorestframework==3.16.1  # API REST v1 (Fase 11)
+djangorestframework-simplejwt==5.5.1  # Tokens JWT de la app móvil (access + refresh con lista negra)
+drf-spectacular==0.28.0  # Esquema OpenAPI de la API

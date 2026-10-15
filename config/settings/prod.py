@@ -25,6 +25,22 @@ CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 if DATABASES["default"]["ENGINE"] != "django.db.backends.postgresql":  # noqa: F405
     raise ImproperlyConfigured("DATABASE_URL es obligatoria en producción y debe apuntar a PostgreSQL.")
 
+# --- Caché compartida --------------------------------------------------------------
+# Los límites de intentos (login, QR, códigos de canje, reenvíos), el throttling
+# de la API y la invalidación del contenido del local viven en la caché. Con una
+# caché por proceso (memoria) o por máquina (fichero), cada worker de Gunicorn
+# llevaría su propia cuenta y los límites reales se multiplicarían.
+
+_LOCAL_CACHE_BACKENDS = {
+    "django.core.cache.backends.locmem.LocMemCache",
+    "django.core.cache.backends.dummy.DummyCache",
+    "django.core.cache.backends.filebased.FileBasedCache",
+}
+if CACHES["default"]["BACKEND"] in _LOCAL_CACHE_BACKENDS:  # noqa: F405
+    raise ImproperlyConfigured(
+        "CACHE_URL es obligatoria en producción y debe apuntar a una caché compartida (p. ej. redis://redis:6379/1)."
+    )
+
 # --- Email real obligatorio ----------------------------------------------------
 # En producción no se simulan envíos: se rechazan los backends de consola,
 # memoria, fichero o nulo y se exige un servidor SMTP y una URL pública HTTPS.

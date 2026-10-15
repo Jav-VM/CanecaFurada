@@ -1,2 +1,4 @@
-# Producción (el servidor WSGI y el almacenamiento se añadirán en la fase de despliegue)
+# Producción (Linux): servidor WSGI y cliente de la caché compartida.
 -r base.txt
+gunicorn==25.3.0  # Servidor WSGI (no funciona en Windows: solo en el contenedor o el VPS)
+redis==7.4.1  # Cliente de la caché compartida (CACHE_URL=redis://...), obligatoria en producción

@@ -1,6 +1,6 @@
 # Despliegue, correo y tareas programadas
 
-Revisión de la preparación para producción hecha en la [Fase 11](fase-11-api-auditoria.md). Recoge lo que ya está configurado en el código, lo que hay que hacer en el servidor y lo que queda pendiente para la fase de despliegue (sin número). **No incluye secretos reales:** todos los valores son de ejemplo.
+Revisión de la preparación para producción hecha en la [Fase 11](fase-11-api-auditoria.md) y actualizada en la [auditoría previa a la Fase 12](auditoria-pre-fase-12.md). Destino previsto: VPS Linux (Ubuntu LTS) con **Docker Compose, PostgreSQL, Redis, Gunicorn y Nginx**. Recoge lo que ya está configurado en el código, lo que hay que hacer en el servidor y lo que queda pendiente para la fase de despliegue (sin número). **No incluye secretos reales:** todos los valores son de ejemplo.
 
 ## 1. Estado
 
@@ -10,7 +10,10 @@ Revisión de la preparación para producción hecha en la [Fase 11](fase-11-api-
 | `check --deploy` | Ejecutado con valores ficticios (2026-10-14): solo `security.W021` (HSTS *preload* desactivado a propósito; activarlo es irreversible en la práctica). |
 | HTTPS y cookies | Listo en código (§4). Falta el certificado y el proxy en el servidor. |
 | PostgreSQL | Obligatorio en `prod` (rechaza SQLite). Suite completa OK en PostgreSQL 17 (2026-10-15). Falta instalarlo en el VPS: [migracion-postgresql.md](migracion-postgresql.md). |
-| Servidor WSGI | **Pendiente de elegir** (p. ej. Gunicorn en Linux o Waitress en Windows). No se ha añadido a `requirements/prod.txt`. |
+| Servidor WSGI | **Gunicorn** (`requirements/prod.txt`, versión fijada). Su configuración en el contenedor es parte de la Fase 12. |
+| Dependencias | Versiones exactas en `requirements/` y transitivas en `requirements/constraints.txt`. |
+| Caché compartida | **Obligatoria**: `config.settings.prod` no arranca con una caché local (`locmem`, `dummy`, `filebased`). Redis (`redis` en `requirements/prod.txt`). |
+| Login del admin | Mismo límite de intentos que la web y la API (auditoría previa a la Fase 12). |
 | Estáticos y multimedia | **Pendiente** (§5–6). |
 | Correo | Configurable por entorno (§8). Falta un proveedor SMTP real. |
 | Tareas programadas | Comandos listos (§9). Falta programarlos. |
@@ -24,13 +27,13 @@ Lista completa con valores ficticios en [.env.example](../.env.example). En prod
 |---|---|
 | Django | `DJANGO_SETTINGS_MODULE=config.settings.prod`, `DJANGO_SECRET_KEY` (≥ 50 caracteres aleatorios), `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `DJANGO_ADMIN_URL` (ruta no obvia), `DJANGO_LOG_LEVEL` |
 | HTTPS y proxy | `DJANGO_SECURE_SSL_REDIRECT`, `DJANGO_SECURE_HSTS_SECONDS`, `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_SECURE_HSTS_PRELOAD`, `DJANGO_BEHIND_TLS_PROXY`, `DJANGO_TRUSTED_PROXY_COUNT` |
-| Base de datos y caché | `DATABASE_URL`, `DATABASE_CONN_MAX_AGE`, `CACHE_URL` |
+| Base de datos y caché | `DATABASE_URL`, `DATABASE_CONN_MAX_AGE`, `DATABASE_CONN_HEALTH_CHECKS`, `CACHE_URL` (obligatoria en producción) |
 | Correo | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`/`EMAIL_USE_SSL`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SITE_BASE_URL` |
 | Notificaciones | `SMS_BACKEND` (vacío = desactivado), `NOTIFICATIONS_BATCH_SIZE` |
 | Cuentas | `EMAIL_VERIFICATION_TOKEN_TTL_HOURS`, `ACCOUNTS_MIN_CUSTOMER_AGE` |
 | API (Fase 11) | `API_ACCESS_TOKEN_MINUTES`, `API_REFRESH_TOKEN_DAYS`, `API_JWT_SIGNING_KEY` (opcional, ≥ 32 bytes), `API_THROTTLE_ANON`, `API_THROTTLE_USER`, `API_THROTTLE_AUTH`, `API_DOCS_PUBLIC` |
 
-`manage.py` usa `config.settings.dev` por defecto: en el servidor, ejecuta los comandos con `DJANGO_SETTINGS_MODULE=config.settings.prod` o `--settings=config.settings.prod`.
+`manage.py` usa `config.settings.dev` por defecto (con `DEBUG=True`): en el servidor, ejecuta los comandos con `DJANGO_SETTINGS_MODULE=config.settings.prod` o `--settings=config.settings.prod`. En la imagen Docker, define `ENV DJANGO_SETTINGS_MODULE=config.settings.prod`.
 
 Rotar `DJANGO_SECRET_KEY` invalida sesiones web, enlaces de recuperación y de baja pendientes y, si no hay `API_JWT_SIGNING_KEY`, todos los tokens de la app.
 
@@ -42,7 +45,7 @@ Guía completa (rol con privilegios mínimos, ICU `es-ES`, variables y resultado
 2. `python manage.py migrate --settings=config.settings.prod` (antes, `migrate --plan` para revisar). Las migraciones son pequeñas y revisadas; la Fase 11 añade `core/0009` (solo opciones) y las tablas de `token_blacklist`.
 3. Suite contra PostgreSQL: **ejecutada en desarrollo** (803 OK, 2026-10-15). Se repite en desarrollo o en un entorno de pruebas tras cada cambio, nunca en producción (el rol de producción no puede crear la BD de test).
 4. `DATABASE_CONN_MAX_AGE=60` reduce conexiones si el servidor lo permite; con él, `DATABASE_CONN_HEALTH_CHECKS=True`.
-5. Caché compartida para los límites de intentos y el throttling de la API: `CACHE_URL=redis://…` (requiere instalar `redis`) o `CACHE_URL=dbcache://django_cache` + `python manage.py createcachetable`.
+5. Caché compartida (**obligatoria** en `prod`) para los límites de intentos, el throttling de la API y la caché del contenido del local: `CACHE_URL=redis://redis:6379/1` (servicio de Compose; el cliente `redis` ya está en `requirements/prod.txt`) o, sin Redis, `CACHE_URL=dbcache://django_cache` + `python manage.py createcachetable`.
 
 ## 4. HTTPS, proxy y cookies
 
@@ -73,6 +76,7 @@ Imágenes de la carta, recompensas y eventos en `MEDIA_ROOT` (`media/`). En prod
 - `SITE_BASE_URL=https://<dominio>`: con él se construyen los enlaces de verificación, recuperación y baja (nunca con la cabecera `Host`).
 - Emails que envía la plataforma: verificación y cambio de email, aviso al email anterior, intento de registro con email existente, recuperación de contraseña (al momento y sin guardar el enlace); avisos de reservas, campañas y cumpleaños (cola con reintentos). Las promociones solo a clientes con consentimiento y siempre con enlace de baja. Detalle: [Fase 10](fase-10-eventos-reservas-notificaciones.md).
 - SMS: desactivado hasta integrar un proveedor (`SMS_BACKEND`).
+- **Riesgo aceptado (P2-3):** el SMTP se llama dentro de la petición. Un proveedor lento bloquea el worker y, en la recuperación de contraseña, el tiempo de respuesta puede revelar si un email está registrado. Configura el `--timeout` de Gunicorn por encima de `EMAIL_TIMEOUT` y suficientes workers. Detalle: [auditoría previa a la Fase 12, §5](auditoria-pre-fase-12.md#5-riesgo-aceptado-envío-de-correo-dentro-de-la-petición-p2-3).
 - Push en la app: no implementado.
 
 ## 9. Tareas programadas
@@ -92,7 +96,7 @@ Imágenes de la carta, recompensas y eventos en `MEDIA_ROOT` (`media/`). En prod
 45 4 * * *  cd /srv/caneca && .venv/bin/python manage.py purge_email_tokens --settings=config.settings.prod && .venv/bin/python manage.py flushexpiredtokens --settings=config.settings.prod
 ```
 
-En Windows, el Programador de tareas ejecuta los mismos comandos con `.venv\Scripts\python.exe`. Las variables de producción deben estar disponibles para la tarea.
+El ejemplo usa un entorno virtual en el servidor. Con Docker Compose (destino previsto) los mismos comandos se lanzan con `docker compose run --rm web python manage.py <comando>` (o desde un servicio programador); la adaptación es parte de la Fase 12, que añadirá además `clearsessions` (diario). En Windows, el Programador de tareas ejecuta los mismos comandos con `.venv\Scripts\python.exe`. Las variables de producción deben estar disponibles para la tarea.
 
 ## 10. Logs
 
@@ -118,7 +122,8 @@ En Windows, el Programador de tareas ejecuta los mismos comandos con `.venv\Scri
 - [ ] `migrate` aplicado en el PostgreSQL del VPS.
 - [ ] `collectstatic` y `/static/`, `/media/` servidos.
 - [ ] HTTPS con certificado válido; `DJANGO_BEHIND_TLS_PROXY` y `DJANGO_TRUSTED_PROXY_COUNT` según la topología real.
-- [ ] `CACHE_URL` compartida.
+- [ ] `CACHE_URL` compartida (Redis); sin ella `prod` no arranca.
+- [ ] Imagen sin `.env`, `*.sqlite3*`, `media/`, `.venv/` ni `.tools/` (`.dockerignore`).
 - [ ] SMTP real probado (registro → email de verificación).
 - [ ] Tareas programadas activas.
 - [ ] Copias de seguridad y restauración probadas.

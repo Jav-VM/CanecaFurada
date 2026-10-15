@@ -64,6 +64,62 @@ class LoginLogoutTests(TestCase):
         self.assertNotIn("_auth_user_id", self.client.session)
 
 
+class AdminLoginThrottleTests(TestCase):
+    """El login del admin técnico tiene el mismo límite que el web (auditoría previa a la Fase 12)."""
+
+    url = reverse("admin:login")
+
+    def setUp(self):
+        cache.clear()
+        self.owner = make_user(email="propietario@example.com", role=User.Role.OWNER)
+
+    def test_owner_can_log_in(self):
+        response = self.client.post(self.url, {"username": self.owner.email, "password": PASSWORD})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.session["_auth_user_id"], str(self.owner.pk))
+
+    @override_settings(LOGIN_MAX_FAILURES_PER_EMAIL=3)
+    def test_admin_login_throttled_after_failures(self):
+        for _ in range(3):
+            self.client.post(self.url, {"username": self.owner.email, "password": "mala"})
+        # Ni siquiera la contraseña correcta funciona mientras dura el bloqueo.
+        response = self.client.post(self.url, {"username": self.owner.email, "password": PASSWORD})
+        self.assertContains(response, "Demasiados intentos")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    @override_settings(LOGIN_MAX_FAILURES_PER_IP=3, LOGIN_MAX_FAILURES_PER_EMAIL=100)
+    def test_admin_login_throttled_by_ip_with_different_emails(self):
+        for i in range(3):
+            self.client.post(self.url, {"username": f"nadie{i}@example.com", "password": "mala"})
+        response = self.client.post(self.url, {"username": self.owner.email, "password": PASSWORD})
+        self.assertContains(response, "Demasiados intentos")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    @override_settings(LOGIN_MAX_FAILURES_PER_EMAIL=3)
+    def test_admin_and_web_share_the_counter(self):
+        web = reverse("accounts:login")
+        for _ in range(2):
+            self.client.post(web, {"username": self.owner.email, "password": "mala"})
+        self.client.post(self.url, {"username": self.owner.email, "password": "mala"})
+        self.assertContains(
+            self.client.post(self.url, {"username": self.owner.email, "password": PASSWORD}), "Demasiados intentos"
+        )
+        self.assertContains(
+            self.client.post(web, {"username": self.owner.email, "password": PASSWORD}), "Demasiados intentos"
+        )
+
+    @override_settings(LOGIN_MAX_FAILURES_PER_EMAIL=3)
+    def test_non_staff_with_valid_password_counts_as_failure(self):
+        """Un cliente con su contraseña correcta no entra al admin y el intento cuenta."""
+        customer = make_user(email="cliente2@example.com")
+        for _ in range(3):
+            response = self.client.post(self.url, {"username": customer.email, "password": PASSWORD})
+            self.assertNotIn("_auth_user_id", self.client.session)
+        self.assertContains(response, "Demasiados intentos", count=0)
+        response = self.client.post(self.url, {"username": customer.email, "password": PASSWORD})
+        self.assertContains(response, "Demasiados intentos")
+
+
 @override_settings(SITE_BASE_URL="https://www.example.com")
 class PasswordResetTests(TestCase):
     def setUp(self):

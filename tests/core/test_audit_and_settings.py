@@ -41,10 +41,12 @@ class ProductionSettingsTests(SimpleTestCase):
         "SITE_BASE_URL": "https://www.example.com",
         # Explícita: si no, se usaría la del `.env` local. `django.setup()` no se conecta.
         "DATABASE_URL": "postgres://usuario-ficticio:contrasena-ficticia@localhost:5432/bd_ficticia",
+        # Caché compartida obligatoria; `django.setup()` tampoco se conecta a ella.
+        "CACHE_URL": "redis://localhost:6379/1",
     }
 
     def _import_prod(self, extra_env):
-        prefixes = ("DJANGO_", "EMAIL_", "SITE_BASE_URL", "DATABASE_")
+        prefixes = ("DJANGO_", "EMAIL_", "SITE_BASE_URL", "DATABASE_", "CACHE_")
         env = {k: v for k, v in os.environ.items() if not k.startswith(prefixes)}
         env.update(extra_env)
         env["DJANGO_SETTINGS_MODULE"] = "config.settings.prod"
@@ -101,3 +103,19 @@ class ProductionSettingsTests(SimpleTestCase):
         result = self._import_prod({**self.REQUIRED, "DATABASE_URL": "sqlite:///bd-ficticia.sqlite3"})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("PostgreSQL", result.stderr)
+
+    def test_prod_requires_shared_cache(self):
+        """Sin caché compartida los límites de intentos serían por proceso (auditoría previa a la Fase 12)."""
+        without = {k: v for k, v in self.REQUIRED.items() if k != "CACHE_URL"}
+        result = self._import_prod(without)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("CACHE_URL", result.stderr)
+        for url in ("locmemcache://", "dummycache://", "filecache:///tmp/cache-ficticia"):
+            with self.subTest(url=url):
+                result = self._import_prod({**self.REQUIRED, "CACHE_URL": url})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("CACHE_URL", result.stderr)
+
+    def test_prod_accepts_database_cache(self):
+        result = self._import_prod({**self.REQUIRED, "CACHE_URL": "dbcache://django_cache"})
+        self.assertEqual(result.returncode, 0, result.stderr)

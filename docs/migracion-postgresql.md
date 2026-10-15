@@ -160,5 +160,5 @@ Entorno: Windows 11, Python 3.14.2, Django 5.2.18, psycopg 3.3.6, PostgreSQL 17.
 
 - Instalar y configurar PostgreSQL en el VPS (§8), con copias de seguridad automatizadas y cifradas fuera del servidor.
 - En el VPS, la BD de test (si se usa un entorno de pruebas) heredará la collation de `template1`. Para que coincida con ICU `es-ES`, crea el clúster con `--locale-provider=icu --icu-locale=es-ES`.
-- `requirements/base.txt` usa rangos de versiones y no hay archivo de bloqueo. Conviene fijar las versiones probadas (las de §9) antes de desplegar.
+- ~~`requirements/base.txt` usa rangos de versiones~~: resuelto en la [auditoría previa a la Fase 12](auditoria-pre-fase-12.md) (versiones exactas y `requirements/constraints.txt`).
 - `db.sqlite3.bak` sigue en el historial de Git (§10).

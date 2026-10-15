@@ -1,5 +1,7 @@
 # Resultados reales de las comprobaciones
 
+> **Nota posterior:** registro histórico del commit `ac5903a`. Los resultados actuales (817 tests tras la auditoría previa a la Fase 12) están en [`docs/auditoria-pre-fase-12.md`](../../auditoria-pre-fase-12.md#6-pruebas-ejecutadas-y-resultados-reales-2026-10-15).
+
 Ejecutadas el 2026-10-15 en Windows 11, Python 3.14.2, Django 5.2.18, sin `.env` (BD SQLite; la de test es SQLite en memoria).
 
 | Comando | Resultado |

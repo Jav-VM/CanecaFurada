@@ -8,6 +8,7 @@ campos explícitos: no existe ningún campo de rol, estado o verificación que
 pueda asignarse desde el navegador.
 """
 from django import forms
+from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
 
@@ -170,17 +171,15 @@ def apply_service_errors(form, exc, field_map=None, fallback_field=None):
         form.add_error(fallback_field, exc.messages)
 
 
-class ThrottledAuthenticationForm(AuthenticationForm):
-    """
-    Login con límite de intentos fallidos por email y por IP. El mensaje es el
-    mismo exista o no la cuenta.
-    """
+_THROTTLED = "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos."
 
-    error_messages = {
-        **AuthenticationForm.error_messages,
-        "invalid_login": "Email o contraseña incorrectos.",
-        "throttled": "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.",
-    }
+
+class LoginThrottleMixin:
+    """
+    Límite de intentos fallidos por email y por IP para un formulario de login
+    de Django. Web, admin y API comparten los mismos contadores
+    (`services.login_throttle_keys`): fallar en uno cuenta para todos.
+    """
 
     def clean(self):
         ip = client_ip(self.request) if self.request else "-"
@@ -192,6 +191,26 @@ class ThrottledAuthenticationForm(AuthenticationForm):
         except ValidationError:
             services.register_login_failure(keys)
             raise
+
+
+class ThrottledAuthenticationForm(LoginThrottleMixin, AuthenticationForm):
+    """Login web. El mensaje es el mismo exista o no la cuenta."""
+
+    error_messages = {
+        **AuthenticationForm.error_messages,
+        "invalid_login": "Email o contraseña incorrectos.",
+        "throttled": _THROTTLED,
+    }
+
+
+class ThrottledAdminAuthenticationForm(LoginThrottleMixin, AdminAuthenticationForm):
+    """
+    Login del admin técnico (`admin.site.login_form`, en `config/urls.py`). Sin
+    él, el login del admin no tenía límite de intentos y la cuenta del
+    propietario es superusuario.
+    """
+
+    error_messages = {**AdminAuthenticationForm.error_messages, "throttled": _THROTTLED}
 
 
 class NotifyingPasswordResetForm(PasswordResetForm):

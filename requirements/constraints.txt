@@ -1,0 +1,17 @@
+# Versiones fijadas de las dependencias transitivas (no se instalan por estar
+# aquí: solo limitan la versión si otra dependencia las pide). Obtenidas con
+# `pip freeze` del entorno en el que pasó la suite completa.
+asgiref==3.12.1
+attrs==26.1.0
+inflection==0.5.1
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+packaging==26.3  # la pide gunicorn (prod.txt)
+psycopg-binary==3.3.6
+PyJWT==2.15.1
+PyYAML==6.0.3
+referencing==0.37.0
+rpds-py==2026.9.1
+sqlparse==0.6.0
+tzdata==2026.5
+uritemplate==4.2.0

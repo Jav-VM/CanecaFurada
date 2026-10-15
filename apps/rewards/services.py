@@ -331,7 +331,10 @@ def _find(staff, raw_code, *, for_update=False):
     if code is not None:
         queryset = Redemption.objects.select_related("customer", "reward")
         if for_update:
-            queryset = queryset.select_for_update()
+            # `of=("self",)`: solo el canje. Sin él, PostgreSQL bloquea también
+            # las filas del cliente y de la recompensa del JOIN, fuera del orden
+            # cliente -> recompensa -> canje de `_close`, y puede haber interbloqueos.
+            queryset = queryset.select_for_update(of=("self",))
         redemption = queryset.filter(code=code).first()
     if redemption is None or not (redemption.customer.is_active and redemption.customer.role == User.Role.CUSTOMER):
         # Mismo mensaje si no existe o si la cuenta del cliente ya no está activa.

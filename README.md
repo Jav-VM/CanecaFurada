@@ -21,6 +21,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 10 — Eventos, reservas, contenido y notificaciones | **Completa** (pendiente SMTP real, programar las tareas y proveedor de SMS) |
 | 11 — API, auditoría, seguridad y preparación para la app | **Completa** (pendiente el despliegue) |
 | Migración a PostgreSQL (endurecimiento y despliegue) | **Completa en desarrollo**: suite completa OK en PostgreSQL 17 (pendiente el VPS) |
+| Auditoría previa a la Fase 12 (endurecimiento y despliegue) | **Completa**: 817 tests OK en PostgreSQL 17 y en SQLite; los pendientes de despliegue van a la Fase 12 |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -170,6 +171,7 @@ requirements/      dependencias por entorno
 - [Fase 11 — API, auditoría y seguridad](docs/fase-11-api-auditoria.md): resumen de la auditoría y correcciones, endpoints, estrategia de autenticación, revisión de seguridad, privacidad, tests y pendientes.
 - [Guía de la app Flutter](docs/guia-app-flutter.md): autenticación, renovación y revocación de tokens, errores, paginación, idempotencia y pantallas.
 - [Migración a PostgreSQL](docs/migracion-postgresql.md): auditoría de compatibilidad, correcciones, configuración en desarrollo y en el VPS, resultados de la suite y copia/restauración.
+- [Auditoría previa a la Fase 12](docs/auditoria-pre-fase-12.md): hallazgos priorizados (P0-P3), correcciones, riesgo aceptado del envío de correo, pruebas y lista de comprobación antes del despliegue.
 - [Despliegue](docs/despliegue.md): variables de entorno, PostgreSQL, HTTPS, estáticos y multimedia, copias de seguridad, correo, tareas programadas y logs.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.
 - [Documentación para la defensa del proyecto](docs/defensa_proyecto/README.md): memoria técnica y funcional, guion de la defensa oral, banco de preguntas del tribunal, mapa del código, limitaciones y diagramas Mermaid.
