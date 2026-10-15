@@ -121,6 +121,37 @@ Con SQLite en fichero, la prueba demuestra que no hay saldo negativo, doble cons
 python manage.py test --settings=config.settings.test --parallel 1
 ```
 
+### 6.1 Prueba de humo por HTTP sobre PostgreSQL
+
+**Qué se hizo:**
+- Servidor real (`runserver`, settings de desarrollo, correo por consola) contra una BD de PostgreSQL **temporal** (`caneca_smoke`), creada con `migrate` y **eliminada al terminar**. No se tocaron `caneca_furada` ni `db.sqlite3`.
+- Recorrido con un script HTTP que se comporta como un navegador (cookies, CSRF, formularios), con una sesión por persona: cliente, propietaria y empleado. El script queda fuera del repositorio.
+- Todos los datos son ficticios (`@example.com`). La recompensa de prueba se creó con `rewards.services.save_reward`, el servicio que usa el admin.
+
+**Resultado: 39 de 39 comprobaciones funcionales OK.**
+
+| Área | Qué se comprobó |
+|---|---|
+| Web pública | Las 6 páginas y los estáticos responden 200; 404 con página propia; `/dashboard/` sin sesión lleva al login |
+| Registro | Alta de cliente, email de verificación enviado y confirmado con el enlace (GET + POST) |
+| Cliente | Login y QR personal en SVG generado en el servidor |
+| Propietaria y empleado | Login de la propietaria, dashboard, alta de un empleado desde el dashboard y login del empleado |
+| Compras | Un cliente recibe 403 en el panel del personal; identificación por QR («Lúa F.»); compra de 30,00 € registrada; el **doble envío** del mismo formulario no la duplica; detalle de la compra |
+| Puntos y canje | Saldo de 30; canje de 20; código visible; saldo de 10; consulta y validación por el empleado; el **segundo uso** del código se rechaza |
+| Reservas | Reserva de mesa solicitada, confirmada desde el dashboard y vista como «Confirmada» por el cliente; sin sesión no se accede |
+| Otros | Login del admin disponible y cierre de sesión |
+
+**Log del servidor:**
+- 0 respuestas 500. Las únicas trazas son el 403 provocado a propósito, que Django registra con traza en desarrollo.
+- No aparecen el token del QR, el código de canje ni emails en las líneas de log de la aplicación.
+- El enlace de verificación solo aparece porque, en desarrollo, el backend de correo es la consola. Producción rechaza ese backend.
+
+**No cubierto:**
+- Aspecto visual y diseño responsive.
+- Cámara y lector de QR en dispositivos reales (JavaScript).
+- SMTP real.
+- Gunicorn, Nginx y HTTPS (Fase 12).
+
 ## 7. Seguridad y privacidad
 
 - El límite del admin protege la cuenta con más privilegios. Los contadores siguen guardándose como hash (`apps.core.throttling`), sin emails ni IPs en claro.
@@ -151,6 +182,7 @@ python manage.py test --settings=config.settings.test --parallel 1
 - [x] Esquema OpenAPI idéntico a `docs/api/openapi.yaml`.
 - [ ] `.dockerignore` que excluya `.env`, `*.sqlite3*`, `media/`, `.venv/` y `.tools/` (Fase 12).
 - [x] Decidido P2-3 (riesgo aceptado, §5).
+- [x] Prueba de humo por HTTP sobre PostgreSQL (§6.1). Falta la revisión visual y de la cámara en dispositivos.
 
 ## 10. Dependencias para la Fase 12
 

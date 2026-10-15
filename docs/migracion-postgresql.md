@@ -134,7 +134,7 @@ Entorno: Windows 11, Python 3.14.2, Django 5.2.18, psycopg 3.3.6, PostgreSQL 17.
 | Esquema en PostgreSQL | 86 CHECK, 38 FK, 35 únicas, 6 índices únicos parciales (las 6 restricciones condicionales de los modelos), 3 únicas con `lower()`, 2 CHECK con regex |
 | `pg_dump -Fc` → `pg_restore` en una BD temporal | Restauración idéntica (32 tablas, 191 restricciones, 56 migraciones). BD temporal y volcado eliminados después |
 
-**No probado:** la prueba de humo manual en el navegador sobre PostgreSQL (registro → verificación → QR → compra → canje → reservas). El comportamiento está cubierto por la suite, pero conviene repetirlo a mano antes de abrir al público. Tampoco se ha probado la instalación en el VPS.
+**Prueba de humo por HTTP (2026-10-15):** hecha contra el servidor real y una BD de PostgreSQL temporal, con el flujo registro → verificación → QR → compra → canje → reservas. Detalle: [auditoría previa a la Fase 12, §6.1](auditoria-pre-fase-12.md#61-prueba-de-humo-por-http-sobre-postgresql). **No probado:** el aspecto visual en el navegador, la cámara en dispositivos y la instalación en el VPS.
 
 ## 10. Seguridad y privacidad
 
@@ -153,7 +153,7 @@ Entorno: Windows 11, Python 3.14.2, Django 5.2.18, psycopg 3.3.6, PostgreSQL 17.
 | Producción no arranca sin PostgreSQL | **Completo** (con test) |
 | Copia y restauración comprobadas | **Completo** (en desarrollo) |
 | Documentación actualizada | **Completo** |
-| Prueba de humo manual en PostgreSQL | **Pendiente** |
+| Prueba de humo en PostgreSQL | **Completa** por HTTP; la revisión visual y la cámara siguen pendientes |
 | PostgreSQL en el VPS | **Pendiente** (fase de despliegue) |
 
 ## 12. Limitaciones y pendientes
