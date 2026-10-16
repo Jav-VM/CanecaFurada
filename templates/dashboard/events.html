@@ -16,19 +16,19 @@
 </div>
 {% if page.object_list %}
   <div class="table-wrap">
-    <table class="data-table" data-event-list>
+    <table class="data-table data-table-fit" data-event-list>
       <thead><tr><th scope="col">{% translate "Evento" %}</th><th scope="col">{% translate "Empieza" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col">{% translate "Reservas" %}</th><th scope="col" class="num">{% translate "Pendientes" %}</th><th scope="col" class="num">{% translate "Personas confirmadas" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for event in page %}
           <tr>
-            <td class="font-semibold">{{ event.title }}{% if event.is_featured %} <span class="badge">{% translate "Destacado" %}</span>{% endif %}</td>
-            <td class="whitespace-nowrap">{{ event.starts_at|date:"d/m/Y H:i" }}</td>
-            <td>{{ event.get_status_display }}</td>
-            <td>{% if event.accepts_reservations %}{% translate "Sí" %}{% if event.capacity %} · {% blocktranslate trimmed with seats=event.capacity %}{{ seats }} plazas{% endblocktranslate %}{% endif %}{% else %}{% translate "No" %}{% endif %}</td>
-            <td class="num">{% if event.pending %}<a class="link" href="{% url 'dashboard:reservations' %}?estado=PENDING">{{ event.pending }}</a>{% else %}0{% endif %}</td>
-            <td class="num">{{ event.confirmed_people }}</td>
-            <td>
-              <form method="post" action="{% url 'dashboard:event_status' event.public_id %}" class="flex flex-wrap gap-2">
+            <td class="cell-title font-semibold" data-label="{% translate 'Evento' %}">{{ event.title }}{% if event.is_featured %} <span class="badge">{% translate "Destacado" %}</span>{% endif %}</td>
+            <td class="whitespace-nowrap" data-label="{% translate 'Empieza' %}">{{ event.starts_at|date:"d/m/Y H:i" }}</td>
+            <td data-label="{% translate 'Estado' %}">{{ event.get_status_display }}</td>
+            <td data-label="{% translate 'Reservas' %}">{% if event.accepts_reservations %}{% translate "Sí" %}{% if event.capacity %} · {% blocktranslate trimmed with seats=event.capacity %}{{ seats }} plazas{% endblocktranslate %}{% endif %}{% else %}{% translate "No" %}{% endif %}</td>
+            <td class="num" data-label="{% translate 'Pendientes' %}">{% if event.pending %}<a class="link" href="{% url 'dashboard:reservations' %}?estado=PENDING">{{ event.pending }}</a>{% else %}0{% endif %}</td>
+            <td class="num" data-label="{% translate 'Personas confirmadas' %}">{{ event.confirmed_people }}</td>
+            <td class="cell-buttons" data-label="{% translate 'Acciones' %}">
+              <form method="post" action="{% url 'dashboard:event_status' event.public_id %}" class="cell-actions">
                 {% csrf_token %}
                 {% if event.status == "DRAFT" %}
                   <button type="submit" name="estado" value="PUBLISHED" class="btn btn-secondary btn-sm">{% translate "Publicar" %}</button>

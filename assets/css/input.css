@@ -127,6 +127,22 @@
   .data-table td { @apply border-b border-line px-4 py-3 align-top; }
   .data-table tr:last-child td { @apply border-b-0; }
   .num { @apply text-right tabular-nums; }
+  /* Tabla que cabe sin scroll horizontal: compacta desde xl y, por debajo, una tarjeta por
+     fila con la etiqueta de cada celda tomada de data-label. Uso: lista de eventos. */
+  .data-table-fit th { @apply whitespace-normal px-3; }
+  .data-table-fit td { @apply px-3; }
+  .data-table-fit .cell-actions { @apply flex flex-wrap gap-2 xl:flex-col xl:items-stretch; }
+  @media (width < 80rem) {
+    .data-table-fit thead { @apply sr-only; }
+    .data-table-fit, .data-table-fit tbody, .data-table-fit tr, .data-table-fit td { display: block; }
+    .data-table-fit tr { @apply border-b border-line px-4 py-3; }
+    .data-table-fit tr:last-child { @apply border-b-0; }
+    .data-table-fit td { @apply flex gap-3 border-b-0 px-0 py-1 text-left; }
+    .data-table-fit td::before { content: attr(data-label); @apply w-36 shrink-0 text-xs uppercase tracking-wider text-mist; }
+    .data-table-fit td.cell-title { @apply pb-2 text-base; }
+    .data-table-fit td.cell-title::before, .data-table-fit td.cell-buttons::before { content: none; }
+    .data-table-fit td.cell-buttons { @apply pt-3; }
+  }
   .note { @apply text-sm text-mist; }
   .stat-sub { @apply mt-1 text-xs text-mist; }
   /* Barra de magnitud de una sola serie: dorado sobre la pista; el valor va siempre en texto al lado */

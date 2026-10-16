@@ -197,7 +197,11 @@ class DashboardTests(ViewTestCase):
         )
         event.refresh_from_db()
         self.assertEqual(event.title, "Noche de IPA y APA")
-        self.assertContains(self.client.get(reverse("dashboard:events")), "Noche de IPA y APA")
+        response = self.client.get(reverse("dashboard:events"))
+        self.assertContains(response, "Noche de IPA y APA")
+        # La tabla se ajusta al ancho (tarjetas en pantallas estrechas): cada celda lleva su etiqueta
+        self.assertContains(response, 'class="data-table data-table-fit"')
+        self.assertContains(response, "data-label=", count=7)  # un evento × 7 columnas
 
     def test_home_shows_reservation_figures(self):
         response = self.client.get(reverse("dashboard:home"))
