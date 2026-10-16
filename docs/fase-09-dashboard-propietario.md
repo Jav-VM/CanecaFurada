@@ -63,6 +63,8 @@ Barra de secciones lateral en escritorio y deslizable en móvil. Todas las lista
 | **Contenido** | `/dashboard/contenido/` | Formulario del contenido público del local | Guardar (validado y auditado) |
 | **Configuración** | `/dashboard/configuracion/` | Conversión de puntos vigente e historial; valores fijados en los ajustes del servidor (solo lectura) | Nueva conversión (no altera los puntos ya concedidos) |
 
+> **Ajuste posterior (2026-10-17):** las listas de **Carta** y **Cervezas** usan, como la de Eventos, el modificador `.data-table-fit` (`assets/css/input.css`) para que no haya que desplazarse a los lados. Desde `xl` (1280 px) se muestra una tabla compacta: cabeceras en dos líneas y botones de disponibilidad y de acciones apilados. Por debajo, cada producto es una tarjeta con la etiqueta de cada celda (`data-label`). En Cervezas, tipo, estilo y graduación van en una sola columna («Propia · IPA · 6,5 %») para que la tabla quepa. Solo cambia el aspecto: formularios, CSRF y permisos son los mismos. Test: `tests/dashboard/test_customers_and_actions.py::test_beers_and_menu_sections_split_products`.
+
 ### Estadísticas: definiciones
 
 - **Clientes registrados:** cuentas de cliente activas (las desactivadas no cuentan). «+N en el periodo»: altas activas del periodo.

@@ -243,6 +243,11 @@ class CatalogActionTests(DashboardTestCase):
         self.assertNotContains(beers, "Tosta ficticia")
         self.assertContains(menu, "Tosta ficticia")
         self.assertNotContains(menu, "IPA ficticia")
+        # Las dos listas se ajustan al ancho (tarjetas en pantallas estrechas): cada celda lleva su etiqueta.
+        # Cervezas: 7 columnas (tipo, estilo y graduación juntos); carta: 6.
+        for response, columns in ((beers, 7), (menu, 6)):
+            self.assertContains(response, 'class="data-table data-table-fit"')
+            self.assertContains(response, "data-label=", count=columns)
 
 
 class ContentAndSettingsTests(DashboardTestCase):

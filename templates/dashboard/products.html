@@ -26,25 +26,27 @@
 
 {% if page.object_list %}
   <div class="table-wrap">
-    <table class="data-table" data-product-list>
-      <thead><tr><th scope="col">{% translate "Producto" %}</th><th scope="col">{% translate "Categoría" %}</th>{% if beers %}<th scope="col">{% translate "Tipo" %}</th><th scope="col">{% translate "Estilo" %}</th><th scope="col" class="num">{% translate "Graduación" %}</th>{% endif %}<th scope="col" class="num">{% translate "Precio" %}</th><th scope="col">{% translate "Publicación" %}</th><th scope="col">{% translate "Disponibilidad" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+    {% comment %}Mismo ajuste que la lista de eventos (.data-table-fit): tabla compacta desde xl y una tarjeta por producto por debajo. En cervezas, tipo, estilo y graduación van en una sola columna para que quepa.{% endcomment %}
+    {% translate "Tipo" as kind_label %}{% translate "Estilo" as style_label %}{% translate "Graduación" as abv_label %}
+    <table class="data-table data-table-fit" data-product-list>
+      <thead><tr><th scope="col">{% translate "Producto" %}</th><th scope="col">{% translate "Categoría" %}</th>{% if beers %}<th scope="col">{{ kind_label }} · {{ style_label }} · {{ abv_label }}</th>{% endif %}<th scope="col" class="num">{% translate "Precio" %}</th><th scope="col">{% translate "Publicación" %}</th><th scope="col">{% translate "Disponibilidad" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for product in page %}
           <tr>
-            <td class="font-semibold">{{ product.name }}{% if product.is_featured %} <span class="badge">{% translate "Destacada" %}</span>{% endif %}</td>
-            <td>{{ product.category.name }}</td>
-            {% if beers %}<td>{{ product.get_kind_display }}</td><td>{{ product.style.name|default:"—" }}</td><td class="num">{% if product.abv is not None %}{{ product.abv }} %{% else %}—{% endif %}</td>{% endif %}
-            <td class="num">{% if product.price is not None %}{{ product.price|floatformat:2 }} €{% else %}—{% endif %}</td>
-            <td>{{ product.get_status_display }}</td>
-            <td>
-              <form method="post" action="{% url 'dashboard:product_availability' product.public_id %}">
+            <td class="cell-title font-semibold" data-label="{% translate 'Producto' %}">{{ product.name }}{% if product.is_featured %} <span class="badge">{% translate "Destacada" %}</span>{% endif %}</td>
+            <td data-label="{% translate 'Categoría' %}">{{ product.category.name }}</td>
+            {% if beers %}<td data-label="{{ kind_label }} · {{ style_label }} · {{ abv_label }}">{{ product.get_kind_display }} · {{ product.style.name|default:"—" }} · <span class="whitespace-nowrap tabular-nums">{% if product.abv is not None %}{{ product.abv }} %{% else %}—{% endif %}</span></td>{% endif %}
+            <td class="num whitespace-nowrap" data-label="{% translate 'Precio' %}">{% if product.price is not None %}{{ product.price|floatformat:2 }} €{% else %}—{% endif %}</td>
+            <td data-label="{% translate 'Publicación' %}">{{ product.get_status_display }}</td>
+            <td data-label="{% translate 'Disponibilidad' %}">
+              <form method="post" action="{% url 'dashboard:product_availability' product.public_id %}" class="cell-actions">
                 {% csrf_token %}
-                {% if product.is_available %}<span class="mr-2">{% translate "Disponible" %}</span><button type="submit" name="disponible" value="no" class="btn btn-secondary btn-sm">{% translate "Marcar agotado" %}</button>
-                {% else %}<span class="mr-2 text-danger">{% translate "Agotado" context "producto" %}</span><button type="submit" name="disponible" value="si" class="btn btn-secondary btn-sm">{% translate "Marcar disponible" %}</button>{% endif %}
+                {% if product.is_available %}<span>{% translate "Disponible" %}</span><button type="submit" name="disponible" value="no" class="btn btn-secondary btn-sm">{% translate "Marcar agotado" %}</button>
+                {% else %}<span class="text-danger">{% translate "Agotado" context "producto" %}</span><button type="submit" name="disponible" value="si" class="btn btn-secondary btn-sm">{% translate "Marcar disponible" %}</button>{% endif %}
               </form>
             </td>
-            <td>
-              <form method="post" action="{% url 'dashboard:product_status' product.public_id %}" class="flex flex-wrap gap-2">
+            <td class="cell-buttons" data-label="{% translate 'Acciones' %}">
+              <form method="post" action="{% url 'dashboard:product_status' product.public_id %}" class="cell-actions">
                 {% csrf_token %}
                 {% for value, label in product_statuses %}{% if value != product.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "PUBLISHED" %}{% translate "Publicar" %}{% elif value == "DRAFT" %}{% translate "A borrador" %}{% else %}{% translate "Archivar" %}{% endif %}</button>{% endif %}{% endfor %}
                 <a class="btn btn-ghost btn-sm" href="{% url 'admin:catalog_product_change' product.pk %}">{% translate "Editar" %}</a>
