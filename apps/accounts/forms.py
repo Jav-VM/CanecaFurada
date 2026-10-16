@@ -11,6 +11,7 @@ from django import forms
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.http import client_ip
 
@@ -30,30 +31,30 @@ def _text(label, max_length, required=True, **attrs):
 
 
 class PersonalDataFieldsMixin(forms.Form):
-    first_name = _text("Nombre", 150, autocomplete="given-name")
-    last_name = _text("Apellidos", 150, autocomplete="family-name")
+    first_name = _text(_("Nombre"), 150, autocomplete="given-name")
+    last_name = _text(_("Apellidos"), 150, autocomplete="family-name")
     date_of_birth = forms.DateField(
-        label="Fecha de nacimiento",
+        label=_("Fecha de nacimiento"),
         widget=_DATE_WIDGET,
         input_formats=["%Y-%m-%d", "%d/%m/%Y"],
-        help_text="Solo la usaremos para tu edad y tus promociones de cumpleaños.",
+        help_text=_("Solo la usaremos para tu edad y tus promociones de cumpleaños."),
     )
-    phone_number = _text("Teléfono móvil", 32, required=False, autocomplete="tel", type="tel")
-    address_line_1 = _text("Dirección", 200, autocomplete="address-line1")
-    address_line_2 = _text("Dirección (línea 2)", 200, required=False, autocomplete="address-line2")
-    postal_code = _text("Código postal", 12, autocomplete="postal-code")
-    city = _text("Localidad", 100, autocomplete="address-level2")
-    province = _text("Provincia", 100, autocomplete="address-level1")
-    country = forms.ChoiceField(label="País", choices=COUNTRIES, initial=DEFAULT_COUNTRY)
+    phone_number = _text(_("Teléfono móvil"), 32, required=False, autocomplete="tel", type="tel")
+    address_line_1 = _text(_("Dirección"), 200, autocomplete="address-line1")
+    address_line_2 = _text(_("Dirección (línea 2)"), 200, required=False, autocomplete="address-line2")
+    postal_code = _text(_("Código postal"), 12, autocomplete="postal-code")
+    city = _text(_("Localidad"), 100, autocomplete="address-level2")
+    province = _text(_("Provincia"), 100, autocomplete="address-level1")
+    country = forms.ChoiceField(label=_("País"), choices=COUNTRIES, initial=DEFAULT_COUNTRY)
 
     sections = ()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["phone_number"].help_text = (
-            "Con prefijo internacional si no es español (p. ej. +351…)."
+            _("Con prefijo internacional si no es español (p. ej. +351…).")
         )
-        self.fields["province"].help_text = "Provincia, estado o región."
+        self.fields["province"].help_text = _("Provincia, estado o región.")
 
     def grouped_fields(self):
         """Secciones visuales del formulario para la plantilla: [(título, [campos])]."""
@@ -82,41 +83,41 @@ class PersonalDataFieldsMixin(forms.Form):
 
 class RegistrationForm(PersonalDataFieldsMixin):
     email = forms.EmailField(
-        label="Email", max_length=254, widget=forms.EmailInput(attrs={"autocomplete": "email"})
+        label=_("Email"), max_length=254, widget=forms.EmailInput(attrs={"autocomplete": "email"})
     )
     password1 = forms.CharField(
-        label="Contraseña",
+        label=_("Contraseña"),
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
-        help_text="Mínimo 10 caracteres; no uses una contraseña común ni solo números.",
+        help_text=_("Mínimo 10 caracteres; no uses una contraseña común ni solo números."),
     )
     password2 = forms.CharField(
-        label="Repite la contraseña",
+        label=_("Repite la contraseña"),
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
     )
     promo_email_opt_in = forms.BooleanField(
-        label="Quiero recibir promociones y novedades por email.", required=False
+        label=_("Quiero recibir promociones y novedades por email."), required=False
     )
     promo_sms_opt_in = forms.BooleanField(
-        label="Quiero recibir promociones por SMS (requiere teléfono móvil).", required=False
+        label=_("Quiero recibir promociones por SMS (requiere teléfono móvil)."), required=False
     )
 
     sections = (
-        ("Datos personales", ("first_name", "last_name", "date_of_birth", "phone_number")),
+        (_("Datos personales"), ("first_name", "last_name", "date_of_birth", "phone_number")),
         (
-            "Dirección postal",
+            _("Dirección postal"),
             ("address_line_1", "address_line_2", "postal_code", "city", "province", "country"),
         ),
-        ("Acceso a la cuenta", ("email", "password1", "password2")),
-        ("Preferencias de comunicación", ("promo_email_opt_in", "promo_sms_opt_in")),
+        (_("Acceso a la cuenta"), ("email", "password1", "password2")),
+        (_("Preferencias de comunicación"), ("promo_email_opt_in", "promo_sms_opt_in")),
     )
 
     def clean(self):
         cleaned = super().clean()
         p1, p2 = cleaned.get("password1"), cleaned.get("password2")
         if p1 and p2 and p1 != p2:
-            self.add_error("password2", "Las contraseñas no coinciden.")
+            self.add_error("password2", _("Las contraseñas no coinciden."))
         return cleaned
 
     def service_kwargs(self):
@@ -128,9 +129,9 @@ class RegistrationForm(PersonalDataFieldsMixin):
 
 class ProfileForm(PersonalDataFieldsMixin):
     sections = (
-        ("Datos personales", ("first_name", "last_name", "date_of_birth", "phone_number")),
+        (_("Datos personales"), ("first_name", "last_name", "date_of_birth", "phone_number")),
         (
-            "Dirección postal",
+            _("Dirección postal"),
             ("address_line_1", "address_line_2", "postal_code", "city", "province", "country"),
         ),
     )
@@ -138,26 +139,26 @@ class ProfileForm(PersonalDataFieldsMixin):
 
 class CommunicationPreferencesForm(forms.Form):
     promo_email_opt_in = forms.BooleanField(
-        label="Quiero recibir promociones y novedades por email.", required=False
+        label=_("Quiero recibir promociones y novedades por email."), required=False
     )
     promo_sms_opt_in = forms.BooleanField(
-        label="Quiero recibir promociones por SMS (requiere teléfono móvil).", required=False
+        label=_("Quiero recibir promociones por SMS (requiere teléfono móvil)."), required=False
     )
 
 
 class EmailChangeForm(forms.Form):
     new_email = forms.EmailField(
-        label="Nuevo email", max_length=254, widget=forms.EmailInput(attrs={"autocomplete": "email"})
+        label=_("Nuevo email"), max_length=254, widget=forms.EmailInput(attrs={"autocomplete": "email"})
     )
     password = forms.CharField(
-        label="Contraseña actual",
+        label=_("Contraseña actual"),
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
     )
 
 
 class ResendVerificationForm(forms.Form):
-    email = forms.EmailField(label="Email", max_length=254)
+    email = forms.EmailField(label=_("Email"), max_length=254)
 
 
 def apply_service_errors(form, exc, field_map=None, fallback_field=None):
@@ -171,7 +172,7 @@ def apply_service_errors(form, exc, field_map=None, fallback_field=None):
         form.add_error(fallback_field, exc.messages)
 
 
-_THROTTLED = "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos."
+_THROTTLED = _("Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.")
 
 
 class LoginThrottleMixin:
@@ -198,7 +199,7 @@ class ThrottledAuthenticationForm(LoginThrottleMixin, AuthenticationForm):
 
     error_messages = {
         **AuthenticationForm.error_messages,
-        "invalid_login": "Email o contraseña incorrectos.",
+        "invalid_login": _("Email o contraseña incorrectos."),
         "throttled": _THROTTLED,
     }
 

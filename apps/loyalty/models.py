@@ -8,6 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
 
@@ -28,16 +29,16 @@ class CustomerQRCode(TimeStampedModel):
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        verbose_name="cliente",
+        verbose_name=_("cliente"),
         on_delete=models.CASCADE,
         related_name="qr_code",
     )
-    token = models.CharField("token", max_length=32, unique=True, editable=False)
-    rotated_at = models.DateTimeField("renovado el", null=True, blank=True, editable=False)
+    token = models.CharField(_("token"), max_length=32, unique=True, editable=False)
+    rotated_at = models.DateTimeField(_("renovado el"), null=True, blank=True, editable=False)
 
     class Meta:
-        verbose_name = "código QR de cliente"
-        verbose_name_plural = "códigos QR de cliente"
+        verbose_name = _("código QR de cliente")
+        verbose_name_plural = _("códigos QR de cliente")
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(token__regex=r"^[A-Z2-7]{32}$"),
@@ -47,7 +48,7 @@ class CustomerQRCode(TimeStampedModel):
 
     def __str__(self):
         # Sin el token: el admin, los logs o los errores nunca lo muestran.
-        return f"QR de cliente #{self.pk}"
+        return _("QR de cliente #%(pk)s") % {"pk": self.pk}
 
 
 # --- Puntos (Fase 6) -------------------------------------------------------------
@@ -66,30 +67,30 @@ class LoyaltyRule(models.Model):
     MIN_RATE = Decimal("0.01")
     MAX_RATE = Decimal("100.00")
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     points_per_euro = models.DecimalField(
-        "puntos por euro",
+        _("puntos por euro"),
         max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(MIN_RATE), MaxValueValidator(MAX_RATE)],
-        help_text="Puntos por cada euro de compra. El resultado se redondea hacia abajo a puntos enteros.",
+        help_text=_("Puntos por cada euro de compra. El resultado se redondea hacia abajo a puntos enteros."),
     )
-    valid_from = models.DateTimeField("en vigor desde", default=timezone.now, db_index=True)
-    note = models.CharField("motivo", max_length=200, blank=True)
+    valid_from = models.DateTimeField(_("en vigor desde"), default=timezone.now, db_index=True)
+    note = models.CharField(_("motivo"), max_length=200, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="creada por",
+        verbose_name=_("creada por"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="+",
         editable=False,
     )
-    created_at = models.DateTimeField("creada", auto_now_add=True)
+    created_at = models.DateTimeField(_("creada"), auto_now_add=True)
 
     class Meta:
-        verbose_name = "regla de conversión de puntos"
-        verbose_name_plural = "reglas de conversión de puntos"
+        verbose_name = _("regla de conversión de puntos")
+        verbose_name_plural = _("reglas de conversión de puntos")
         ordering = ["-valid_from", "-id"]
         constraints = [
             models.CheckConstraint(
@@ -99,14 +100,14 @@ class LoyaltyRule(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.points_per_euro} puntos/€ desde {timezone.localtime(self.valid_from):%d/%m/%Y %H:%M}"
+        return _("%(points_per_euro)s puntos/€ desde %(localtime)s") % {"points_per_euro": self.points_per_euro, "localtime": format(timezone.localtime(self.valid_from), "%d/%m/%Y %H:%M")}
 
     def clean(self):
         super().clean()
         # Una regla nueva no puede aplicarse a compras ya registradas. Margen de
         # unos minutos para "en vigor desde ahora" en el formulario del admin.
         if self._state.adding and self.valid_from and self.valid_from < timezone.now() - datetime.timedelta(minutes=5):
-            raise ValidationError({"valid_from": "La nueva conversión no puede entrar en vigor en el pasado."})
+            raise ValidationError({"valid_from": _("La nueva conversión no puede entrar en vigor en el pasado.")})
 
 
 class PointsExpiryPolicy(models.Model):
@@ -125,37 +126,37 @@ class PointsExpiryPolicy(models.Model):
     MAX_WARN_DAYS = 60
     DEFAULT_WARN_DAYS = 15
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     months = models.PositiveSmallIntegerField(
-        "meses de validez",
+        _("meses de validez"),
         null=True,
         blank=True,
         validators=[MinValueValidator(1), MaxValueValidator(MAX_MONTHS)],
-        help_text="Vacío: los puntos no caducan.",
+        help_text=_("Vacío: los puntos no caducan."),
     )
     warn_days = models.PositiveSmallIntegerField(
-        "días de aviso",
+        _("días de aviso"),
         default=DEFAULT_WARN_DAYS,
         validators=[MinValueValidator(1), MaxValueValidator(MAX_WARN_DAYS)],
-        help_text="Con cuántos días de antelación se avisa por email de los puntos que van a caducar.",
+        help_text=_("Con cuántos días de antelación se avisa por email de los puntos que van a caducar."),
     )
-    counts_from = models.DateTimeField("el plazo cuenta desde", null=True, blank=True, editable=False)
-    valid_from = models.DateTimeField("en vigor desde", default=timezone.now, db_index=True, editable=False)
-    note = models.CharField("motivo", max_length=200, blank=True)
+    counts_from = models.DateTimeField(_("el plazo cuenta desde"), null=True, blank=True, editable=False)
+    valid_from = models.DateTimeField(_("en vigor desde"), default=timezone.now, db_index=True, editable=False)
+    note = models.CharField(_("motivo"), max_length=200, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="creada por",
+        verbose_name=_("creada por"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="+",
         editable=False,
     )
-    created_at = models.DateTimeField("creada", auto_now_add=True)
+    created_at = models.DateTimeField(_("creada"), auto_now_add=True)
 
     class Meta:
-        verbose_name = "política de caducidad de puntos"
-        verbose_name_plural = "políticas de caducidad de puntos"
+        verbose_name = _("política de caducidad de puntos")
+        verbose_name_plural = _("políticas de caducidad de puntos")
         ordering = ["-valid_from", "-id"]
         constraints = [
             models.CheckConstraint(
@@ -174,8 +175,8 @@ class PointsExpiryPolicy(models.Model):
 
     def __str__(self):
         if self.months is None:
-            return f"Sin caducidad desde {timezone.localtime(self.valid_from):%d/%m/%Y %H:%M}"
-        return f"{self.months} meses desde {timezone.localtime(self.valid_from):%d/%m/%Y %H:%M}"
+            return _("Sin caducidad desde %(localtime)s") % {"localtime": format(timezone.localtime(self.valid_from), "%d/%m/%Y %H:%M")}
+        return _("%(months)s meses desde %(localtime)s") % {"months": self.months, "localtime": format(timezone.localtime(self.valid_from), "%d/%m/%Y %H:%M")}
 
     @property
     def is_active(self):
@@ -198,78 +199,78 @@ class Promotion(TimeStampedModel):
     """
 
     class Kind(models.TextChoices):
-        PURCHASE = "PURCHASE", "Por compra"
-        BIRTHDAY = "BIRTHDAY", "Cumpleaños"
+        PURCHASE = "PURCHASE", _("Por compra")
+        BIRTHDAY = "BIRTHDAY", _("Cumpleaños")
 
     class BonusType(models.TextChoices):
-        FIXED_POINTS = "FIXED_POINTS", "Puntos fijos"
-        MULTIPLIER = "MULTIPLIER", "Multiplicador de los puntos de la compra"
+        FIXED_POINTS = "FIXED_POINTS", _("Puntos fijos")
+        MULTIPLIER = "MULTIPLIER", _("Multiplicador de los puntos de la compra")
 
     class Status(models.TextChoices):
-        DRAFT = "DRAFT", "Borrador"
-        ACTIVE = "ACTIVE", "Activa"
-        PAUSED = "PAUSED", "Pausada"
-        ENDED = "ENDED", "Finalizada"
+        DRAFT = "DRAFT", _("Borrador")
+        ACTIVE = "ACTIVE", _("Activa")
+        PAUSED = "PAUSED", _("Pausada")
+        ENDED = "ENDED", _("Finalizada")
 
     MAX_FIXED_POINTS = 10000
     MAX_MULTIPLIER = Decimal("10.00")
     MAX_BIRTHDAY_WINDOW_DAYS = 31
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
-    name = models.CharField("nombre", max_length=100)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
+    name = models.CharField(_("nombre"), max_length=100)
     description = models.CharField(
-        "descripción para el cliente", max_length=300, blank=True, help_text="Texto público, sin datos personales."
+        _("descripción para el cliente"), max_length=300, blank=True, help_text=_("Texto público, sin datos personales.")
     )
-    kind = models.CharField("tipo", max_length=10, choices=Kind.choices, default=Kind.PURCHASE)
-    bonus_type = models.CharField("bonificación", max_length=16, choices=BonusType.choices)
+    kind = models.CharField(_("tipo"), max_length=10, choices=Kind.choices, default=Kind.PURCHASE)
+    bonus_type = models.CharField(_("bonificación"), max_length=16, choices=BonusType.choices)
     fixed_points = models.PositiveIntegerField(
-        "puntos fijos",
+        _("puntos fijos"),
         null=True,
         blank=True,
         validators=[MinValueValidator(1), MaxValueValidator(MAX_FIXED_POINTS)],
     )
     multiplier = models.DecimalField(
-        "multiplicador",
+        _("multiplicador"),
         max_digits=4,
         decimal_places=2,
         null=True,
         blank=True,
         validators=[MinValueValidator(Decimal("1.01")), MaxValueValidator(MAX_MULTIPLIER)],
-        help_text="Por ejemplo 2,00 = puntos dobles: se suman los puntos de la compra × (multiplicador − 1).",
+        help_text=_("Por ejemplo 2,00 = puntos dobles: se suman los puntos de la compra × (multiplicador − 1)."),
     )
     min_purchase_amount = models.DecimalField(
-        "importe mínimo de la compra (€)",
+        _("importe mínimo de la compra (€)"),
         max_digits=8,
         decimal_places=2,
         null=True,
         blank=True,
         validators=[MinValueValidator(Decimal("0.01"))],
     )
-    starts_at = models.DateTimeField("empieza")
-    ends_at = models.DateTimeField("termina", null=True, blank=True, help_text="Vacío: sin fecha de fin.")
+    starts_at = models.DateTimeField(_("empieza"))
+    ends_at = models.DateTimeField(_("termina"), null=True, blank=True, help_text=_("Vacío: sin fecha de fin."))
     max_uses_per_customer = models.PositiveIntegerField(
-        "usos máximos por cliente",
+        _("usos máximos por cliente"),
         null=True,
         blank=True,
         validators=[MinValueValidator(1)],
-        help_text="Vacío: sin límite. Las de cumpleaños son siempre una por cliente y año.",
+        help_text=_("Vacío: sin límite. Las de cumpleaños son siempre una por cliente y año."),
     )
     max_total_uses = models.PositiveIntegerField(
-        "usos máximos en total", null=True, blank=True, validators=[MinValueValidator(1)]
+        _("usos máximos en total"), null=True, blank=True, validators=[MinValueValidator(1)]
     )
     birthday_window_days = models.PositiveSmallIntegerField(
-        "días de margen alrededor del cumpleaños",
+        _("días de margen alrededor del cumpleaños"),
         default=7,
         validators=[MaxValueValidator(MAX_BIRTHDAY_WINDOW_DAYS)],
-        help_text="Sin uso desde la Fase 10: el regalo de cumpleaños se concede el mismo día.",
+        help_text=_("Sin uso desde la Fase 10: el regalo de cumpleaños se concede el mismo día."),
     )
     status = models.CharField(
-        "estado", max_length=8, choices=Status.choices, default=Status.DRAFT, db_index=True
+        _("estado"), max_length=8, choices=Status.choices, default=Status.DRAFT, db_index=True
     )
 
     class Meta:
-        verbose_name = "promoción"
-        verbose_name_plural = "promociones"
+        verbose_name = _("promoción")
+        verbose_name_plural = _("promociones")
         ordering = ["-starts_at", "-id"]
         constraints = [
             models.CheckConstraint(condition=Q(kind__in=["PURCHASE", "BIRTHDAY"]), name="loyalty_promo_kind_valid"),
@@ -330,18 +331,18 @@ class Promotion(TimeStampedModel):
         errors = {}
         if self.bonus_type == self.BonusType.FIXED_POINTS:
             if not self.fixed_points:
-                errors["fixed_points"] = "Indica los puntos que da la promoción."
+                errors["fixed_points"] = _("Indica los puntos que da la promoción.")
             if self.multiplier is not None:
-                errors["multiplier"] = "Deja vacío el multiplicador en una promoción de puntos fijos."
+                errors["multiplier"] = _("Deja vacío el multiplicador en una promoción de puntos fijos.")
         elif self.bonus_type == self.BonusType.MULTIPLIER:
             if self.multiplier is None:
-                errors["multiplier"] = "Indica el multiplicador."
+                errors["multiplier"] = _("Indica el multiplicador.")
             if self.fixed_points is not None:
-                errors["fixed_points"] = "Deja vacíos los puntos fijos en una promoción con multiplicador."
+                errors["fixed_points"] = _("Deja vacíos los puntos fijos en una promoción con multiplicador.")
         if self.kind == self.Kind.BIRTHDAY and self.bonus_type != self.BonusType.FIXED_POINTS:
-            errors["bonus_type"] = "Las promociones de cumpleaños regalan puntos fijos: no admiten multiplicador."
+            errors["bonus_type"] = _("Las promociones de cumpleaños regalan puntos fijos: no admiten multiplicador.")
         if self.starts_at and self.ends_at and self.ends_at <= self.starts_at:
-            errors["ends_at"] = "La fecha de fin debe ser posterior a la de inicio."
+            errors["ends_at"] = _("La fecha de fin debe ser posterior a la de inicio.")
         if errors:
             raise ValidationError(errors)
 
@@ -357,30 +358,30 @@ class PointsTransaction(models.Model):
     """
 
     class Kind(models.TextChoices):
-        EARN_PURCHASE = "EARN_PURCHASE", "Compra"
-        PROMOTION_BONUS = "PROMOTION_BONUS", "Promoción"
-        ADJUSTMENT = "ADJUSTMENT", "Ajuste manual"
-        REVERSAL = "REVERSAL", "Compensación"
+        EARN_PURCHASE = "EARN_PURCHASE", _("Compra")
+        PROMOTION_BONUS = "PROMOTION_BONUS", _("Promoción")
+        ADJUSTMENT = "ADJUSTMENT", _("Ajuste manual")
+        REVERSAL = "REVERSAL", _("Compensación")
         # Canje de una recompensa (Fase 7, `ledger.spend_points`).
-        REDEMPTION = "REDEMPTION", "Canje"
+        REDEMPTION = "REDEMPTION", _("Canje")
         # Regalo de cumpleaños sin compra (Fase 10, `ledger.grant_birthday_gift`).
-        BIRTHDAY_GIFT = "BIRTHDAY_GIFT", "Regalo de cumpleaños"
+        BIRTHDAY_GIFT = "BIRTHDAY_GIFT", _("Regalo de cumpleaños")
         # Puntos vencidos según la política de caducidad (Fase 14, `ledger.expire_points`).
-        EXPIRATION = "EXPIRATION", "Puntos caducados"
+        EXPIRATION = "EXPIRATION", _("Puntos caducados")
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="cliente",
+        verbose_name=_("cliente"),
         on_delete=models.PROTECT,
         related_name="points_transactions",
     )
-    kind =models.CharField("tipo", max_length=16, choices=Kind.choices)
-    points = models.IntegerField("puntos")
-    balance_after = models.IntegerField("saldo resultante")
+    kind =models.CharField(_("tipo"), max_length=16, choices=Kind.choices)
+    points = models.IntegerField(_("puntos"))
+    balance_after = models.IntegerField(_("saldo resultante"))
     purchase = models.ForeignKey(
         "purchases.Purchase",
-        verbose_name="compra",
+        verbose_name=_("compra"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
@@ -388,21 +389,21 @@ class PointsTransaction(models.Model):
     )
     promotion = models.ForeignKey(
         Promotion,
-        verbose_name="promoción",
+        verbose_name=_("promoción"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="points_transactions",
     )
     birthday_year = models.PositiveSmallIntegerField(
-        "año del cumpleaños",
+        _("año del cumpleaños"),
         null=True,
         blank=True,
-        help_text="Solo en promociones de cumpleaños: impide más de una por cliente y año.",
+        help_text=_("Solo en promociones de cumpleaños: impide más de una por cliente y año."),
     )
     reverses = models.OneToOneField(
         "self",
-        verbose_name="compensa a",
+        verbose_name=_("compensa a"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
@@ -410,31 +411,31 @@ class PointsTransaction(models.Model):
     )
     rule = models.ForeignKey(
         LoyaltyRule,
-        verbose_name="regla de conversión",
+        verbose_name=_("regla de conversión"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    base_amount = models.DecimalField("importe base (€)", max_digits=8, decimal_places=2, null=True, blank=True)
+    base_amount = models.DecimalField(_("importe base (€)"), max_digits=8, decimal_places=2, null=True, blank=True)
     points_per_euro = models.DecimalField(
-        "puntos por euro aplicados", max_digits=6, decimal_places=2, null=True, blank=True
+        _("puntos por euro aplicados"), max_digits=6, decimal_places=2, null=True, blank=True
     )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="registrado por",
+        verbose_name=_("registrado por"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    reason = models.CharField("motivo", max_length=200, blank=True)
-    idempotency_key = models.UUIDField("referencia de idempotencia", null=True, blank=True, unique=True)
-    created_at = models.DateTimeField("fecha", auto_now_add=True, db_index=True)
+    reason = models.CharField(_("motivo"), max_length=200, blank=True)
+    idempotency_key = models.UUIDField(_("referencia de idempotencia"), null=True, blank=True, unique=True)
+    created_at = models.DateTimeField(_("fecha"), auto_now_add=True, db_index=True)
 
     class Meta:
-        verbose_name = "movimiento de puntos"
-        verbose_name_plural = "movimientos de puntos"
+        verbose_name = _("movimiento de puntos")
+        verbose_name_plural = _("movimientos de puntos")
         ordering = ["-created_at", "-id"]
         indexes = [models.Index(fields=["customer", "created_at"])]
         constraints = [
@@ -526,27 +527,27 @@ class BirthdayMessage(models.Model):
     MAX_EMAIL_BODY = 2000
     MAX_SMS_BODY = 200
 
-    email_subject = models.CharField("asunto del email", max_length=MAX_SUBJECT, blank=True)
-    email_body = models.TextField("mensaje del email", max_length=MAX_EMAIL_BODY, blank=True)
-    sms_body = models.CharField("mensaje SMS", max_length=MAX_SMS_BODY, blank=True)
+    email_subject = models.CharField(_("asunto del email"), max_length=MAX_SUBJECT, blank=True)
+    email_body = models.TextField(_("mensaje del email"), max_length=MAX_EMAIL_BODY, blank=True)
+    sms_body = models.CharField(_("mensaje SMS"), max_length=MAX_SMS_BODY, blank=True)
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="modificado por",
+        verbose_name=_("modificado por"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="+",
         editable=False,
     )
-    updated_at = models.DateTimeField("actualizado", auto_now=True)
+    updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:
-        verbose_name = "aviso de cumpleaños"
-        verbose_name_plural = "aviso de cumpleaños"
+        verbose_name = _("aviso de cumpleaños")
+        verbose_name_plural = _("aviso de cumpleaños")
         constraints = [models.CheckConstraint(condition=Q(id=1), name="loyalty_birthdaymessage_singleton")]
 
     def __str__(self):
-        return "Aviso de cumpleaños"
+        return _("Aviso de cumpleaños")
 
     def save(self, *args, **kwargs):
         self.pk = self.SINGLETON_ID

@@ -18,6 +18,7 @@ from django.core.validators import validate_email
 from django.db import IntegrityError, models, transaction
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
+from django.utils.translation import gettext_lazy as _
 
 from apps.core import throttling
 from apps.core.models import AuditEvent
@@ -54,7 +55,7 @@ class EmailAlreadyRegistered(ValidationError):
     """
 
     def __init__(self):
-        super().__init__({"email": "Ya existe una cuenta con este email."}, code="email_taken")
+        super().__init__({"email": _("Ya existe una cuenta con este email.")}, code="email_taken")
 
 
 class RateLimited(Exception):
@@ -77,9 +78,9 @@ def _apply_role_flags(user):
 def _ensure_active_owner(actor):
     """Comprueba en BD (no en el objeto en memoria) que el actor es propietario activo."""
     if actor is None or not getattr(actor, "is_authenticated", False):
-        raise PermissionDenied("Operación reservada al propietario.")
+        raise PermissionDenied(_("Operación reservada al propietario."))
     if not User.objects.filter(pk=actor.pk, role=Role.OWNER, is_active=True).exists():
-        raise PermissionDenied("Operación reservada al propietario.")
+        raise PermissionDenied(_("Operación reservada al propietario."))
 
 
 def _lock_active_owners(actor):
@@ -104,7 +105,7 @@ def _lock_active_owners(actor):
         .values_list("pk", flat=True)
     )
     if actor.pk not in owner_ids:
-        raise PermissionDenied("Operación reservada al propietario.")
+        raise PermissionDenied(_("Operación reservada al propietario."))
     return len(owner_ids)
 
 
@@ -115,7 +116,7 @@ def ensure_customer_profile(user):
     Debe llamarse dentro de la transacción que da de alta al cliente o le asigna
     el rol CUSTOMER, para que nunca quede un cliente sin perfil.
     """
-    profile, _ = CustomerProfile.objects.get_or_create(user=user)
+    profile, _unused = CustomerProfile.objects.get_or_create(user=user)
     return profile
 
 
@@ -189,7 +190,7 @@ def create_owner(*, email, first_name, last_name, password, actor=None):
         # Bloquea las filas de propietarios para serializar altas concurrentes.
         if list(User.objects.select_for_update().filter(role=Role.OWNER)):
             raise PermissionDenied(
-                "Ya existe un propietario. Los siguientes deben crearse por un propietario."
+                _("Ya existe un propietario. Los siguientes deben crearse por un propietario.")
             )
     else:
         _ensure_active_owner(actor)
@@ -208,7 +209,7 @@ def create_user_by_owner(*, actor, role, email, first_name, last_name, password,
     """Alta de cualquier rol por un propietario (usado por el admin)."""
     _ensure_active_owner(actor)
     if role not in Role.values:
-        raise ValidationError({"role": "Rol no válido."})
+        raise ValidationError({"role": _("Rol no válido.")})
     return _create_user(
         role=role,
         email=email,
@@ -228,7 +229,7 @@ def change_role(*, actor, user, new_role):
     """
     _ensure_active_owner(actor)
     if new_role not in Role.values:
-        raise ValidationError({"role": "Rol no válido."})
+        raise ValidationError({"role": _("Rol no válido.")})
 
     active_owners = _lock_active_owners(actor)
     target = User.objects.select_for_update().get(pk=user.pk)
@@ -237,7 +238,7 @@ def change_role(*, actor, user, new_role):
         return target
 
     if old_role == Role.OWNER and target.is_active and active_owners <= 1:
-        raise ValidationError("No se puede retirar el rol al último propietario activo.")
+        raise ValidationError(_("No se puede retirar el rol al último propietario activo."))
 
     target.role = new_role
     _apply_role_flags(target)
@@ -271,7 +272,7 @@ def set_user_active(*, actor, user, is_active):
     if target.is_active == is_active:
         return target
     if not is_active and target.role == Role.OWNER and active_owners <= 1:
-        raise ValidationError("No se puede desactivar al último propietario activo.")
+        raise ValidationError(_("No se puede desactivar al último propietario activo."))
     target.is_active = is_active
     target.save(update_fields=["is_active"])
     record_audit_event(
@@ -299,11 +300,11 @@ def record_customer_data_access(*, actor, customer):
 def _coerce_date(value, field):
     """Acepta `date` o texto ISO (API); rechaza fechas imposibles como 2001-02-30."""
     if isinstance(value, datetime.datetime):
-        raise ValidationError({field: "Introduce una fecha válida."})
+        raise ValidationError({field: _("Introduce una fecha válida.")})
     try:
         return models.DateField().to_python(value)
     except ValidationError:
-        raise ValidationError({field: "Introduce una fecha válida."}) from None
+        raise ValidationError({field: _("Introduce una fecha válida.")}) from None
 
 
 def _apply_profile_data(profile, data):
@@ -335,7 +336,7 @@ def _validate_complete_profile(profile):
     except ValidationError as exc:
         errors.update(exc.message_dict)
     for name in profile.missing_required_fields():
-        errors.setdefault(name, ["Este campo es obligatorio."])
+        errors.setdefault(name, [_("Este campo es obligatorio.")])
     if errors:
         raise ValidationError(errors)
 
@@ -376,7 +377,7 @@ def login_is_throttled(keys):
 
 
 def register_login_failure(keys):
-    for scope, ident, _ in keys:
+    for scope, ident, _unused in keys:
         throttling.register_attempt(scope, ident, settings.LOGIN_FAILURE_WINDOW_SECONDS)
 
 
@@ -499,9 +500,9 @@ def _issue_email_token(user, purpose, email, *, enforce_limits=True):
         last = recent.filter(purpose=purpose).order_by("-created_at").first()
         interval = datetime.timedelta(seconds=settings.EMAIL_VERIFICATION_RESEND_INTERVAL_SECONDS)
         if last is not None and now - last.created_at < interval:
-            raise RateLimited("Espera un minuto antes de solicitar otro email.")
+            raise RateLimited(_("Espera un minuto antes de solicitar otro email."))
         if recent.count() >= settings.EMAIL_VERIFICATION_MAX_PER_DAY:
-            raise RateLimited("Has alcanzado el máximo de emails de verificación por hoy.")
+            raise RateLimited(_("Has alcanzado el máximo de emails de verificación por hoy."))
 
     EmailVerificationToken.objects.filter(
         user=user, used_at__isnull=True, revoked_at__isnull=True
@@ -562,11 +563,11 @@ def request_verification_resend(email):
 
 
 _TOKEN_ERRORS = {
-    "invalid": "El enlace no es válido.",
-    "expired": "El enlace ha caducado. Solicita uno nuevo.",
-    "used": "Este enlace ya se ha utilizado.",
-    "revoked": "Este enlace ha sido sustituido por uno más reciente.",
-    "email_taken": "Ese email ya no está disponible.",
+    "invalid": _("El enlace no es válido."),
+    "expired": _("El enlace ha caducado. Solicita uno nuevo."),
+    "used": _("Este enlace ya se ha utilizado."),
+    "revoked": _("Este enlace ha sido sustituido por uno más reciente."),
+    "email_taken": _("Ese email ya no está disponible."),
 }
 
 
@@ -656,16 +657,16 @@ def request_email_change(*, user, new_email, password):
     if not user.is_active:
         raise PermissionDenied
     if not user.check_password(password or ""):
-        raise ValidationError({"password": "La contraseña no es correcta."})
+        raise ValidationError({"password": _("La contraseña no es correcta.")})
     new_email = normalize_email_address(new_email or "")
     try:
         validate_email(new_email)
     except ValidationError:
-        raise ValidationError({"new_email": "Introduce un email válido."}) from None
+        raise ValidationError({"new_email": _("Introduce un email válido.")}) from None
     if len(new_email) > 254:
-        raise ValidationError({"new_email": "El email es demasiado largo."})
+        raise ValidationError({"new_email": _("El email es demasiado largo.")})
     if new_email == user.email:
-        raise ValidationError({"new_email": "Ese ya es tu email actual."})
+        raise ValidationError({"new_email": _("Ese ya es tu email actual.")})
     if User.objects.filter(email=new_email).exists():
         return
     raw_token = _issue_email_token(user, TokenPurpose.CHANGE, new_email)
@@ -683,14 +684,14 @@ def purge_email_tokens(*, older_than_days=30, now=None):
     if older_than_days < 1:
         raise ValueError("older_than_days debe ser al menos 1.")
     cutoff = (now or timezone.now()) - datetime.timedelta(days=older_than_days)
-    deleted, _ = EmailVerificationToken.objects.filter(expires_at__lt=cutoff).delete()
+    deleted, _unused = EmailVerificationToken.objects.filter(expires_at__lt=cutoff).delete()
     return deleted
 
 
 def require_verified_email(user):
     """Para operaciones que exigen un email verificado (puntos, canjes, reservas...)."""
     if not (getattr(user, "is_authenticated", False) and user.is_active and user.is_email_verified):
-        raise PermissionDenied("Debes verificar tu email para usar esta función.")
+        raise PermissionDenied(_("Debes verificar tu email para usar esta función."))
 
 
 # --- Contraseña --------------------------------------------------------------------
@@ -727,7 +728,7 @@ def change_password(*, user, current_password, new_password, channel="api"):
     if not user.is_active:
         raise PermissionDenied
     if not user.check_password(current_password or ""):
-        raise ValidationError({"current_password": "La contraseña actual no es correcta."})
+        raise ValidationError({"current_password": _("La contraseña actual no es correcta.")})
     _set_new_password(user, new_password)
     record_password_change(user=user, via="change", channel=channel)
     return user
@@ -751,7 +752,7 @@ def reset_password_with_token(*, uidb64, token, new_password, channel="api"):
     """
     user = _user_from_uidb64(uidb64)
     if user is None or not user.is_active or not default_token_generator.check_token(user, token or ""):
-        raise ValidationError("El enlace no es válido o ha caducado. Solicita uno nuevo.", code="invalid_token")
+        raise ValidationError(_("El enlace no es válido o ha caducado. Solicita uno nuevo."), code="invalid_token")
     _set_new_password(user, new_password)
     record_password_change(user=user, via="reset", channel=channel)
     return user
@@ -762,7 +763,7 @@ def reset_password_with_token(*, uidb64, token, new_password, channel="api"):
 
 def _require_active_customer(user):
     if not (user.is_active and user.role == Role.CUSTOMER):
-        raise PermissionDenied("Solo los clientes tienen perfil de cliente.")
+        raise PermissionDenied(_("Solo los clientes tienen perfil de cliente."))
 
 
 @transaction.atomic
@@ -779,7 +780,7 @@ def update_customer_profile(*, user, first_name, last_name, **profile_data):
     """
     unknown = set(profile_data) - set(PROFILE_FIELDS)
     if unknown:
-        raise ValidationError(f"Campos no permitidos: {', '.join(sorted(unknown))}.")
+        raise ValidationError(_("Campos no permitidos: %(join)s.") % {"join": ', '.join(sorted(unknown))})
     user = User.objects.select_for_update().get(pk=user.pk)
     _require_active_customer(user)
     ensure_customer_profile(user)
@@ -795,7 +796,7 @@ def update_customer_profile(*, user, first_name, last_name, **profile_data):
         last_change = profile.date_of_birth_changed_at
         if last_change is not None and now - last_change < cooldown:
             raise ValidationError(
-                {"date_of_birth": "La fecha de nacimiento solo puede cambiarse una vez al año."}
+                {"date_of_birth": _("La fecha de nacimiento solo puede cambiarse una vez al año.")}
             )
         profile.date_of_birth_changed_at = now
 
@@ -847,7 +848,7 @@ def set_communication_preferences(*, user, promo_email_opt_in, promo_sms_opt_in,
     promo_email_opt_in, promo_sms_opt_in = bool(promo_email_opt_in), bool(promo_sms_opt_in)
     if promo_sms_opt_in and not profile.phone_number:
         raise ValidationError(
-            {"promo_sms_opt_in": "Para recibir SMS promocionales indica antes un teléfono móvil."}
+            {"promo_sms_opt_in": _("Para recibir SMS promocionales indica antes un teléfono móvil.")}
         )
     changes = []
     if profile.promo_email_opt_in != promo_email_opt_in:
@@ -871,7 +872,7 @@ def withdraw_promotional_consent(*, user, channel, source=Source.UNSUBSCRIBE_LIN
     No exige sesión: quien llama ya ha validado el enlace firmado.
     """
     if channel not in Channel.values:
-        raise ValidationError("Canal no válido.")
+        raise ValidationError(_("Canal no válido."))
     user = User.objects.select_for_update().get(pk=user.pk)
     if user.role != Role.CUSTOMER:
         return None

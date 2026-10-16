@@ -1,13 +1,13 @@
-{% autoescape off %}Hola {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola {{ first_name }}:{% endblocktranslate %}
 
-Te recordamos que {{ points }} de tus puntos de Caneca Furada caducan el {{ expires_on }}. Puedes usarlos antes en cualquiera de nuestras recompensas.
+{% blocktranslate %}Te recordamos que {{ points }} de tus puntos de Caneca Furada caducan el {{ expires_on }}. Puedes usarlos antes en cualquiera de nuestras recompensas.{% endblocktranslate %}
 
-Consulta tu saldo y las fechas de caducidad:
+{% translate "Consulta tu saldo y las fechas de caducidad:" %}
 {{ site_base_url }}{% url "loyalty:my_points" %}
 
-Los puntos se gastan siempre empezando por los más antiguos.
+{% translate "Los puntos se gastan siempre empezando por los más antiguos." %}
 
 Caneca Furada
 
-Este es un aviso sobre el estado de tu cuenta de puntos.
+{% translate "Este es un aviso sobre el estado de tu cuenta de puntos." %}
 {% endautoescape %}

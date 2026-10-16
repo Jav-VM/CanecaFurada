@@ -1,3 +1,4 @@
+{% load i18n %}
 {% comment %}
 Cómo funcionará el programa de puntos. Sin cifras de conversión ni recompensas
 concretas: las define el propietario cuando se implemente (Fases 5–7).
@@ -5,17 +6,17 @@ concretas: las define el propietario cuando se implemente (Fases 5–7).
 <ol class="grid gap-4 md:grid-cols-3">
   <li class="card card-hover">
     <span class="step-number" aria-hidden="true">1</span>
-    <h3 class="heading-md mt-5">Crea tu cuenta</h3>
-    <p class="mt-2 text-mist">Regístrate gratis y confirma tu email desde el enlace que te enviamos.</p>
+    <h3 class="heading-md mt-5">{% translate "Crea tu cuenta" %}</h3>
+    <p class="mt-2 text-mist">{% translate "Regístrate gratis y confirma tu email desde el enlace que te enviamos." %}</p>
   </li>
   <li class="card card-hover">
     <span class="step-number" aria-hidden="true">2</span>
-    <h3 class="heading-md mt-5">Suma puntos</h3>
-    <p class="mt-2 text-mist">Enseña tu código personal en la barra y tus consumiciones sumarán puntos.</p>
+    <h3 class="heading-md mt-5">{% translate "Suma puntos" %}</h3>
+    <p class="mt-2 text-mist">{% translate "Enseña tu código personal en la barra y tus consumiciones sumarán puntos." %}</p>
   </li>
   <li class="card card-hover">
     <span class="step-number" aria-hidden="true">3</span>
-    <h3 class="heading-md mt-5">Canjea recompensas</h3>
-    <p class="mt-2 text-mist">Cambia tus puntos por recompensas de la casa.</p>
+    <h3 class="heading-md mt-5">{% translate "Canjea recompensas" %}</h3>
+    <p class="mt-2 text-mist">{% translate "Cambia tus puntos por recompensas de la casa." %}</p>
   </li>
 </ol>

@@ -18,6 +18,7 @@ Traducción de los errores de dominio (los servicios no conocen HTTP):
 Nunca se incluyen trazas, consultas SQL, tokens ni datos personales.
 """
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
@@ -43,7 +44,7 @@ CONFLICT_CODES = frozenset(
 TOO_MANY_CODES = frozenset({"rate_limited"})
 
 _RATE_LIMIT_EXCEPTIONS = (RateLimited, RotationRateLimited, PurchaseAttemptsExceeded, RedemptionAttemptsExceeded)
-_RATE_LIMIT_MESSAGE = "Demasiados intentos. Espera unos minutos antes de volver a intentarlo."
+_RATE_LIMIT_MESSAGE = _("Demasiados intentos. Espera unos minutos antes de volver a intentarlo.")
 
 _DEFAULT_CODES = {
     status.HTTP_401_UNAUTHORIZED: "not_authenticated",
@@ -87,7 +88,7 @@ def _from_django_validation(exc):
         status_code = status.HTTP_429_TOO_MANY_REQUESTS
     else:
         status_code = status.HTTP_400_BAD_REQUEST
-    return error_response(status_code, code, exc.messages[0] if exc.messages else "Datos no válidos.", fields)
+    return error_response(status_code, code, exc.messages[0] if exc.messages else _("Datos no válidos."), fields)
 
 
 def _code_for(exc, data, status_code):
@@ -113,9 +114,9 @@ def exception_handler(exc, context):
     data = response.data
     if isinstance(exc, exceptions.ValidationError):
         fields = _strings(data) if isinstance(data, dict) else {"non_field_errors": _strings(data)}
-        response.data = {"code": "invalid", "detail": "Revisa los datos enviados.", "fields": fields}
+        response.data = {"code": "invalid", "detail": _("Revisa los datos enviados."), "fields": fields}
         return response
 
     detail = data.get("detail") if isinstance(data, dict) else data
-    response.data = {"code": _code_for(exc, data, response.status_code), "detail": _strings(detail or "Error.")}
+    response.data = {"code": _code_for(exc, data, response.status_code), "detail": _strings(detail or _("Error."))}
     return response

@@ -26,6 +26,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | Refactorización final controlada | **Completa**: helper de periodo común, estadísticas con menos consultas (resumen del dashboard 17 → 12; API de estadísticas 12 → 7) y regla del último propietario sin duplicar. Corregido además el interbloqueo previo R-1 de la regla del último propietario. **849 tests OK** en PostgreSQL 17 (local y en contenedor) y en SQLite. CI en verde en GitHub ([ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860)) |
 | 13 — Datos de demostración | **Completa**: comando `seed_demo_data` (solo desarrollo y tests) con 27 cuentas ficticias y datos de todas las áreas creados por los servicios reales; `--reset` y `--clean`. 867 tests OK en PostgreSQL 17 y en SQLite |
 | 14 — Caducidad de puntos y regalo de cumpleaños | **Completa**: caducidad configurable (FIFO, sin retroactividad, aviso por email, comando `expire_points`) y regalo y aviso de cumpleaños editables en Dashboard → Configuración. 930 tests OK en PostgreSQL 17. Pendiente revisión visual |
+| 15 — Web en gallego con selector gallego/castellano | **Completa**: toda la interfaz en gallego por defecto; banderas de Galicia y España en la cabecera (castellano en la web pública y el área de cliente); panel, dashboard, emails y SMS siempre en gallego; «Recompensas» se llama «Agasallos» en gallego. 953 tests OK. Pendiente la revisión nativa de las traducciones y la visual |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -33,6 +34,7 @@ Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
 - Python 3.12+ (desarrollado con 3.14).
 - PostgreSQL 14+ (probado con 17). Obligatorio en producción; sin `DATABASE_URL`, desarrollo y tests usan SQLite. Guía: [docs/migracion-postgresql.md](docs/migracion-postgresql.md).
+- GNU gettext, para compilar las traducciones al gallego (Fase 15). En Windows: `winget install --id mlocati.GetText --exact`; en Debian/Ubuntu: `apt-get install gettext`.
 
 ## Instalación
 
@@ -42,6 +44,7 @@ python -m venv .venv
 pip install -r requirements/dev.txt
 copy .env.example .env    # ajusta los valores; nunca subas .env
 python manage.py migrate
+python scripts/i18n.py compile   # traducciones al gallego (los .mo no se versionan)
 ```
 
 Variables de entorno: [.env.example](.env.example) y [docs/fase-00-fundacion.md](docs/fase-00-fundacion.md#6-configuración-y-variables-de-entorno).
@@ -235,6 +238,7 @@ Dockerfile, compose.yaml, compose.dev.yaml   imagen y pilas de producción y loc
 - [Refactorización final](docs/refactorizacion-final.md): línea base, diagnóstico, cambios por grupos, mediciones de consultas, pruebas antes y después, corrección del interbloqueo R-1 y lo que se decidió no refactorizar.
 - [Fase 13 — Datos de demostración](docs/fase-13-datos-demo.md): comando `seed_demo_data`, protecciones frente a producción, cuentas por rol, escenarios, limpieza, tests y limitaciones.
 - [Fase 14 — Caducidad de puntos y regalo de cumpleaños](docs/fase-14-caducidad-puntos-cumpleanos.md): política versionada sin retroactividad, cálculo FIFO, aviso previo, comando `expire_points`, textos editables del aviso de cumpleaños, seguridad, tests y pendientes.
+- [Fase 15 — Web en gallego](docs/fase-15-idioma-gallego.md): idioma por zonas, selector de banderas, emails en gallego, API, cómo añadir y traducir textos (`scripts/i18n.py`), seguridad, tests y pendientes.
 - [Pruebas de desarrollo](pruebas_dev/pruebas.md): órdenes para probar con bases de datos aparte, tareas programadas, Mailpit, tests, Docker local, volver a la versión original y limpiar.
 - [Despliegue](docs/despliegue.md): guía operativa con variables, órdenes habituales, HTTPS, estáticos y multimedia, copias, correo, tareas programadas, logs y lista de comprobación.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.

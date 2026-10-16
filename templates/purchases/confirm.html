@@ -1,22 +1,23 @@
 {% extends "staff/_layout.html" %}
-{% block title %}Confirmar compra{% endblock %}
-{% block eyebrow %}Panel del personal{% endblock %}
-{% block heading %}Confirmar compra{% endblock %}
-{% block intro %}<p class="lead mt-3">Paso 2 de 2: comprueba el cliente e introduce el importe.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Confirmar compra" %}{% endblock %}
+{% block eyebrow %}{% translate "Panel del personal" %}{% endblock %}
+{% block heading %}{% translate "Confirmar compra" %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "Paso 2 de 2: comprueba el cliente e introduce el importe." %}</p>{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
   {% include "components/form_errors.html" %}
   <div class="rounded-xl border border-gold/50 p-4">
-    <p class="text-sm text-mist">Cliente identificado</p>
+    <p class="text-sm text-mist">{% translate "Cliente identificado" %}</p>
     <p class="text-2xl font-extrabold" data-customer-name>{{ customer_name }}</p>
-    <p class="mt-1 text-sm text-mist">Pregúntale su nombre para confirmar que es su código.</p>
+    <p class="mt-1 text-sm text-mist">{% translate "Pregúntale su nombre para confirmar que es su código." %}</p>
   </div>
   <form method="post" action="{% url 'purchases:register' %}" novalidate data-loading class="space-y-5">
     {% csrf_token %}
     {% for field in form.hidden_fields %}{{ field }}{% endfor %}
     {% for field in form.visible_fields %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="Registrando…">Registrar compra</button>
+    <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="{% translate 'Registrando…' %}">{% translate "Registrar compra" %}</button>
   </form>
-  <p class="text-center text-sm"><a class="link" href="{% url 'purchases:scan' %}">No es este cliente: volver a escanear</a></p>
+  <p class="text-center text-sm"><a class="link" href="{% url 'purchases:scan' %}">{% translate "No es este cliente: volver a escanear" %}</a></p>
 </div>
 {% endblock %}

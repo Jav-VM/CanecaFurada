@@ -19,6 +19,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Max, Q
 from django.db.models.functions import Upper
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.querysets import period_q
 
@@ -27,8 +28,8 @@ from .models import CustomerProfile, User
 from .permissions import is_owner
 
 GEO_SOURCE_NOTE = (
-    "Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. "
-    "No se usa geolocalización por IP ni se deducen domicilios."
+    _("Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. "
+    "No se usa geolocalización por IP ni se deducen domicilios.")
 )
 
 # Nivel → campos que identifican la zona. El país acompaña siempre para no
@@ -39,7 +40,7 @@ GEO_LEVELS = {
     "localidad": ("country", "province", "city"),
     "cp": ("country", "postal_code"),
 }
-GEO_LEVEL_LABELS = {"pais": "País", "provincia": "Provincia", "localidad": "Localidad", "cp": "Código postal"}
+GEO_LEVEL_LABELS = {"pais": _("País"), "provincia": _("Provincia"), "localidad": _("Localidad"), "cp": _("Código postal")}
 
 # Campos del listado: lo necesario para identificar y contactar, nada más.
 LIST_FIELDS = ("public_id", "first_name", "last_name", "email", "email_verified_at", "date_joined", "is_active")
@@ -47,7 +48,7 @@ LIST_FIELDS = ("public_id", "first_name", "last_name", "email", "email_verified_
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede consultar los datos de los clientes.")
+        raise PermissionDenied(_("Solo el propietario puede consultar los datos de los clientes."))
 
 
 def customers():
@@ -200,7 +201,7 @@ def geographic_distribution(*, actor, level, start=None, end=None, customer_ids=
     """
     _require_owner(actor)
     if level not in GEO_LEVELS:
-        raise ValueError(f"Nivel geográfico desconocido: {level}")
+        raise ValueError("Nivel geográfico desconocido: %(level)s" % {"level": level})
     base = customers().filter(period_q("date_joined", start, end), is_active=True)
     if customer_ids is not None:
         base = base.filter(pk__in=customer_ids)

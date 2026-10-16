@@ -14,6 +14,7 @@ exactamente lo mismo:
 """
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 
@@ -58,7 +59,7 @@ def products_for_management(*, actor, beers=None, status=None, category=None):
     dashboard de la Fase 9). `beers=True` solo cervezas; `False`, el resto.
     """
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede gestionar la carta.")
+        raise PermissionDenied(_("Solo el propietario puede gestionar la carta."))
     queryset = Product.objects.select_related("category", "style")
     if beers is True:
         queryset = queryset.filter(kind__in=Product.BEER_KINDS)

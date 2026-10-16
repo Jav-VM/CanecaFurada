@@ -1,12 +1,12 @@
-{% autoescape off %}{% if custom_body %}{{ custom_body }}{% else %}¡Feliz cumpleaños!
+{% load i18n %}{% autoescape off %}{% if custom_body %}{{ custom_body }}{% else %}{% translate "¡Feliz cumpleaños!" %}
 
-Para celebrarlo te hemos regalado {{ points }} puntos en tu cuenta de Caneca Furada. Ya los tienes en tu saldo:
+{% blocktranslate %}Para celebrarlo te hemos regalado {{ points }} puntos en tu cuenta de Caneca Furada. Ya los tienes en tu saldo:{% endblocktranslate %}
 
 {{ site_base_url }}{% url "loyalty:my_points" %}
 
-¡Salud!
+{% translate "¡Salud!" %}
 Caneca Furada{% endif %}
 
-Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:
+{% translate "Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:" %}
 {{ unsubscribe_url }}
 {% endautoescape %}

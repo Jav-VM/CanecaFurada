@@ -18,6 +18,7 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
+from django.utils.translation import gettext as _
 from PIL import Image, UnidentifiedImageError
 
 ALLOWED_IMAGE_EXTENSIONS = ("jpg", "jpeg", "png", "webp")
@@ -35,7 +36,7 @@ def validate_image_file(file):
     max_bytes = settings.CATALOG_IMAGE_MAX_BYTES
     if file.size is not None and file.size > max_bytes:
         raise ValidationError(
-            "La imagen ocupa demasiado. Máximo: %(max)s MB.",
+            _("La imagen ocupa demasiado. Máximo: %(max)s MB."),
             code="image_too_large",
             params={"max": max_bytes // (1024 * 1024)},
         )
@@ -48,11 +49,11 @@ def validate_image_file(file):
             width, height = image.size
             if image_format not in ALLOWED_IMAGE_FORMATS:
                 raise ValidationError(
-                    "Formato no admitido. Usa JPEG, PNG o WebP.", code="image_format"
+                    _("Formato no admitido. Usa JPEG, PNG o WebP."), code="image_format"
                 )
             if width > max_dimension or height > max_dimension:
                 raise ValidationError(
-                    "La imagen es demasiado grande. Máximo: %(max)s px por lado.",
+                    _("La imagen es demasiado grande. Máximo: %(max)s px por lado."),
                     code="image_dimensions",
                     params={"max": max_dimension},
                 )
@@ -60,7 +61,7 @@ def validate_image_file(file):
     except ValidationError:
         raise
     except (UnidentifiedImageError, OSError, SyntaxError, ValueError, Image.DecompressionBombError):
-        raise ValidationError("El fichero no es una imagen válida.", code="image_invalid")
+        raise ValidationError(_("El fichero no es una imagen válida."), code="image_invalid")
     finally:
         file.seek(0)
 

@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
 
@@ -32,32 +33,32 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
 
     class Role(models.TextChoices):
-        OWNER = "OWNER", "Propietario"
-        EMPLOYEE = "EMPLOYEE", "Empleado"
-        CUSTOMER = "CUSTOMER", "Cliente"
+        OWNER = "OWNER", _("Propietario")
+        EMPLOYEE = "EMPLOYEE", _("Empleado")
+        CUSTOMER = "CUSTOMER", _("Cliente")
 
     public_id = models.UUIDField(
-        "identificador público", default=uuid.uuid4, unique=True, editable=False
+        _("identificador público"), default=uuid.uuid4, unique=True, editable=False
     )
-    email = models.EmailField("email", max_length=254, unique=True)
-    first_name = models.CharField("nombre", max_length=150)
-    last_name = models.CharField("apellidos", max_length=150)
+    email = models.EmailField(_("email"), max_length=254, unique=True)
+    first_name = models.CharField(_("nombre"), max_length=150)
+    last_name = models.CharField(_("apellidos"), max_length=150)
     role = models.CharField(
-        "rol", max_length=16, choices=Role.choices, default=Role.CUSTOMER, db_index=True
+        _("rol"), max_length=16, choices=Role.choices, default=Role.CUSTOMER, db_index=True
     )
-    is_active = models.BooleanField("activo", default=True)
+    is_active = models.BooleanField(_("activo"), default=True)
     email_verified_at = models.DateTimeField(
-        "email verificado el",
+        _("email verificado el"),
         null=True,
         blank=True,
-        help_text="Vacío mientras el email actual no se haya confirmado con un enlace.",
+        help_text=_("Vacío mientras el email actual no se haya confirmado con un enlace."),
     )
     is_staff = models.BooleanField(
-        "acceso al admin técnico",
+        _("acceso al admin técnico"),
         default=False,
-        help_text="Solo propietarios. Se deriva del rol.",
+        help_text=_("Solo propietarios. Se deriva del rol."),
     )
-    date_joined = models.DateTimeField("fecha de alta", default=timezone.now)
+    date_joined = models.DateTimeField(_("fecha de alta"), default=timezone.now)
 
     objects = UserManager()
 
@@ -66,8 +67,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["first_name", "last_name"]
 
     class Meta:
-        verbose_name = "usuario"
-        verbose_name_plural = "usuarios"
+        verbose_name = _("usuario")
+        verbose_name_plural = _("usuarios")
         constraints = [
             models.UniqueConstraint(Lower("email"), name="accounts_user_email_ci_unique"),
             models.CheckConstraint(
@@ -178,44 +179,44 @@ class CustomerProfile(TimeStampedModel):
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        verbose_name="usuario",
+        verbose_name=_("usuario"),
         on_delete=models.CASCADE,
         related_name="customer_profile",
     )
     address_line_1 = models.CharField(
-        "dirección", max_length=200, blank=True, help_text="Calle, número, piso."
+        _("dirección"), max_length=200, blank=True, help_text=_("Calle, número, piso.")
     )
-    address_line_2 = models.CharField("dirección (línea 2)", max_length=200, blank=True)
-    postal_code = models.CharField("código postal", max_length=12, blank=True)
-    city = models.CharField("localidad", max_length=100, blank=True)
+    address_line_2 = models.CharField(_("dirección (línea 2)"), max_length=200, blank=True)
+    postal_code = models.CharField(_("código postal"), max_length=12, blank=True)
+    city = models.CharField(_("localidad"), max_length=100, blank=True)
     province = models.CharField(
-        "provincia", max_length=100, blank=True, help_text="Provincia, estado o región."
+        _("provincia"), max_length=100, blank=True, help_text=_("Provincia, estado o región.")
     )
     # Código ISO 3166-1 alfa-2. La lista (`countries.COUNTRIES`) se valida en
     # `clean()` y no como `choices` para no generar migraciones al actualizarla.
     country = models.CharField(
-        "país", max_length=2, default=DEFAULT_COUNTRY, blank=True, help_text="Código ISO 3166-1."
+        _("país"), max_length=2, default=DEFAULT_COUNTRY, blank=True, help_text=_("Código ISO 3166-1.")
     )
-    date_of_birth = models.DateField("fecha de nacimiento", null=True, blank=True)
+    date_of_birth = models.DateField(_("fecha de nacimiento"), null=True, blank=True)
     date_of_birth_changed_at = models.DateTimeField(
-        "última modificación de la fecha de nacimiento",
+        _("última modificación de la fecha de nacimiento"),
         null=True,
         blank=True,
-        help_text="Limita los cambios posteriores (promociones de cumpleaños).",
+        help_text=_("Limita los cambios posteriores (promociones de cumpleaños)."),
     )
     phone_number = models.CharField(
-        "teléfono móvil",
+        _("teléfono móvil"),
         max_length=16,
         blank=True,
         validators=[validators.validate_e164],
-        help_text="Opcional. Formato internacional E.164. No está verificado.",
+        help_text=_("Opcional. Formato internacional E.164. No está verificado."),
     )
-    promo_email_opt_in = models.BooleanField("acepta emails promocionales", default=False)
-    promo_sms_opt_in = models.BooleanField("acepta SMS promocionales", default=False)
+    promo_email_opt_in = models.BooleanField(_("acepta emails promocionales"), default=False)
+    promo_sms_opt_in = models.BooleanField(_("acepta SMS promocionales"), default=False)
 
     class Meta:
-        verbose_name = "perfil de cliente"
-        verbose_name_plural = "perfiles de cliente"
+        verbose_name = _("perfil de cliente")
+        verbose_name_plural = _("perfiles de cliente")
         constraints = [
             models.CheckConstraint(
                 condition=Q(promo_sms_opt_in=False) | ~Q(phone_number=""),
@@ -224,7 +225,7 @@ class CustomerProfile(TimeStampedModel):
         ]
 
     def __str__(self):
-        return f"Perfil de cliente {self.user.public_id}"
+        return _("Perfil de cliente %(public_id)s") % {"public_id": self.user.public_id}
 
     def clean(self):
         super().clean()
@@ -248,7 +249,7 @@ class CustomerProfile(TimeStampedModel):
             except ValidationError as exc:
                 errors["date_of_birth"] = exc.messages
         if self.promo_sms_opt_in and not self.phone_number:
-            errors["promo_sms_opt_in"] = ["Para recibir SMS promocionales indica un teléfono móvil."]
+            errors["promo_sms_opt_in"] = [_("Para recibir SMS promocionales indica un teléfono móvil.")]
         if errors:
             raise ValidationError(errors)
 
@@ -269,26 +270,26 @@ class EmailVerificationToken(models.Model):
     """
 
     class Purpose(models.TextChoices):
-        VERIFY = "VERIFY", "Verificación del email"
-        CHANGE = "CHANGE", "Cambio de email"
+        VERIFY = "VERIFY", _("Verificación del email")
+        CHANGE = "CHANGE", _("Cambio de email")
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="usuario",
+        verbose_name=_("usuario"),
         on_delete=models.CASCADE,
         related_name="email_tokens",
     )
-    purpose = models.CharField("finalidad", max_length=16, choices=Purpose.choices)
-    email = models.EmailField("email a confirmar", max_length=254)
-    token_hash = models.CharField("hash del token", max_length=64, unique=True)
-    created_at = models.DateTimeField("creado", default=timezone.now)
-    expires_at = models.DateTimeField("caduca")
-    used_at = models.DateTimeField("usado", null=True, blank=True)
-    revoked_at = models.DateTimeField("revocado", null=True, blank=True)
+    purpose = models.CharField(_("finalidad"), max_length=16, choices=Purpose.choices)
+    email = models.EmailField(_("email a confirmar"), max_length=254)
+    token_hash = models.CharField(_("hash del token"), max_length=64, unique=True)
+    created_at = models.DateTimeField(_("creado"), default=timezone.now)
+    expires_at = models.DateTimeField(_("caduca"))
+    used_at = models.DateTimeField(_("usado"), null=True, blank=True)
+    revoked_at = models.DateTimeField(_("revocado"), null=True, blank=True)
 
     class Meta:
-        verbose_name = "token de verificación de email"
-        verbose_name_plural = "tokens de verificación de email"
+        verbose_name = _("token de verificación de email")
+        verbose_name_plural = _("tokens de verificación de email")
         indexes = [models.Index(fields=["user", "created_at"])]
         constraints = [
             models.CheckConstraint(
@@ -314,29 +315,29 @@ class CommunicationPreferenceChange(models.Model):
     """
 
     class Channel(models.TextChoices):
-        EMAIL = "EMAIL", "Email promocional"
-        SMS = "SMS", "SMS promocional"
+        EMAIL = "EMAIL", _("Email promocional")
+        SMS = "SMS", _("SMS promocional")
 
     class Source(models.TextChoices):
-        REGISTRATION = "REGISTRATION", "Registro"
-        PROFILE = "PROFILE", "Perfil del cliente"
-        SYSTEM = "SYSTEM", "Automático (teléfono eliminado)"
-        UNSUBSCRIBE_LINK = "UNSUBSCRIBE", "Enlace de baja de un mensaje"
+        REGISTRATION = "REGISTRATION", _("Registro")
+        PROFILE = "PROFILE", _("Perfil del cliente")
+        SYSTEM = "SYSTEM", _("Automático (teléfono eliminado)")
+        UNSUBSCRIBE_LINK = "UNSUBSCRIBE", _("Enlace de baja de un mensaje")
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="cliente",
+        verbose_name=_("cliente"),
         on_delete=models.CASCADE,
         related_name="communication_preference_changes",
     )
-    channel = models.CharField("canal", max_length=8, choices=Channel.choices)
-    opted_in = models.BooleanField("consiente")
-    source = models.CharField("origen", max_length=16, choices=Source.choices)
-    created_at = models.DateTimeField("fecha", default=timezone.now, db_index=True)
+    channel = models.CharField(_("canal"), max_length=8, choices=Channel.choices)
+    opted_in = models.BooleanField(_("consiente"))
+    source = models.CharField(_("origen"), max_length=16, choices=Source.choices)
+    created_at = models.DateTimeField(_("fecha"), default=timezone.now, db_index=True)
 
     class Meta:
-        verbose_name = "cambio de preferencia de comunicación"
-        verbose_name_plural = "cambios de preferencias de comunicación"
+        verbose_name = _("cambio de preferencia de comunicación")
+        verbose_name_plural = _("cambios de preferencias de comunicación")
         ordering = ["-created_at", "-id"]
         constraints = [
             models.CheckConstraint(

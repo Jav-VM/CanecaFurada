@@ -3,6 +3,7 @@ Cuenta del usuario autenticado: datos generales, perfil personal,
 preferencias de comunicación y cambio de email. Nunca reciben un
 identificador de usuario: actúan siempre sobre `request.user`.
 """
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -135,6 +136,6 @@ class ResendMyVerificationView(ApiView):
     )
     def post(self, request):
         if accounts.resend_verification_email(request.user):
-            return Response({"detail": "Te hemos enviado un nuevo enlace de verificación."}, status=status.HTTP_202_ACCEPTED)
-        return Response({"detail": "Tu email ya está verificado."})
+            return Response({"detail": _("Te hemos enviado un nuevo enlace de verificación.")}, status=status.HTTP_202_ACCEPTED)
+        return Response({"detail": _("Tu email ya está verificado.")})
 

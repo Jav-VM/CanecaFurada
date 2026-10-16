@@ -14,6 +14,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.querysets import period_q
@@ -26,7 +27,7 @@ FEATURED_LIMIT = 3
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver los eventos y las reservas.")
+        raise PermissionDenied(_("Solo el propietario puede ver los eventos y las reservas."))
 
 
 # Un evento sin hora de fin se da por terminado a las 6 horas de empezar.

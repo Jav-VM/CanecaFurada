@@ -12,6 +12,7 @@ from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Count
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.permissions import is_owner
 
@@ -57,7 +58,7 @@ class CategoryAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_product_count=Count("products"))
 
-    @admin.display(description="productos", ordering="_product_count")
+    @admin.display(description=_("productos"), ordering="_product_count")
     def product_count(self, obj):
         return obj._product_count
 
@@ -78,7 +79,7 @@ def _service_action(description, name, call):
             except (PermissionDenied, ValidationError) as exc:
                 messages.error(request, f"{product}: {'; '.join(getattr(exc, 'messages', [str(exc)]))}")
         if changed:
-            messages.success(request, f"{description}: {changed} producto(s).")
+            messages.success(request, _("%(description)s: %(changed)s producto(s).") % {"description": description, "changed": changed})
 
     action.__name__ = name
     action.short_description = description
@@ -123,31 +124,31 @@ class ProductAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     readonly_fields = ("public_id", "published_at", "archived_at", "availability_changed_at", "thumbnail")
     fieldsets = (
         (
-            "Información permanente",
+            _("Información permanente"),
             {"fields": ("category", "kind", "name", "description", "style", "abv", "brewery")},
         ),
-        ("Precio", {"fields": ("price", "serving")}),
-        ("Imagen", {"fields": ("image", "thumbnail")}),
-        ("Presentación", {"fields": ("position", "is_featured")}),
+        (_("Precio"), {"fields": ("price", "serving")}),
+        (_("Imagen"), {"fields": ("image", "thumbnail")}),
+        (_("Presentación"), {"fields": ("position", "is_featured")}),
         (
-            "Publicación",
+            _("Publicación"),
             {
                 "fields": ("status", "published_at", "archived_at"),
-                "description": "Los productos archivados no se ven en la web y se conservan como historial.",
+                "description": _("Los productos archivados no se ven en la web y se conservan como historial."),
             },
         ),
-        ("Disponibilidad actual", {"fields": ("is_available", "availability_changed_at")}),
-        ("Identificador", {"fields": ("public_id",), "classes": ("collapse",)}),
+        (_("Disponibilidad actual"), {"fields": ("is_available", "availability_changed_at")}),
+        (_("Identificador"), {"fields": ("public_id",), "classes": ("collapse",)}),
     )
     actions = [
-        _status_action(Product.Status.PUBLISHED, "Publicar", "publish_products"),
-        _status_action(Product.Status.DRAFT, "Pasar a borrador (ocultar)", "unpublish_products"),
-        _status_action(Product.Status.ARCHIVED, "Archivar", "archive_products"),
-        _availability_action(False, "Marcar como agotado", "mark_sold_out"),
-        _availability_action(True, "Marcar como disponible", "mark_available"),
+        _status_action(Product.Status.PUBLISHED, _("Publicar"), "publish_products"),
+        _status_action(Product.Status.DRAFT, _("Pasar a borrador (ocultar)"), "unpublish_products"),
+        _status_action(Product.Status.ARCHIVED, _("Archivar"), "archive_products"),
+        _availability_action(False, _("Marcar como agotado"), "mark_sold_out"),
+        _availability_action(True, _("Marcar como disponible"), "mark_available"),
     ]
 
-    @admin.display(description="vista previa")
+    @admin.display(description=_("vista previa"))
     def thumbnail(self, obj):
         return _image_preview(obj.image)
 
@@ -184,6 +185,6 @@ class TapMenuAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     fields = ("title", "image", "thumbnail", "text_alternative", "is_published")
     readonly_fields = ("thumbnail",)
 
-    @admin.display(description="vista previa")
+    @admin.display(description=_("vista previa"))
     def thumbnail(self, obj):
         return _image_preview(obj.image, height=96)

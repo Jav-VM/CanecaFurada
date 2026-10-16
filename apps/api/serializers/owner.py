@@ -1,6 +1,7 @@
 """Estadísticas agregadas del propietario (sin datos personales)."""
 import datetime
 
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 MAX_RANGE_DAYS = 3660
@@ -15,9 +16,9 @@ class PeriodQuerySerializer(serializers.Serializer):
     def validate(self, attrs):
         start, end = attrs.get("date_from"), attrs.get("date_to")
         if start and end and start > end:
-            raise serializers.ValidationError("La fecha inicial debe ser anterior o igual a la final.")
+            raise serializers.ValidationError(_("La fecha inicial debe ser anterior o igual a la final."))
         if start and end and (end - start) > datetime.timedelta(days=MAX_RANGE_DAYS):
-            raise serializers.ValidationError("El periodo no puede superar 10 años.")
+            raise serializers.ValidationError(_("El periodo no puede superar 10 años."))
         return attrs
 
 

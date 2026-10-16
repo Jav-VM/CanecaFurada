@@ -39,7 +39,7 @@
     var button = form.querySelector("[type=submit]");
     if (button) {
       button.dataset.originalText = button.textContent;
-      button.textContent = button.dataset.loadingText || "Enviando…";
+      button.textContent = button.dataset.loadingText || document.body.dataset.sendingText || "Enviando…";
       button.setAttribute("aria-busy", "true");
       button.disabled = true;
     }

@@ -1,1 +1,1 @@
-Tu reserva en Caneca Furada se ha cancelado
+{% load i18n %}{% translate "Tu reserva en Caneca Furada se ha cancelado" %}

@@ -44,7 +44,7 @@
   function found(text) {
     stop();
     input.value = text;
-    say("Código leído. Comprobando…");
+    say(root.dataset.textRead || "Código leído. Comprobando…");
     if (form.requestSubmit) form.requestSubmit(); else form.submit();
   }
 
@@ -108,7 +108,7 @@
   }
 
   startButton.addEventListener("click", function () {
-    say("Abriendo la cámara…");
+    say(root.dataset.textOpening || "Abriendo la cámara…");
     chooseDetector().then(function () {
       return navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
     }).then(function (mediaStream) {
@@ -119,11 +119,11 @@
       stopButton.hidden = false;
       return video.play();
     }).then(function () {
-      say("Apunta la cámara al QR del cliente.");
+      say(root.dataset.textAim || "Apunta la cámara al QR del cliente.");
       scanLoop();
     }).catch(function () {
       stop();
-      say("No se ha podido usar la cámara. Revisa el permiso del navegador o escribe el código.");
+      say(root.dataset.textError || "No se ha podido usar la cámara. Revisa el permiso del navegador o escribe el código.");
     });
   });
 

@@ -1,13 +1,13 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-Tu reserva{% if event_title %} para «{{ event_title }}»{% endif %} está confirmada:
+{% if event_title %}{% blocktranslate %}Tu reserva para «{{ event_title }}» está confirmada:{% endblocktranslate %}{% else %}{% translate "Tu reserva está confirmada:" %}{% endif %}
 
-- Fecha: {{ when }}
-- Personas: {{ party_size }}
+- {% blocktranslate %}Fecha: {{ when }}{% endblocktranslate %}
+- {% blocktranslate %}Personas: {{ party_size }}{% endblocktranslate %}
 {% if message %}
-Mensaje del local: {{ message }}
+{% blocktranslate %}Mensaje del local: {{ message }}{% endblocktranslate %}
 {% endif %}
-Si no puedes venir, cancélala desde tu cuenta para liberar el sitio:
+{% translate "Si no puedes venir, cancélala desde tu cuenta para liberar el sitio:" %}
 
 {{ site_base_url }}{% url "events:my_reservations" %}
 

@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.validators import normalize_text
 
@@ -30,7 +31,7 @@ def parse_pairs(value):
         line = line.strip()
         if not line:
             continue
-        left, _, right = line.partition(LINE_SEPARATOR)
+        left, _unused, right = line.partition(LINE_SEPARATOR)
         pairs.append((normalize_text(left), normalize_text(right)))
     return pairs
 
@@ -41,34 +42,34 @@ def _is_safe_url(url):
 
 
 class BusinessInfo(models.Model):
-    address = models.CharField("dirección pública del local", max_length=200, blank=True)
+    address = models.CharField(_("dirección pública del local"), max_length=200, blank=True)
     opening_hours = models.TextField(
-        "horario",
+        _("horario"),
         blank=True,
         max_length=1000,
-        help_text="Una línea por franja: «Días | horario», por ejemplo «Lunes a jueves | 18:00–00:00».",
+        help_text=_("Una línea por franja: «Días | horario», por ejemplo «Lunes a jueves | 18:00–00:00»."),
     )
-    email = models.EmailField("email de contacto", blank=True)
-    phone = models.CharField("teléfono de contacto", max_length=20, blank=True)
+    email = models.EmailField(_("email de contacto"), blank=True)
+    phone = models.CharField(_("teléfono de contacto"), max_length=20, blank=True)
     social_links = models.TextField(
-        "redes sociales",
+        _("redes sociales"),
         blank=True,
         max_length=1000,
-        help_text="Una línea por red: «Nombre | https://…». Solo enlaces https.",
+        help_text=_("Una línea por red: «Nombre | https://…». Solo enlaces https."),
     )
-    about_text = models.TextField("presentación de la cervecería", blank=True, max_length=2000)
+    about_text = models.TextField(_("presentación de la cervecería"), blank=True, max_length=2000)
     # Fase 10: textos principales del inicio.
-    hero_text = models.CharField("texto de bienvenida del inicio", max_length=300, blank=True)
-    announcement = models.CharField("aviso destacado", max_length=200, blank=True)
-    updated_at = models.DateTimeField("actualizado", auto_now=True)
+    hero_text = models.CharField(_("texto de bienvenida del inicio"), max_length=300, blank=True)
+    announcement = models.CharField(_("aviso destacado"), max_length=200, blank=True)
+    updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:
-        verbose_name = "contenido del local"
-        verbose_name_plural = "contenido del local"
+        verbose_name = _("contenido del local")
+        verbose_name_plural = _("contenido del local")
         constraints = [models.CheckConstraint(condition=Q(id=SINGLETON_ID), name="web_businessinfo_singleton")]
 
     def __str__(self):
-        return "Contenido del local"
+        return _("Contenido del local")
 
     def save(self, *args, **kwargs):
         self.pk = SINGLETON_ID
@@ -84,13 +85,13 @@ class BusinessInfo(models.Model):
         self.announcement = normalize_text(self.announcement)
         errors = {}
         if self.phone and not _PHONE_RE.match(self.phone):
-            errors["phone"] = "Teléfono no válido: solo números, espacios y un + inicial."
+            errors["phone"] = _("Teléfono no válido: solo números, espacios y un + inicial.")
         hours = parse_pairs(self.opening_hours)
         if len(hours) > MAX_LINES or any(not days or not time for days, time in hours):
-            errors["opening_hours"] = f"Escribe hasta {MAX_LINES} líneas con el formato «Días | horario»."
+            errors["opening_hours"] = _("Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario».") % {"MAX_LINES": MAX_LINES}
         links = parse_pairs(self.social_links)
         if len(links) > MAX_LINES or any(not name or not _is_safe_url(url) for name, url in links):
-            errors["social_links"] = f"Escribe hasta {MAX_LINES} líneas con el formato «Nombre | https://…»."
+            errors["social_links"] = _("Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…».") % {"MAX_LINES": MAX_LINES}
         if errors:
             raise ValidationError(errors)
         self.opening_hours = "\n".join(f"{a} {LINE_SEPARATOR} {b}" for a, b in hours)

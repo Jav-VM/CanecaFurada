@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Petición no válida{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Petición no válida" %}{% endblock %}
 {% block content %}
-{% include "components/error_page.html" with code="400" title="Petición no válida" text="No hemos podido procesar la petición. Vuelve a intentarlo desde el inicio." %}
+{% include "components/error_page.html" with code="400" title=_("Petición no válida") text=_("No hemos podido procesar la petición. Vuelve a intentarlo desde el inicio.") %}
 {% endblock %}

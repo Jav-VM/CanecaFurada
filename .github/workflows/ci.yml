@@ -49,6 +49,12 @@ jobs:
         run: |
           pip install --only-binary=:all: -r requirements/prod.txt
 
+      - name: Traducciones (gettext) al día, completas y compiladas
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends gettext
+          python scripts/i18n.py check
+          python scripts/i18n.py compile
+
       - name: manage.py check
         run: python manage.py check
 

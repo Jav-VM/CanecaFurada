@@ -15,6 +15,7 @@ import datetime
 
 from django.http import Http404
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers
 from rest_framework.response import Response
@@ -56,7 +57,7 @@ def _period(request, *, default_days=None):
         date_to = date_to or timezone.localdate()
         date_from = date_from or date_to - datetime.timedelta(days=default_days - 1)
         if date_from > date_to:
-            raise serializers.ValidationError("La fecha inicial debe ser anterior o igual a la final.")
+            raise serializers.ValidationError(_("La fecha inicial debe ser anterior o igual a la final."))
     start = _midnight(date_from) if date_from else None
     end = _midnight(date_to + datetime.timedelta(days=1)) if date_to else None
     return date_from, date_to, start, end
@@ -105,8 +106,8 @@ class OwnerReservationListView(ListApiView):
     def get_queryset(self):
         status = self.request.query_params.get("status", "")
         if status and status not in Reservation.Status.values:
-            raise serializers.ValidationError({"status": "Estado no válido."})
-        _, _, start, end = _period(self.request)
+            raise serializers.ValidationError({"status": _("Estado no válido.")})
+        _unused, _unused, start, end = _period(self.request)
         return event_selectors.reservations_for_management(actor=self.request.user, status=status, start=start, end=end)
 
 

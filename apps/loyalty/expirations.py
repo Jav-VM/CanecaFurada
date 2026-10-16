@@ -60,7 +60,7 @@ def send_expiry_warnings(*, policy, at, result):
         # Lo ya vencido caduca en esta misma ejecución: no tiene sentido avisar.
         if upcoming is None or not at < upcoming.expires_at <= until:
             continue
-        _, created = notifications.enqueue(
+        _unused, created = notifications.enqueue(
             kind=Notification.Kind.POINTS_EXPIRING,
             recipient=customer,
             channel=Channel.EMAIL,

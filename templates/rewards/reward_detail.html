@@ -1,6 +1,7 @@
 {% extends "accounts/_layout.html" %}
+{% load i18n %}
 {% block title %}{{ reward.name }}{% endblock %}
-{% block eyebrow %}Canjear puntos{% endblock %}
+{% block eyebrow %}{% translate "Canjear puntos" %}{% endblock %}
 {% block heading %}{{ reward.name }}{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
@@ -10,27 +11,27 @@
   {% endif %}
   {% if reward.description %}<p class="text-mist">{{ reward.description|linebreaksbr }}</p>{% endif %}
   <dl class="space-y-3 border-t border-line pt-6 text-sm">
-    <div class="flex justify-between gap-4"><dt class="text-mist">Coste</dt><dd class="font-bold text-gold" data-reward-cost>{{ reward.points_cost }} puntos</dd></div>
-    <div class="flex justify-between gap-4"><dt class="text-mist">Tu saldo</dt><dd class="font-semibold" data-balance>{{ balance }} puntos</dd></div>
-    {% if reward.valid_until %}<div class="flex justify-between gap-4"><dt class="text-mist">Disponible hasta</dt><dd class="font-semibold">{{ reward.valid_until|date:"d/m/Y H:i" }}</dd></div>{% endif %}
-    {% if not reward.is_unlimited %}<div class="flex justify-between gap-4"><dt class="text-mist">Unidades</dt><dd class="font-semibold">{% if reward.is_in_stock %}{{ reward.stock }}{% else %}Agotada{% endif %}</dd></div>{% endif %}
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Coste" %}</dt><dd class="font-bold text-gold" data-reward-cost>{% blocktranslate count points=reward.points_cost %}{{ points }} punto{% plural %}{{ points }} puntos{% endblocktranslate %}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Tu saldo" %}</dt><dd class="font-semibold" data-balance>{% blocktranslate count points=balance %}{{ points }} punto{% plural %}{{ points }} puntos{% endblocktranslate %}</dd></div>
+    {% if reward.valid_until %}<div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Disponible hasta" %}</dt><dd class="font-semibold">{{ reward.valid_until|date:"d/m/Y H:i" }}</dd></div>{% endif %}
+    {% if not reward.is_unlimited %}<div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Unidades" %}</dt><dd class="font-semibold">{% if reward.is_in_stock %}{{ reward.stock }}{% else %}{% translate "Agotada" context "recompensa" %}{% endif %}</dd></div>{% endif %}
   </dl>
 
   {% if pending %}
-    <div class="alert alert-info"><p>Ya tienes un código pendiente de recoger para esta recompensa.</p></div>
-    <a href="{% url 'rewards:redemption_detail' pending.public_id %}" class="btn btn-primary btn-block">Ver mi código</a>
+    <div class="alert alert-info"><p>{% translate "Ya tienes un código pendiente de recoger para esta recompensa." %}</p></div>
+    <a href="{% url 'rewards:redemption_detail' pending.public_id %}" class="btn btn-primary btn-block">{% translate "Ver mi código" %}</a>
   {% elif not reward.is_in_stock %}
-    <p class="alert alert-info">Esta recompensa se ha agotado.</p>
+    <p class="alert alert-info">{% translate "Esta recompensa se ha agotado." %}</p>
   {% elif not can_afford %}
-    <p class="alert alert-info" data-missing-points>Te faltan {{ missing_points }} puntos para esta recompensa.</p>
+    <p class="alert alert-info" data-missing-points>{% blocktranslate trimmed with points=missing_points %}Te faltan {{ points }} puntos para esta recompensa.{% endblocktranslate %}</p>
   {% else %}
     <form method="post" action="{% url 'rewards:redeem' reward.public_id %}" data-loading class="space-y-3">
       {% csrf_token %}
       {{ form.idempotency_key }}
-      <p class="text-sm text-mist">Al confirmar se descontarán {{ reward.points_cost }} puntos y recibirás un código para recogerla en la barra. Si no lo usas o lo cancelas, te devolvemos los puntos.</p>
-      <button type="submit" class="btn btn-primary btn-block" data-loading-text="Canjeando…">Canjear por {{ reward.points_cost }} puntos</button>
+      <p class="text-sm text-mist">{% blocktranslate trimmed with points=reward.points_cost %}Al confirmar se descontarán {{ points }} puntos y recibirás un código para recogerla en la barra. Si no lo usas o lo cancelas, te devolvemos los puntos.{% endblocktranslate %}</p>
+      <button type="submit" class="btn btn-primary btn-block" data-loading-text="{% translate 'Canjeando…' %}">{% blocktranslate trimmed with points=reward.points_cost %}Canjear por {{ points }} puntos{% endblocktranslate %}</button>
     </form>
   {% endif %}
 </div>
-<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'web:rewards' %}">Ver todas las recompensas</a> · <a class="link" href="{% url 'rewards:my_redemptions' %}">Mis canjes</a></p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'web:rewards' %}">{% translate "Ver todas las recompensas" %}</a> · <a class="link" href="{% url 'rewards:my_redemptions' %}">{% translate "Mis canjes" %}</a></p>
 {% endblock %}

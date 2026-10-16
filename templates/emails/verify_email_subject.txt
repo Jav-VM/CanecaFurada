@@ -1,1 +1,1 @@
-Confirma tu email en Caneca Furada
+{% load i18n %}{% translate "Confirma tu email en Caneca Furada" %}

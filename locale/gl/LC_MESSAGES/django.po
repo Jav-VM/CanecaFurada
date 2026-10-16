@@ -1,0 +1,5207 @@
+# Traducción al gallego de Caneca Furada (Fase 15).
+# Ver docs/fase-15-idioma-gallego.md.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Caneca Furada\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 22:51+0200\n"
+"PO-Revision-Date: 2026-10-16 22:30+0200\n"
+"Last-Translator: Caneca Furada\n"
+"Language-Team: Galego\n"
+"Language: gl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "No se puede desactivar al último propietario activo."
+msgstr "Non se pode desactivar o último propietario activo."
+
+#, python-format
+msgid "Rol actualizado en %(changed)s usuario(s)."
+msgstr "Rol actualizado en %(changed)s usuario(s)."
+
+#, python-format
+msgid "Estado actualizado en %(changed)s usuario(s)."
+msgstr "Estado actualizado en %(changed)s usuario(s)."
+
+msgid "Datos personales"
+msgstr "Datos persoais"
+
+msgid "Rol y estado"
+msgstr "Rol e estado"
+
+msgid "Fechas"
+msgstr "Datas"
+
+msgid "Cambiar rol a Empleado"
+msgstr "Cambiar o rol a Empregado"
+
+msgid "Cambiar rol a Cliente"
+msgstr "Cambiar o rol a Cliente"
+
+msgid "Cambiar rol a Propietario"
+msgstr "Cambiar o rol a Propietario"
+
+msgid "Activar (autorizar) cuentas"
+msgstr "Activar (autorizar) contas"
+
+msgid "Desactivar cuentas"
+msgstr "Desactivar contas"
+
+msgid "email verificado"
+msgstr "email verificado"
+
+msgid "Cuentas"
+msgstr "Contas"
+
+msgid "Afganistán"
+msgstr "Afganistán"
+
+msgid "Albania"
+msgstr "Albania"
+
+msgid "Alemania"
+msgstr "Alemaña"
+
+msgid "Andorra"
+msgstr "Andorra"
+
+msgid "Angola"
+msgstr "Angola"
+
+msgid "Anguila"
+msgstr "Anguila"
+
+msgid "Antártida"
+msgstr "Antártida"
+
+msgid "Antigua y Barbuda"
+msgstr "Antigua e Barbuda"
+
+msgid "Arabia Saudí"
+msgstr "Arabia Saudita"
+
+msgid "Argelia"
+msgstr "Alxeria"
+
+msgid "Argentina"
+msgstr "Arxentina"
+
+msgid "Armenia"
+msgstr "Armenia"
+
+msgid "Aruba"
+msgstr "Aruba"
+
+msgid "Australia"
+msgstr "Australia"
+
+msgid "Austria"
+msgstr "Austria"
+
+msgid "Azerbaiyán"
+msgstr "Acerbaixán"
+
+msgid "Bahamas"
+msgstr "Bahamas"
+
+msgid "Bangladés"
+msgstr "Bangladesh"
+
+msgid "Barbados"
+msgstr "Barbados"
+
+msgid "Baréin"
+msgstr "Bahrain"
+
+msgid "Bélgica"
+msgstr "Bélxica"
+
+msgid "Belice"
+msgstr "Belize"
+
+msgid "Benín"
+msgstr "Benín"
+
+msgid "Bermudas"
+msgstr "Bermudas"
+
+msgid "Bielorrusia"
+msgstr "Bielorrusia"
+
+msgid "Bolivia"
+msgstr "Bolivia"
+
+msgid "Bosnia y Herzegovina"
+msgstr "Bosnia e Hercegovina"
+
+msgid "Botsuana"
+msgstr "Botswana"
+
+msgid "Brasil"
+msgstr "Brasil"
+
+msgid "Brunéi"
+msgstr "Brunei"
+
+msgid "Bulgaria"
+msgstr "Bulgaria"
+
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+msgid "Burundi"
+msgstr "Burundi"
+
+msgid "Bután"
+msgstr "Bután"
+
+msgid "Cabo Verde"
+msgstr "Cabo Verde"
+
+msgid "Camboya"
+msgstr "Camboxa"
+
+msgid "Camerún"
+msgstr "Camerún"
+
+msgid "Canadá"
+msgstr "Canadá"
+
+msgid "Caribe neerlandés"
+msgstr "Caribe neerlandés"
+
+msgid "Catar"
+msgstr "Qatar"
+
+msgid "Chad"
+msgstr "Chad"
+
+msgid "Chequia"
+msgstr "Chequia"
+
+msgid "Chile"
+msgstr "Chile"
+
+msgid "China"
+msgstr "China"
+
+msgid "Chipre"
+msgstr "Chipre"
+
+msgid "Ciudad del Vaticano"
+msgstr "Cidade do Vaticano"
+
+msgid "Colombia"
+msgstr "Colombia"
+
+msgid "Comoras"
+msgstr "Comores"
+
+msgid "Congo"
+msgstr "Congo"
+
+msgid "Corea del Norte"
+msgstr "Corea do Norte"
+
+msgid "Corea del Sur"
+msgstr "Corea do Sur"
+
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+msgid "Côte d’Ivoire"
+msgstr "Costa do Marfil"
+
+msgid "Croacia"
+msgstr "Croacia"
+
+msgid "Cuba"
+msgstr "Cuba"
+
+msgid "Curazao"
+msgstr "Curaçao"
+
+msgid "Dinamarca"
+msgstr "Dinamarca"
+
+msgid "Dominica"
+msgstr "Dominica"
+
+msgid "Ecuador"
+msgstr "Ecuador"
+
+msgid "Egipto"
+msgstr "Exipto"
+
+msgid "El Salvador"
+msgstr "O Salvador"
+
+msgid "Emiratos Árabes Unidos"
+msgstr "Emiratos Árabes Unidos"
+
+msgid "Eritrea"
+msgstr "Eritrea"
+
+msgid "Eslovaquia"
+msgstr "Eslovaquia"
+
+msgid "Eslovenia"
+msgstr "Eslovenia"
+
+msgid "España"
+msgstr "España"
+
+msgid "Estados Unidos"
+msgstr "Estados Unidos"
+
+msgid "Estonia"
+msgstr "Estonia"
+
+msgid "Esuatini"
+msgstr "Eswatini"
+
+msgid "Etiopía"
+msgstr "Etiopía"
+
+msgid "Filipinas"
+msgstr "Filipinas"
+
+msgid "Finlandia"
+msgstr "Finlandia"
+
+msgid "Fiyi"
+msgstr "Fidxi"
+
+msgid "Francia"
+msgstr "Francia"
+
+msgid "Gabón"
+msgstr "Gabón"
+
+msgid "Gambia"
+msgstr "Gambia"
+
+msgid "Georgia"
+msgstr "Xeorxia"
+
+msgid "Ghana"
+msgstr "Ghana"
+
+msgid "Gibraltar"
+msgstr "Xibraltar"
+
+msgid "Granada"
+msgstr "Granada"
+
+msgid "Grecia"
+msgstr "Grecia"
+
+msgid "Groenlandia"
+msgstr "Groenlandia"
+
+msgid "Guadalupe"
+msgstr "Guadalupe"
+
+msgid "Guam"
+msgstr "Guam"
+
+msgid "Guatemala"
+msgstr "Guatemala"
+
+msgid "Guayana Francesa"
+msgstr "Güiana Francesa"
+
+msgid "Guernsey"
+msgstr "Guernsey"
+
+msgid "Guinea"
+msgstr "Guinea"
+
+msgid "Guinea Ecuatorial"
+msgstr "Guinea Ecuatorial"
+
+msgid "Guinea-Bisáu"
+msgstr "Guinea-Bisau"
+
+msgid "Guyana"
+msgstr "Güiana"
+
+msgid "Haití"
+msgstr "Haití"
+
+msgid "Honduras"
+msgstr "Honduras"
+
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+msgid "Hungría"
+msgstr "Hungría"
+
+msgid "India"
+msgstr "India"
+
+msgid "Indonesia"
+msgstr "Indonesia"
+
+msgid "Irak"
+msgstr "Iraq"
+
+msgid "Irán"
+msgstr "Irán"
+
+msgid "Irlanda"
+msgstr "Irlanda"
+
+msgid "Isla Bouvet"
+msgstr "Illa Bouvet"
+
+msgid "Isla de Man"
+msgstr "Illa de Man"
+
+msgid "Isla de Navidad"
+msgstr "Illa de Nadal"
+
+msgid "Isla Norfolk"
+msgstr "Illa Norfolk"
+
+msgid "Islandia"
+msgstr "Islandia"
+
+msgid "Islas Aland"
+msgstr "Illas Åland"
+
+msgid "Islas Caimán"
+msgstr "Illas Caimán"
+
+msgid "Islas Cocos"
+msgstr "Illas Cocos"
+
+msgid "Islas Cook"
+msgstr "Illas Cook"
+
+msgid "Islas Feroe"
+msgstr "Illas Feroe"
+
+msgid "Islas Georgia del Sur y Sandwich del Sur"
+msgstr "Illas Xeorxia do Sur e Sandwich do Sur"
+
+msgid "Islas Heard y McDonald"
+msgstr "Illas Heard e McDonald"
+
+msgid "Islas Malvinas"
+msgstr "Illas Malvinas"
+
+msgid "Islas Marianas del Norte"
+msgstr "Illas Marianas do Norte"
+
+msgid "Islas Marshall"
+msgstr "Illas Marshall"
+
+msgid "Islas menores alejadas de EE. UU."
+msgstr "Illas Menores Distantes dos EUA"
+
+msgid "Islas Pitcairn"
+msgstr "Illas Pitcairn"
+
+msgid "Islas Salomón"
+msgstr "Illas Salomón"
+
+msgid "Islas Turcas y Caicos"
+msgstr "Illas Turks e Caicos"
+
+msgid "Islas Vírgenes Británicas"
+msgstr "Illas Virxes Británicas"
+
+msgid "Islas Vírgenes de EE. UU."
+msgstr "Illas Virxes Estadounidenses"
+
+msgid "Israel"
+msgstr "Israel"
+
+msgid "Italia"
+msgstr "Italia"
+
+msgid "Jamaica"
+msgstr "Xamaica"
+
+msgid "Japón"
+msgstr "Xapón"
+
+msgid "Jersey"
+msgstr "Jersey"
+
+msgid "Jordania"
+msgstr "Xordania"
+
+msgid "Kazajistán"
+msgstr "Casaquistán"
+
+msgid "Kenia"
+msgstr "Kenya"
+
+msgid "Kirguistán"
+msgstr "Kirguizistán"
+
+msgid "Kiribati"
+msgstr "Kiribati"
+
+msgid "Kuwait"
+msgstr "Kuwait"
+
+msgid "Laos"
+msgstr "Laos"
+
+msgid "Lesoto"
+msgstr "Lesotho"
+
+msgid "Letonia"
+msgstr "Letonia"
+
+msgid "Líbano"
+msgstr "Líbano"
+
+msgid "Liberia"
+msgstr "Liberia"
+
+msgid "Libia"
+msgstr "Libia"
+
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
+
+msgid "Lituania"
+msgstr "Lituania"
+
+msgid "Luxemburgo"
+msgstr "Luxemburgo"
+
+msgid "Macao"
+msgstr "Macau"
+
+msgid "Macedonia del Norte"
+msgstr "Macedonia do Norte"
+
+msgid "Madagascar"
+msgstr "Madagascar"
+
+msgid "Malasia"
+msgstr "Malaisia"
+
+msgid "Malaui"
+msgstr "Malawi"
+
+msgid "Maldivas"
+msgstr "Maldivas"
+
+msgid "Mali"
+msgstr "Malí"
+
+msgid "Malta"
+msgstr "Malta"
+
+msgid "Marruecos"
+msgstr "Marrocos"
+
+msgid "Martinica"
+msgstr "Martinica"
+
+msgid "Mauricio"
+msgstr "Mauricio"
+
+msgid "Mauritania"
+msgstr "Mauritania"
+
+msgid "Mayotte"
+msgstr "Mayotte"
+
+msgid "México"
+msgstr "México"
+
+msgid "Micronesia"
+msgstr "Micronesia"
+
+msgid "Moldavia"
+msgstr "Moldavia"
+
+msgid "Mónaco"
+msgstr "Mónaco"
+
+msgid "Mongolia"
+msgstr "Mongolia"
+
+msgid "Montenegro"
+msgstr "Montenegro"
+
+msgid "Montserrat"
+msgstr "Montserrat"
+
+msgid "Mozambique"
+msgstr "Mozambique"
+
+msgid "Myanmar (Birmania)"
+msgstr "Myanmar (Birmania)"
+
+msgid "Namibia"
+msgstr "Namibia"
+
+msgid "Nauru"
+msgstr "Nauru"
+
+msgid "Nepal"
+msgstr "Nepal"
+
+msgid "Nicaragua"
+msgstr "Nicaragua"
+
+msgid "Níger"
+msgstr "Níxer"
+
+msgid "Nigeria"
+msgstr "Nixeria"
+
+msgid "Niue"
+msgstr "Niue"
+
+msgid "Noruega"
+msgstr "Noruega"
+
+msgid "Nueva Caledonia"
+msgstr "Nova Caledonia"
+
+msgid "Nueva Zelanda"
+msgstr "Nova Zelandia"
+
+msgid "Omán"
+msgstr "Omán"
+
+msgid "Países Bajos"
+msgstr "Países Baixos"
+
+msgid "Pakistán"
+msgstr "Paquistán"
+
+msgid "Palaos"
+msgstr "Palau"
+
+msgid "Palestina"
+msgstr "Palestina"
+
+msgid "Panamá"
+msgstr "Panamá"
+
+msgid "Papúa Nueva Guinea"
+msgstr "Papúa-Nova Guinea"
+
+msgid "Paraguay"
+msgstr "Paraguai"
+
+msgid "Perú"
+msgstr "Perú"
+
+msgid "Polinesia Francesa"
+msgstr "Polinesia Francesa"
+
+msgid "Polonia"
+msgstr "Polonia"
+
+msgid "Portugal"
+msgstr "Portugal"
+
+msgid "Puerto Rico"
+msgstr "Porto Rico"
+
+msgid "Reino Unido"
+msgstr "Reino Unido"
+
+msgid "República Centroafricana"
+msgstr "República Centroafricana"
+
+msgid "República Democrática del Congo"
+msgstr "República Democrática do Congo"
+
+msgid "República Dominicana"
+msgstr "República Dominicana"
+
+msgid "Reunión"
+msgstr "Reunión"
+
+msgid "Ruanda"
+msgstr "Ruanda"
+
+msgid "Rumanía"
+msgstr "Romanía"
+
+msgid "Rusia"
+msgstr "Rusia"
+
+msgid "Sáhara Occidental"
+msgstr "Sáhara Occidental"
+
+msgid "Samoa"
+msgstr "Samoa"
+
+msgid "Samoa Americana"
+msgstr "Samoa Americana"
+
+msgid "San Bartolomé"
+msgstr "San Bartolomeu"
+
+msgid "San Cristóbal y Nieves"
+msgstr "San Cristovo e Nevis"
+
+msgid "San Marino"
+msgstr "San Marino"
+
+msgid "San Martín"
+msgstr "San Martiño"
+
+msgid "San Pedro y Miquelón"
+msgstr "San Pedro e Miquelón"
+
+msgid "San Vicente y las Granadinas"
+msgstr "San Vicente e as Granadinas"
+
+msgid "Santa Elena"
+msgstr "Santa Helena"
+
+msgid "Santa Lucía"
+msgstr "Santa Lucía"
+
+msgid "Santo Tomé y Príncipe"
+msgstr "San Tomé e Príncipe"
+
+msgid "Senegal"
+msgstr "Senegal"
+
+msgid "Serbia"
+msgstr "Serbia"
+
+msgid "Seychelles"
+msgstr "Seychelles"
+
+msgid "Sierra Leona"
+msgstr "Serra Leoa"
+
+msgid "Singapur"
+msgstr "Singapur"
+
+msgid "Sint Maarten"
+msgstr "Sint Maarten"
+
+msgid "Siria"
+msgstr "Siria"
+
+msgid "Somalia"
+msgstr "Somalia"
+
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
+
+msgid "Sudáfrica"
+msgstr "Suráfrica"
+
+msgid "Sudán"
+msgstr "Sudán"
+
+msgid "Sudán del Sur"
+msgstr "Sudán do Sur"
+
+msgid "Suecia"
+msgstr "Suecia"
+
+msgid "Suiza"
+msgstr "Suíza"
+
+msgid "Surinam"
+msgstr "Suriname"
+
+msgid "Svalbard y Jan Mayen"
+msgstr "Svalbard e Jan Mayen"
+
+msgid "Tailandia"
+msgstr "Tailandia"
+
+msgid "Taiwán"
+msgstr "Taiwán"
+
+msgid "Tanzania"
+msgstr "Tanzania"
+
+msgid "Tayikistán"
+msgstr "Taxiquistán"
+
+msgid "Territorio Británico del Océano Índico"
+msgstr "Territorio Británico do Océano Índico"
+
+msgid "Territorios Australes Franceses"
+msgstr "Territorios Austrais Franceses"
+
+msgid "Timor-Leste"
+msgstr "Timor Leste"
+
+msgid "Togo"
+msgstr "Togo"
+
+msgid "Tokelau"
+msgstr "Tokelau"
+
+msgid "Tonga"
+msgstr "Tonga"
+
+msgid "Trinidad y Tobago"
+msgstr "Trinidad e Tobago"
+
+msgid "Túnez"
+msgstr "Tunisia"
+
+msgid "Turkmenistán"
+msgstr "Turkmenistán"
+
+msgid "Turquía"
+msgstr "Turquía"
+
+msgid "Tuvalu"
+msgstr "Tuvalu"
+
+msgid "Ucrania"
+msgstr "Ucraína"
+
+msgid "Uganda"
+msgstr "Uganda"
+
+msgid "Uruguay"
+msgstr "Uruguai"
+
+msgid "Uzbekistán"
+msgstr "Usbequistán"
+
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+msgid "Venezuela"
+msgstr "Venezuela"
+
+msgid "Vietnam"
+msgstr "Vietnam"
+
+msgid "Wallis y Futuna"
+msgstr "Wallis e Futuna"
+
+msgid "Yemen"
+msgstr "Iemen"
+
+msgid "Yibuti"
+msgstr "Xibutí"
+
+msgid "Zambia"
+msgstr "Zambia"
+
+msgid "Zimbabue"
+msgstr "Zimbabwe"
+
+msgid "Nombre"
+msgstr "Nome"
+
+msgid "Apellidos"
+msgstr "Apelidos"
+
+msgid "Fecha de nacimiento"
+msgstr "Data de nacemento"
+
+msgid "Solo la usaremos para tu edad y tus promociones de cumpleaños."
+msgstr "Só a usaremos para a túa idade e as túas promocións de aniversario."
+
+msgid "Teléfono móvil"
+msgstr "Teléfono móbil"
+
+msgid "Dirección"
+msgstr "Enderezo"
+
+msgid "Dirección (línea 2)"
+msgstr "Enderezo (liña 2)"
+
+msgid "Código postal"
+msgstr "Código postal"
+
+msgid "Localidad"
+msgstr "Localidade"
+
+msgid "Provincia"
+msgstr "Provincia"
+
+msgid "País"
+msgstr "País"
+
+msgid "Con prefijo internacional si no es español (p. ej. +351…)."
+msgstr "Co prefixo internacional se non é español (p. ex. +351…)."
+
+msgid "Provincia, estado o región."
+msgstr "Provincia, estado ou rexión."
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Contraseña"
+msgstr "Contrasinal"
+
+msgid "Mínimo 10 caracteres; no uses una contraseña común ni solo números."
+msgstr "Mínimo 10 caracteres; non uses un contrasinal común nin só números."
+
+msgid "Repite la contraseña"
+msgstr "Repite o contrasinal"
+
+msgid "Quiero recibir promociones y novedades por email."
+msgstr "Quero recibir promocións e novidades por email."
+
+msgid "Quiero recibir promociones por SMS (requiere teléfono móvil)."
+msgstr "Quero recibir promocións por SMS (require teléfono móbil)."
+
+msgid "Dirección postal"
+msgstr "Enderezo postal"
+
+msgid "Acceso a la cuenta"
+msgstr "Acceso á conta"
+
+msgid "Preferencias de comunicación"
+msgstr "Preferencias de comunicación"
+
+msgid "Las contraseñas no coinciden."
+msgstr "Os contrasinais non coinciden."
+
+msgid "Nuevo email"
+msgstr "Novo email"
+
+msgid "Contraseña actual"
+msgstr "Contrasinal actual"
+
+msgid "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos."
+msgstr "Demasiados intentos fallidos. Téntao de novo nuns minutos."
+
+msgid "Email o contraseña incorrectos."
+msgstr "Email ou contrasinal incorrectos."
+
+msgid "Propietario"
+msgstr "Propietario"
+
+msgid "Empleado"
+msgstr "Empregado"
+
+msgid "Cliente"
+msgstr "Cliente"
+
+msgid "identificador público"
+msgstr "identificador público"
+
+msgid "email"
+msgstr "email"
+
+msgid "nombre"
+msgstr "nome"
+
+msgid "apellidos"
+msgstr "apelidos"
+
+msgid "rol"
+msgstr "rol"
+
+msgid "activo"
+msgstr "activo"
+
+msgid "email verificado el"
+msgstr "email verificado o"
+
+msgid "Vacío mientras el email actual no se haya confirmado con un enlace."
+msgstr "Baleiro mentres o email actual non se confirme cunha ligazón."
+
+msgid "acceso al admin técnico"
+msgstr "acceso ao admin técnico"
+
+msgid "Solo propietarios. Se deriva del rol."
+msgstr "Só propietarios. Dedúcese do rol."
+
+msgid "fecha de alta"
+msgstr "data de alta"
+
+msgid "usuario"
+msgstr "usuario"
+
+msgid "usuarios"
+msgstr "usuarios"
+
+msgid "dirección"
+msgstr "enderezo"
+
+msgid "Calle, número, piso."
+msgstr "Rúa, número, andar."
+
+msgid "dirección (línea 2)"
+msgstr "enderezo (liña 2)"
+
+msgid "código postal"
+msgstr "código postal"
+
+msgid "localidad"
+msgstr "localidade"
+
+msgid "provincia"
+msgstr "provincia"
+
+msgid "país"
+msgstr "país"
+
+msgid "Código ISO 3166-1."
+msgstr "Código ISO 3166-1."
+
+msgid "fecha de nacimiento"
+msgstr "data de nacemento"
+
+msgid "última modificación de la fecha de nacimiento"
+msgstr "última modificación da data de nacemento"
+
+msgid "Limita los cambios posteriores (promociones de cumpleaños)."
+msgstr "Limita os cambios posteriores (promocións de aniversario)."
+
+msgid "teléfono móvil"
+msgstr "teléfono móbil"
+
+msgid "Opcional. Formato internacional E.164. No está verificado."
+msgstr "Opcional. Formato internacional E.164. Non está verificado."
+
+msgid "acepta emails promocionales"
+msgstr "acepta emails promocionais"
+
+msgid "acepta SMS promocionales"
+msgstr "acepta SMS promocionais"
+
+msgid "perfil de cliente"
+msgstr "perfil de cliente"
+
+msgid "perfiles de cliente"
+msgstr "perfís de cliente"
+
+#, python-format
+msgid "Perfil de cliente %(public_id)s"
+msgstr "Perfil de cliente %(public_id)s"
+
+msgid "Para recibir SMS promocionales indica un teléfono móvil."
+msgstr "Para recibir SMS promocionais indica un teléfono móbil."
+
+msgid "Verificación del email"
+msgstr "Verificación do email"
+
+msgid "Cambio de email"
+msgstr "Cambio de email"
+
+msgid "finalidad"
+msgstr "finalidade"
+
+msgid "email a confirmar"
+msgstr "email por confirmar"
+
+msgid "hash del token"
+msgstr "hash do token"
+
+msgid "creado"
+msgstr "creado"
+
+msgid "caduca"
+msgstr "caduca"
+
+msgid "usado"
+msgstr "usado"
+
+msgid "revocado"
+msgstr "revogado"
+
+msgid "token de verificación de email"
+msgstr "token de verificación de email"
+
+msgid "tokens de verificación de email"
+msgstr "tokens de verificación de email"
+
+msgid "Email promocional"
+msgstr "Email promocional"
+
+msgid "SMS promocional"
+msgstr "SMS promocional"
+
+msgid "Registro"
+msgstr "Rexistro"
+
+msgid "Perfil del cliente"
+msgstr "Perfil do cliente"
+
+msgid "Automático (teléfono eliminado)"
+msgstr "Automático (teléfono eliminado)"
+
+msgid "Enlace de baja de un mensaje"
+msgstr "Ligazón de baixa dunha mensaxe"
+
+msgid "cliente"
+msgstr "cliente"
+
+msgid "canal"
+msgstr "canle"
+
+msgid "consiente"
+msgstr "consente"
+
+msgid "origen"
+msgstr "orixe"
+
+msgid "fecha"
+msgstr "data"
+
+msgid "cambio de preferencia de comunicación"
+msgstr "cambio de preferencia de comunicación"
+
+msgid "cambios de preferencias de comunicación"
+msgstr "cambios de preferencias de comunicación"
+
+msgid "Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. No se usa geolocalización por IP ni se deducen domicilios."
+msgstr "Datos procedentes dos enderezos postais que declararon os propios clientes no seu perfil. Non se usa xeolocalización por IP nin se deducen domicilios."
+
+msgid "Solo el propietario puede consultar los datos de los clientes."
+msgstr "Só o propietario pode consultar os datos dos clientes."
+
+msgid "Ya existe una cuenta con este email."
+msgstr "Xa existe unha conta con este email."
+
+msgid "Operación reservada al propietario."
+msgstr "Operación reservada ao propietario."
+
+msgid "Ya existe un propietario. Los siguientes deben crearse por un propietario."
+msgstr "Xa existe un propietario. Os seguintes debe crealos un propietario."
+
+msgid "Rol no válido."
+msgstr "Rol non válido."
+
+msgid "No se puede retirar el rol al último propietario activo."
+msgstr "Non se lle pode retirar o rol ao último propietario activo."
+
+msgid "Introduce una fecha válida."
+msgstr "Introduce unha data válida."
+
+msgid "Este campo es obligatorio."
+msgstr "Este campo é obrigatorio."
+
+msgid "Espera un minuto antes de solicitar otro email."
+msgstr "Agarda un minuto antes de solicitar outro email."
+
+msgid "Has alcanzado el máximo de emails de verificación por hoy."
+msgstr "Chegaches ao máximo de emails de verificación por hoxe."
+
+msgid "El enlace no es válido."
+msgstr "A ligazón non é válida."
+
+msgid "El enlace ha caducado. Solicita uno nuevo."
+msgstr "A ligazón caducou. Solicita unha nova."
+
+msgid "Este enlace ya se ha utilizado."
+msgstr "Esta ligazón xa se utilizou."
+
+msgid "Este enlace ha sido sustituido por uno más reciente."
+msgstr "Esta ligazón foi substituída por outra máis recente."
+
+msgid "Ese email ya no está disponible."
+msgstr "Ese email xa non está dispoñible."
+
+msgid "La contraseña no es correcta."
+msgstr "O contrasinal non é correcto."
+
+msgid "Introduce un email válido."
+msgstr "Introduce un email válido."
+
+msgid "El email es demasiado largo."
+msgstr "O email é demasiado longo."
+
+msgid "Ese ya es tu email actual."
+msgstr "Ese xa é o teu email actual."
+
+msgid "Debes verificar tu email para usar esta función."
+msgstr "Debes verificar o teu email para usar esta función."
+
+msgid "La contraseña actual no es correcta."
+msgstr "O contrasinal actual non é correcto."
+
+msgid "El enlace no es válido o ha caducado. Solicita uno nuevo."
+msgstr "A ligazón non é válida ou caducou. Solicita unha nova."
+
+msgid "Solo los clientes tienen perfil de cliente."
+msgstr "Só os clientes teñen perfil de cliente."
+
+#, python-format
+msgid "Campos no permitidos: %(join)s."
+msgstr "Campos non permitidos: %(join)s."
+
+msgid "La fecha de nacimiento solo puede cambiarse una vez al año."
+msgstr "A data de nacemento só se pode cambiar unha vez ao ano."
+
+msgid "Para recibir SMS promocionales indica antes un teléfono móvil."
+msgstr "Para recibir SMS promocionais indica antes un teléfono móbil."
+
+msgid "Canal no válido."
+msgstr "Canle non válida."
+
+msgid "5 dígitos, por ejemplo 15001"
+msgstr "5 díxitos, por exemplo 15001"
+
+msgid "formato 1234-567"
+msgstr "formato 1234-567"
+
+msgid "Selecciona un país válido."
+msgstr "Selecciona un país válido."
+
+#, python-format
+msgid "Código postal no válido (%(hint)s)."
+msgstr "Código postal non válido (%(hint)s)."
+
+msgid "Código postal no válido."
+msgstr "Código postal non válido."
+
+msgid "Número de teléfono no válido."
+msgstr "Número de teléfono non válido."
+
+msgid "Introduce un número de teléfono móvil."
+msgstr "Introduce un número de teléfono móbil."
+
+msgid "El teléfono debe guardarse en formato E.164."
+msgstr "O teléfono debe gardarse en formato E.164."
+
+msgid "La fecha de nacimiento no puede ser futura."
+msgstr "A data de nacemento non pode ser futura."
+
+msgid "Revisa la fecha de nacimiento."
+msgstr "Revisa a data de nacemento."
+
+#, python-format
+msgid "Debes tener al menos %(min_age)s años para registrarte."
+msgstr "Debes ter polo menos %(min_age)s anos para rexistrarte."
+
+msgid "Demasiados intentos desde tu conexión. Inténtalo más tarde."
+msgstr "Demasiados intentos desde a túa conexión. Téntao máis tarde."
+
+msgid "Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace."
+msgstr "Se existe unha conta pendente de verificación con ese email, recibirás unha nova ligazón."
+
+msgid "Te hemos enviado un nuevo enlace de verificación."
+msgstr "Enviámosche unha nova ligazón de verificación."
+
+msgid "Tu email ya está verificado."
+msgstr "O teu email xa está verificado."
+
+msgid "Datos actualizados."
+msgstr "Datos actualizados."
+
+msgid "Preferencias de comunicación guardadas."
+msgstr "Preferencias de comunicación gardadas."
+
+msgid "Si la dirección está disponible, te hemos enviado un enlace para confirmarla. Tu email actual seguirá siendo el de acceso hasta que lo confirmes."
+msgstr "Se o enderezo está dispoñible, enviámosche unha ligazón para confirmalo. O teu email actual seguirá sendo o de acceso ata que o confirmes."
+
+msgid "Contraseña cambiada."
+msgstr "Contrasinal cambiado."
+
+msgid "API REST v1"
+msgstr "API REST v1"
+
+msgid "La sesión ya no es válida. Vuelve a iniciar sesión."
+msgstr "A sesión xa non é válida. Volve iniciar sesión."
+
+msgid "Demasiados intentos. Espera unos minutos antes de volver a intentarlo."
+msgstr "Demasiados intentos. Agarda uns minutos antes de volver tentalo."
+
+msgid "Datos no válidos."
+msgstr "Datos non válidos."
+
+msgid "Revisa los datos enviados."
+msgstr "Revisa os datos enviados."
+
+msgid "Error."
+msgstr "Erro."
+
+msgid "No tienes permiso para realizar esta acción."
+msgstr "Non tes permiso para realizar esta acción."
+
+msgid "Esta función es solo para clientes."
+msgstr "Esta función é só para clientes."
+
+msgid "Solo el personal del local puede realizar esta acción."
+msgstr "Só o persoal do local pode realizar esta acción."
+
+msgid "Solo el propietario puede realizar esta acción."
+msgstr "Só o propietario pode realizar esta acción."
+
+msgid "La fecha inicial debe ser anterior o igual a la final."
+msgstr "A data inicial debe ser anterior ou igual á final."
+
+msgid "El periodo no puede superar 10 años."
+msgstr "O período non pode superar 10 anos."
+
+msgid "Si los datos son correctos, te hemos enviado un email para confirmar tu cuenta. Revisa tu bandeja de entrada."
+msgstr "Se os datos son correctos, enviámosche un email para confirmar a túa conta. Revisa a túa caixa de entrada."
+
+msgid "Si existe una cuenta con ese email, recibirás un enlace para elegir una contraseña nueva."
+msgstr "Se existe unha conta con ese email, recibirás unha ligazón para escoller un contrasinal novo."
+
+msgid "La sesión ha caducado o se ha cerrado. Vuelve a iniciar sesión."
+msgstr "A sesión caducou ou pechouse. Volve iniciar sesión."
+
+msgid "Demasiados intentos desde tu conexión."
+msgstr "Demasiados intentos desde a túa conexión."
+
+msgid "Email confirmado."
+msgstr "Email confirmado."
+
+msgid "Contraseña cambiada. Ya puedes iniciar sesión."
+msgstr "Contrasinal cambiado. Xa podes iniciar sesión."
+
+msgid "Este evento no existe o ya no está publicado."
+msgstr "Este evento non existe ou xa non está publicado."
+
+msgid "Estado no válido."
+msgstr "Estado non válido."
+
+msgid "productos"
+msgstr "produtos"
+
+#, python-format
+msgid "%(description)s: %(changed)s producto(s)."
+msgstr "%(description)s: %(changed)s produto(s)."
+
+msgid "Información permanente"
+msgstr "Información permanente"
+
+msgid "Precio"
+msgstr "Prezo"
+
+msgid "Imagen"
+msgstr "Imaxe"
+
+msgid "Presentación"
+msgstr "Presentación"
+
+msgid "Publicación"
+msgstr "Publicación"
+
+msgid "Los productos archivados no se ven en la web y se conservan como historial."
+msgstr "Os produtos arquivados non se ven na web e consérvanse como historial."
+
+msgid "Disponibilidad actual"
+msgstr "Dispoñibilidade actual"
+
+msgid "Identificador"
+msgstr "Identificador"
+
+msgid "Publicar"
+msgstr "Publicar"
+
+msgid "Pasar a borrador (ocultar)"
+msgstr "Pasar a borrador (ocultar)"
+
+msgid "Archivar"
+msgstr "Arquivar"
+
+msgid "Marcar como agotado"
+msgstr "Marcar como esgotado"
+
+msgid "Marcar como disponible"
+msgstr "Marcar como dispoñible"
+
+msgid "vista previa"
+msgstr "vista previa"
+
+msgid "Carta"
+msgstr "Carta"
+
+msgid "identificador en la URL"
+msgstr "identificador no URL"
+
+msgid "Se usa como ancla en la página de la carta (/carta/#identificador)."
+msgstr "Úsase como áncora na páxina da carta (/carta/#identificador)."
+
+msgid "descripción"
+msgstr "descrición"
+
+msgid "orden"
+msgstr "orde"
+
+msgid "Las categorías se muestran de menor a mayor."
+msgstr "As categorías móstranse de menor a maior."
+
+msgid "publicada"
+msgstr "publicada"
+
+msgid "Si se desmarca, la categoría y todos sus productos dejan de verse en la web."
+msgstr "Se se desmarca, a categoría e todos os seus produtos deixan de verse na web."
+
+msgid "categoría"
+msgstr "categoría"
+
+msgid "categorías"
+msgstr "categorías"
+
+msgid "estilo de cerveza"
+msgstr "estilo de cervexa"
+
+msgid "estilos de cerveza"
+msgstr "estilos de cervexa"
+
+msgid "Producto fijo"
+msgstr "Produto fixo"
+
+msgid "Cerveza propia"
+msgstr "Cervexa propia"
+
+msgid "Cerveza invitada"
+msgstr "Cervexa convidada"
+
+msgid "Cerveza rotativa"
+msgstr "Cervexa rotativa"
+
+msgid "Borrador"
+msgstr "Borrador"
+
+msgid "Publicado"
+msgstr "Publicado"
+
+msgid "Archivado"
+msgstr "Arquivado"
+
+msgid "tipo"
+msgstr "tipo"
+
+msgid "estilo"
+msgstr "estilo"
+
+msgid "Obligatorio en las cervezas; vacío en los productos fijos."
+msgstr "Obrigatorio nas cervexas; baleiro nos produtos fixos."
+
+msgid "graduación (% vol.)"
+msgstr "graduación (% vol.)"
+
+msgid "Obligatoria en las cervezas. Opcional en otros productos con alcohol."
+msgstr "Obrigatoria nas cervexas. Opcional noutros produtos con alcohol."
+
+msgid "cervecera"
+msgstr "cervexeira"
+
+msgid "Elaborador de las cervezas invitadas."
+msgstr "Elaborador das cervexas convidadas."
+
+msgid "precio (€)"
+msgstr "prezo (€)"
+
+msgid "IVA incluido, con dos decimales (p. ej. 3.50). Máximo 9999.99."
+msgstr "IVE incluído, con dous decimais (p. ex. 3.50). Máximo 9999.99."
+
+msgid "formato"
+msgstr "formato"
+
+msgid "Opcional, p. ej. «33 cl» o «Ración»."
+msgstr "Opcional, p. ex. «33 cl» ou «Ración»."
+
+msgid "imagen"
+msgstr "imaxe"
+
+msgid "JPEG, PNG o WebP. Opcional."
+msgstr "JPEG, PNG ou WebP. Opcional."
+
+msgid "Orden dentro de la categoría, de menor a mayor."
+msgstr "Orde dentro da categoría, de menor a maior."
+
+msgid "destacada en el inicio"
+msgstr "destacada no inicio"
+
+msgid "Solo las cervezas publicadas y disponibles aparecen en la selección del inicio."
+msgstr "Só as cervexas publicadas e dispoñibles aparecen na selección do inicio."
+
+msgid "estado"
+msgstr "estado"
+
+msgid "publicado el"
+msgstr "publicado o"
+
+msgid "archivado el"
+msgstr "arquivado o"
+
+msgid "disponible ahora"
+msgstr "dispoñible agora"
+
+msgid "Desmárcalo cuando se agote. Seguirá en la carta como «Agotada»."
+msgstr "Desmárcao cando se esgote. Seguirá na carta como «Esgotada»."
+
+msgid "disponibilidad cambiada el"
+msgstr "dispoñibilidade cambiada o"
+
+msgid "producto"
+msgstr "produto"
+
+msgid "Indica el estilo de la cerveza."
+msgstr "Indica o estilo da cervexa."
+
+msgid "Indica la graduación de la cerveza."
+msgstr "Indica a graduación da cervexa."
+
+msgid "Los productos fijos no tienen estilo de cerveza."
+msgstr "Os produtos fixos non teñen estilo de cervexa."
+
+msgid "Solo se pueden destacar cervezas."
+msgstr "Só se poden destacar cervexas."
+
+msgid "título"
+msgstr "título"
+
+msgid "Carta de grifos"
+msgstr "Carta de billas"
+
+msgid "JPEG, PNG o WebP."
+msgstr "JPEG, PNG ou WebP."
+
+msgid "versión en texto"
+msgstr "versión en texto"
+
+msgid "Recomendado: las cervezas de la imagen en texto, para quien usa lector de pantalla o no puede ver bien la imagen."
+msgstr "Recomendado: as cervexas da imaxe en texto, para quen usa lector de pantalla ou non pode ver ben a imaxe."
+
+msgid "carta de grifos"
+msgstr "carta de billas"
+
+msgid "cartas de grifos"
+msgstr "cartas de billas"
+
+msgid "Solo el propietario puede gestionar la carta."
+msgstr "Só o propietario pode xestionar a carta."
+
+msgid "Estado de publicación no válido."
+msgstr "Estado de publicación non válido."
+
+#, python-format
+msgid "La imagen ocupa demasiado. Máximo: %(max)s MB."
+msgstr "A imaxe ocupa demasiado. Máximo: %(max)s MB."
+
+msgid "Formato no admitido. Usa JPEG, PNG o WebP."
+msgstr "Formato non admitido. Usa JPEG, PNG ou WebP."
+
+#, python-format
+msgid "La imagen es demasiado grande. Máximo: %(max)s px por lado."
+msgstr "A imaxe é demasiado grande. Máximo: %(max)s px por lado."
+
+msgid "El fichero no es una imagen válida."
+msgstr "O ficheiro non é unha imaxe válida."
+
+msgid "Núcleo"
+msgstr "Núcleo"
+
+msgid "actualizado"
+msgstr "actualizado"
+
+msgid "Propietario creado"
+msgstr "Propietario creado"
+
+msgid "Empleado creado"
+msgstr "Empregado creado"
+
+msgid "Cliente creado"
+msgstr "Cliente creado"
+
+msgid "Rol modificado"
+msgstr "Rol modificado"
+
+msgid "Cuenta activada"
+msgstr "Conta activada"
+
+msgid "Cuenta desactivada"
+msgstr "Conta desactivada"
+
+msgid "Email verificado"
+msgstr "Email verificado"
+
+msgid "Cambio de email solicitado"
+msgstr "Cambio de email solicitado"
+
+msgid "Email modificado"
+msgstr "Email modificado"
+
+msgid "Perfil modificado"
+msgstr "Perfil modificado"
+
+msgid "Publicación de producto modificada"
+msgstr "Publicación de produto modificada"
+
+msgid "Disponibilidad de producto modificada"
+msgstr "Dispoñibilidade de produto modificada"
+
+msgid "QR personal renovado"
+msgstr "QR persoal renovado"
+
+msgid "Conversión de puntos modificada"
+msgstr "Conversión de puntos modificada"
+
+msgid "Promoción creada o modificada"
+msgstr "Promoción creada ou modificada"
+
+msgid "Ajuste manual de puntos"
+msgstr "Axuste manual de puntos"
+
+msgid "Movimiento de puntos compensado"
+msgstr "Movemento de puntos compensado"
+
+msgid "Recompensa creada o modificada"
+msgstr "Agasallo creado ou modificado"
+
+msgid "Canje validado"
+msgstr "Canxe validado"
+
+msgid "Ficha de cliente consultada"
+msgstr "Ficha de cliente consultada"
+
+msgid "Contenido del local modificado"
+msgstr "Contido do local modificado"
+
+msgid "Evento creado o modificado"
+msgstr "Evento creado ou modificado"
+
+msgid "Estado de reserva modificado"
+msgstr "Estado de reserva modificado"
+
+msgid "Reserva consultada con datos de contacto"
+msgstr "Reserva consultada con datos de contacto"
+
+msgid "Campaña promocional modificada"
+msgstr "Campaña promocional modificada"
+
+msgid "Promociones de cumpleaños procesadas"
+msgstr "Promocións de aniversario procesadas"
+
+msgid "Contraseña cambiada"
+msgstr "Contrasinal cambiado"
+
+msgid "Sesiones de la app cerradas"
+msgstr "Sesións da app pechadas"
+
+msgid "Caducidad de puntos modificada"
+msgstr "Caducidade de puntos modificada"
+
+msgid "Caducidad de puntos procesada"
+msgstr "Caducidade de puntos procesada"
+
+msgid "Regalo de cumpleaños modificado"
+msgstr "Agasallo de aniversario modificado"
+
+msgid "actor"
+msgstr "actor"
+
+msgid "Vacío cuando la acción la ejecuta un procedimiento administrativo (CLI)."
+msgstr "Baleiro cando a acción a executa un procedemento administrativo (CLI)."
+
+msgid "acción"
+msgstr "acción"
+
+msgid "identificador del objetivo"
+msgstr "identificador do obxectivo"
+
+msgid "metadatos"
+msgstr "metadatos"
+
+msgid "evento de auditoría"
+msgstr "evento de auditoría"
+
+msgid "eventos de auditoría"
+msgstr "eventos de auditoría"
+
+msgid "Dashboard del propietario"
+msgstr "Dashboard do propietario"
+
+msgid "Hoy"
+msgstr "Hoxe"
+
+msgid "7 días"
+msgstr "7 días"
+
+msgid "30 días"
+msgstr "30 días"
+
+msgid "90 días"
+msgstr "90 días"
+
+msgid "12 meses"
+msgstr "12 meses"
+
+msgid "Todo"
+msgstr "Todo"
+
+msgid "Personalizado"
+msgstr "Personalizado"
+
+msgid "Desde"
+msgstr "Desde"
+
+msgid "Hasta"
+msgstr "Ata"
+
+msgid "Indica las dos fechas del periodo personalizado."
+msgstr "Indica as dúas datas do período personalizado."
+
+msgid "El periodo personalizado no puede superar 10 años."
+msgstr "O período personalizado non pode superar 10 anos."
+
+msgid "Todos"
+msgstr "Todos"
+
+msgid "Sí"
+msgstr "Si"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Buscar cliente"
+msgstr "Buscar cliente"
+
+msgid "Clientes dados de alta"
+msgstr "Clientes dados de alta"
+
+msgid "Clientes con compras"
+msgstr "Clientes con compras"
+
+msgid "Próximas"
+msgstr "Próximas"
+
+msgid "Pasadas"
+msgstr "Pasadas"
+
+msgid "Todas"
+msgstr "Todas"
+
+msgid "Puntos"
+msgstr "Puntos"
+
+msgid "Positivo para sumar, negativo para restar. El saldo nunca puede quedar en negativo."
+msgstr "Positivo para sumar, negativo para restar. O saldo nunca pode quedar en negativo."
+
+msgid "Motivo"
+msgstr "Motivo"
+
+msgid "Obligatorio. Queda en el historial del cliente."
+msgstr "Obrigatorio. Queda no historial do cliente."
+
+msgid "Motivo de la compensación"
+msgstr "Motivo da compensación"
+
+msgid "Email de acceso"
+msgstr "Email de acceso"
+
+msgid "Contraseña inicial"
+msgstr "Contrasinal inicial"
+
+msgid "Al menos 10 caracteres. Pide al empleado que la cambie al entrar."
+msgstr "Polo menos 10 caracteres. Pídelle ao empregado que o cambie ao entrar."
+
+msgid "Nuevo rol"
+msgstr "Novo rol"
+
+msgid "Confirmo el cambio. Un propietario tiene acceso a todos los datos de los clientes y a la configuración."
+msgstr "Confirmo o cambio. Un propietario ten acceso a todos os datos dos clientes e á configuración."
+
+msgid "Puntos por euro"
+msgstr "Puntos por euro"
+
+msgid "Por ejemplo 1,00. Se aplica a las compras registradas a partir de ahora; no cambia los puntos ya concedidos."
+msgstr "Por exemplo 1,00. Aplícase ás compras rexistradas a partir de agora; non cambia os puntos xa concedidos."
+
+msgid "Los puntos caducan"
+msgstr "Os puntos caducan"
+
+msgid "Meses de validez"
+msgstr "Meses de validez"
+
+msgid "Cada punto caduca estos meses después de ganarlo. Se gastan primero los más antiguos."
+msgstr "Cada punto caduca estes meses despois de gañalo. Gástanse primeiro os máis antigos."
+
+msgid "Días de aviso"
+msgstr "Días de aviso"
+
+msgid "Con cuántos días de antelación se avisa por email al cliente."
+msgstr "Con cantos días de antelación se avisa por email ao cliente."
+
+msgid "Indica cuántos meses son válidos los puntos."
+msgstr "Indica cantos meses son válidos os puntos."
+
+msgid "Regalar puntos por el cumpleaños"
+msgstr "Agasallar puntos polo aniversario"
+
+msgid "Puntos de regalo"
+msgstr "Puntos de agasallo"
+
+msgid "Asunto del email"
+msgstr "Asunto do email"
+
+msgid "¡Feliz cumpleaños de parte de Caneca Furada!"
+msgstr "Feliz aniversario de parte de Caneca Furada!"
+
+msgid "Mensaje del email"
+msgstr "Mensaxe do email"
+
+msgid "Vacío: se envía el mensaje por defecto."
+msgstr "Baleiro: envíase a mensaxe predeterminada."
+
+#, python-format
+msgid "Texto plano. Escribe %(PLACEHOLDER)s donde quieras mostrar los puntos regalados. Se añade siempre el enlace de baja. No incluyas datos personales."
+msgstr "Texto plano. Escribe %(PLACEHOLDER)s onde queiras mostrar os puntos agasallados. Engádese sempre a ligazón de baixa. Non inclúas datos persoais."
+
+msgid "Mensaje SMS"
+msgstr "Mensaxe SMS"
+
+#, python-brace-format
+msgid "¡Feliz cumpleaños! Te hemos regalado {puntos} puntos."
+msgstr "Feliz aniversario! Agasallámoste con {puntos} puntos."
+
+#, python-format
+msgid "Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite %(PLACEHOLDER)s."
+msgstr "Unha liña. Vai precedida de «Caneca Furada:» e seguida da ligazón de baixa. Admite %(PLACEHOLDER)s."
+
+msgid "Dirección pública del local"
+msgstr "Enderezo público do local"
+
+msgid "Horario"
+msgstr "Horario"
+
+msgid "Una línea por franja: «Días | horario». Vacío: «Pendiente de publicar»."
+msgstr "Unha liña por franxa: «Días | horario». Baleiro: «Pendente de publicar»."
+
+msgid "Email de contacto"
+msgstr "Email de contacto"
+
+msgid "Teléfono de contacto"
+msgstr "Teléfono de contacto"
+
+msgid "Redes sociales"
+msgstr "Redes sociais"
+
+msgid "Una línea por red: «Nombre | https://…». Solo enlaces https."
+msgstr "Unha liña por rede: «Nome | https://…». Só ligazóns https."
+
+msgid "Presentación de la cervecería"
+msgstr "Presentación da cervexaría"
+
+msgid "Texto de bienvenida del inicio"
+msgstr "Texto de benvida do inicio"
+
+msgid "Frase bajo el lema en la portada. Vacío: el texto genérico de la marca."
+msgstr "Frase baixo o lema na portada. Baleiro: o texto xenérico da marca."
+
+msgid "Aviso destacado"
+msgstr "Aviso destacado"
+
+msgid "Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."
+msgstr "Móstrase nunha franxa ao principio do inicio (peche por vacacións, novidades…). Baleiro: sen aviso."
+
+msgid "Confirmar"
+msgstr "Confirmar"
+
+msgid "Rechazar"
+msgstr "Rexeitar"
+
+msgid "Cancelar"
+msgstr "Cancelar"
+
+msgid "Completar"
+msgstr "Completar"
+
+msgid "Mensaje para el cliente"
+msgstr "Mensaxe para o cliente"
+
+msgid "Opcional. Se muestra al cliente y va en el email. No incluyas datos personales."
+msgstr "Opcional. Móstraselle ao cliente e vai no email. Non inclúas datos persoais."
+
+msgid "Nombre interno"
+msgstr "Nome interno"
+
+msgid "Solo lo ves tú."
+msgstr "Só o ves ti."
+
+msgid "Canal"
+msgstr "Canle"
+
+msgid "Asunto"
+msgstr "Asunto"
+
+msgid "Obligatorio en email."
+msgstr "Obrigatorio en email."
+
+msgid "Mensaje"
+msgstr "Mensaxe"
+
+#, python-format
+msgid "Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."
+msgstr "Texto plano. Email: ata %(MAX_EMAIL_BODY)s caracteres; SMS: ata %(MAX_SMS_BODY)s. Engádese sempre a ligazón de baixa. Non inclúas datos persoais."
+
+msgid "Resumen"
+msgstr "Resumo"
+
+msgid "Clientes"
+msgstr "Clientes"
+
+msgid "Empleados"
+msgstr "Empregados"
+
+msgid "Compras"
+msgstr "Compras"
+
+msgid "Recompensas"
+msgstr "Agasallos"
+
+msgid "Cervezas"
+msgstr "Cervexas"
+
+msgid "Eventos"
+msgstr "Eventos"
+
+msgid "Reservas"
+msgstr "Reservas"
+
+msgid "Promociones"
+msgstr "Promocións"
+
+msgid "Comunicaciones"
+msgstr "Comunicacións"
+
+msgid "Contenido"
+msgstr "Contido"
+
+msgid "Configuración"
+msgstr "Configuración"
+
+#, python-format
+msgid "Ajuste registrado: %(points)s puntos."
+msgstr "Axuste rexistrado: %(points)s puntos."
+
+msgid "Este ajuste ya estaba registrado; no se ha duplicado."
+msgstr "Este axuste xa estaba rexistrado; non se duplicou."
+
+#, python-format
+msgid "Movimiento compensado: %(points)s puntos."
+msgstr "Movemento compensado: %(points)s puntos."
+
+msgid "Ese movimiento ya estaba compensado."
+msgstr "Ese movemento xa estaba compensado."
+
+msgid "Empleado dado de alta. Ya puede entrar con su email y la contraseña inicial."
+msgstr "Empregado dado de alta. Xa pode entrar co seu email e o contrasinal inicial."
+
+msgid "No puedes desactivar tu propia cuenta desde el dashboard."
+msgstr "Non podes desactivar a túa propia conta desde o dashboard."
+
+msgid "Acción no válida."
+msgstr "Acción non válida."
+
+msgid "Cuenta activada."
+msgstr "Conta activada."
+
+msgid "Cuenta desactivada: ya no puede entrar."
+msgstr "Conta desactivada: xa non pode entrar."
+
+msgid "No puedes cambiar tu propio rol desde el dashboard."
+msgstr "Non podes cambiar o teu propio rol desde o dashboard."
+
+msgid "Elige el nuevo rol y marca la casilla de confirmación."
+msgstr "Escolle o novo rol e marca a caixa de confirmación."
+
+msgid "Rol actualizado."
+msgstr "Rol actualizado."
+
+#, python-format
+msgid "Estado de «%(name)s» actualizado."
+msgstr "Estado de «%(name)s» actualizado."
+
+#, python-format
+msgid "«%(name)s» marcado como disponible."
+msgstr "«%(name)s» marcado como dispoñible."
+
+#, python-format
+msgid "«%(name)s» marcado como agotado."
+msgstr "«%(name)s» marcado como esgotado."
+
+#, python-format
+msgid "Evento «%(title)s» guardado."
+msgstr "Evento «%(title)s» gardado."
+
+#, python-format
+msgid "Estado de «%(title)s» actualizado."
+msgstr "Estado de «%(title)s» actualizado."
+
+msgid "Reserva confirmada. Se ha avisado al cliente."
+msgstr "Reserva confirmada. Avisouse o cliente."
+
+msgid "Reserva rechazada. Se ha avisado al cliente."
+msgstr "Reserva rexeitada. Avisouse o cliente."
+
+msgid "Reserva cancelada. Se ha avisado al cliente."
+msgstr "Reserva cancelada. Avisouse o cliente."
+
+msgid "Reserva marcada como completada."
+msgstr "Reserva marcada como completada."
+
+msgid "La reserva ya estaba en ese estado."
+msgstr "A reserva xa estaba nese estado."
+
+msgid "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
+msgstr "Campaña gardada como borrador. Revísaa e prográmaa cando queiras."
+
+msgid "Solo se pueden modificar las campañas en borrador."
+msgstr "Só se poden modificar as campañas en borrador."
+
+msgid "Campaña programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
+msgstr "Campaña programada. Repartirase na próxima execución da tarefa de envíos, só a quen o autorizou."
+
+msgid "Campaña cancelada."
+msgstr "Campaña cancelada."
+
+msgid "Contenido guardado."
+msgstr "Contido gardado."
+
+msgid "No había cambios que guardar."
+msgstr "Non había cambios que gardar."
+
+msgid "Importe máximo por compra"
+msgstr "Importe máximo por compra"
+
+msgid "Días para recoger una recompensa canjeada"
+msgstr "Días para recoller un agasallo canxeado"
+
+msgid "Ajuste manual máximo de puntos"
+msgstr "Axuste manual máximo de puntos"
+
+msgid "Edad mínima para registrarse"
+msgstr "Idade mínima para rexistrarse"
+
+msgid "Nueva conversión en vigor para las próximas compras."
+msgstr "Nova conversión en vigor para as próximas compras."
+
+msgid "Caducidad de los puntos actualizada."
+msgstr "Caducidade dos puntos actualizada."
+
+msgid "Los puntos ya no caducan."
+msgstr "Os puntos xa non caducan."
+
+msgid "Regalo de cumpleaños guardado."
+msgstr "Agasallo de aniversario gardado."
+
+msgid "Eventos y reservas"
+msgstr "Eventos e reservas"
+
+msgid "Personas"
+msgstr "Persoas"
+
+msgid "Comentarios"
+msgstr "Comentarios"
+
+msgid "Opcional. Solo lo verá el local. No incluyas datos de salud ni otros datos sensibles."
+msgstr "Opcional. Só o verá o local. Non inclúas datos de saúde nin outros datos sensibles."
+
+#, python-format
+msgid "Entre 1 y %(maximum)s. Para grupos mayores, contacta con el local."
+msgstr "Entre 1 e %(maximum)s. Para grupos maiores, contacta co local."
+
+msgid "Día"
+msgstr "Día"
+
+msgid "Hora"
+msgstr "Hora"
+
+msgid "identificador"
+msgstr "identificador"
+
+msgid "resumen"
+msgstr "resumo"
+
+msgid "Una o dos frases para el listado."
+msgstr "Unha ou dúas frases para a listaxe."
+
+msgid "empieza"
+msgstr "comeza"
+
+msgid "termina"
+msgstr "remata"
+
+msgid "destacado en el inicio"
+msgstr "destacado no inicio"
+
+msgid "admite reservas"
+msgstr "admite reservas"
+
+msgid "plazas"
+msgstr "prazas"
+
+msgid "Personas en reservas confirmadas. Vacío: sin límite."
+msgstr "Persoas en reservas confirmadas. Baleiro: sen límite."
+
+msgid "evento"
+msgstr "evento"
+
+msgid "eventos"
+msgstr "eventos"
+
+msgid "La hora de fin debe ser posterior a la de inicio."
+msgstr "A hora de fin debe ser posterior á de inicio."
+
+msgid "Pendiente de confirmar"
+msgstr "Pendente de confirmar"
+
+msgid "Confirmada"
+msgstr "Confirmada"
+
+msgid "Rechazada"
+msgstr "Rexeitada"
+
+msgid "Cancelada"
+msgstr "Cancelada"
+
+msgid "Completada"
+msgstr "Completada"
+
+msgid "fecha y hora"
+msgstr "data e hora"
+
+msgid "personas"
+msgstr "persoas"
+
+msgid "comentarios del cliente"
+msgstr "comentarios do cliente"
+
+msgid "Solo los ve el propietario. No se envían por email."
+msgstr "Só os ve o propietario. Non se envían por email."
+
+msgid "mensaje del local"
+msgstr "mensaxe do local"
+
+msgid "Se muestra al cliente y va en el email."
+msgstr "Móstraselle ao cliente e vai no email."
+
+msgid "último cambio de estado"
+msgstr "último cambio de estado"
+
+msgid "cambiado por"
+msgstr "cambiado por"
+
+msgid "referencia de idempotencia"
+msgstr "referencia de idempotencia"
+
+msgid "solicitada"
+msgstr "solicitada"
+
+msgid "actualizada"
+msgstr "actualizada"
+
+msgid "reserva"
+msgstr "reserva"
+
+msgid "reservas"
+msgstr "reservas"
+
+#, python-format
+msgid "Reserva %(public_id)s"
+msgstr "Reserva %(public_id)s"
+
+msgid "Solo el propietario puede ver los eventos y las reservas."
+msgstr "Só o propietario pode ver os eventos e as reservas."
+
+msgid "Solo el propietario gestiona los eventos y las reservas."
+msgstr "Só o propietario xestiona os eventos e as reservas."
+
+#, python-format
+msgid "Ya hay %(seats)s plazas confirmadas: el aforo no puede ser menor."
+msgstr "Xa hai %(seats)s prazas confirmadas: o aforo non pode ser menor."
+
+msgid "Estado de evento no válido."
+msgstr "Estado de evento non válido."
+
+msgid "Ese cambio de estado no está permitido."
+msgstr "Ese cambio de estado non está permitido."
+
+msgid "No se puede publicar un evento que ya ha empezado."
+msgstr "Non se pode publicar un evento que xa comezou."
+
+msgid "La operación no es válida. Vuelve a intentarlo."
+msgstr "A operación non é válida. Volve tentalo."
+
+#, python-format
+msgid "Indica entre 1 y %(maximum)s personas."
+msgstr "Indica entre 1 e %(maximum)s persoas."
+
+#, python-format
+msgid "Admite como máximo %(MAX_TEXT)s caracteres."
+msgstr "Admite como máximo %(MAX_TEXT)s caracteres."
+
+msgid "Indica la fecha y la hora de la reserva."
+msgstr "Indica a data e a hora da reserva."
+
+#, python-format
+msgid "Reserva con al menos %(EVENTS_RESERVATION_MIN_NOTICE_HOURS)s horas de antelación."
+msgstr "Reserva con polo menos %(EVENTS_RESERVATION_MIN_NOTICE_HOURS)s horas de antelación."
+
+#, python-format
+msgid "Solo se puede reservar hasta %(EVENTS_RESERVATION_MAX_DAYS_AHEAD)s días vista."
+msgstr "Só se pode reservar con ata %(EVENTS_RESERVATION_MAX_DAYS_AHEAD)s días de antelación."
+
+msgid "Para reservar necesitas una cuenta de cliente con el email verificado."
+msgstr "Para reservar necesitas unha conta de cliente co email verificado."
+
+msgid "%d/%m/%Y a las %H:%M"
+msgstr "%d/%m/%Y ás %H:%M"
+
+msgid "Esta operación ya se registró con otros datos."
+msgstr "Esta operación xa se rexistrou con outros datos."
+
+msgid "Este evento ya no admite reservas."
+msgstr "Este evento xa non admite reservas."
+
+msgid "Ya tienes una reserva activa para este evento."
+msgstr "Xa tes unha reserva activa para este evento."
+
+msgid "No quedan plazas suficientes para este evento."
+msgstr "Non quedan prazas suficientes para este evento."
+
+#, python-format
+msgid "Ya tienes %(active)s reservas activas. Cancela alguna antes de pedir otra."
+msgstr "Xa tes %(active)s reservas activas. Cancela algunha antes de pedir outra."
+
+msgid "Nueva solicitud de reserva"
+msgstr "Nova solicitude de reserva"
+
+msgid "Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde."
+msgstr "Fixeches demasiadas solicitudes de reserva. Téntao máis tarde."
+
+#, python-format
+msgid "Una reserva %(current)s no puede pasar a %(new)s."
+msgstr "Unha reserva %(current)s non pode pasar a %(new)s."
+
+msgid "La fecha de la reserva ya ha pasado."
+msgstr "A data da reserva xa pasou."
+
+msgid "Confirmarla superaría el aforo del evento."
+msgstr "Confirmala superaría o aforo do evento."
+
+msgid "Una reserva solo se completa a partir de su día."
+msgstr "Unha reserva só se completa a partir do seu día."
+
+msgid "La hora de la reserva ya ha pasado: ya no se puede cancelar."
+msgstr "A hora da reserva xa pasou: xa non se pode cancelar."
+
+msgid "Reserva cancelada por el cliente"
+msgstr "Reserva cancelada polo cliente"
+
+msgid "Solicitud enviada. Te avisaremos por email cuando el local la confirme."
+msgstr "Solicitude enviada. Avisarémoste por email cando o local a confirme."
+
+msgid "Esta solicitud ya estaba enviada."
+msgstr "Esta solicitude xa estaba enviada."
+
+msgid "Este evento no admite reservas."
+msgstr "Este evento non admite reservas."
+
+msgid "Reserva cancelada."
+msgstr "Reserva cancelada."
+
+msgid "Bonificación"
+msgstr "Bonificación"
+
+msgid "Condiciones"
+msgstr "Condicións"
+
+msgid "Límites"
+msgstr "Límites"
+
+msgid "Referencia"
+msgstr "Referencia"
+
+msgid "usos"
+msgstr "usos"
+
+msgid "Fidelización"
+msgstr "Fidelización"
+
+msgid "Regalo de cumpleaños"
+msgstr "Agasallo de aniversario"
+
+#, python-format
+msgid "Admite como máximo %(max_length)s caracteres."
+msgstr "Admite como máximo %(max_length)s caracteres."
+
+msgid "Escríbelo en una sola línea."
+msgstr "Escríbeo nunha soa liña."
+
+#, python-format
+msgid "El único marcador admitido es %(PLACEHOLDER)s; no uses otras llaves."
+msgstr "O único marcador admitido é %(PLACEHOLDER)s; non uses outras chaves."
+
+#, python-format
+msgid "Indica entre 1 y %(MAX_FIXED_POINTS)s puntos."
+msgstr "Indica entre 1 e %(MAX_FIXED_POINTS)s puntos."
+
+msgid "Solo el propietario configura el regalo de cumpleaños."
+msgstr "Só o propietario configura o agasallo de aniversario."
+
+msgid "Introduce un número válido, por ejemplo 1,00."
+msgstr "Introduce un número válido, por exemplo 1,00."
+
+msgid "Solo el propietario puede cambiar la conversión de puntos."
+msgstr "Só o propietario pode cambiar a conversión de puntos."
+
+msgid "Solo el propietario puede cambiar la caducidad de los puntos."
+msgstr "Só o propietario pode cambiar a caducidade dos puntos."
+
+#, python-format
+msgid "Indica entre 1 y %(MAX_MONTHS)s meses."
+msgstr "Indica entre 1 e %(MAX_MONTHS)s meses."
+
+#, python-format
+msgid "Indica entre 1 y %(MAX_WARN_DAYS)s días."
+msgstr "Indica entre 1 e %(MAX_WARN_DAYS)s días."
+
+msgid "El cliente no tiene puntos suficientes para esta operación."
+msgstr "O cliente non ten puntos suficientes para esta operación."
+
+msgid "Solo el propietario puede corregir puntos."
+msgstr "Só o propietario pode corrixir puntos."
+
+msgid "Indica el motivo."
+msgstr "Indica o motivo."
+
+msgid "El motivo admite como máximo 200 caracteres."
+msgstr "O motivo admite como máximo 200 caracteres."
+
+msgid "Indica un número entero de puntos distinto de cero."
+msgstr "Indica un número enteiro de puntos distinto de cero."
+
+#, python-format
+msgid "El ajuste no puede superar %(LOYALTY_MAX_ADJUSTMENT_POINTS)s puntos."
+msgstr "O axuste non pode superar %(LOYALTY_MAX_ADJUSTMENT_POINTS)s puntos."
+
+msgid "Solo los clientes tienen puntos."
+msgstr "Só os clientes teñen puntos."
+
+msgid "Una compensación no se compensa: registra un ajuste."
+msgstr "Unha compensación non se compensa: rexistra un axuste."
+
+msgid "Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento."
+msgstr "Os puntos dun canxe devólvense cancelando o canxe, non compensando o movemento."
+
+msgid "Los puntos caducados no se compensan: devuélvelos con un ajuste manual a favor."
+msgstr "Os puntos caducados non se compensan: devólveos cun axuste manual a favor."
+
+#, python-format
+msgid "Regalo de cumpleaños %(year)s"
+msgstr "Agasallo de aniversario %(year)s"
+
+msgid "Puntos caducados"
+msgstr "Puntos caducados"
+
+msgid "token"
+msgstr "token"
+
+msgid "renovado el"
+msgstr "renovado o"
+
+msgid "código QR de cliente"
+msgstr "código QR de cliente"
+
+msgid "códigos QR de cliente"
+msgstr "códigos QR de cliente"
+
+#, python-format
+msgid "QR de cliente #%(pk)s"
+msgstr "QR de cliente #%(pk)s"
+
+msgid "puntos por euro"
+msgstr "puntos por euro"
+
+msgid "Puntos por cada euro de compra. El resultado se redondea hacia abajo a puntos enteros."
+msgstr "Puntos por cada euro de compra. O resultado arredóndase cara a abaixo a puntos enteiros."
+
+msgid "en vigor desde"
+msgstr "en vigor desde"
+
+msgid "motivo"
+msgstr "motivo"
+
+msgid "creada por"
+msgstr "creada por"
+
+msgid "creada"
+msgstr "creada"
+
+msgid "regla de conversión de puntos"
+msgstr "regra de conversión de puntos"
+
+msgid "reglas de conversión de puntos"
+msgstr "regras de conversión de puntos"
+
+#, python-format
+msgid "%(points_per_euro)s puntos/€ desde %(localtime)s"
+msgstr "%(points_per_euro)s puntos/€ desde %(localtime)s"
+
+msgid "La nueva conversión no puede entrar en vigor en el pasado."
+msgstr "A nova conversión non pode entrar en vigor no pasado."
+
+msgid "meses de validez"
+msgstr "meses de validez"
+
+msgid "Vacío: los puntos no caducan."
+msgstr "Baleiro: os puntos non caducan."
+
+msgid "días de aviso"
+msgstr "días de aviso"
+
+msgid "Con cuántos días de antelación se avisa por email de los puntos que van a caducar."
+msgstr "Con cantos días de antelación se avisa por email dos puntos que van caducar."
+
+msgid "el plazo cuenta desde"
+msgstr "o prazo conta desde"
+
+msgid "política de caducidad de puntos"
+msgstr "política de caducidade de puntos"
+
+msgid "políticas de caducidad de puntos"
+msgstr "políticas de caducidade de puntos"
+
+#, python-format
+msgid "Sin caducidad desde %(localtime)s"
+msgstr "Sen caducidade desde %(localtime)s"
+
+#, python-format
+msgid "%(months)s meses desde %(localtime)s"
+msgstr "%(months)s meses desde %(localtime)s"
+
+msgid "Por compra"
+msgstr "Por compra"
+
+msgid "Cumpleaños"
+msgstr "Aniversario"
+
+msgid "Puntos fijos"
+msgstr "Puntos fixos"
+
+msgid "Multiplicador de los puntos de la compra"
+msgstr "Multiplicador dos puntos da compra"
+
+msgid "Activa"
+msgstr "Activa"
+
+msgid "Pausada"
+msgstr "Pausada"
+
+msgid "Finalizada"
+msgstr "Finalizada"
+
+msgid "descripción para el cliente"
+msgstr "descrición para o cliente"
+
+msgid "Texto público, sin datos personales."
+msgstr "Texto público, sen datos persoais."
+
+msgid "bonificación"
+msgstr "bonificación"
+
+msgid "puntos fijos"
+msgstr "puntos fixos"
+
+msgid "multiplicador"
+msgstr "multiplicador"
+
+msgid "Por ejemplo 2,00 = puntos dobles: se suman los puntos de la compra × (multiplicador − 1)."
+msgstr "Por exemplo 2,00 = puntos dobres: súmanse os puntos da compra × (multiplicador − 1)."
+
+msgid "importe mínimo de la compra (€)"
+msgstr "importe mínimo da compra (€)"
+
+msgid "Vacío: sin fecha de fin."
+msgstr "Baleiro: sen data de fin."
+
+msgid "usos máximos por cliente"
+msgstr "usos máximos por cliente"
+
+msgid "Vacío: sin límite. Las de cumpleaños son siempre una por cliente y año."
+msgstr "Baleiro: sen límite. As de aniversario son sempre unha por cliente e ano."
+
+msgid "usos máximos en total"
+msgstr "usos máximos en total"
+
+msgid "días de margen alrededor del cumpleaños"
+msgstr "días de marxe arredor do aniversario"
+
+msgid "Sin uso desde la Fase 10: el regalo de cumpleaños se concede el mismo día."
+msgstr "Sen uso desde a Fase 10: o agasallo de aniversario concédese o mesmo día."
+
+msgid "promoción"
+msgstr "promoción"
+
+msgid "promociones"
+msgstr "promocións"
+
+msgid "Indica los puntos que da la promoción."
+msgstr "Indica os puntos que dá a promoción."
+
+msgid "Deja vacío el multiplicador en una promoción de puntos fijos."
+msgstr "Deixa baleiro o multiplicador nunha promoción de puntos fixos."
+
+msgid "Indica el multiplicador."
+msgstr "Indica o multiplicador."
+
+msgid "Deja vacíos los puntos fijos en una promoción con multiplicador."
+msgstr "Deixa baleiros os puntos fixos nunha promoción con multiplicador."
+
+msgid "Las promociones de cumpleaños regalan puntos fijos: no admiten multiplicador."
+msgstr "As promocións de aniversario agasallan puntos fixos: non admiten multiplicador."
+
+msgid "La fecha de fin debe ser posterior a la de inicio."
+msgstr "A data de fin debe ser posterior á de inicio."
+
+msgid "Compra"
+msgstr "Compra"
+
+msgid "Promoción"
+msgstr "Promoción"
+
+msgid "Ajuste manual"
+msgstr "Axuste manual"
+
+msgid "Compensación"
+msgstr "Compensación"
+
+msgid "Canje"
+msgstr "Canxe"
+
+msgid "puntos"
+msgstr "puntos"
+
+msgid "saldo resultante"
+msgstr "saldo resultante"
+
+msgid "compra"
+msgstr "compra"
+
+msgid "año del cumpleaños"
+msgstr "ano do aniversario"
+
+msgid "Solo en promociones de cumpleaños: impide más de una por cliente y año."
+msgstr "Só en promocións de aniversario: impide máis dunha por cliente e ano."
+
+msgid "compensa a"
+msgstr "compensa a"
+
+msgid "regla de conversión"
+msgstr "regra de conversión"
+
+msgid "importe base (€)"
+msgstr "importe base (€)"
+
+msgid "puntos por euro aplicados"
+msgstr "puntos por euro aplicados"
+
+msgid "registrado por"
+msgstr "rexistrado por"
+
+msgid "movimiento de puntos"
+msgstr "movemento de puntos"
+
+msgid "movimientos de puntos"
+msgstr "movementos de puntos"
+
+msgid "asunto del email"
+msgstr "asunto do email"
+
+msgid "mensaje del email"
+msgstr "mensaxe do email"
+
+msgid "mensaje SMS"
+msgstr "mensaxe SMS"
+
+msgid "modificado por"
+msgstr "modificado por"
+
+msgid "aviso de cumpleaños"
+msgstr "aviso de aniversario"
+
+msgid "Aviso de cumpleaños"
+msgstr "Aviso de aniversario"
+
+msgid "Solo el propietario gestiona las promociones."
+msgstr "Só o propietario xestiona as promocións."
+
+msgid "Estado de promoción no válido."
+msgstr "Estado de promoción non válido."
+
+msgid "Solo el propietario puede ver las estadísticas."
+msgstr "Só o propietario pode ver as estatísticas."
+
+msgid "Solo el propietario puede ver todos los movimientos de puntos."
+msgstr "Só o propietario pode ver todos os movementos de puntos."
+
+msgid "Solo el propietario puede ver las promociones."
+msgstr "Só o propietario pode ver as promocións."
+
+msgid "El código no es válido o la cuenta no está activa."
+msgstr "O código non é válido ou a conta non está activa."
+
+msgid "El cliente tiene que verificar su email antes de poder sumar compras."
+msgstr "O cliente ten que verificar o seu email antes de poder sumar compras."
+
+msgid "Solo los clientes tienen código QR."
+msgstr "Só os clientes teñen código QR."
+
+msgid "Debes verificar tu email para usar tu código QR."
+msgstr "Debes verificar o teu email para usar o teu código QR."
+
+msgid "Has renovado tu código demasiadas veces hoy. Inténtalo mañana."
+msgstr "Renovaches o teu código demasiadas veces hoxe. Téntao mañá."
+
+msgid "Tu código QR se ha renovado. El anterior ya no sirve."
+msgstr "Renovouse o teu código QR. O anterior xa non serve."
+
+msgid "Notificaciones"
+msgstr "Notificacións"
+
+msgid "Solo el propietario gestiona las campañas."
+msgstr "Só o propietario xestiona as campañas."
+
+msgid "Escribe el mensaje."
+msgstr "Escribe a mensaxe."
+
+#, python-format
+msgid "Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres."
+msgstr "Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres."
+
+msgid "Escribe el asunto del email."
+msgstr "Escribe o asunto do email."
+
+#, python-format
+msgid "El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres."
+msgstr "A mensaxe admite como máximo %(MAX_EMAIL_BODY)s caracteres."
+
+msgid "Esta campaña ya no se puede programar."
+msgstr "Esta campaña xa non se pode programar."
+
+msgid "No hay ningún proveedor de SMS configurado: la campaña no puede enviarse por SMS."
+msgstr "Non hai ningún provedor de SMS configurado: a campaña non se pode enviar por SMS."
+
+msgid "Una campaña ya repartida no se puede cancelar."
+msgstr "Unha campaña xa repartida non se pode cancelar."
+
+msgid "Programada para envío"
+msgstr "Programada para envío"
+
+msgid "Repartida"
+msgstr "Repartida"
+
+msgid "nombre interno"
+msgstr "nome interno"
+
+msgid "asunto"
+msgstr "asunto"
+
+msgid "Solo email."
+msgstr "Só email."
+
+msgid "mensaje"
+msgstr "mensaxe"
+
+msgid "Texto plano. No incluyas datos personales de clientes ni de empleados."
+msgstr "Texto plano. Non inclúas datos persoais de clientes nin de empregados."
+
+msgid "programada el"
+msgstr "programada o"
+
+msgid "repartida el"
+msgstr "repartida o"
+
+msgid "destinatarios"
+msgstr "destinatarios"
+
+msgid "campaña promocional"
+msgstr "campaña promocional"
+
+msgid "campañas promocionales"
+msgstr "campañas promocionais"
+
+msgid "Confirmación de cambio de email"
+msgstr "Confirmación de cambio de email"
+
+msgid "Aviso de email cambiado"
+msgstr "Aviso de email cambiado"
+
+msgid "Aviso de cuenta existente"
+msgstr "Aviso de conta existente"
+
+msgid "Recuperación de la cuenta"
+msgstr "Recuperación da conta"
+
+msgid "Reserva recibida"
+msgstr "Reserva recibida"
+
+msgid "Reserva confirmada"
+msgstr "Reserva confirmada"
+
+msgid "Reserva rechazada"
+msgstr "Reserva rexeitada"
+
+msgid "Reserva cancelada"
+msgstr "Reserva cancelada"
+
+msgid "Aviso de reserva al propietario"
+msgstr "Aviso de reserva ao propietario"
+
+msgid "Campaña promocional"
+msgstr "Campaña promocional"
+
+msgid "Promoción de cumpleaños"
+msgstr "Promoción de aniversario"
+
+msgid "Aviso de puntos que van a caducar"
+msgstr "Aviso de puntos que van caducar"
+
+msgid "Transaccional"
+msgstr "Transaccional"
+
+msgid "Promocional"
+msgstr "Promocional"
+
+msgid "Pendiente"
+msgstr "Pendente"
+
+msgid "Enviando"
+msgstr "Enviando"
+
+msgid "Enviada"
+msgstr "Enviada"
+
+msgid "Fallida"
+msgstr "Fallida"
+
+msgid "No enviada"
+msgstr "Non enviada"
+
+msgid "destinatario"
+msgstr "destinatario"
+
+msgid "datos del mensaje"
+msgstr "datos da mensaxe"
+
+msgid "Sin tokens ni datos personales."
+msgstr "Sen tokens nin datos persoais."
+
+msgid "clave de idempotencia"
+msgstr "clave de idempotencia"
+
+msgid "campaña"
+msgstr "campaña"
+
+msgid "intentos"
+msgstr "intentos"
+
+msgid "próximo intento"
+msgstr "próximo intento"
+
+msgid "último error"
+msgstr "último erro"
+
+msgid "Tipo de error o motivo de no envío; nunca el mensaje."
+msgstr "Tipo de erro ou motivo de non envío; nunca a mensaxe."
+
+msgid "enviada el"
+msgstr "enviada o"
+
+msgid "notificación"
+msgstr "notificación"
+
+msgid "notificaciones"
+msgstr "notificacións"
+
+msgid "Consola (desarrollo): los emails no se envían, se muestran en la terminal."
+msgstr "Consola (desenvolvemento): os emails non se envían, móstranse no terminal."
+
+msgid "Memoria (tests): los emails no se envían."
+msgstr "Memoria (tests): os emails non se envían."
+
+msgid "Fichero (desarrollo): los emails no se envían."
+msgstr "Ficheiro (desenvolvemento): os emails non se envían."
+
+msgid "Nulo: los emails no se envían."
+msgstr "Nulo: os emails non se envían."
+
+msgid "Solo el propietario puede ver las comunicaciones."
+msgstr "Só o propietario pode ver as comunicacións."
+
+msgid "Proveedor configurado por variables de entorno (EMAIL_*)."
+msgstr "Provedor configurado por variables de contorno (EMAIL_*)."
+
+msgid "Código del cliente"
+msgstr "Código do cliente"
+
+msgid "Se rellena al escanear el QR. Si la cámara no funciona, escribe el código que aparece bajo el QR."
+msgstr "Énchese ao escanear o QR. Se a cámara non funciona, escribe o código que aparece baixo o QR."
+
+msgid "Importe (€)"
+msgstr "Importe (€)"
+
+msgid "Importe total pagado, por ejemplo 12,50."
+msgstr "Importe total pagado, por exemplo 12,50."
+
+msgid "Manual (panel del personal)"
+msgstr "Manual (panel do persoal)"
+
+msgid "Registrada"
+msgstr "Rexistrada"
+
+msgid "Anulada"
+msgstr "Anulada"
+
+msgid "registrada por"
+msgstr "rexistrada por"
+
+msgid "importe (€)"
+msgstr "importe (€)"
+
+msgid "La genera el servidor al mostrar el formulario; un reenvío no crea otra compra."
+msgstr "Xéraa o servidor ao mostrar o formulario; un reenvío non crea outra compra."
+
+msgid "referencia externa"
+msgstr "referencia externa"
+
+msgid "Reservado para el identificador del ticket del TPV."
+msgstr "Reservado para o identificador do tíquet do TPV."
+
+msgid "compras"
+msgstr "compras"
+
+#, python-format
+msgid "Compra %(public_id)s"
+msgstr "Compra %(public_id)s"
+
+msgid "Compras registradas en el programa de fidelización"
+msgstr "Compras rexistradas no programa de fidelización"
+
+msgid "Solo incluye las compras que el personal registró con el QR de un cliente. No es la facturación total del local."
+msgstr "Só inclúe as compras que o persoal rexistrou co QR dun cliente. Non é a facturación total do local."
+
+msgid "Solo el propietario puede ver todas las compras."
+msgstr "Só o propietario pode ver todas as compras."
+
+msgid "Solo el personal del local puede registrar compras."
+msgstr "Só o persoal do local pode rexistrar compras."
+
+msgid "Introduce un importe válido, por ejemplo 12,50."
+msgstr "Introduce un importe válido, por exemplo 12,50."
+
+msgid "El importe admite como máximo dos decimales."
+msgstr "O importe admite como máximo dous decimais."
+
+msgid "El importe debe ser mayor que cero."
+msgstr "O importe debe ser maior que cero."
+
+#, python-format
+msgid "El importe supera el máximo permitido (%(max)s €)."
+msgstr "O importe supera o máximo permitido (%(max)s €)."
+
+msgid "La operación no es válida. Vuelve a escanear el código."
+msgstr "A operación non é válida. Volve escanear o código."
+
+msgid "Esta operación ya se registró con otros datos. Vuelve a escanear el código."
+msgstr "Esta operación xa se rexistrou con outros datos. Volve escanear o código."
+
+msgid "Esta operación ya no está vigente."
+msgstr "Esta operación xa non está vixente."
+
+msgid "Este origen de compras no está habilitado."
+msgstr "Esta orixe de compras non está habilitada."
+
+msgid "Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo."
+msgstr "Demasiados códigos non válidos seguidos. Agarda uns minutos antes de volver tentalo."
+
+msgid "Compra registrada."
+msgstr "Compra rexistrada."
+
+msgid "Esta compra ya estaba registrada. No se ha duplicado."
+msgstr "Esta compra xa estaba rexistrada. Non se duplicou."
+
+msgid "unidades"
+msgstr "unidades"
+
+msgid "Sin límite"
+msgstr "Sen límite"
+
+msgid "canjes"
+msgstr "canxes"
+
+msgid "Código del canje"
+msgstr "Código do canxe"
+
+msgid "Se rellena al escanear el QR del canje. Si la cámara no funciona, escribe el código (p. ej. ABCD-EFGH-JKMN)."
+msgstr "Énchese ao escanear o QR do canxe. Se a cámara non funciona, escribe o código (p. ex. ABCD-EFGH-JKMN)."
+
+msgctxt "recompensa"
+msgid "Activa"
+msgstr "Activo"
+
+msgctxt "recompensa"
+msgid "Pausada"
+msgstr "Pausado"
+
+msgctxt "recompensa"
+msgid "Archivada"
+msgstr "Arquivado"
+
+msgid "Texto público."
+msgstr "Texto público."
+
+msgid "coste en puntos"
+msgstr "custo en puntos"
+
+msgid "Cambiarlo no afecta a los canjes ya solicitados."
+msgstr "Cambialo non afecta aos canxes xa solicitados."
+
+msgid "Solo las activas se ven en la web y se pueden canjear."
+msgstr "Só os activos se ven na web e se poden canxear."
+
+msgid "se puede canjear desde"
+msgstr "pódese canxear desde"
+
+msgid "se puede canjear hasta"
+msgstr "pódese canxear ata"
+
+msgid "unidades disponibles"
+msgstr "unidades dispoñibles"
+
+msgid "Vacío: sin límite. Baja sola con cada canje y sube si un canje se cancela o caduca."
+msgstr "Baleiro: sen límite. Baixa soa con cada canxe e sobe se un canxe se cancela ou caduca."
+
+msgid "De menor a mayor."
+msgstr "De menor a maior."
+
+msgid "recompensa"
+msgstr "agasallo"
+
+msgid "recompensas"
+msgstr "agasallos"
+
+msgid "Pendiente de recoger"
+msgstr "Pendente de recoller"
+
+msgid "Canjeado"
+msgstr "Canxeado"
+
+msgid "Caducado"
+msgstr "Caducado"
+
+msgid "Cancelado"
+msgstr "Cancelado"
+
+msgid "puntos descontados"
+msgstr "puntos descontados"
+
+msgid "Copia del coste en el momento del canje."
+msgstr "Copia do custo no momento do canxe."
+
+msgid "código"
+msgstr "código"
+
+msgid "solicitado el"
+msgstr "solicitado o"
+
+msgid "caduca el"
+msgstr "caduca o"
+
+msgid "movimiento del canje"
+msgstr "movemento do canxe"
+
+msgid "movimiento de devolución"
+msgstr "movemento de devolución"
+
+msgid "validado por"
+msgstr "validado por"
+
+msgid "validado el"
+msgstr "validado o"
+
+msgid "cancelado o caducado el"
+msgstr "cancelado ou caducado o"
+
+msgid "canje"
+msgstr "canxe"
+
+#, python-format
+msgid "Canje %(public_id)s"
+msgstr "Canxe %(public_id)s"
+
+msgid "Solo el propietario puede ver todos los canjes."
+msgstr "Só o propietario pode ver todos os canxes."
+
+msgid "Esta recompensa no está disponible ahora mismo."
+msgstr "Este agasallo non está dispoñible agora mesmo."
+
+msgid "Esta recompensa se ha agotado."
+msgstr "Este agasallo esgotouse."
+
+msgid "Ya tienes un código pendiente de recoger para esta recompensa. Úsalo o cancélalo antes de pedir otro."
+msgstr "Xa tes un código pendente de recoller para este agasallo. Úsao ou cancélao antes de pedir outro."
+
+msgid "El código no es válido."
+msgstr "O código non é válido."
+
+#, python-format
+msgid "Este código ya se utilizó el %(when)s. No se puede volver a usar."
+msgstr "Este código xa se utilizou o %(when)s. Non se pode volver usar."
+
+msgid "Este código ha caducado. Los puntos se han devuelto al cliente."
+msgstr "Este código caducou. Devolvéronselle os puntos ao cliente."
+
+msgid "Este canje ya no está pendiente."
+msgstr "Este canxe xa non está pendente."
+
+msgid "Solo los clientes con el email verificado pueden canjear puntos."
+msgstr "Só os clientes co email verificado poden canxear puntos."
+
+msgid "Solo el personal del local puede validar canjes."
+msgstr "Só o persoal do local pode validar canxes."
+
+msgid "Este canje no es tuyo."
+msgstr "Este canxe non é teu."
+
+msgid "No puedes validar tu propio canje."
+msgstr "Non podes validar o teu propio canxe."
+
+msgid "Solo el propietario puede gestionar las recompensas."
+msgstr "Só o propietario pode xestionar os agasallos."
+
+msgid "Estado de recompensa no válido."
+msgstr "Estado de agasallo non válido."
+
+msgid "¡Canje hecho! Enseña este código en la barra para recoger tu recompensa."
+msgstr "Canxe feito! Amosa este código na barra para recoller o teu agasallo."
+
+msgid "Este canje ya estaba hecho. No se han descontado más puntos."
+msgstr "Este canxe xa estaba feito. Non se descontaron máis puntos."
+
+#, python-format
+msgid "Canje cancelado. Te hemos devuelto %(points_cost)s puntos."
+msgstr "Canxe cancelado. Devolvémosche %(points_cost)s puntos."
+
+msgid "Canje validado. Entrega la recompensa."
+msgstr "Canxe validado. Entrega o agasallo."
+
+msgid "Panel del personal"
+msgstr "Panel do persoal"
+
+msgid "Canjes"
+msgstr "Canxes"
+
+msgid "Web pública"
+msgstr "Web pública"
+
+msgid "Inicio"
+msgstr "Inicio"
+
+msgid "La cervecería"
+msgstr "A cervexaría"
+
+msgid "Contacto"
+msgstr "Contacto"
+
+msgid "dirección pública del local"
+msgstr "enderezo público do local"
+
+msgid "horario"
+msgstr "horario"
+
+msgid "Una línea por franja: «Días | horario», por ejemplo «Lunes a jueves | 18:00–00:00»."
+msgstr "Unha liña por franxa: «Días | horario», por exemplo «Luns a xoves | 18:00–00:00»."
+
+msgid "email de contacto"
+msgstr "email de contacto"
+
+msgid "teléfono de contacto"
+msgstr "teléfono de contacto"
+
+msgid "redes sociales"
+msgstr "redes sociais"
+
+msgid "presentación de la cervecería"
+msgstr "presentación da cervexaría"
+
+msgid "texto de bienvenida del inicio"
+msgstr "texto de benvida do inicio"
+
+msgid "aviso destacado"
+msgstr "aviso destacado"
+
+msgid "contenido del local"
+msgstr "contido do local"
+
+msgid "Contenido del local"
+msgstr "Contido do local"
+
+msgid "Teléfono no válido: solo números, espacios y un + inicial."
+msgstr "Teléfono non válido: só números, espazos e un + inicial."
+
+#, python-format
+msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario»."
+msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Días | horario»."
+
+#, python-format
+msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
+msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Nome | https://…»."
+
+msgid "Solo el propietario puede editar el contenido del local."
+msgstr "Só o propietario pode editar o contido do local."
+
+msgid "Caneca Furada — Administración"
+msgstr "Caneca Furada — Administración"
+
+msgid "Petición no válida"
+msgstr "Petición non válida"
+
+msgid "No hemos podido procesar la petición. Vuelve a intentarlo desde el inicio."
+msgstr "Non puidemos procesar a petición. Volve tentalo desde o inicio."
+
+msgid "Acceso no permitido"
+msgstr "Acceso non permitido"
+
+msgid "No tienes permiso para ver esta página. Si crees que es un error, entra con otra cuenta."
+msgstr "Non tes permiso para ver esta páxina. Se cres que é un erro, entra con outra conta."
+
+msgid "Esta jarra está vacía"
+msgstr "Esta xerra está baleira"
+
+msgid "La página que buscas no existe o se ha movido."
+msgstr "A páxina que buscas non existe ou moveuse."
+
+msgid "Error del servidor"
+msgstr "Erro do servidor"
+
+msgid "Error 500"
+msgstr "Erro 500"
+
+msgid "Algo ha fallado"
+msgstr "Algo fallou"
+
+msgid "Ha ocurrido un error inesperado. Inténtalo de nuevo en unos minutos."
+msgstr "Produciuse un erro inesperado. Téntao de novo nuns minutos."
+
+msgid "Volver al inicio"
+msgstr "Volver ao inicio"
+
+msgid "(obligatorio)"
+msgstr "(obrigatorio)"
+
+msgid "(opcional)"
+msgstr "(opcional)"
+
+msgid "Tu cuenta"
+msgstr "A túa conta"
+
+msgid "Tu email está pendiente de verificación."
+msgstr "O teu email está pendente de verificación."
+
+msgid "Hasta que lo confirmes no podrás usar las funciones que lo requieren (puntos, canjes, reservas) ni recibirás promociones."
+msgstr "Ata que o confirmes non poderás usar as funcións que o requiren (puntos, canxes, reservas) nin recibirás promocións."
+
+msgid "Enviando…"
+msgstr "Enviando…"
+
+msgid "Reenviar enlace de verificación"
+msgstr "Reenviar ligazón de verificación"
+
+msgid "Cambiar email"
+msgstr "Cambiar email"
+
+msgid "Te enviaremos un enlace a la nueva dirección. Tu email actual seguirá siendo el de acceso hasta que confirmes la nueva, que quedará verificada al hacerlo."
+msgstr "Enviaremos unha ligazón ao novo enderezo. O teu email actual seguirá sendo o de acceso ata que confirmes o novo, que quedará verificado ao facelo."
+
+msgid "Enviar enlace de confirmación"
+msgstr "Enviar ligazón de confirmación"
+
+msgid "Volver"
+msgstr "Volver"
+
+msgid "Entrar"
+msgstr "Entrar"
+
+msgid "Accede a tu cuenta de Caneca Furada."
+msgstr "Accede á túa conta de Caneca Furada."
+
+msgid "Entrando…"
+msgstr "Entrando…"
+
+msgid "¿Has olvidado tu contraseña?"
+msgstr "Esqueciches o contrasinal?"
+
+#, python-format
+msgid "¿No tienes cuenta? <a class=\"link\" href=\"%(register_url)s\">Regístrate</a>."
+msgstr "Non tes conta? <a class=\"link\" href=\"%(register_url)s\">Rexístrate</a>."
+
+msgid "Reenviar el email de verificación"
+msgstr "Reenviar o email de verificación"
+
+msgid "Cambiar contraseña"
+msgstr "Cambiar o contrasinal"
+
+msgid "Guardando…"
+msgstr "Gardando…"
+
+msgid "Contraseña restablecida"
+msgstr "Contrasinal restablecido"
+
+msgid "Ya puedes entrar con tu nueva contraseña."
+msgstr "Xa podes entrar co teu novo contrasinal."
+
+msgid "Nueva contraseña"
+msgstr "Novo contrasinal"
+
+msgid "Elige una contraseña nueva"
+msgstr "Escolle un contrasinal novo"
+
+msgid "Enlace no válido"
+msgstr "Ligazón non válida"
+
+msgid "Guardar contraseña"
+msgstr "Gardar o contrasinal"
+
+msgid "El enlace ha caducado o ya se ha utilizado."
+msgstr "A ligazón caducou ou xa se utilizou."
+
+msgid "Solicita uno nuevo"
+msgstr "Solicita unha nova"
+
+msgid "Revisa tu correo"
+msgstr "Revisa o teu correo"
+
+msgid "Si existe una cuenta activa con ese email, recibirás un enlace para restablecer la contraseña. El enlace caduca en unas horas."
+msgstr "Se existe unha conta activa con ese email, recibirás unha ligazón para restablecer o contrasinal. A ligazón caduca nunhas horas."
+
+msgid "Volver a entrar"
+msgstr "Volver entrar"
+
+msgid "Recuperar contraseña"
+msgstr "Recuperar o contrasinal"
+
+msgid "Indica el email de tu cuenta y te enviaremos un enlace para elegir una contraseña nueva."
+msgstr "Indica o email da túa conta e enviarémosche unha ligazón para escoller un contrasinal novo."
+
+msgid "Enviar enlace"
+msgstr "Enviar ligazón"
+
+msgid "Mi perfil"
+msgstr "O meu perfil"
+
+msgid "Acceso"
+msgstr "Acceso"
+
+msgid "Verificado"
+msgstr "Verificado"
+
+msgid "Pendiente de verificación"
+msgstr "Pendente de verificación"
+
+msgid "Mi código QR"
+msgstr "O meu código QR"
+
+msgid "Mis puntos"
+msgstr "Os meus puntos"
+
+msgid "Mis canjes"
+msgstr "Os meus canxes"
+
+msgid "Mis reservas"
+msgstr "As miñas reservas"
+
+msgid "Mis datos"
+msgstr "Os meus datos"
+
+msgid "Los campos marcados con <span class=\"required-mark\">*</span> son obligatorios. La fecha de nacimiento solo puede cambiarse una vez al año."
+msgstr "Os campos marcados con <span class=\"required-mark\">*</span> son obrigatorios. A data de nacemento só se pode cambiar unha vez ao ano."
+
+msgid "Completa los datos obligatorios de tu perfil."
+msgstr "Completa os datos obrigatorios do teu perfil."
+
+msgid "Guardar datos"
+msgstr "Gardar datos"
+
+msgid "Son opcionales. Los emails promocionales solo se envían a direcciones verificadas, y los SMS requieren un teléfono móvil."
+msgstr "Son opcionais. Os emails promocionais só se envían a enderezos verificados, e os SMS requiren un teléfono móbil."
+
+msgid "Guardar preferencias"
+msgstr "Gardar preferencias"
+
+msgid "Crear cuenta"
+msgstr "Crear conta"
+
+msgid "Únete al club"
+msgstr "Únete ao club"
+
+msgid "Crear cuenta de cliente"
+msgstr "Crear conta de cliente"
+
+msgid "Regístrate para acceder al programa de puntos y a las novedades de la casa."
+msgstr "Rexístrate para acceder ao programa de puntos e ás novidades da casa."
+
+msgid "Los campos marcados con <span class=\"required-mark\">*</span> son obligatorios. El teléfono móvil es opcional."
+msgstr "Os campos marcados con <span class=\"required-mark\">*</span> son obrigatorios. O teléfono móbil é opcional."
+
+#, python-format
+msgid "Paso %(step)s: "
+msgstr "Paso %(step)s: "
+
+msgid "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil."
+msgstr "Son opcionais e están desactivadas por defecto. Verificar o teu email non implica aceptalas, e podes cambialas cando queiras desde o teu perfil."
+
+msgid "Creando cuenta…"
+msgstr "Creando conta…"
+
+msgid "Después te enviaremos un email para verificar tu dirección."
+msgstr "Despois enviarémosche un email para verificar o teu enderezo."
+
+#, python-format
+msgid "¿Ya tienes cuenta? <a class=\"link\" href=\"%(login_url)s\">Entra</a>."
+msgstr "Xa tes conta? <a class=\"link\" href=\"%(login_url)s\">Entra</a>."
+
+msgid "Solicitud de registro recibida"
+msgstr "Solicitude de rexistro recibida"
+
+msgid "Falta un paso: verificar tu email."
+msgstr "Falta un paso: verificar o teu email."
+
+msgid "Tu cuenta quedará pendiente de verificación hasta que confirmes tu dirección de correo."
+msgstr "A túa conta quedará pendente de verificación ata que confirmes o teu enderezo de correo."
+
+msgid "Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez."
+msgstr "Se os datos son correctos, enviámosche un email cunha ligazón para confirmar o teu enderezo. A ligazón caduca e só se pode usar unha vez."
+
+msgid "Abre el email que te hemos enviado (revisa también la carpeta de spam)."
+msgstr "Abre o email que che enviamos (revisa tamén o cartafol de spam)."
+
+msgid "Pulsa el enlace y confirma tu dirección."
+msgstr "Preme a ligazón e confirma o teu enderezo."
+
+msgid "Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles."
+msgstr "Ata que confirmes o teu email, algunhas funcións (como acumular ou canxear puntos) non estarán dispoñibles."
+
+#, python-format
+msgid "Mientras tanto ya puedes <a class=\"link\" href=\"%(login_url)s\">entrar</a> y revisar tu perfil."
+msgstr "Mentres tanto xa podes <a class=\"link\" href=\"%(login_url)s\">entrar</a> e revisar o teu perfil."
+
+#, python-format
+msgid "¿No te ha llegado? <a class=\"link\" href=\"%(resend_url)s\">Solicitar otro enlace</a>."
+msgstr "Non che chegou? <a class=\"link\" href=\"%(resend_url)s\">Solicitar outra ligazón</a>."
+
+msgid "Reenviar verificación"
+msgstr "Reenviar verificación"
+
+msgid "Indica el email con el que te registraste y te enviaremos un nuevo enlace."
+msgstr "Indica o email co que te rexistraches e enviarémosche unha nova ligazón."
+
+msgid "Confirmar email"
+msgstr "Confirmar email"
+
+msgid "Confirmar tu email"
+msgstr "Confirmar o teu email"
+
+msgid "Pulsa el botón para confirmar esta dirección de correo."
+msgstr "Preme o botón para confirmar este enderezo de correo."
+
+msgid "Confirmando…"
+msgstr "Confirmando…"
+
+msgid "Email confirmado"
+msgstr "Email confirmado"
+
+msgid "No se ha podido confirmar el email"
+msgstr "Non se puido confirmar o email"
+
+msgid "Tu dirección de correo ha quedado verificada."
+msgstr "O teu enderezo de correo quedou verificado."
+
+msgid "Continuar"
+msgstr "Continuar"
+
+msgid "Solicitar un nuevo enlace de verificación"
+msgstr "Solicitar unha nova ligazón de verificación"
+
+msgid "Saltar al contenido"
+msgstr "Saltar ao contido"
+
+msgid "Caneca Furada, ir al inicio"
+msgstr "Caneca Furada, ir ao inicio"
+
+msgid "Menú"
+msgstr "Menú"
+
+msgid "Principal"
+msgstr "Principal"
+
+msgid "Cuenta"
+msgstr "Conta"
+
+msgid "Mi cuenta"
+msgstr "A miña conta"
+
+msgid "Panel"
+msgstr "Panel"
+
+msgid "Salir"
+msgstr "Saír"
+
+msgid "dirección pendiente de publicar"
+msgstr "enderezo pendente de publicar"
+
+msgid "Pendiente de publicar"
+msgstr "Pendente de publicar"
+
+msgid "Redes"
+msgstr "Redes"
+
+msgid "Próximamente"
+msgstr "Proximamente"
+
+#, python-format
+msgid "Error %(code)s"
+msgstr "Erro %(code)s"
+
+msgid "l j \\d\\e F · H:i"
+msgstr "l j \\d\\e F · H:i"
+
+msgid "Con reserva"
+msgstr "Con reserva"
+
+msgid "Ver evento"
+msgstr "Ver evento"
+
+msgid "Pie: secciones"
+msgstr "Pé: seccións"
+
+msgid "Explora"
+msgstr "Explora"
+
+msgid "Pie: cuenta"
+msgstr "Pé: conta"
+
+msgid "Programa de puntos"
+msgstr "Programa de puntos"
+
+msgid "Visítanos"
+msgstr "Visítanos"
+
+msgid "Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años."
+msgstr "Bebe con moderación. Prohibida a venda de alcohol a menores de 18 anos."
+
+msgid "No se ha podido enviar el formulario. Revisa lo siguiente:"
+msgstr "Non se puido enviar o formulario. Revisa o seguinte:"
+
+msgid "Idioma"
+msgstr "Idioma"
+
+msgid "Crea tu cuenta"
+msgstr "Crea a túa conta"
+
+msgid "Regístrate gratis y confirma tu email desde el enlace que te enviamos."
+msgstr "Rexístrate de balde e confirma o teu email desde a ligazón que che enviamos."
+
+msgid "Suma puntos"
+msgstr "Suma puntos"
+
+msgid "Enseña tu código personal en la barra y tus consumiciones sumarán puntos."
+msgstr "Amosa o teu código persoal na barra e as túas consumicións sumarán puntos."
+
+msgid "Canjea recompensas"
+msgstr "Canxea agasallos"
+
+msgid "Cambia tus puntos por recompensas de la casa."
+msgstr "Troca os teus puntos por agasallos da casa."
+
+msgid "Contenido pendiente:"
+msgstr "Contido pendente:"
+
+msgctxt "cerveza"
+msgid "Agotada"
+msgstr "Esgotada"
+
+msgctxt "producto"
+msgid "Agotado"
+msgstr "Esgotado"
+
+msgid "Estilo"
+msgstr "Estilo"
+
+msgid "Graduación"
+msgstr "Graduación"
+
+msgid "Cervecera"
+msgstr "Cervexeira"
+
+msgid "En grifo"
+msgstr "De barril"
+
+#, python-format
+msgid "%(title)s: cervezas que hay ahora en los grifos"
+msgstr "%(title)s: cervexas que hai agora nas billas"
+
+msgid "(versión en texto a continuación)"
+msgstr "(versión en texto a continuación)"
+
+msgid "Ver la carta de grifos en texto"
+msgstr "Ver a carta de billas en texto"
+
+msgid "La carta de grifos se publicará aquí"
+msgstr "A carta de billas publicarase aquí"
+
+msgid "Mientras tanto, pregunta en la barra qué hay hoy en los grifos."
+msgstr "Mentres tanto, pregunta na barra que hai hoxe nas billas."
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Secciones del dashboard"
+msgstr "Seccións do dashboard"
+
+msgid "Páginas"
+msgstr "Páxinas"
+
+msgid "Anteriores"
+msgstr "Anteriores"
+
+#, python-format
+msgid "Página %(number)s de %(total)s · %(count)s resultados"
+msgstr "Páxina %(number)s de %(total)s · %(count)s resultados"
+
+msgid "Siguientes"
+msgstr "Seguintes"
+
+msgid "Periodo"
+msgstr "Período"
+
+msgid "(personalizado)"
+msgstr "(personalizado)"
+
+msgid "Se muestra el periodo por defecto."
+msgstr "Móstrase o período predeterminado."
+
+msgid "Periodo:"
+msgstr "Período:"
+
+msgid "Editar campaña"
+msgstr "Editar campaña"
+
+msgid "Nueva campaña"
+msgstr "Nova campaña"
+
+msgid "Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales."
+msgstr "Gárdase como borrador. Cando a programes, enviarase só a quen aceptou comunicacións promocionais."
+
+msgid "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
+msgstr "Non hai provedor de SMS configurado: as campañas por SMS pódense redactar, pero non programar."
+
+msgid "No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja."
+msgstr "Non inclúas datos persoais de clientes nin de empregados. A mensaxe non saúda polo nome e sempre engade a ligazón de baixa."
+
+msgid "Guardar borrador"
+msgstr "Gardar borrador"
+
+msgid "← Volver a comunicaciones"
+msgstr "← Volver a comunicacións"
+
+msgid "Campañas promocionales y registro de todo lo que envía la plataforma."
+msgstr "Campañas promocionais e rexistro de todo o que envía a plataforma."
+
+msgid "Canales"
+msgstr "Canles"
+
+msgid "Proveedor real"
+msgstr "Provedor real"
+
+msgid "Sin envío real"
+msgstr "Sen envío real"
+
+msgid "SMS"
+msgstr "SMS"
+
+msgid "Proveedor configurado"
+msgstr "Provedor configurado"
+
+msgid "No disponible"
+msgstr "Non dispoñible"
+
+msgid "Solo a clientes con teléfono válido y consentimiento de SMS."
+msgstr "Só a clientes con teléfono válido e consentimento de SMS."
+
+msgid "No hay ningún proveedor de SMS integrado: no se envían SMS."
+msgstr "Non hai ningún provedor de SMS integrado: non se envían SMS."
+
+msgid "Campañas promocionales"
+msgstr "Campañas promocionais"
+
+#, python-format
+msgid "Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: %(email)s por email, %(sms)s por SMS). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja."
+msgstr "Só a reciben os clientes con email verificado que aceptaron comunicacións promocionais da canle (hoxe: %(email)s por email, %(sms)s por SMS). O consentimento vólvese comprobar xusto antes de cada envío e cada mensaxe leva a súa ligazón de baixa."
+
+#, python-format
+msgid "Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: %(email)s por email). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja."
+msgstr "Só a reciben os clientes con email verificado que aceptaron comunicacións promocionais da canle (hoxe: %(email)s por email). O consentimento vólvese comprobar xusto antes de cada envío e cada mensaxe leva a súa ligazón de baixa."
+
+msgid "Campaña"
+msgstr "Campaña"
+
+msgid "Estado"
+msgstr "Estado"
+
+msgid "Destinatarios"
+msgstr "Destinatarios"
+
+msgid "Enviadas"
+msgstr "Enviadas"
+
+msgid "No enviadas"
+msgstr "Non enviadas"
+
+msgid "Fallidas"
+msgstr "Fallidas"
+
+msgid "Acciones"
+msgstr "Accións"
+
+msgid "Editar"
+msgstr "Editar"
+
+msgid "Programar envío"
+msgstr "Programar envío"
+
+msgid "Todavía no hay campañas."
+msgstr "Aínda non hai campañas."
+
+msgid "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
+msgstr "«Programar envío» non envía nada desde aquí: a tarefa programada <code>process_notifications</code> reparte a campaña e envíaa por lotes."
+
+msgid "Registro de notificaciones"
+msgstr "Rexistro de notificacións"
+
+msgid "Filtrar notificaciones"
+msgstr "Filtrar notificacións"
+
+msgid "Tipo"
+msgstr "Tipo"
+
+msgid "Aplicar"
+msgstr "Aplicar"
+
+msgid "Fecha"
+msgstr "Data"
+
+msgid "Intentos"
+msgstr "Intentos"
+
+msgid "Motivo / error"
+msgstr "Motivo / erro"
+
+msgid "No hay notificaciones con estos filtros."
+msgstr "Non hai notificacións con estes filtros."
+
+msgid "El registro no guarda destinatarios, enlaces ni el texto de los mensajes. «Enviada» significa que el proveedor aceptó el mensaje, no que el cliente lo haya leído."
+msgstr "O rexistro non garda destinatarios, ligazóns nin o texto das mensaxes. «Enviada» significa que o provedor aceptou a mensaxe, non que o cliente a lese."
+
+msgid "Datos que se muestran en la web pública (inicio, La cervecería, Contacto y pie de página). Lo que dejes vacío aparece como «Pendiente de publicar»."
+msgstr "Datos que se mostran na web pública (inicio, A cervexaría, Contacto e pé de páxina). O que deixes baleiro aparece como «Pendente de publicar»."
+
+msgid "Son datos públicos del local: no escribas datos personales de clientes ni de empleados."
+msgstr "Son datos públicos do local: non escribas datos persoais de clientes nin de empregados."
+
+msgid "Guardar contenido"
+msgstr "Gardar contido"
+
+msgid "El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas."
+msgstr "O nome e a cidade son os da marca e non se editan aquí. Os cambios poden tardar uns minutos en verse en todas as páxinas."
+
+msgid "Ficha de cliente"
+msgstr "Ficha de cliente"
+
+msgid "Volver a clientes"
+msgstr "Volver a clientes"
+
+msgid "Esta consulta queda registrada en la auditoría."
+msgstr "Esta consulta queda rexistrada na auditoría."
+
+msgid "Sin dirección en el perfil"
+msgstr "Sen enderezo no perfil"
+
+msgid "Teléfono"
+msgstr "Teléfono"
+
+msgid "No indicado"
+msgstr "Non indicado"
+
+msgid "No indicada"
+msgstr "Non indicada"
+
+msgid "Fecha de registro"
+msgstr "Data de rexistro"
+
+msgid "Desactivada"
+msgstr "Desactivada"
+
+msgid "Emails promocionales"
+msgstr "Emails promocionais"
+
+msgid "Acepta"
+msgstr "Acepta"
+
+msgid "No acepta"
+msgstr "Non acepta"
+
+msgid "SMS promocionales"
+msgstr "SMS promocionais"
+
+msgid "Últimos cambios"
+msgstr "Últimos cambios"
+
+msgctxt "preferencia"
+msgid "alta"
+msgstr "alta"
+
+msgctxt "preferencia"
+msgid "baja"
+msgstr "baixa"
+
+msgid "Sin cambios registrados."
+msgstr "Sen cambios rexistrados."
+
+msgid "Actividad de fidelización"
+msgstr "Actividade de fidelización"
+
+msgid "Saldo"
+msgstr "Saldo"
+
+msgid "Obtenidos"
+msgstr "Obtidos"
+
+msgid "Utilizados"
+msgstr "Utilizados"
+
+msgid "Corregidos"
+msgstr "Corrixidos"
+
+msgid "Caducados"
+msgstr "Caducados"
+
+msgid "Últimas compras registradas"
+msgstr "Últimas compras rexistradas"
+
+msgid "Importe"
+msgstr "Importe"
+
+msgid "Registrada por"
+msgstr "Rexistrada por"
+
+msgid "Sin compras registradas."
+msgstr "Sen compras rexistradas."
+
+msgid "Últimos canjes"
+msgstr "Últimos canxes"
+
+msgid "Solicitado"
+msgstr "Solicitado"
+
+msgid "Recompensa"
+msgstr "Agasallo"
+
+msgid "Sin canjes."
+msgstr "Sen canxes."
+
+msgid "Últimos movimientos de puntos"
+msgstr "Últimos movementos de puntos"
+
+msgid "Detalle"
+msgstr "Detalle"
+
+msgid "Compensar"
+msgstr "Compensar"
+
+msgid "Sin movimientos de puntos."
+msgstr "Sen movementos de puntos."
+
+msgid "Para corregir errores. No modifica movimientos anteriores: añade uno nuevo con el motivo y queda auditado."
+msgstr "Para corrixir erros. Non modifica movementos anteriores: engade un novo co motivo e queda auditado."
+
+msgid "Registrar ajuste"
+msgstr "Rexistrar axuste"
+
+msgid "Estadísticas geográficas"
+msgstr "Estatísticas xeográficas"
+
+msgid "De qué zonas procede tu base de clientes."
+msgstr "De que zonas procede a túa base de clientes."
+
+msgid "Listado"
+msgstr "Listaxe"
+
+msgid "Filtrar estadísticas geográficas"
+msgstr "Filtrar estatísticas xeográficas"
+
+msgid "Agrupar por"
+msgstr "Agrupar por"
+
+msgid "Clientes activos con al menos una compra registrada en el periodo."
+msgstr "Clientes activos con polo menos unha compra rexistrada no período."
+
+msgid "Clientes activos dados de alta en el periodo."
+msgstr "Clientes activos dados de alta no período."
+
+msgid "Total:"
+msgstr "Total:"
+
+#, python-format
+msgid "Clientes por %(level)s"
+msgstr "Clientes por %(level)s"
+
+msgid "Proporción"
+msgstr "Proporción"
+
+msgid "Otras zonas"
+msgstr "Outras zonas"
+
+msgid "Sin dato en el perfil"
+msgstr "Sen dato no perfil"
+
+msgid "Las barras son proporcionales a la zona con más clientes. Los porcentajes son sobre el total de la base filtrada. Pulsa una zona para ver sus clientes. Nunca se muestran direcciones completas."
+msgstr "As barras son proporcionais á zona con máis clientes. As porcentaxes son sobre o total da base filtrada. Preme unha zona para ver os seus clientes. Nunca se mostran enderezos completos."
+
+msgid "No hay clientes con este dato en el periodo seleccionado."
+msgstr "Non hai clientes con este dato no período seleccionado."
+
+#, python-format
+msgid "%(count)s clientes no lo tienen en su perfil."
+msgstr "%(count)s clientes non o teñen no seu perfil."
+
+msgid "Buscar por nombre, apellidos o email"
+msgstr "Buscar por nome, apelidos ou email"
+
+msgid "Buscar"
+msgstr "Buscar"
+
+msgid "Quitar búsqueda"
+msgstr "Quitar a busca"
+
+msgid "La búsqueda no se guarda en la dirección de la página para que no quede en el historial ni en los registros del servidor."
+msgstr "A busca non se garda no enderezo da páxina para que non quede no historial nin nos rexistros do servidor."
+
+msgid "Filtrar clientes"
+msgstr "Filtrar clientes"
+
+msgid "Cuenta activa"
+msgstr "Conta activa"
+
+msgid "Acepta emails promocionales"
+msgstr "Acepta emails promocionais"
+
+msgid "Filtrar"
+msgstr "Filtrar"
+
+msgid "Limpiar"
+msgstr "Limpar"
+
+msgid "El periodo filtra por fecha de alta."
+msgstr "O período filtra por data de alta."
+
+msgid "Verificación"
+msgstr "Verificación"
+
+msgid "Alta"
+msgstr "Alta"
+
+msgid "No hay clientes que cumplan estos filtros."
+msgstr "Non hai clientes que cumpran estes filtros."
+
+msgid "Personal con acceso al panel y su actividad en el periodo."
+msgstr "Persoal con acceso ao panel e a súa actividade no período."
+
+msgid "Filtrar por periodo"
+msgstr "Filtrar por período"
+
+msgid "Rol"
+msgstr "Rol"
+
+msgid "(tú)"
+msgstr "(ti)"
+
+msgid "Dar de baja"
+msgstr "Dar de baixa"
+
+msgid "Reactivar"
+msgstr "Reactivar"
+
+msgid "Cambiar rol"
+msgstr "Cambiar o rol"
+
+msgid "Guardar rol"
+msgstr "Gardar o rol"
+
+msgid "No hay personal dado de alta."
+msgstr "Non hai persoal dado de alta."
+
+msgid "Compras e importe: compras registradas en el programa (no es la caja). Canjes: recompensas validadas en barra. Una cuenta dada de baja no puede entrar y se puede reactivar; nada se borra."
+msgstr "Compras e importe: compras rexistradas no programa (non é a caixa). Canxes: agasallos validados na barra. Unha conta dada de baixa non pode entrar e pódese reactivar; nada se borra."
+
+msgid "Dar de alta un empleado"
+msgstr "Dar de alta un empregado"
+
+msgid "El empleado entra en el panel con su email y esta contraseña, y solo ve el nombre abreviado de los clientes."
+msgstr "O empregado entra no panel co seu email e este contrasinal, e só ve o nome abreviado dos clientes."
+
+msgid "Creando…"
+msgstr "Creando…"
+
+msgid "Dar de alta"
+msgstr "Dar de alta"
+
+msgid "Editar evento"
+msgstr "Editar evento"
+
+msgid "Nuevo evento"
+msgstr "Novo evento"
+
+#, python-format
+msgid "Editar «%(title)s»"
+msgstr "Editar «%(title)s»"
+
+#, python-format
+msgid "Estado: %(status)s."
+msgstr "Estado: %(status)s."
+
+msgid "Se guarda como borrador; publícalo desde el listado."
+msgstr "Gárdase como borrador; publícao desde a listaxe."
+
+msgid "Es contenido público: no escribas datos personales de clientes ni de empleados."
+msgstr "É contido público: non escribas datos persoais de clientes nin de empregados."
+
+msgid "Guardar evento"
+msgstr "Gardar evento"
+
+msgid "← Volver a eventos"
+msgstr "← Volver a eventos"
+
+msgid "Crea, edita, publica y archiva los eventos del local. Solo los publicados se ven en la web."
+msgstr "Crea, edita, publica e arquiva os eventos do local. Só os publicados se ven na web."
+
+msgid "Filtrar eventos"
+msgstr "Filtrar eventos"
+
+msgid "Evento"
+msgstr "Evento"
+
+msgid "Empieza"
+msgstr "Comeza"
+
+msgid "Pendientes"
+msgstr "Pendentes"
+
+msgid "Personas confirmadas"
+msgstr "Persoas confirmadas"
+
+msgid "Destacado"
+msgstr "Destacado"
+
+#, python-format
+msgid "%(seats)s plazas"
+msgstr "%(seats)s prazas"
+
+msgid "Retirar de la web"
+msgstr "Retirar da web"
+
+msgid "Recuperar como borrador"
+msgstr "Recuperar como borrador"
+
+msgid "Todavía no hay eventos con este estado."
+msgstr "Aínda non hai eventos con este estado."
+
+msgid "Todavía no hay eventos."
+msgstr "Aínda non hai eventos."
+
+msgid "Los eventos no se borran: se archivan. Solo se publica un evento que aún no ha empezado. Archivar o retirar un evento no cancela sus reservas: revísalas en Reservas."
+msgstr "Os eventos non se borran: arquívanse. Só se publica un evento que aínda non comezou. Arquivar ou retirar un evento non cancela as súas reservas: revísaas en Reservas."
+
+msgid "Cifras reales del programa de fidelización."
+msgstr "Cifras reais do programa de fidelización."
+
+msgid "Estadísticas del periodo"
+msgstr "Estatísticas do período"
+
+msgid "Clientes registrados"
+msgstr "Clientes rexistrados"
+
+#, python-format
+msgid "+%(count)s en el periodo"
+msgstr "+%(count)s no período"
+
+msgid "Compras registradas"
+msgstr "Compras rexistradas"
+
+#, python-format
+msgid "%(count)s clientes distintos"
+msgstr "%(count)s clientes distintos"
+
+msgid "Importe de compras registradas"
+msgstr "Importe de compras rexistradas"
+
+#, python-format
+msgid "Media %(amount)s €"
+msgstr "Media %(amount)s €"
+
+msgid "Sin compras"
+msgstr "Sen compras"
+
+msgid "Puntos emitidos"
+msgstr "Puntos emitidos"
+
+#, python-format
+msgid "Saldo pendiente total: %(points)s"
+msgstr "Saldo pendente total: %(points)s"
+
+msgid "Puntos canjeados"
+msgstr "Puntos canxeados"
+
+msgid "Descontadas las devoluciones"
+msgstr "Descontadas as devolucións"
+
+msgid "Recompensas utilizadas"
+msgstr "Agasallos utilizados"
+
+#, python-format
+msgid "%(count)s pendientes de recoger"
+msgstr "%(count)s pendentes de recoller"
+
+msgid "Reservas solicitadas"
+msgstr "Reservas solicitadas"
+
+#, python-format
+msgid "%(count)s confirmadas"
+msgstr "%(count)s confirmadas"
+
+#, python-format
+msgid "%(count)s pendientes"
+msgstr "%(count)s pendentes"
+
+msgid "Próximos eventos"
+msgstr "Próximos eventos"
+
+#, python-format
+msgid "Publicados · %(count)s reservas confirmadas por venir"
+msgstr "Publicados · %(count)s reservas confirmadas por vir"
+
+msgid "Localidades con más clientes"
+msgstr "Localidades con máis clientes"
+
+msgid "Ver estadísticas geográficas"
+msgstr "Ver estatísticas xeográficas"
+
+msgid "Todavía no hay clientes con localidad en su perfil."
+msgstr "Aínda non hai clientes con localidade no seu perfil."
+
+#, python-format
+msgid "Total de la base: %(total)s clientes activos."
+msgstr "Total da base: %(total)s clientes activos."
+
+#, python-format
+msgid "Conversión vigente: <strong class=\"text-paper\">%(rate)s puntos por euro</strong>"
+msgstr "Conversión vixente: <strong class=\"text-paper\">%(rate)s puntos por euro</strong>"
+
+msgid "(valor por defecto)"
+msgstr "(valor predeterminado)"
+
+msgid "Cambiar"
+msgstr "Cambiar"
+
+msgid "Filtrar movimientos"
+msgstr "Filtrar movementos"
+
+msgid "Tipo de movimiento"
+msgstr "Tipo de movemento"
+
+msgid "Emitidos"
+msgstr "Emitidos"
+
+msgid "Compras, promociones y ajustes a favor"
+msgstr "Compras, promocións e axustes a favor"
+
+msgid "Canjeados"
+msgstr "Canxeados"
+
+msgid "Compensaciones y ajustes en contra"
+msgstr "Compensacións e axustes en contra"
+
+msgid "Vencidos sin usar"
+msgstr "Vencidos sen usar"
+
+msgid "Saldo pendiente"
+msgstr "Saldo pendente"
+
+msgid "Total actual, sin filtro de fechas"
+msgstr "Total actual, sen filtro de datas"
+
+msgid "Para ajustar o compensar puntos abre la ficha del cliente. Los movimientos nunca se editan ni se borran."
+msgstr "Para axustar ou compensar puntos abre a ficha do cliente. Os movementos nunca se editan nin se borran."
+
+msgid "No hay movimientos con estos filtros."
+msgstr "Non hai movementos con estes filtros."
+
+msgid "Cervezas propias, invitadas y rotativas."
+msgstr "Cervexas propias, convidadas e rotativas."
+
+msgid "Productos fijos de la carta. Las cervezas están en su propia sección."
+msgstr "Produtos fixos da carta. As cervexas están na súa propia sección."
+
+msgid "Nuevo producto"
+msgstr "Novo produto"
+
+msgid "Categorías"
+msgstr "Categorías"
+
+msgid "Estilos"
+msgstr "Estilos"
+
+msgid "Carta de grifos:"
+msgstr "Carta de billas:"
+
+#, python-format
+msgid "publicada («%(title)s»)"
+msgstr "publicada («%(title)s»)"
+
+msgid "sin publicar"
+msgstr "sen publicar"
+
+msgid "Filtrar productos"
+msgstr "Filtrar produtos"
+
+msgid "Categoría"
+msgstr "Categoría"
+
+msgid "Producto"
+msgstr "Produto"
+
+msgid "Disponibilidad"
+msgstr "Dispoñibilidade"
+
+msgid "Destacada"
+msgstr "Destacada"
+
+msgid "Disponible"
+msgstr "Dispoñible"
+
+msgid "Marcar agotado"
+msgstr "Marcar esgotado"
+
+msgid "Marcar disponible"
+msgstr "Marcar dispoñible"
+
+msgid "A borrador"
+msgstr "A borrador"
+
+msgid "No hay productos con estos filtros."
+msgstr "Non hai produtos con estes filtros."
+
+msgid "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin."
+msgstr "Nada se borra: os produtos arquívanse. Só se publica un produto completo (se falta algún dato, indícase o erro). A ficha completa, con imaxe, edítase no admin."
+
+msgid "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)."
+msgstr "Puntos extra ao rexistrar unha compra e agasallo de aniversario (puntos fixos o día do aniversario; o aviso só se envía a quen aceptou comunicacións promocionais)."
+
+msgid "Nueva promoción"
+msgstr "Nova promoción"
+
+msgid "Vigencia"
+msgstr "Vixencia"
+
+msgid "Usos"
+msgstr "Usos"
+
+#, python-format
+msgid "+%(points)s pts"
+msgstr "+%(points)s pts"
+
+#, python-format
+msgid "desde %(amount)s €"
+msgstr "desde %(amount)s €"
+
+msgid "sin fin"
+msgstr "sen fin"
+
+msgid "Activar"
+msgstr "Activar"
+
+msgid "Pausar"
+msgstr "Pausar"
+
+msgid "Finalizar"
+msgstr "Finalizar"
+
+msgid "Todavía no hay promociones."
+msgstr "Aínda non hai promocións."
+
+msgid "Condiciones, fechas y límites se editan en el admin. Usos: bonificaciones concedidas hasta hoy."
+msgstr "Condicións, datas e límites edítanse no admin. Usos: bonificacións concedidas ata hoxe."
+
+#, python-format
+msgid "Los puntos del regalo de cumpleaños y el texto de su aviso se configuran en <a class=\"link\" href=\"%(settings_url)s#cumpleanos\">Configuración</a>."
+msgstr "Os puntos do agasallo de aniversario e o texto do seu aviso configúranse en <a class=\"link\" href=\"%(settings_url)s#cumpleanos\">Configuración</a>."
+
+msgid "Filtrar compras"
+msgstr "Filtrar compras"
+
+msgid "Todo el personal"
+msgstr "Todo o persoal"
+
+msgid "Importe registrado"
+msgstr "Importe rexistrado"
+
+msgid "Ticket medio"
+msgstr "Tíquet medio"
+
+msgid "Clientes distintos"
+msgstr "Clientes distintos"
+
+msgid "Las cifras de arriba cuentan todo el personal y solo compras vigentes."
+msgstr "As cifras de arriba contan todo o persoal e só compras vixentes."
+
+msgid "No hay compras registradas con estos filtros."
+msgstr "Non hai compras rexistradas con estes filtros."
+
+msgid "Reserva"
+msgstr "Reserva"
+
+#, python-format
+msgid "Reserva para «%(title)s»"
+msgstr "Reserva para «%(title)s»"
+
+msgid "Reserva de mesa"
+msgstr "Reserva de mesa"
+
+msgid "Estado:"
+msgstr "Estado:"
+
+msgid "Datos de la reserva"
+msgstr "Datos da reserva"
+
+msgid "Plazas libres del evento"
+msgstr "Prazas libres do evento"
+
+msgid "Solicitada"
+msgstr "Solicitada"
+
+msgid "Último cambio"
+msgstr "Último cambio"
+
+msgid "Comentarios del cliente"
+msgstr "Comentarios do cliente"
+
+msgid "Mensaje enviado al cliente"
+msgstr "Mensaxe enviada ao cliente"
+
+msgid "Contacto del cliente"
+msgstr "Contacto do cliente"
+
+msgid "Úsalos solo para gestionar esta reserva. Esta consulta queda registrada."
+msgstr "Úsaos só para xestionar esta reserva. Esta consulta queda rexistrada."
+
+msgid "Cambiar estado"
+msgstr "Cambiar o estado"
+
+msgid "Marcar como completada"
+msgstr "Marcar como completada"
+
+msgid "Confirmar, rechazar o cancelar envía un email al cliente. «Completada» solo a partir del día de la reserva."
+msgstr "Confirmar, rexeitar ou cancelar envíalle un email ao cliente. «Completada» só a partir do día da reserva."
+
+#, python-format
+msgid "Esta reserva está %(status)s: ya no admite cambios."
+msgstr "Esta reserva está %(status)s: xa non admite cambios."
+
+msgid "← Volver a reservas"
+msgstr "← Volver a reservas"
+
+msgid "Solicitudes de los clientes. Se confirman a mano: el cliente recibe un email con cada cambio."
+msgstr "Solicitudes dos clientes. Confírmanse a man: o cliente recibe un email con cada cambio."
+
+msgid "Filtrar reservas"
+msgstr "Filtrar reservas"
+
+msgid "Mesa"
+msgstr "Mesa"
+
+msgid "Gestionar"
+msgstr "Xestionar"
+
+msgid "No hay reservas con estos filtros."
+msgstr "Non hai reservas con estes filtros."
+
+msgid "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
+msgstr "A listaxe non mostra datos de contacto. Ao abrir unha reserva verás o email e o teléfono do cliente; esa consulta queda rexistrada."
+
+msgid "Catálogo"
+msgstr "Catálogo"
+
+msgid "Nueva recompensa"
+msgstr "Novo agasallo"
+
+msgid "Coste"
+msgstr "Custo"
+
+msgid "Unidades"
+msgstr "Unidades"
+
+msgid "Utilizadas"
+msgstr "Utilizadas"
+
+#, python-format
+msgid "%(points)s pts"
+msgstr "%(points)s pts"
+
+msgid "Todavía no hay recompensas."
+msgstr "Aínda non hai agasallos."
+
+msgid "La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan."
+msgstr "A ficha completa (nome, descrición, imaxe, custo, datas e unidades) edítase no admin. Os agasallos non se borran: páusanse ou arquívanse."
+
+msgid "Filtrar canjes"
+msgstr "Filtrar canxes"
+
+msgid "Solicitados"
+msgstr "Solicitados"
+
+msgid "Validados en barra"
+msgstr "Validados na barra"
+
+msgid "Cancelados o caducados"
+msgstr "Cancelados ou caducados"
+
+msgid "Pendientes ahora"
+msgstr "Pendentes agora"
+
+msgid "Sin filtro de fechas"
+msgstr "Sen filtro de datas"
+
+msgid "Validado por"
+msgstr "Validado por"
+
+msgid "No hay canjes con estos filtros."
+msgstr "Non hai canxes con estes filtros."
+
+msgid "Los códigos de canje no se muestran nunca en el dashboard."
+msgstr "Os códigos de canxe nunca se mostran no dashboard."
+
+msgid "Conversión de puntos"
+msgstr "Conversión de puntos"
+
+#, python-format
+msgid "Vigente: <strong data-current-rate>%(rate)s puntos por euro</strong>"
+msgstr "Vixente: <strong data-current-rate>%(rate)s puntos por euro</strong>"
+
+msgid "(valor por defecto, pendiente de confirmar)"
+msgstr "(valor predeterminado, pendente de confirmar)"
+
+msgid "Los puntos se redondean hacia abajo."
+msgstr "Os puntos arredóndanse cara a abaixo."
+
+msgid "Aplicar nueva conversión"
+msgstr "Aplicar nova conversión"
+
+msgid "Historial"
+msgstr "Historial"
+
+#, python-format
+msgid "%(rate)s pts/€ desde %(date)s"
+msgstr "%(rate)s pts/€ desde o %(date)s"
+
+msgid "Todavía no se ha creado ninguna regla: se aplica el valor por defecto."
+msgstr "Aínda non se creou ningunha regra: aplícase o valor predeterminado."
+
+msgid "Caducidad de los puntos"
+msgstr "Caducidade dos puntos"
+
+#, python-format
+msgid "Vigente: <strong>los puntos caducan a los %(months)s meses</strong> de ganarlos (aviso por email %(days)s días antes). El plazo cuenta como pronto desde el %(date)s."
+msgstr "Vixente: <strong>os puntos caducan aos %(months)s meses</strong> de gañalos (aviso por email %(days)s días antes). O prazo conta como moi cedo desde o %(date)s."
+
+msgid "Vigente: <strong>los puntos no caducan</strong>."
+msgstr "Vixente: <strong>os puntos non caducan</strong>."
+
+msgid "Se gastan primero los puntos más antiguos. Al activar la caducidad o acortar el plazo, el plazo nuevo empieza a contar desde ese momento: nadie pierde puntos de golpe. Al alargarlo, las fechas solo se retrasan. Los puntos vencidos se descuentan cada noche."
+msgstr "Gástanse primeiro os puntos máis antigos. Ao activar a caducidade ou acurtar o prazo, o prazo novo comeza a contar desde ese momento: ninguén perde puntos de golpe. Ao alongalo, as datas só se atrasan. Os puntos vencidos descóntanse cada noite."
+
+msgid "Guardar caducidad"
+msgstr "Gardar caducidade"
+
+#, python-format
+msgid "%(months)s meses · aviso %(days)s días"
+msgstr "%(months)s meses · aviso %(days)s días"
+
+msgid "Sin caducidad"
+msgstr "Sen caducidade"
+
+#, python-format
+msgid "desde %(date)s"
+msgstr "desde o %(date)s"
+
+msgid "Nunca se ha configurado: los puntos no caducan."
+msgstr "Nunca se configurou: os puntos non caducan."
+
+#, python-format
+msgid "El día de su cumpleaños, cada cliente con email verificado recibe los puntos en su saldo. El aviso solo se envía a quien ha aceptado comunicaciones promocionales (email y, si hay proveedor, SMS). Escribe <code>%(placeholder)s</code> donde quieras mostrar los puntos; deja un texto vacío para usar el mensaje por defecto."
+msgstr "O día do seu aniversario, cada cliente con email verificado recibe os puntos no seu saldo. O aviso só se envía a quen aceptou comunicacións promocionais (email e, se hai provedor, SMS). Escribe <code>%(placeholder)s</code> onde queiras mostrar os puntos; deixa un texto baleiro para usar a mensaxe predeterminada."
+
+msgid "Guardar regalo de cumpleaños"
+msgstr "Gardar agasallo de aniversario"
+
+msgid "Valores fijados en la configuración del servidor"
+msgstr "Valores fixados na configuración do servidor"
+
+msgid "Se cambian en los ajustes del proyecto, no desde aquí."
+msgstr "Cámbianse nos axustes do proxecto, non desde aquí."
+
+#, python-format
+msgid "Administración técnica (auditoría, gestión avanzada): <a class=\"link\" href=\"%(url)s\">admin</a>."
+msgstr "Administración técnica (auditoría, xestión avanzada): <a class=\"link\" href=\"%(url)s\">admin</a>."
+
+#, python-format
+msgid "Hola, %(first_name)s:"
+msgstr "Ola, %(first_name)s:"
+
+msgid "Has solicitado usar esta dirección como nuevo email de tu cuenta de Caneca Furada. Para confirmarla abre este enlace y pulsa «Confirmar email»:"
+msgstr "Solicitaches usar este enderezo como novo email da túa conta de Caneca Furada. Para confirmalo abre esta ligazón e preme «Confirmar email»:"
+
+#, python-format
+msgid "El enlace caduca en %(ttl_hours)s horas y solo puede usarse una vez. Hasta que lo confirmes, tu email anterior sigue siendo el de acceso."
+msgstr "A ligazón caduca en %(ttl_hours)s horas e só se pode usar unha vez. Ata que o confirmes, o teu email anterior segue sendo o de acceso."
+
+msgid "Si no lo has solicitado tú, ignora este mensaje."
+msgstr "Se non o solicitaches ti, ignora esta mensaxe."
+
+msgid "Confirma tu nuevo email en Caneca Furada"
+msgstr "Confirma o teu novo email en Caneca Furada"
+
+msgid "El email de acceso de tu cuenta de Caneca Furada se ha cambiado a otra dirección, que ya ha sido confirmada."
+msgstr "O email de acceso da túa conta de Caneca Furada cambiouse a outro enderezo, que xa foi confirmado."
+
+msgid "Si no has sido tú, contacta con el local cuanto antes."
+msgstr "Se non fuches ti, contacta co local canto antes."
+
+msgid "Se ha cambiado el email de tu cuenta de Caneca Furada"
+msgstr "Cambiouse o email da túa conta de Caneca Furada"
+
+msgid "Hola:"
+msgstr "Ola:"
+
+msgid "Alguien ha intentado crear una cuenta en Caneca Furada con esta dirección de correo, pero ya tienes una."
+msgstr "Alguén tentou crear unha conta en Caneca Furada con este enderezo de correo, pero xa tes unha."
+
+msgid "Si has olvidado tu contraseña, puedes restablecerla aquí:"
+msgstr "Se esqueciches o contrasinal, podes restablecelo aquí:"
+
+msgid "Si no has sido tú, ignora este mensaje: tu cuenta no ha cambiado."
+msgstr "Se non fuches ti, ignora esta mensaxe: a túa conta non cambiou."
+
+msgid "Intento de registro con tu email en Caneca Furada"
+msgstr "Intento de rexistro co teu email en Caneca Furada"
+
+msgid "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de Caneca Furada. Para elegir una nueva abre este enlace:"
+msgstr "Recibimos unha solicitude para restablecer o contrasinal da túa conta de Caneca Furada. Para escoller un novo abre esta ligazón:"
+
+msgid "El enlace caduca en unas horas y deja de funcionar en cuanto cambias la contraseña."
+msgstr "A ligazón caduca nunhas horas e deixa de funcionar en canto cambias o contrasinal."
+
+msgid "Si no lo has solicitado, ignora este mensaje."
+msgstr "Se non o solicitaches, ignora esta mensaxe."
+
+msgid "Restablece tu contraseña de Caneca Furada"
+msgstr "Restablece o teu contrasinal de Caneca Furada"
+
+msgid "Gracias por registrarte en Caneca Furada. Para confirmar tu dirección de correo abre este enlace y pulsa «Confirmar email»:"
+msgstr "Grazas por rexistrarte en Caneca Furada. Para confirmar o teu enderezo de correo abre esta ligazón e preme «Confirmar email»:"
+
+#, python-format
+msgid "El enlace caduca en %(ttl_hours)s horas y solo puede usarse una vez."
+msgstr "A ligazón caduca en %(ttl_hours)s horas e só se pode usar unha vez."
+
+msgid "Si no has creado esta cuenta, ignora este mensaje."
+msgstr "Se non creaches esta conta, ignora esta mensaxe."
+
+msgid "Confirma tu email en Caneca Furada"
+msgstr "Confirma o teu email en Caneca Furada"
+
+msgid "Cuándo"
+msgstr "Cando"
+
+msgid "Termina"
+msgstr "Remata"
+
+msgid "Plazas libres"
+msgstr "Prazas libres"
+
+#, python-format
+msgid "Tienes una reserva %(status)s para este evento."
+msgstr "Tes unha reserva %(status)s para este evento."
+
+msgid "Ver mi reserva"
+msgstr "Ver a miña reserva"
+
+msgid "No quedan plazas libres."
+msgstr "Non quedan prazas libres."
+
+msgid "Solicitar reserva"
+msgstr "Solicitar reserva"
+
+msgid "Necesitas una cuenta con el email verificado. La reserva queda pendiente hasta que el local la confirma."
+msgstr "Necesitas unha conta co email verificado. A reserva queda pendente ata que o local a confirma."
+
+msgid "Las reservas para este evento están cerradas."
+msgstr "As reservas para este evento están pechadas."
+
+msgid "Este evento no necesita reserva."
+msgstr "Este evento non precisa reserva."
+
+msgid "← Todos los eventos"
+msgstr "← Todos os eventos"
+
+msgid "Tus solicitudes de reserva y su estado."
+msgstr "As túas solicitudes de reserva e o seu estado."
+
+msgid "Nueva reserva de mesa"
+msgstr "Nova reserva de mesa"
+
+#, python-format
+msgid "%(people)s persona"
+msgid_plural "%(people)s personas"
+msgstr[0] "%(people)s persoa"
+msgstr[1] "%(people)s persoas"
+
+msgid "Páginas de reservas"
+msgstr "Páxinas de reservas"
+
+msgid "Todavía no has hecho ninguna reserva."
+msgstr "Aínda non fixeches ningunha reserva."
+
+msgid "Ver eventos"
+msgstr "Ver eventos"
+
+msgid "Volver a mi perfil"
+msgstr "Volver ao meu perfil"
+
+msgid "Mi reserva"
+msgstr "A miña reserva"
+
+msgid "Tus comentarios"
+msgstr "Os teus comentarios"
+
+msgid "Mensaje del local"
+msgstr "Mensaxe do local"
+
+msgid "Pendiente de confirmar: te avisaremos por email."
+msgstr "Pendente de confirmar: avisarémoste por email."
+
+msgid "Cancelando…"
+msgstr "Cancelando…"
+
+msgid "Cancelar la reserva"
+msgstr "Cancelar a reserva"
+
+#, python-format
+msgid "Reservar: %(title)s"
+msgstr "Reservar: %(title)s"
+
+msgid "Solicitar reserva de mesa"
+msgstr "Solicitar reserva de mesa"
+
+#, python-format
+msgid "Plazas libres: %(seats)s."
+msgstr "Prazas libres: %(seats)s."
+
+msgid "Elige día, hora y personas."
+msgstr "Escolle día, hora e persoas."
+
+msgid "La reserva queda pendiente hasta que el local la confirme por email."
+msgstr "A reserva queda pendente ata que o local a confirme por email."
+
+msgid "Te avisaremos al email de tu cuenta. Tus datos de contacto solo los ve el local."
+msgstr "Avisarémoste no email da túa conta. Os teus datos de contacto só os ve o local."
+
+msgid "Enviar solicitud"
+msgstr "Enviar solicitude"
+
+msgid "Sumas puntos cada vez que el personal registra una compra con tu código QR."
+msgstr "Sumas puntos cada vez que o persoal rexistra unha compra co teu código QR."
+
+msgid "Saldo disponible"
+msgstr "Saldo dispoñible"
+
+#, python-format
+msgid "<strong>%(points)s puntos</strong> caducan el <strong>%(date)s</strong>. Los puntos se gastan empezando por los más antiguos."
+msgstr "<strong>%(points)s puntos</strong> caducan o <strong>%(date)s</strong>. Os puntos gástanse empezando polos máis antigos."
+
+msgid "Movimientos"
+msgstr "Movementos"
+
+msgid "Devolución de canje"
+msgstr "Devolución de canxe"
+
+#, python-format
+msgid "compra de %(amount)s €"
+msgstr "compra de %(amount)s €"
+
+msgid "Páginas de movimientos"
+msgstr "Páxinas de movementos"
+
+msgid "Más recientes"
+msgstr "Máis recentes"
+
+msgid "Todavía no tienes movimientos de puntos."
+msgstr "Aínda non tes movementos de puntos."
+
+msgid "Mis compras"
+msgstr "As miñas compras"
+
+#, python-format
+msgid "%(points)s punto"
+msgid_plural "%(points)s puntos"
+msgstr[0] "%(points)s punto"
+msgstr[1] "%(points)s puntos"
+
+msgid "Páginas de compras"
+msgstr "Páxinas de compras"
+
+msgid "Todavía no hay compras registradas con tu código."
+msgstr "Aínda non hai compras rexistradas co teu código."
+
+msgid "Los puntos se calculan en el local a partir del importe registrado: se redondean hacia abajo a puntos enteros. Si ves algún error, coméntalo en la barra."
+msgstr "Os puntos calcúlanse no local a partir do importe rexistrado: arredóndanse cara a abaixo a puntos enteiros. Se ves algún erro, coméntao na barra."
+
+msgid "Canjear puntos"
+msgstr "Canxear puntos"
+
+msgid "Enséñalo en la barra cuando pagues para que registremos tu compra."
+msgstr "Amósao na barra cando pagues para que rexistremos a túa compra."
+
+msgid "Tu código QR personal"
+msgstr "O teu código QR persoal"
+
+msgid "Si la cámara no lo lee, dicta este código:"
+msgstr "Se a cámara non o le, dita este código:"
+
+msgid "El código no contiene tus datos personales ni tu saldo. Solo sirve para que el personal te identifique; nadie puede usarlo sin pasar por la barra."
+msgstr "O código non contén os teus datos persoais nin o teu saldo. Só serve para que o persoal te identifique; ninguén pode usalo sen pasar pola barra."
+
+msgid "No lo publiques. Si crees que alguien lo ha copiado, renuévalo: el anterior dejará de funcionar."
+msgstr "Non o publiques. Se cres que alguén o copiou, renóvao: o anterior deixará de funcionar."
+
+#, python-format
+msgid "Última renovación: %(date)s."
+msgstr "Última renovación: %(date)s."
+
+msgid "Renovando…"
+msgstr "Renovando…"
+
+msgid "Renovar mi código"
+msgstr "Renovar o meu código"
+
+msgid "¡Feliz cumpleaños!"
+msgstr "Feliz aniversario!"
+
+#, python-format
+msgid "Para celebrarlo te hemos regalado %(points)s puntos en tu cuenta de Caneca Furada. Ya los tienes en tu saldo:"
+msgstr "Para celebralo agasallámoste con %(points)s puntos na túa conta de Caneca Furada. Xa os tes no teu saldo:"
+
+msgid "¡Salud!"
+msgstr "Saúde!"
+
+msgid "Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:"
+msgstr "Recibes esta mensaxe porque aceptaches recibir comunicacións promocionais por email. Para darte de baixa:"
+
+#, python-format
+msgid "¡Feliz cumpleaños! Te hemos regalado %(points)s puntos."
+msgstr "Feliz aniversario! Agasallámoste con %(points)s puntos."
+
+msgid "Baja:"
+msgstr "Baixa:"
+
+#, python-format
+msgid "Hola %(first_name)s:"
+msgstr "Ola, %(first_name)s:"
+
+#, python-format
+msgid "Te recordamos que %(points)s de tus puntos de Caneca Furada caducan el %(expires_on)s. Puedes usarlos antes en cualquiera de nuestras recompensas."
+msgstr "Lembrámosche que %(points)s dos teus puntos de Caneca Furada caducan o %(expires_on)s. Podes usalos antes en calquera dos nosos agasallos."
+
+msgid "Consulta tu saldo y las fechas de caducidad:"
+msgstr "Consulta o teu saldo e as datas de caducidade:"
+
+msgid "Los puntos se gastan siempre empezando por los más antiguos."
+msgstr "Os puntos gástanse sempre empezando polos máis antigos."
+
+msgid "Este es un aviso sobre el estado de tu cuenta de puntos."
+msgstr "Este é un aviso sobre o estado da túa conta de puntos."
+
+#, python-format
+msgid "Caneca Furada: tienes %(points)s puntos que caducan el %(expires_on)s"
+msgstr "Caneca Furada: tes %(points)s puntos que caducan o %(expires_on)s"
+
+#, python-format
+msgid "Has cancelado tu reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+msgstr "Cancelaches a túa reserva para «%(event_title)s» do %(when)s (%(party_size)s persoas)."
+
+#, python-format
+msgid "Has cancelado tu reserva del %(when)s (%(party_size)s personas)."
+msgstr "Cancelaches a túa reserva do %(when)s (%(party_size)s persoas)."
+
+#, python-format
+msgid "El local ha cancelado tu reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+msgstr "O local cancelou a túa reserva para «%(event_title)s» do %(when)s (%(party_size)s persoas)."
+
+#, python-format
+msgid "El local ha cancelado tu reserva del %(when)s (%(party_size)s personas)."
+msgstr "O local cancelou a túa reserva do %(when)s (%(party_size)s persoas)."
+
+#, python-format
+msgid "Mensaje del local: %(message)s"
+msgstr "Mensaxe do local: %(message)s"
+
+msgid "Tu reserva en Caneca Furada se ha cancelado"
+msgstr "Cancelouse a túa reserva en Caneca Furada"
+
+#, python-format
+msgid "Tu reserva para «%(event_title)s» está confirmada:"
+msgstr "A túa reserva para «%(event_title)s» está confirmada:"
+
+msgid "Tu reserva está confirmada:"
+msgstr "A túa reserva está confirmada:"
+
+#, python-format
+msgid "Fecha: %(when)s"
+msgstr "Data: %(when)s"
+
+#, python-format
+msgid "Personas: %(party_size)s"
+msgstr "Persoas: %(party_size)s"
+
+msgid "Si no puedes venir, cancélala desde tu cuenta para liberar el sitio:"
+msgstr "Se non podes vir, cancélaa desde a túa conta para liberar o sitio:"
+
+msgid "Tu reserva en Caneca Furada está confirmada"
+msgstr "A túa reserva en Caneca Furada está confirmada"
+
+#, python-format
+msgid "%(alert)s para «%(event_title)s»:"
+msgstr "%(alert)s para «%(event_title)s»:"
+
+msgid "Los datos del cliente están en el dashboard (no se envían por email):"
+msgstr "Os datos do cliente están no dashboard (non se envían por email):"
+
+#, python-format
+msgid "%(alert)s: reserva del %(when)s"
+msgstr "%(alert)s: reserva do %(when)s"
+
+#, python-format
+msgid "Hemos recibido tu solicitud de reserva para «%(event_title)s»:"
+msgstr "Recibimos a túa solicitude de reserva para «%(event_title)s»:"
+
+msgid "Hemos recibido tu solicitud de reserva:"
+msgstr "Recibimos a túa solicitude de reserva:"
+
+msgid "Todavía no está confirmada: te escribiremos en cuanto la revisemos. Puedes consultarla o cancelarla en tu cuenta:"
+msgstr "Aínda non está confirmada: escribirémosche en canto a revisemos. Podes consultala ou cancelala na túa conta:"
+
+msgid "Hemos recibido tu solicitud de reserva en Caneca Furada"
+msgstr "Recibimos a túa solicitude de reserva en Caneca Furada"
+
+#, python-format
+msgid "Lo sentimos: no podemos confirmar tu solicitud de reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+msgstr "Sentímolo: non podemos confirmar a túa solicitude de reserva para «%(event_title)s» do %(when)s (%(party_size)s persoas)."
+
+#, python-format
+msgid "Lo sentimos: no podemos confirmar tu solicitud de reserva del %(when)s (%(party_size)s personas)."
+msgstr "Sentímolo: non podemos confirmar a túa solicitude de reserva do %(when)s (%(party_size)s persoas)."
+
+msgid "Puedes hacer otra solicitud cuando quieras desde la web."
+msgstr "Podes facer outra solicitude cando queiras desde a web."
+
+msgid "No podemos confirmar tu reserva en Caneca Furada"
+msgstr "Non podemos confirmar a túa reserva en Caneca Furada"
+
+msgid "Darse de baja"
+msgstr "Darse de baixa"
+
+msgid "Baja completada"
+msgstr "Baixa completada"
+
+msgid "Este enlace de baja no es válido o ha caducado."
+msgstr "Esta ligazón de baixa non é válida ou caducou."
+
+msgid "Puedes retirar tus preferencias en cualquier momento desde tu perfil, en «Preferencias de comunicación»."
+msgstr "Podes retirar as túas preferencias en calquera momento desde o teu perfil, en «Preferencias de comunicación»."
+
+msgid "Ir a mi perfil"
+msgstr "Ir ao meu perfil"
+
+#, python-format
+msgid "Ya no recibirás comunicaciones promocionales por %(channel)s."
+msgstr "Xa non recibirás comunicacións promocionais por %(channel)s."
+
+msgid "Seguirás recibiendo los mensajes necesarios de tu cuenta y de tus reservas. Puedes volver a activarlas desde tu perfil."
+msgstr "Seguirás recibindo as mensaxes necesarias da túa conta e das túas reservas. Podes volver activalas desde o teu perfil."
+
+#, python-format
+msgid "¿Quieres dejar de recibir comunicaciones promocionales de Caneca Furada por %(channel)s?"
+msgstr "Queres deixar de recibir comunicacións promocionais de Caneca Furada por %(channel)s?"
+
+msgid "Darme de baja"
+msgstr "Darme de baixa"
+
+msgid "Confirmar compra"
+msgstr "Confirmar compra"
+
+msgid "Paso 2 de 2: comprueba el cliente e introduce el importe."
+msgstr "Paso 2 de 2: comproba o cliente e introduce o importe."
+
+msgid "Cliente identificado"
+msgstr "Cliente identificado"
+
+msgid "Pregúntale su nombre para confirmar que es su código."
+msgstr "Pregúntalle o seu nome para confirmar que é o seu código."
+
+msgid "Registrando…"
+msgstr "Rexistrando…"
+
+msgid "Registrar compra"
+msgstr "Rexistrar compra"
+
+msgid "No es este cliente: volver a escanear"
+msgstr "Non é este cliente: volver escanear"
+
+msgid "Compra registrada"
+msgstr "Compra rexistrada"
+
+#, python-format
+msgid "Compra %(status)s"
+msgstr "Compra %(status)s"
+
+msgid "Fecha y hora"
+msgstr "Data e hora"
+
+msgid "Origen"
+msgstr "Orixe"
+
+msgid "Puntos generados"
+msgstr "Puntos xerados"
+
+msgid "Registrar otra compra"
+msgstr "Rexistrar outra compra"
+
+msgid "Volver al panel"
+msgstr "Volver ao panel"
+
+msgid "Paso 1 de 2: escanea el QR del cliente."
+msgstr "Paso 1 de 2: escanea o QR do cliente."
+
+msgid "Código leído. Comprobando…"
+msgstr "Código lido. Comprobando…"
+
+msgid "Abriendo la cámara…"
+msgstr "Abrindo a cámara…"
+
+msgid "Apunta la cámara al QR del cliente."
+msgstr "Apunta a cámara ao QR do cliente."
+
+msgid "No se ha podido usar la cámara. Revisa el permiso del navegador o escribe el código."
+msgstr "Non se puido usar a cámara. Revisa o permiso do navegador ou escribe o código."
+
+msgid "Abrir la cámara"
+msgstr "Abrir a cámara"
+
+msgid "Cerrar la cámara"
+msgstr "Pechar a cámara"
+
+msgid "Comprobando…"
+msgstr "Comprobando…"
+
+msgid "Tus últimos registros"
+msgstr "Os teus últimos rexistros"
+
+msgid "Todavía no has registrado ninguna compra."
+msgstr "Aínda non rexistraches ningunha compra."
+
+msgid "Las recompensas que has canjeado y su estado."
+msgstr "Os agasallos que canxeaches e o seu estado."
+
+msgid "Páginas de canjes"
+msgstr "Páxinas de canxes"
+
+msgid "Todavía no has canjeado ninguna recompensa."
+msgstr "Aínda non canxeaches ningún agasallo."
+
+msgid "Ver recompensas"
+msgstr "Ver agasallos"
+
+msgid "Mi canje"
+msgstr "O meu canxe"
+
+msgid "Enseña este código en la barra para recoger tu recompensa. Solo sirve una vez."
+msgstr "Amosa este código na barra para recoller o teu agasallo. Só serve unha vez."
+
+msgid "Código QR de tu canje"
+msgstr "Código QR do teu canxe"
+
+#, python-format
+msgid "Válido hasta el %(date)s. Si no lo usas, te devolveremos los puntos."
+msgstr "Válido ata o %(date)s. Se non o usas, devolverémosche os puntos."
+
+#, python-format
+msgid "Recogido el %(date)s. ¡Que lo disfrutes!"
+msgstr "Recollido o %(date)s. Que o goces!"
+
+#, python-format
+msgid "Este canje se cerró el %(date)s y te devolvimos %(points)s puntos."
+msgstr "Este canxe pechouse o %(date)s e devolvémosche %(points)s puntos."
+
+#, python-format
+msgid "El plazo para recogerlo terminó el %(date)s. Te devolveremos los puntos."
+msgstr "O prazo para recollelo rematou o %(date)s. Devolverémosche os puntos."
+
+msgid "Cancelar el canje y recuperar los puntos"
+msgstr "Cancelar o canxe e recuperar os puntos"
+
+msgid "Tu saldo"
+msgstr "O teu saldo"
+
+msgid "Disponible hasta"
+msgstr "Dispoñible ata"
+
+msgctxt "recompensa"
+msgid "Agotada"
+msgstr "Esgotado"
+
+msgid "Ya tienes un código pendiente de recoger para esta recompensa."
+msgstr "Xa tes un código pendente de recoller para este agasallo."
+
+msgid "Ver mi código"
+msgstr "Ver o meu código"
+
+#, python-format
+msgid "Te faltan %(points)s puntos para esta recompensa."
+msgstr "Fáltanche %(points)s puntos para este agasallo."
+
+#, python-format
+msgid "Al confirmar se descontarán %(points)s puntos y recibirás un código para recogerla en la barra. Si no lo usas o lo cancelas, te devolvemos los puntos."
+msgstr "Ao confirmar descontaranse %(points)s puntos e recibirás un código para recollelo na barra. Se non o usas ou o cancelas, devolvémosche os puntos."
+
+msgid "Canjeando…"
+msgstr "Canxeando…"
+
+#, python-format
+msgid "Canjear por %(points)s puntos"
+msgstr "Canxear por %(points)s puntos"
+
+msgid "Ver todas las recompensas"
+msgstr "Ver todos os agasallos"
+
+msgid "Confirmar canje"
+msgstr "Confirmar canxe"
+
+msgid "Paso 2 de 2: comprueba la recompensa y entrégala."
+msgstr "Paso 2 de 2: comproba o agasallo e entrégao."
+
+msgid "Caduca"
+msgstr "Caduca"
+
+msgid "Recogido"
+msgstr "Recollido"
+
+msgid "Pregúntale su nombre para confirmar que el canje es suyo."
+msgstr "Pregúntalle o seu nome para confirmar que o canxe é seu."
+
+msgid "Validando…"
+msgstr "Validando…"
+
+msgid "Validar y entregar"
+msgstr "Validar e entregar"
+
+msgid "Este código no se puede usar: no entregues la recompensa."
+msgstr "Este código non se pode usar: non entregues o agasallo."
+
+msgid "Volver a escanear"
+msgstr "Volver escanear"
+
+#, python-format
+msgid "Canje %(status)s"
+msgstr "Canxe %(status)s"
+
+msgid "Canje validado: entrega la recompensa"
+msgstr "Canxe validado: entrega o agasallo"
+
+msgid "Validado el"
+msgstr "Validado o"
+
+msgid "Validar otro canje"
+msgstr "Validar outro canxe"
+
+msgid "Validar canje"
+msgstr "Validar canxe"
+
+msgid "Paso 1 de 2: escanea el código del canje que enseña el cliente."
+msgstr "Paso 1 de 2: escanea o código do canxe que amosa o cliente."
+
+msgid "Comprobar código"
+msgstr "Comprobar código"
+
+msgid "Tus últimos canjes validados"
+msgstr "Os teus últimos canxes validados"
+
+msgid "Todavía no has validado ningún canje."
+msgstr "Aínda non validaches ningún canxe."
+
+msgid "Resultados"
+msgstr "Resultados"
+
+msgid "Perfil"
+msgstr "Perfil"
+
+#, python-format
+msgid "Hola, %(name)s"
+msgstr "Ola, %(name)s"
+
+msgid "¿Qué quieres hacer?"
+msgstr "Que queres facer?"
+
+msgid "Escanea el QR del cliente e introduce el importe."
+msgstr "Escanea o QR do cliente e introduce o importe."
+
+msgid "Escanea el código del canje y entrega la recompensa."
+msgstr "Escanea o código do canxe e entrega o agasallo."
+
+msgid "Mis resultados"
+msgstr "Os meus resultados"
+
+msgid "Compras registradas y canjes validados por ti."
+msgstr "Compras rexistradas e canxes validados por ti."
+
+msgid "Tus datos de acceso, email y contraseña."
+msgstr "Os teus datos de acceso, email e contrasinal."
+
+msgid "Hoy, por ti"
+msgstr "Hoxe, por ti"
+
+msgid "Solo cuenta lo que registraste en el programa de fidelización; no es la caja del local."
+msgstr "Só conta o que rexistraches no programa de fidelización; non é a caixa do local."
+
+msgid "Si tu nombre o tu rol no son correctos, pídeselo al propietario: solo él puede cambiarlos."
+msgstr "Se o teu nome ou o teu rol non son correctos, pídello ao propietario: só el pode cambialos."
+
+msgid "Cerrar sesión"
+msgstr "Pechar sesión"
+
+msgid "Lo que has registrado y validado tú."
+msgstr "O que rexistraches e validaches ti."
+
+msgid "Tipo de operación"
+msgstr "Tipo de operación"
+
+msgid "Canjes validados"
+msgstr "Canxes validados"
+
+#, python-format
+msgid "Página %(number)s de %(total)s"
+msgstr "Páxina %(number)s de %(total)s"
+
+msgid "No has validado ningún canje en este periodo."
+msgstr "Non validaches ningún canxe neste período."
+
+msgid "No has registrado ninguna compra en este periodo."
+msgstr "Non rexistraches ningunha compra neste período."
+
+#, python-format
+msgid "Cerveza 100%% artesana"
+msgstr "Cervexa 100%% artesá"
+
+msgid "Nuestra historia"
+msgstr "A nosa historia"
+
+msgid "Caneca Furada es una cervecería artesana de A Coruña."
+msgstr "Caneca Furada é unha cervexaría artesá da Coruña."
+
+msgid "historia de la cervecería y del local"
+msgstr "historia da cervexaría e do local"
+
+msgid "Cartel del X aniversario de Caneca Furada: un corazón hecho de lúpulo con el logotipo de la casa"
+msgstr "Cartel do X aniversario de Caneca Furada: un corazón feito de lúpulo co logotipo da casa"
+
+msgid "Imagen del X aniversario."
+msgstr "Imaxe do X aniversario."
+
+msgid "La casa"
+msgstr "A casa"
+
+msgid "Cómo trabajamos"
+msgstr "Como traballamos"
+
+msgid "elaboración, estilos de la casa y cervezas invitadas"
+msgstr "elaboración, estilos da casa e cervexas convidadas"
+
+msgid "Ver la carta"
+msgstr "Ver a carta"
+
+msgid "Cómo llegar"
+msgstr "Como chegar"
+
+msgid "Ven a vernos"
+msgstr "Ven vernos"
+
+msgid "El local"
+msgstr "O local"
+
+msgid "¿Tienes cuenta?"
+msgstr "Tes conta?"
+
+msgid "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
+msgstr "Xestiona os teus datos, o teu email e as túas preferencias de comunicación desde o teu perfil."
+
+msgid "Agenda"
+msgstr "Axenda"
+
+msgid "Lo que pasa en Caneca Furada."
+msgstr "O que pasa en Caneca Furada."
+
+msgid "No hay eventos publicados todavía"
+msgstr "Aínda non hai eventos publicados"
+
+msgid "Cuando programemos el próximo, lo verás aquí."
+msgstr "Cando programemos o próximo, verálo aquí."
+
+msgid "¿Quieres reservar mesa?"
+msgstr "Queres reservar mesa?"
+
+msgid "Envía una solicitud desde tu cuenta y te confirmaremos por email."
+msgstr "Envía unha solicitude desde a túa conta e confirmarémoscho por email."
+
+msgid "Aviso"
+msgstr "Aviso"
+
+msgid "Cerveza artesana en A Coruña. Ven a probarla, descubre la carta y únete a nuestro programa de puntos."
+msgstr "Cervexa artesá na Coruña. Ven probala, descobre a carta e únete ao noso programa de puntos."
+
+msgid "Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada"
+msgstr "Logotipo de Caneca Furada: unha xerra de cervexa sorrinte con escuma dourada"
+
+msgid "Somos Caneca Furada"
+msgstr "Somos Caneca Furada"
+
+#, python-format
+msgid "Una cervecería 100%% artesana en A Coruña."
+msgstr "Unha cervexaría 100%% artesá na Coruña."
+
+msgid "presentación de la marca (historia, filosofía y cerveza)"
+msgstr "presentación da marca (historia, filosofía e cervexa)"
+
+msgid "Conoce la cervecería →"
+msgstr "Coñece a cervexaría →"
+
+msgid "La carta de la casa"
+msgstr "A carta da casa"
+
+msgid "Consulta las cervezas y todo lo que servimos."
+msgstr "Consulta as cervexas e todo o que servimos."
+
+msgid "Selección"
+msgstr "Selección"
+
+msgid "Nuestras cervezas"
+msgstr "As nosas cervexas"
+
+msgid "Estamos preparando la selección de cervezas"
+msgstr "Estamos a preparar a selección de cervexas"
+
+msgid "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
+msgstr "Moi pronto poderás ver aquí as cervexas destacadas da casa."
+
+msgid "Ir a la carta"
+msgstr "Ir á carta"
+
+msgid "Cada visita suma"
+msgstr "Cada visita suma"
+
+msgid "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
+msgstr "Así funciona o club de Caneca Furada. Crea a túa conta, verifica o teu email e amosa o teu QR na barra para sumar puntos."
+
+msgid "Eventos destacados"
+msgstr "Eventos destacados"
+
+msgid "Los próximos eventos de la casa aparecerán aquí."
+msgstr "Os próximos eventos da casa aparecerán aquí."
+
+msgid "Te esperamos en A Coruña."
+msgstr "Agardámoste na Coruña."
+
+msgid "Lo que servimos"
+msgstr "O que servimos"
+
+msgid "Cervezas de la casa, invitadas y de temporada."
+msgstr "Cervexas da casa, convidadas e de tempada."
+
+msgid "Categorías de la carta"
+msgstr "Categorías da carta"
+
+msgid "Grifos"
+msgstr "Billas"
+
+msgid "Productos"
+msgstr "Produtos"
+
+msgid "Estamos preparando la carta online"
+msgstr "Estamos a preparar a carta en liña"
+
+msgid "Mientras tanto, pregunta en la barra por las cervezas de hoy."
+msgstr "Mentres tanto, pregunta na barra polas cervexas de hoxe."
+
+msgid "Dónde estamos"
+msgstr "Onde estamos"
+
+msgid "Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa."
+msgstr "A túa fidelidade, na xerra. Coa túa conta acumularás puntos coas túas consumicións e poderás trocalos por agasallos da casa."
+
+msgid "Cómo funciona"
+msgstr "Como funciona"
+
+msgid "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
+msgstr "Para sumar e canxear puntos necesitas unha conta co email verificado. Ao canxear recibes un código dun só uso que amosas na barra; se non o usas a tempo ou o cancelas, recuperas os puntos."
+
+msgid "Recompensas disponibles"
+msgstr "Agasallos dispoñibles"
+
+#, python-format
+msgid "Hasta el %(date)s"
+msgstr "Ata o %(date)s"
+
+msgid "Canjear"
+msgstr "Canxear"
+
+msgid "El catálogo de recompensas aún no está publicado"
+msgstr "O catálogo de agasallos aínda non está publicado"
+
+msgid "Lo anunciaremos aquí y por email a quienes lo hayan aceptado."
+msgstr "Anunciarémolo aquí e por email a quen o aceptase."
+
+msgid "condiciones del programa de puntos"
+msgstr "condicións do programa de puntos"
+
+msgid "Ya formas parte"
+msgstr "Xa formas parte"
+
+msgid "Consulta tus puntos y tus canjes en tu cuenta."
+msgstr "Consulta os teus puntos e os teus canxes na túa conta."
+
+msgid "Crea tu cuenta y empieza a sumar puntos con tus consumiciones."
+msgstr "Crea a túa conta e empeza a sumar puntos coas túas consumicións."

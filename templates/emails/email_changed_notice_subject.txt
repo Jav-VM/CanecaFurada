@@ -1,1 +1,1 @@
-Se ha cambiado el email de tu cuenta de Caneca Furada
+{% load i18n %}{% translate "Se ha cambiado el email de tu cuenta de Caneca Furada" %}

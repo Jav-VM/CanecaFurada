@@ -19,6 +19,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 12 | Despliegue y endurecimiento | **Completa en local** ([detalle](fase-12-despliegue.md)); CI en verde; pendiente el VPS |
 | 13 | Datos de demostración | **Completa** ([detalle](fase-13-datos-demo.md)) |
 | 14 | Caducidad de puntos y regalo de cumpleaños configurables | **Completa** ([detalle](fase-14-caducidad-puntos-cumpleanos.md)); pendiente revisión visual |
+| 15 | Web en gallego con selector gallego/castellano | **Completa** ([detalle](fase-15-idioma-gallego.md)); pendientes la revisión nativa de las traducciones y la visual |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -174,6 +175,24 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
   - 63 tests nuevos;
   - **930 tests OK** en PostgreSQL 17.
 - Ver [fase-14-caducidad-puntos-cumpleanos.md](fase-14-caducidad-puntos-cumpleanos.md).
+
+## Fase 15 — Web en gallego con selector gallego/castellano
+- **Numeración:** fase añadida por el usuario el 2026-10-16.
+- **Incluye:**
+  - toda la interfaz en gallego por defecto (i18n de Django, castellano como idioma fuente, `locale/gl`);
+  - banderas de Galicia y España en la cabecera: la de España pasa a castellano la web pública y el área de cliente;
+  - panel, dashboard, admin, emails y SMS siempre en gallego; API según `Accept-Language`;
+  - `scripts/i18n.py` y comprobación del catálogo en el CI; compilación en la imagen Docker.
+- **Decisiones del usuario:** contenido del propietario sin traducir; panel y dashboard sin selector; emails siempre en gallego; API en gallego por defecto; gettext instalado con winget.
+- **Criterios:**
+  - cambio de idioma por POST con CSRF y sin redirecciones abiertas;
+  - catálogo completo y al día;
+  - sin migraciones;
+  - suite existente intacta.
+- **Resultado (2026-10-16):**
+  - 23 tests nuevos (5 tras la primera revisión: catálogo castellano y «Agasallos»);
+  - **953 tests OK** en PostgreSQL 17 y en SQLite.
+- Ver [fase-15-idioma-gallego.md](fase-15-idioma-gallego.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

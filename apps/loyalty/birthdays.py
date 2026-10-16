@@ -58,7 +58,7 @@ class BirthdayRunResult:
 
 
 def _notify(customer, movement, channel):
-    _, created = notifications.enqueue(
+    _unused, created = notifications.enqueue(
         kind=Notification.Kind.BIRTHDAY,
         recipient=customer,
         channel=channel,

@@ -1,26 +1,27 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Mi reserva{% endblock %}
-{% block eyebrow %}Reservas{% endblock %}
-{% block heading %}{% if reservation.event %}{{ reservation.event.title }}{% else %}Reserva de mesa{% endif %}{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Mi reserva" %}{% endblock %}
+{% block eyebrow %}{% translate "Reservas" %}{% endblock %}
+{% block heading %}{% if reservation.event %}{{ reservation.event.title }}{% else %}{% translate "Reserva de mesa" %}{% endif %}{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
   <p><span class="badge {% if not reservation.is_active %}badge-muted{% endif %}" data-reservation-status>{{ reservation.get_status_display }}</span></p>
   <dl class="space-y-3 text-sm">
-    <div class="flex justify-between gap-4"><dt class="text-mist">Fecha</dt><dd class="font-semibold">{{ reservation.requested_for|date:"l j \d\e F \d\e Y, H:i" }}</dd></div>
-    <div class="flex justify-between gap-4"><dt class="text-mist">Personas</dt><dd class="font-semibold">{{ reservation.party_size }}</dd></div>
-    <div class="flex justify-between gap-4"><dt class="text-mist">Solicitada</dt><dd>{{ reservation.created_at|date:"d/m/Y H:i" }}</dd></div>
-    {% if reservation.notes %}<div><dt class="text-mist">Tus comentarios</dt><dd class="mt-1">{{ reservation.notes|linebreaksbr }}</dd></div>{% endif %}
-    {% if reservation.owner_message %}<div><dt class="text-mist">Mensaje del local</dt><dd class="mt-1">{{ reservation.owner_message|linebreaksbr }}</dd></div>{% endif %}
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Fecha" %}</dt><dd class="font-semibold">{{ reservation.requested_for|date:"l j \d\e F \d\e Y, H:i" }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Personas" %}</dt><dd class="font-semibold">{{ reservation.party_size }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Solicitada" %}</dt><dd>{{ reservation.created_at|date:"d/m/Y H:i" }}</dd></div>
+    {% if reservation.notes %}<div><dt class="text-mist">{% translate "Tus comentarios" %}</dt><dd class="mt-1">{{ reservation.notes|linebreaksbr }}</dd></div>{% endif %}
+    {% if reservation.owner_message %}<div><dt class="text-mist">{% translate "Mensaje del local" %}</dt><dd class="mt-1">{{ reservation.owner_message|linebreaksbr }}</dd></div>{% endif %}
   </dl>
   {% if reservation.status == "PENDING" %}
-    <p class="alert alert-info">Pendiente de confirmar: te avisaremos por email.</p>
+    <p class="alert alert-info">{% translate "Pendiente de confirmar: te avisaremos por email." %}</p>
   {% endif %}
   {% if reservation.is_active %}
     <form method="post" action="{% url 'events:reservation_cancel' reservation.public_id %}" data-loading>
       {% csrf_token %}
-      <button type="submit" class="btn btn-secondary btn-block" data-loading-text="Cancelando…">Cancelar la reserva</button>
+      <button type="submit" class="btn btn-secondary btn-block" data-loading-text="{% translate 'Cancelando…' %}">{% translate "Cancelar la reserva" %}</button>
     </form>
   {% endif %}
 </div>
-<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'events:my_reservations' %}">Mis reservas</a></p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'events:my_reservations' %}">{% translate "Mis reservas" %}</a></p>
 {% endblock %}

@@ -12,6 +12,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_POST
+from django.utils.translation import gettext as _
 
 from apps.core.http import ip_limited
 
@@ -45,7 +46,7 @@ def register(request):
     form = RegistrationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         if _ip_limited(request, "register-ip"):
-            form.add_error(None, "Demasiados intentos desde tu conexión. Inténtalo más tarde.")
+            form.add_error(None, _("Demasiados intentos desde tu conexión. Inténtalo más tarde."))
         else:
             try:
                 services.register_customer(**form.service_kwargs())
@@ -98,7 +99,7 @@ def resend_verification(request):
             services.request_verification_resend(form.cleaned_data["email"])
         messages.info(
             request,
-            "Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace.",
+            _("Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace."),
         )
         return redirect("accounts:login")
     return render(request, "accounts/resend_verification.html", {"form": form})
@@ -113,9 +114,9 @@ def resend_verification_self(request):
         messages.error(request, str(exc))
     else:
         if sent:
-            messages.success(request, "Te hemos enviado un nuevo enlace de verificación.")
+            messages.success(request, _("Te hemos enviado un nuevo enlace de verificación."))
         else:
-            messages.info(request, "Tu email ya está verificado.")
+            messages.info(request, _("Tu email ya está verificado."))
     return redirect("accounts:home")
 
 
@@ -157,7 +158,7 @@ def profile(request):
             except ValidationError as exc:
                 apply_service_errors(form, exc)
             else:
-                messages.success(request, "Datos actualizados.")
+                messages.success(request, _("Datos actualizados."))
                 return redirect("accounts:profile")
     else:
         form = ProfileForm(initial=_profile_initial(user, customer_profile))
@@ -190,7 +191,7 @@ def preferences(request):
             for error in exc.messages:
                 messages.error(request, error)
         else:
-            messages.success(request, "Preferencias de comunicación guardadas.")
+            messages.success(request, _("Preferencias de comunicación guardadas."))
     return redirect(reverse("accounts:profile") + "#preferencias")
 
 
@@ -209,8 +210,8 @@ def email_change(request):
         else:
             messages.success(
                 request,
-                "Si la dirección está disponible, te hemos enviado un enlace para confirmarla. "
-                "Tu email actual seguirá siendo el de acceso hasta que lo confirmes.",
+                _("Si la dirección está disponible, te hemos enviado un enlace para confirmarla. "
+                "Tu email actual seguirá siendo el de acceso hasta que lo confirmes."),
             )
             return redirect("accounts:home")
     return render(request, "accounts/email_change.html", {"form": form})
@@ -262,5 +263,5 @@ class PasswordChangeView(auth_views.PasswordChangeView):
     def form_valid(self, form):
         response = super().form_valid(form)
         services.record_password_change(user=form.user, via="change", channel="web")
-        messages.success(self.request, "Contraseña cambiada.")
+        messages.success(self.request, _("Contraseña cambiada."))
         return response

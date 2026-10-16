@@ -22,6 +22,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Lower
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
 
@@ -40,26 +41,26 @@ MAX_ABV = Decimal("100.0")
 class Category(TimeStampedModel):
     """Categoría dentro de la sección Carta (p. ej. Cervezas de la casa, Para picar)."""
 
-    name = models.CharField("nombre", max_length=80)
+    name = models.CharField(_("nombre"), max_length=80)
     slug = models.SlugField(
-        "identificador en la URL",
+        _("identificador en la URL"),
         max_length=80,
         unique=True,
-        help_text="Se usa como ancla en la página de la carta (/carta/#identificador).",
+        help_text=_("Se usa como ancla en la página de la carta (/carta/#identificador)."),
     )
-    description = models.TextField("descripción", blank=True, max_length=500)
+    description = models.TextField(_("descripción"), blank=True, max_length=500)
     position = models.PositiveSmallIntegerField(
-        "orden", default=0, help_text="Las categorías se muestran de menor a mayor."
+        _("orden"), default=0, help_text=_("Las categorías se muestran de menor a mayor.")
     )
     is_published = models.BooleanField(
-        "publicada",
+        _("publicada"),
         default=True,
-        help_text="Si se desmarca, la categoría y todos sus productos dejan de verse en la web.",
+        help_text=_("Si se desmarca, la categoría y todos sus productos dejan de verse en la web."),
     )
 
     class Meta:
-        verbose_name = "categoría"
-        verbose_name_plural = "categorías"
+        verbose_name = _("categoría")
+        verbose_name_plural = _("categorías")
         ordering = ["position", "name"]
         constraints = [
             models.UniqueConstraint(Lower("name"), name="catalog_category_name_ci_unique"),
@@ -72,11 +73,11 @@ class Category(TimeStampedModel):
 class BeerStyle(TimeStampedModel):
     """Estilo de cerveza (IPA, Stout, Lager...). Lista gestionada por el propietario."""
 
-    name = models.CharField("nombre", max_length=60)
+    name = models.CharField(_("nombre"), max_length=60)
 
     class Meta:
-        verbose_name = "estilo de cerveza"
-        verbose_name_plural = "estilos de cerveza"
+        verbose_name = _("estilo de cerveza")
+        verbose_name_plural = _("estilos de cerveza")
         ordering = ["name"]
         constraints = [
             models.UniqueConstraint(Lower("name"), name="catalog_beerstyle_name_ci_unique"),
@@ -88,101 +89,101 @@ class BeerStyle(TimeStampedModel):
 
 class Product(TimeStampedModel):
     class Kind(models.TextChoices):
-        FIXED = "FIXED", "Producto fijo"
-        HOUSE_BEER = "HOUSE_BEER", "Cerveza propia"
-        GUEST_BEER = "GUEST_BEER", "Cerveza invitada"
-        ROTATING_BEER = "ROTATING_BEER", "Cerveza rotativa"
+        FIXED = "FIXED", _("Producto fijo")
+        HOUSE_BEER = "HOUSE_BEER", _("Cerveza propia")
+        GUEST_BEER = "GUEST_BEER", _("Cerveza invitada")
+        ROTATING_BEER = "ROTATING_BEER", _("Cerveza rotativa")
 
     class Status(models.TextChoices):
-        DRAFT = "DRAFT", "Borrador"
-        PUBLISHED = "PUBLISHED", "Publicado"
-        ARCHIVED = "ARCHIVED", "Archivado"
+        DRAFT = "DRAFT", _("Borrador")
+        PUBLISHED = "PUBLISHED", _("Publicado")
+        ARCHIVED = "ARCHIVED", _("Archivado")
 
     BEER_KINDS = (Kind.HOUSE_BEER, Kind.GUEST_BEER, Kind.ROTATING_BEER)
 
     public_id = models.UUIDField(
-        "identificador público", default=uuid.uuid4, unique=True, editable=False
+        _("identificador público"), default=uuid.uuid4, unique=True, editable=False
     )
     category = models.ForeignKey(
-        Category, verbose_name="categoría", on_delete=models.PROTECT, related_name="products"
+        Category, verbose_name=_("categoría"), on_delete=models.PROTECT, related_name="products"
     )
-    kind = models.CharField("tipo", max_length=16, choices=Kind.choices, default=Kind.FIXED)
-    name = models.CharField("nombre", max_length=120)
-    description = models.TextField("descripción", blank=True, max_length=1000)
+    kind = models.CharField(_("tipo"), max_length=16, choices=Kind.choices, default=Kind.FIXED)
+    name = models.CharField(_("nombre"), max_length=120)
+    description = models.TextField(_("descripción"), blank=True, max_length=1000)
     style = models.ForeignKey(
         BeerStyle,
-        verbose_name="estilo",
+        verbose_name=_("estilo"),
         on_delete=models.PROTECT,
         related_name="products",
         null=True,
         blank=True,
-        help_text="Obligatorio en las cervezas; vacío en los productos fijos.",
+        help_text=_("Obligatorio en las cervezas; vacío en los productos fijos."),
     )
     abv = models.DecimalField(
-        "graduación (% vol.)",
+        _("graduación (% vol.)"),
         max_digits=4,
         decimal_places=1,
         null=True,
         blank=True,
         validators=[MinValueValidator(MIN_ABV), MaxValueValidator(MAX_ABV)],
-        help_text="Obligatoria en las cervezas. Opcional en otros productos con alcohol.",
+        help_text=_("Obligatoria en las cervezas. Opcional en otros productos con alcohol."),
     )
     brewery = models.CharField(
-        "cervecera",
+        _("cervecera"),
         max_length=120,
         blank=True,
-        help_text="Elaborador de las cervezas invitadas.",
+        help_text=_("Elaborador de las cervezas invitadas."),
     )
     price = models.DecimalField(
-        "precio (€)",
+        _("precio (€)"),
         max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(MIN_PRICE)],
-        help_text="IVA incluido, con dos decimales (p. ej. 3.50). Máximo 9999.99.",
+        help_text=_("IVA incluido, con dos decimales (p. ej. 3.50). Máximo 9999.99."),
     )
     serving = models.CharField(
-        "formato", max_length=40, blank=True, help_text="Opcional, p. ej. «33 cl» o «Ración»."
+        _("formato"), max_length=40, blank=True, help_text=_("Opcional, p. ej. «33 cl» o «Ración».")
     )
     image = models.ImageField(
-        "imagen",
+        _("imagen"),
         upload_to=product_image_path,
         blank=True,
         width_field="image_width",
         height_field="image_height",
         validators=[validate_image_extension, validate_image_file],
-        help_text="JPEG, PNG o WebP. Opcional.",
+        help_text=_("JPEG, PNG o WebP. Opcional."),
     )
     image_width = models.PositiveIntegerField(null=True, blank=True, editable=False)
     image_height = models.PositiveIntegerField(null=True, blank=True, editable=False)
     position = models.PositiveSmallIntegerField(
-        "orden", default=0, help_text="Orden dentro de la categoría, de menor a mayor."
+        _("orden"), default=0, help_text=_("Orden dentro de la categoría, de menor a mayor.")
     )
     is_featured = models.BooleanField(
-        "destacada en el inicio",
+        _("destacada en el inicio"),
         default=False,
-        help_text="Solo las cervezas publicadas y disponibles aparecen en la selección del inicio.",
+        help_text=_("Solo las cervezas publicadas y disponibles aparecen en la selección del inicio."),
     )
 
     # Publicación. Se cambia mediante `services.set_product_status`.
     status = models.CharField(
-        "estado", max_length=16, choices=Status.choices, default=Status.DRAFT, db_index=True
+        _("estado"), max_length=16, choices=Status.choices, default=Status.DRAFT, db_index=True
     )
-    published_at = models.DateTimeField("publicado el", null=True, blank=True, editable=False)
-    archived_at = models.DateTimeField("archivado el", null=True, blank=True, editable=False)
+    published_at = models.DateTimeField(_("publicado el"), null=True, blank=True, editable=False)
+    archived_at = models.DateTimeField(_("archivado el"), null=True, blank=True, editable=False)
 
     # Disponibilidad actual. Se cambia mediante `services.set_product_availability`.
     is_available = models.BooleanField(
-        "disponible ahora",
+        _("disponible ahora"),
         default=True,
-        help_text="Desmárcalo cuando se agote. Seguirá en la carta como «Agotada».",
+        help_text=_("Desmárcalo cuando se agote. Seguirá en la carta como «Agotada»."),
     )
     availability_changed_at = models.DateTimeField(
-        "disponibilidad cambiada el", null=True, blank=True, editable=False
+        _("disponibilidad cambiada el"), null=True, blank=True, editable=False
     )
 
     class Meta:
-        verbose_name = "producto"
-        verbose_name_plural = "productos"
+        verbose_name = _("producto")
+        verbose_name_plural = _("productos")
         ordering = ["category__position", "position", "name"]
         indexes = [models.Index(fields=["status", "category"])]
         constraints = [
@@ -222,14 +223,14 @@ class Product(TimeStampedModel):
         errors = {}
         if self.is_beer:
             if self.style_id is None:
-                errors["style"] = "Indica el estilo de la cerveza."
+                errors["style"] = _("Indica el estilo de la cerveza.")
             if self.abv is None:
-                errors["abv"] = "Indica la graduación de la cerveza."
+                errors["abv"] = _("Indica la graduación de la cerveza.")
         else:
             if self.style_id is not None:
-                errors["style"] = "Los productos fijos no tienen estilo de cerveza."
+                errors["style"] = _("Los productos fijos no tienen estilo de cerveza.")
             if self.is_featured:
-                errors["is_featured"] = "Solo se pueden destacar cervezas."
+                errors["is_featured"] = _("Solo se pueden destacar cervezas.")
         if errors:
             raise ValidationError(errors)
 
@@ -265,31 +266,31 @@ class TapMenu(TimeStampedModel):
     como historial (despublicadas) en lugar de borrarse.
     """
 
-    title = models.CharField("título", max_length=80, default="Carta de grifos")
+    title = models.CharField(_("título"), max_length=80, default=_("Carta de grifos"))
     image = models.ImageField(
-        "imagen",
+        _("imagen"),
         upload_to=tap_menu_image_path,
         width_field="image_width",
         height_field="image_height",
         validators=[validate_image_extension, validate_image_file],
-        help_text="JPEG, PNG o WebP.",
+        help_text=_("JPEG, PNG o WebP."),
     )
     image_width = models.PositiveIntegerField(null=True, blank=True, editable=False)
     image_height = models.PositiveIntegerField(null=True, blank=True, editable=False)
     text_alternative = models.TextField(
-        "versión en texto",
+        _("versión en texto"),
         blank=True,
         max_length=2000,
         help_text=(
-            "Recomendado: las cervezas de la imagen en texto, para quien usa lector de "
-            "pantalla o no puede ver bien la imagen."
+            _("Recomendado: las cervezas de la imagen en texto, para quien usa lector de "
+            "pantalla o no puede ver bien la imagen.")
         ),
     )
-    is_published = models.BooleanField("publicada", default=False)
+    is_published = models.BooleanField(_("publicada"), default=False)
 
     class Meta:
-        verbose_name = "carta de grifos"
-        verbose_name_plural = "cartas de grifos"
+        verbose_name = _("carta de grifos")
+        verbose_name_plural = _("cartas de grifos")
         ordering = ["-updated_at", "-id"]
 
     def __str__(self):

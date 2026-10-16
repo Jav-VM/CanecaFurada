@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.querysets import period_q
@@ -66,7 +67,7 @@ def validations_by(staff, *, since=None):
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver todos los canjes.")
+        raise PermissionDenied(_("Solo el propietario puede ver todos los canjes."))
 
 
 @dataclass(frozen=True)

@@ -1,20 +1,21 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Revisa tu correo{% endblock %}
-{% block eyebrow %}Solicitud de registro recibida{% endblock %}
-{% block heading %}Revisa tu correo{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Revisa tu correo" %}{% endblock %}
+{% block eyebrow %}{% translate "Solicitud de registro recibida" %}{% endblock %}
+{% block heading %}{% translate "Revisa tu correo" %}{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
   <div class="alert alert-warning">
-    <p class="font-bold">Falta un paso: verificar tu email.</p>
-    <p class="mt-1 text-sm text-mist">Tu cuenta quedará pendiente de verificación hasta que confirmes tu dirección de correo.</p>
+    <p class="font-bold">{% translate "Falta un paso: verificar tu email." %}</p>
+    <p class="mt-1 text-sm text-mist">{% translate "Tu cuenta quedará pendiente de verificación hasta que confirmes tu dirección de correo." %}</p>
   </div>
-  <p class="text-mist">Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez.</p>
+  <p class="text-mist">{% translate "Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez." %}</p>
   <ol class="space-y-4">
-    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">1</span><span>Abre el email que te hemos enviado (revisa también la carpeta de spam).</span></li>
-    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">2</span><span>Pulsa el enlace y confirma tu dirección.</span></li>
-    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">3</span><span>Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles.</span></li>
+    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">1</span><span>{% translate "Abre el email que te hemos enviado (revisa también la carpeta de spam)." %}</span></li>
+    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">2</span><span>{% translate "Pulsa el enlace y confirma tu dirección." %}</span></li>
+    <li class="flex items-start gap-4"><span class="step-number" aria-hidden="true">3</span><span>{% translate "Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles." %}</span></li>
   </ol>
-  <p class="text-sm text-mist">Mientras tanto ya puedes <a class="link" href="{% url 'accounts:login' %}">entrar</a> y revisar tu perfil.</p>
+  {% url 'accounts:login' as login_url %}<p class="text-sm text-mist">{% blocktranslate trimmed %}Mientras tanto ya puedes <a class="link" href="{{ login_url }}">entrar</a> y revisar tu perfil.{% endblocktranslate %}</p>
 </div>
-<p class="mt-6 text-center text-sm text-mist">¿No te ha llegado? <a class="link" href="{% url 'accounts:resend_verification' %}">Solicitar otro enlace</a>.</p>
+{% url 'accounts:resend_verification' as resend_url %}<p class="mt-6 text-center text-sm text-mist">{% blocktranslate trimmed %}¿No te ha llegado? <a class="link" href="{{ resend_url }}">Solicitar otro enlace</a>.{% endblocktranslate %}</p>
 {% endblock %}

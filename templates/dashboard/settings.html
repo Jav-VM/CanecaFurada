@@ -1,58 +1,59 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Configuración · Dashboard{% endblock %}
-{% block heading %}Configuración{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Configuración" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Configuración" %}{% endblock %}
 {% block body %}
 <section aria-labelledby="conversion" class="max-w-2xl">
-  <h2 id="conversion" class="heading-md mb-2">Conversión de puntos</h2>
-  <p class="mb-4">Vigente: <strong data-current-rate>{{ rate.points_per_euro }} puntos por euro</strong>{% if not rate.rule %} (valor por defecto, pendiente de confirmar){% endif %}. Los puntos se redondean hacia abajo.</p>
+  <h2 id="conversion" class="heading-md mb-2">{% translate "Conversión de puntos" %}</h2>
+  <p class="mb-4">{% blocktranslate trimmed with rate=rate.points_per_euro %}Vigente: <strong data-current-rate>{{ rate }} puntos por euro</strong>{% endblocktranslate %}{% if not rate.rule %} {% translate "(valor por defecto, pendiente de confirmar)" %}{% endif %}. {% translate "Los puntos se redondean hacia abajo." %}</p>
   {% include "components/form_errors.html" %}
   <form method="post" class="form-section" novalidate data-loading>
     {% csrf_token %}
     {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Aplicar nueva conversión</button>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Aplicar nueva conversión" %}</button>
   </form>
-  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">Historial</h3>
+  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">{% translate "Historial" %}</h3>
   {% if rules %}
-    <ul class="card space-y-2 text-sm">{% for rule in rules %}<li>{{ rule.points_per_euro }} pts/€ desde {{ rule.valid_from|date:"d/m/Y H:i" }}{% if rule.created_by %} · {{ rule.created_by.get_full_name }}{% endif %}{% if rule.note %} · {{ rule.note }}{% endif %}</li>{% endfor %}</ul>
-  {% else %}<p class="note">Todavía no se ha creado ninguna regla: se aplica el valor por defecto.</p>{% endif %}
+    <ul class="card space-y-2 text-sm">{% for rule in rules %}<li>{% blocktranslate trimmed with rate=rule.points_per_euro date=rule.valid_from|date:"d/m/Y H:i" %}{{ rate }} pts/€ desde {{ date }}{% endblocktranslate %}{% if rule.created_by %} · {{ rule.created_by.get_full_name }}{% endif %}{% if rule.note %} · {{ rule.note }}{% endif %}</li>{% endfor %}</ul>
+  {% else %}<p class="note">{% translate "Todavía no se ha creado ninguna regla: se aplica el valor por defecto." %}</p>{% endif %}
 </section>
 
 <section aria-labelledby="caducidad" class="mt-10 max-w-2xl" data-expiry-settings>
-  <h2 id="caducidad" class="heading-md mb-2">Caducidad de los puntos</h2>
+  <h2 id="caducidad" class="heading-md mb-2">{% translate "Caducidad de los puntos" %}</h2>
   <p class="mb-2" data-expiry-status>
-    {% if expiry_policy %}Vigente: <strong>los puntos caducan a los {{ expiry_policy.months }} meses</strong> de ganarlos (aviso por email {{ expiry_policy.warn_days }} días antes). El plazo cuenta como pronto desde el {{ expiry_policy.counts_from|date:"d/m/Y H:i" }}.
-    {% else %}Vigente: <strong>los puntos no caducan</strong>.{% endif %}
+    {% if expiry_policy %}{% blocktranslate trimmed with months=expiry_policy.months days=expiry_policy.warn_days date=expiry_policy.counts_from|date:"d/m/Y H:i" %}Vigente: <strong>los puntos caducan a los {{ months }} meses</strong> de ganarlos (aviso por email {{ days }} días antes). El plazo cuenta como pronto desde el {{ date }}.{% endblocktranslate %}
+    {% else %}{% blocktranslate trimmed %}Vigente: <strong>los puntos no caducan</strong>.{% endblocktranslate %}{% endif %}
   </p>
-  <p class="note mb-4">Se gastan primero los puntos más antiguos. Al activar la caducidad o acortar el plazo, el plazo nuevo empieza a contar desde ese momento: nadie pierde puntos de golpe. Al alargarlo, las fechas solo se retrasan. Los puntos vencidos se descuentan cada noche.</p>
+  <p class="note mb-4">{% translate "Se gastan primero los puntos más antiguos. Al activar la caducidad o acortar el plazo, el plazo nuevo empieza a contar desde ese momento: nadie pierde puntos de golpe. Al alargarlo, las fechas solo se retrasan. Los puntos vencidos se descuentan cada noche." %}</p>
   {% with form=expiry_form %}{% include "components/form_errors.html" %}{% endwith %}
   <form method="post" action="{% url 'dashboard:settings_expiry' %}" class="form-section" novalidate data-loading>
     {% csrf_token %}
     {% for field in expiry_form %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar caducidad</button>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar caducidad" %}</button>
   </form>
-  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">Historial</h3>
+  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">{% translate "Historial" %}</h3>
   {% if expiry_history %}
-    <ul class="card space-y-2 text-sm">{% for policy in expiry_history %}<li>{% if policy.months %}{{ policy.months }} meses · aviso {{ policy.warn_days }} días{% else %}Sin caducidad{% endif %} desde {{ policy.valid_from|date:"d/m/Y H:i" }}{% if policy.created_by %} · {{ policy.created_by.get_full_name }}{% endif %}{% if policy.note %} · {{ policy.note }}{% endif %}</li>{% endfor %}</ul>
-  {% else %}<p class="note">Nunca se ha configurado: los puntos no caducan.</p>{% endif %}
+    <ul class="card space-y-2 text-sm">{% for policy in expiry_history %}<li>{% if policy.months %}{% blocktranslate trimmed with months=policy.months days=policy.warn_days %}{{ months }} meses · aviso {{ days }} días{% endblocktranslate %}{% else %}{% translate "Sin caducidad" %}{% endif %} {% blocktranslate trimmed with date=policy.valid_from|date:"d/m/Y H:i" %}desde {{ date }}{% endblocktranslate %}{% if policy.created_by %} · {{ policy.created_by.get_full_name }}{% endif %}{% if policy.note %} · {{ policy.note }}{% endif %}</li>{% endfor %}</ul>
+  {% else %}<p class="note">{% translate "Nunca se ha configurado: los puntos no caducan." %}</p>{% endif %}
 </section>
 
 <section aria-labelledby="cumpleanos" class="mt-10 max-w-2xl" data-birthday-settings>
-  <h2 id="cumpleanos" class="heading-md mb-2">Regalo de cumpleaños</h2>
-  <p class="note mb-4">El día de su cumpleaños, cada cliente con email verificado recibe los puntos en su saldo. El aviso solo se envía a quien ha aceptado comunicaciones promocionales (email y, si hay proveedor, SMS). Escribe <code>{{ birthday_placeholder }}</code> donde quieras mostrar los puntos; deja un texto vacío para usar el mensaje por defecto.</p>
+  <h2 id="cumpleanos" class="heading-md mb-2">{% translate "Regalo de cumpleaños" %}</h2>
+  <p class="note mb-4">{% blocktranslate trimmed with placeholder=birthday_placeholder %}El día de su cumpleaños, cada cliente con email verificado recibe los puntos en su saldo. El aviso solo se envía a quien ha aceptado comunicaciones promocionales (email y, si hay proveedor, SMS). Escribe <code>{{ placeholder }}</code> donde quieras mostrar los puntos; deja un texto vacío para usar el mensaje por defecto.{% endblocktranslate %}</p>
   {% with form=birthday_form %}{% include "components/form_errors.html" %}{% endwith %}
   <form method="post" action="{% url 'dashboard:settings_birthday' %}" class="form-section" novalidate data-loading>
     {% csrf_token %}
     {% for field in birthday_form %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar regalo de cumpleaños</button>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar regalo de cumpleaños" %}</button>
   </form>
 </section>
 
 <section aria-labelledby="fijos" class="mt-10 max-w-2xl">
-  <h2 id="fijos" class="heading-md mb-2">Valores fijados en la configuración del servidor</h2>
-  <p class="note mb-4">Se cambian en los ajustes del proyecto, no desde aquí.</p>
+  <h2 id="fijos" class="heading-md mb-2">{% translate "Valores fijados en la configuración del servidor" %}</h2>
+  <p class="note mb-4">{% translate "Se cambian en los ajustes del proyecto, no desde aquí." %}</p>
   <dl class="card grid gap-3 text-sm sm:grid-cols-2">
     {% for label, value in read_only_settings %}<div><dt class="text-mist">{{ label }}</dt><dd class="font-semibold">{{ value }}</dd></div>{% endfor %}
   </dl>
-  <p class="note mt-4">Administración técnica (auditoría, gestión avanzada): <a class="link" href="{{ admin_url }}">admin</a>.</p>
+  <p class="note mt-4">{% blocktranslate trimmed with url=admin_url %}Administración técnica (auditoría, gestión avanzada): <a class="link" href="{{ url }}">admin</a>.{% endblocktranslate %}</p>
 </section>
 {% endblock %}

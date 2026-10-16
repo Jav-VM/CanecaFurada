@@ -12,6 +12,7 @@ import phonenumbers
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .countries import COUNTRY_CODES
 
@@ -22,8 +23,8 @@ _WHITESPACE_RE = re.compile(r"\s+")
 _GENERIC_POSTAL_CODE_RE = re.compile(r"^[A-Z0-9](?:[A-Z0-9 -]{0,10}[A-Z0-9])$")
 # Formatos estrictos para los países más habituales; el resto usa el genérico.
 _POSTAL_CODE_BY_COUNTRY = {
-    "ES": (re.compile(r"^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$"), "5 dígitos, por ejemplo 15001"),
-    "PT": (re.compile(r"^\d{4}-\d{3}$"), "formato 1234-567"),
+    "ES": (re.compile(r"^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$"), _("5 dígitos, por ejemplo 15001")),
+    "PT": (re.compile(r"^\d{4}-\d{3}$"), _("formato 1234-567")),
 }
 _ALLOWED_PHONE_TYPES = {
     phonenumbers.PhoneNumberType.MOBILE,
@@ -45,7 +46,7 @@ def normalize_postal_code(value):
 
 def validate_country(value):
     if value not in COUNTRY_CODES:
-        raise ValidationError("Selecciona un país válido.", code="invalid_country")
+        raise ValidationError(_("Selecciona un país válido."), code="invalid_country")
 
 
 def validate_postal_code(value, country):
@@ -54,10 +55,10 @@ def validate_postal_code(value, country):
     if strict is not None:
         pattern, hint = strict
         if not pattern.match(value):
-            raise ValidationError(f"Código postal no válido ({hint}).", code="invalid_postal_code")
+            raise ValidationError(_("Código postal no válido (%(hint)s).") % {"hint": hint}, code="invalid_postal_code")
         return
     if not _GENERIC_POSTAL_CODE_RE.match(value):
-        raise ValidationError("Código postal no válido.", code="invalid_postal_code")
+        raise ValidationError(_("Código postal no válido."), code="invalid_postal_code")
 
 
 def normalize_phone_number(value, region=None):
@@ -75,18 +76,18 @@ def normalize_phone_number(value, region=None):
     try:
         number = phonenumbers.parse(value, region)
     except phonenumbers.NumberParseException:
-        raise ValidationError("Número de teléfono no válido.", code="invalid_phone") from None
+        raise ValidationError(_("Número de teléfono no válido."), code="invalid_phone") from None
     if not phonenumbers.is_valid_number(number):
-        raise ValidationError("Número de teléfono no válido.", code="invalid_phone")
+        raise ValidationError(_("Número de teléfono no válido."), code="invalid_phone")
     if phonenumbers.number_type(number) not in _ALLOWED_PHONE_TYPES:
-        raise ValidationError("Introduce un número de teléfono móvil.", code="not_mobile")
+        raise ValidationError(_("Introduce un número de teléfono móvil."), code="not_mobile")
     return phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
 
 
 def validate_e164(value):
     """Validador de modelo: el valor guardado debe estar ya normalizado."""
     if value and normalize_phone_number(value) != value:
-        raise ValidationError("El teléfono debe guardarse en formato E.164.", code="invalid_phone")
+        raise ValidationError(_("El teléfono debe guardarse en formato E.164."), code="invalid_phone")
 
 
 def age_on(date_of_birth, today):
@@ -96,15 +97,15 @@ def age_on(date_of_birth, today):
 
 def validate_date_of_birth(value, today=None):
     if not isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
-        raise ValidationError("Introduce una fecha válida.", code="invalid_date")
+        raise ValidationError(_("Introduce una fecha válida."), code="invalid_date")
     today = today or timezone.localdate()
     if value > today:
-        raise ValidationError("La fecha de nacimiento no puede ser futura.", code="future_date")
+        raise ValidationError(_("La fecha de nacimiento no puede ser futura."), code="future_date")
     age = age_on(value, today)
     if age > MAX_AGE_YEARS:
-        raise ValidationError("Revisa la fecha de nacimiento.", code="implausible_date")
+        raise ValidationError(_("Revisa la fecha de nacimiento."), code="implausible_date")
     min_age = settings.ACCOUNTS_MIN_CUSTOMER_AGE
     if age < min_age:
         raise ValidationError(
-            f"Debes tener al menos {min_age} años para registrarte.", code="under_min_age"
+            _("Debes tener al menos %(min_age)s años para registrarte.") % {"min_age": min_age}, code="under_min_age"
         )

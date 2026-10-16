@@ -1,1 +1,1 @@
-{% autoescape off %}Caneca Furada: {{ campaign_body }} Baja: {{ unsubscribe_url }}{% endautoescape %}
+{% load i18n %}{% autoescape off %}Caneca Furada: {{ campaign_body }} {% translate "Baja:" %} {{ unsubscribe_url }}{% endautoescape %}

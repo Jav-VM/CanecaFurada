@@ -26,6 +26,7 @@ from decimal import Decimal, InvalidOperation
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner, is_staff_member
 from apps.core import throttling
@@ -57,7 +58,7 @@ class RegistrationResult:
 
 def ensure_can_register_purchases(staff):
     if not is_staff_member(staff):
-        raise PermissionDenied("Solo el personal del local puede registrar compras.")
+        raise PermissionDenied(_("Solo el personal del local puede registrar compras."))
 
 
 def parse_amount(value):
@@ -69,14 +70,14 @@ def parse_amount(value):
     except InvalidOperation:
         amount = None
     if amount is None or not amount.is_finite():
-        raise ValidationError("Introduce un importe válido, por ejemplo 12,50.", code="amount_invalid")
+        raise ValidationError(_("Introduce un importe válido, por ejemplo 12,50."), code="amount_invalid")
     if amount.as_tuple().exponent < -2:
-        raise ValidationError("El importe admite como máximo dos decimales.", code="amount_decimals")
+        raise ValidationError(_("El importe admite como máximo dos decimales."), code="amount_decimals")
     if amount < Decimal("0.01"):
-        raise ValidationError("El importe debe ser mayor que cero.", code="amount_min")
+        raise ValidationError(_("El importe debe ser mayor que cero."), code="amount_min")
     if amount > settings.PURCHASES_MAX_AMOUNT:
         raise ValidationError(
-            "El importe supera el máximo permitido (%(max)s €).",
+            _("El importe supera el máximo permitido (%(max)s €)."),
             code="amount_max",
             params={"max": settings.PURCHASES_MAX_AMOUNT},
         )
@@ -87,7 +88,7 @@ def parse_idempotency_key(value):
     try:
         return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
     except (TypeError, ValueError, AttributeError):
-        raise ValidationError("La operación no es válida. Vuelve a escanear el código.", code="idempotency_invalid")
+        raise ValidationError(_("La operación no es válida. Vuelve a escanear el código."), code="idempotency_invalid")
 
 
 def _check_failures(staff):
@@ -147,18 +148,18 @@ def _replay(existing, *, staff, qr_code, amount, source):
         and same_customer
     ):
         raise ValidationError(
-            "Esta operación ya se registró con otros datos. Vuelve a escanear el código.",
+            _("Esta operación ya se registró con otros datos. Vuelve a escanear el código."),
             code="idempotency_conflict",
         )
     if existing.status != Purchase.Status.COMPLETED:
-        raise ValidationError("Esta operación ya no está vigente.", code="operation_not_completed")
+        raise ValidationError(_("Esta operación ya no está vigente."), code="operation_not_completed")
     return RegistrationResult(purchase=existing, created=False)
 
 
 def register_purchase(*, staff, qr_code, amount, idempotency_key, source=Purchase.Source.MANUAL):
     ensure_can_register_purchases(staff)
     if source not in settings.PURCHASES_ENABLED_SOURCES:
-        raise ValidationError("Este origen de compras no está habilitado.", code="source_disabled")
+        raise ValidationError(_("Este origen de compras no está habilitado."), code="source_disabled")
     amount = parse_amount(amount)
     key = parse_idempotency_key(idempotency_key)
     _check_failures(staff)

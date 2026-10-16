@@ -1,10 +1,10 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-Lo sentimos: no podemos confirmar tu solicitud de reserva{% if event_title %} para «{{ event_title }}»{% endif %} del {{ when }} ({{ party_size }} personas).
+{% if event_title %}{% blocktranslate %}Lo sentimos: no podemos confirmar tu solicitud de reserva para «{{ event_title }}» del {{ when }} ({{ party_size }} personas).{% endblocktranslate %}{% else %}{% blocktranslate %}Lo sentimos: no podemos confirmar tu solicitud de reserva del {{ when }} ({{ party_size }} personas).{% endblocktranslate %}{% endif %}
 {% if message %}
-Mensaje del local: {{ message }}
+{% blocktranslate %}Mensaje del local: {{ message }}{% endblocktranslate %}
 {% endif %}
-Puedes hacer otra solicitud cuando quieras desde la web.
+{% translate "Puedes hacer otra solicitud cuando quieras desde la web." %}
 
 Caneca Furada
 {% endautoescape %}

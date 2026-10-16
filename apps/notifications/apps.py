@@ -1,8 +1,9 @@
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class NotificationsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.notifications"
     label = "notifications"
-    verbose_name = "Notificaciones"
+    verbose_name = _("Notificaciones")

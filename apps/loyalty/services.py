@@ -18,6 +18,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
 from apps.core import throttling
@@ -36,13 +37,13 @@ _SEPARATORS_RE = re.compile(r"[\s\-]+")
 
 class InvalidQRCode(ValidationError):
     def __init__(self):
-        super().__init__("El código no es válido o la cuenta no está activa.", code="invalid_qr")
+        super().__init__(_("El código no es válido o la cuenta no está activa."), code="invalid_qr")
 
 
 class CustomerNotEligible(ValidationError):
     def __init__(self):
         super().__init__(
-            "El cliente tiene que verificar su email antes de poder sumar compras.",
+            _("El cliente tiene que verificar su email antes de poder sumar compras."),
             code="email_not_verified",
         )
 
@@ -89,9 +90,9 @@ def _require_verified_customer(user):
         and user.is_active
         and user.role == User.Role.CUSTOMER
     ):
-        raise PermissionDenied("Solo los clientes tienen código QR.")
+        raise PermissionDenied(_("Solo los clientes tienen código QR."))
     if not user.is_email_verified:
-        raise PermissionDenied("Debes verificar tu email para usar tu código QR.")
+        raise PermissionDenied(_("Debes verificar tu email para usar tu código QR."))
 
 
 def get_customer_qr(user):

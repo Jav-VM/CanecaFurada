@@ -37,6 +37,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from apps.accounts.validators import validate_e164
+from apps.core.i18n import site_language
 
 from . import sms, unsubscribe
 from .models import Channel, Notification
@@ -92,7 +93,7 @@ def _check_context(context):
     """Solo valores JSON simples: el contexto se guarda y no debe arrastrar objetos."""
     for key, value in (context or {}).items():
         if not isinstance(key, str) or not (value is None or isinstance(value, (str, int, float, bool))):
-            raise ValueError(f"Valor no permitido en el contexto de la notificación: {key}")
+            raise ValueError("Valor no permitido en el contexto de la notificación: %(key)s" % {"key": key})
 
 
 def _context_for(notification):
@@ -145,8 +146,10 @@ def send_immediately(*, kind, recipient, to, subject_template, body_template, co
     )
     full_context = {"site_base_url": settings.SITE_BASE_URL, **context}
     try:
-        subject = _subject(subject_template, full_context)
-        body = render_to_string(body_template, full_context)
+        # Siempre en el idioma del sitio (gallego), sea cual sea el de la petición (Fase 15).
+        with site_language():
+            subject = _subject(subject_template, full_context)
+            body = render_to_string(body_template, full_context)
         _send_email(to=to, subject=subject, body=body)
     except Exception as exc:  # noqa: BLE001 - un fallo del proveedor no debe romper el flujo
         Notification.objects.filter(pk=notification.pk).update(
@@ -225,6 +228,12 @@ def _skip_reason(notification):
 
 
 def _send(notification):
+    with site_language():
+        _send_rendered(notification)
+
+
+def _send_rendered(notification):
+    """Compone y envía. Se llama en el idioma del sitio (`_send`)."""
     context = _context_for(notification)
     if notification.channel == Channel.EMAIL:
         headers = None

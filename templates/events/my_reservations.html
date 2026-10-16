@@ -1,30 +1,31 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Mis reservas{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Mis reservas" %}{% endblock %}
 {% block width %}max-w-3xl{% endblock %}
-{% block heading %}Mis reservas{% endblock %}
-{% block intro %}<p class="lead mt-4">Tus solicitudes de reserva y su estado.</p>{% endblock %}
+{% block heading %}{% translate "Mis reservas" %}{% endblock %}
+{% block intro %}<p class="lead mt-4">{% translate "Tus solicitudes de reserva y su estado." %}</p>{% endblock %}
 {% block body %}
-<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'events:reservation_new' %}">Nueva reserva de mesa</a></div>
+<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'events:reservation_new' %}">{% translate "Nueva reserva de mesa" %}</a></div>
 {% if reservations.object_list %}
   <ul class="card divide-y divide-line p-0" data-reservation-list>
     {% for reservation in reservations %}
       <li><a href="{% url 'events:reservation_detail' reservation.public_id %}" class="flex items-center justify-between gap-4 px-5 py-3 no-underline hover:text-gold">
         <span>
-          <span class="block font-semibold">{% if reservation.event %}{{ reservation.event.title }}{% else %}Mesa{% endif %}</span>
-          <span class="block text-sm text-mist">{{ reservation.requested_for|date:"d/m/Y H:i" }} · {{ reservation.party_size }} personas</span>
+          <span class="block font-semibold">{% if reservation.event %}{{ reservation.event.title }}{% else %}{% translate "Mesa" %}{% endif %}</span>
+          <span class="block text-sm text-mist">{{ reservation.requested_for|date:"d/m/Y H:i" }} · {% blocktranslate count people=reservation.party_size %}{{ people }} persona{% plural %}{{ people }} personas{% endblocktranslate %}</span>
         </span>
         <span class="badge {% if not reservation.is_active %}badge-muted{% endif %}">{{ reservation.get_status_display }}</span>
       </a></li>
     {% endfor %}
   </ul>
   {% if reservations.has_other_pages %}
-    <nav aria-label="Páginas de reservas" class="mt-4 flex justify-between text-sm">
-      {% if reservations.has_previous %}<a class="link" href="?page={{ reservations.previous_page_number }}">Anteriores</a>{% else %}<span></span>{% endif %}
-      {% if reservations.has_next %}<a class="link" href="?page={{ reservations.next_page_number }}">Siguientes</a>{% endif %}
+    <nav aria-label="{% translate 'Páginas de reservas' %}" class="mt-4 flex justify-between text-sm">
+      {% if reservations.has_previous %}<a class="link" href="?page={{ reservations.previous_page_number }}">{% translate "Anteriores" %}</a>{% else %}<span></span>{% endif %}
+      {% if reservations.has_next %}<a class="link" href="?page={{ reservations.next_page_number }}">{% translate "Siguientes" %}</a>{% endif %}
     </nav>
   {% endif %}
 {% else %}
-  <p class="pending">Todavía no has hecho ninguna reserva.</p>
+  <p class="pending">{% translate "Todavía no has hecho ninguna reserva." %}</p>
 {% endif %}
-<p class="mt-8 text-center text-sm"><a class="link" href="{% url 'web:events' %}">Ver eventos</a> · <a class="link" href="{% url 'accounts:profile' %}">Volver a mi perfil</a></p>
+<p class="mt-8 text-center text-sm"><a class="link" href="{% url 'web:events' %}">{% translate "Ver eventos" %}</a> · <a class="link" href="{% url 'accounts:profile' %}">{% translate "Volver a mi perfil" %}</a></p>
 {% endblock %}

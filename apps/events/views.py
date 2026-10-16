@@ -15,6 +15,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+from django.utils.translation import gettext as _
 
 from apps.accounts.forms import apply_service_errors
 from apps.accounts.models import User
@@ -73,9 +74,9 @@ def _submit(request, form, *, event=None):
         apply_service_errors(form, exc, field_map={"requested_for": "date"})
         return None
     if result.created:
-        messages.success(request, "Solicitud enviada. Te avisaremos por email cuando el local la confirme.")
+        messages.success(request, _("Solicitud enviada. Te avisaremos por email cuando el local la confirme."))
     else:
-        messages.info(request, "Esta solicitud ya estaba enviada.")
+        messages.info(request, _("Esta solicitud ya estaba enviada."))
     return redirect("events:reservation_detail", public_id=result.reservation.public_id)
 
 
@@ -106,10 +107,10 @@ def event_reservation_new(request, public_id):
         raise Http404
     own = selectors.active_reservation_for_event(request.user, event)
     if own is not None:
-        messages.info(request, "Ya tienes una reserva activa para este evento.")
+        messages.info(request, _("Ya tienes una reserva activa para este evento."))
         return redirect("events:reservation_detail", public_id=own.public_id)
     if not selectors.is_bookable(event):
-        messages.error(request, "Este evento no admite reservas.")
+        messages.error(request, _("Este evento no admite reservas."))
         return redirect("events:event_detail", public_id=event.public_id)
     form = EventReservationForm(request.POST or None, initial={"idempotency_key": services.new_idempotency_key()})
     status = 200
@@ -150,5 +151,5 @@ def reservation_cancel(request, public_id):
         messages.error(request, exc.messages[0])
     else:
         if result.created:
-            messages.success(request, "Reserva cancelada.")
+            messages.success(request, _("Reserva cancelada."))
     return redirect("events:reservation_detail", public_id=reservation.public_id)

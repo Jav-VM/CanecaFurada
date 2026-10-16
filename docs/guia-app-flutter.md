@@ -106,7 +106,9 @@ No cachees el perfil completo más allá de la pantalla que lo usa.
 {"code": "duplicate_pending", "detail": "Ya tienes un código pendiente…", "fields": {"campo": ["mensaje"]}}
 ```
 
-Decide con `code` (estable), muestra `detail`. Códigos principales:
+Decide con `code` (estable), muestra `detail`. Desde la Fase 15, `detail` y las etiquetas de estado (`*_display`) vienen en gallego por defecto. Envía `Accept-Language: es` para recibirlos en castellano; los `code` y los valores de los campos no cambian con el idioma. Algunos mensajes genéricos de DRF (p. ej. falta de credenciales) salen en inglés si se piden en gallego, porque DRF no tiene traducción al gallego. Ver [fase-15-idioma-gallego.md](fase-15-idioma-gallego.md).
+
+Códigos principales:
 
 | HTTP | `code` | Significado |
 |---|---|---|

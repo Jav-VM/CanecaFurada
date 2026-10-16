@@ -5,6 +5,7 @@ cuenta existe (registro, reenvío y recuperación responden siempre igual).
 """
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
@@ -31,15 +32,15 @@ from ..serializers.auth import (
 from ..throttling import AnonThrottle, AuthThrottle, UserThrottle
 from .base import ApiView, PublicAuthView
 
-REGISTER_DONE = (
+REGISTER_DONE = _(
     "Si los datos son correctos, te hemos enviado un email para confirmar tu cuenta. "
     "Revisa tu bandeja de entrada."
 )
-RESEND_DONE = "Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace."
-RESET_DONE = "Si existe una cuenta con ese email, recibirás un enlace para elegir una contraseña nueva."
-INVALID_LOGIN = "Email o contraseña incorrectos."
-LOGIN_THROTTLED = "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos."
-INVALID_REFRESH = "La sesión ha caducado o se ha cerrado. Vuelve a iniciar sesión."
+RESEND_DONE = _("Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace.")
+RESET_DONE = _("Si existe una cuenta con ese email, recibirás un enlace para elegir una contraseña nueva.")
+INVALID_LOGIN = _("Email o contraseña incorrectos.")
+LOGIN_THROTTLED = _("Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.")
+INVALID_REFRESH = _("La sesión ha caducado o se ha cerrado. Vuelve a iniciar sesión.")
 
 TAG = "Autenticación"
 
@@ -64,7 +65,7 @@ class RegisterView(PublicAuthView):
         serializer.is_valid(raise_exception=True)
         data = dict(serializer.validated_data)
         if ip_limited(request, "register-ip", settings.PUBLIC_FORM_MAX_PER_IP_PER_HOUR):
-            return error_response(status.HTTP_429_TOO_MANY_REQUESTS, "rate_limited", "Demasiados intentos desde tu conexión.")
+            return error_response(status.HTTP_429_TOO_MANY_REQUESTS, "rate_limited", _("Demasiados intentos desde tu conexión."))
         try:
             accounts.register_customer(**data)
         except accounts.EmailAlreadyRegistered:
@@ -87,7 +88,7 @@ class VerifyEmailView(PublicAuthView):
         serializer = TokenToVerifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         accounts.confirm_email_token(serializer.validated_data["token"])
-        return Response({"detail": "Email confirmado."})
+        return Response({"detail": _("Email confirmado.")})
 
 
 class ResendVerificationView(PublicAuthView):
@@ -147,7 +148,7 @@ class TokenRefreshView(PublicAuthView):
         serializer = RefreshSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            _, pair = tokens.rotate_refresh_token(serializer.validated_data["refresh"])
+            _unused, pair = tokens.rotate_refresh_token(serializer.validated_data["refresh"])
         except tokens.InvalidRefreshToken:
             return error_response(status.HTTP_401_UNAUTHORIZED, "token_not_valid", INVALID_REFRESH)
         return Response(pair)
@@ -245,4 +246,4 @@ class PasswordResetConfirmView(PublicAuthView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         accounts.reset_password_with_token(uidb64=data["uid"], token=data["token"], new_password=data["new_password"])
-        return Response({"detail": "Contraseña cambiada. Ya puedes iniciar sesión."})
+        return Response({"detail": _("Contraseña cambiada. Ya puedes iniciar sesión.")})

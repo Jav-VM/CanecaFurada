@@ -6,6 +6,7 @@ import datetime
 
 from django import forms
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 PERIOD_DAYS = {"hoy": 1, "7d": 7, "30d": 30}
 
@@ -18,8 +19,8 @@ def period_start(period, now=None):
 
 
 class ResultsFilterForm(forms.Form):
-    KIND_CHOICES = [("compras", "Compras"), ("canjes", "Canjes")]
-    PERIOD_CHOICES = [("hoy", "Hoy"), ("7d", "7 días"), ("30d", "30 días")]
+    KIND_CHOICES = [("compras", _("Compras")), ("canjes", _("Canjes"))]
+    PERIOD_CHOICES = [("hoy", _("Hoy")), ("7d", _("7 días")), ("30d", _("30 días"))]
 
     tipo = forms.ChoiceField(choices=KIND_CHOICES, required=False)
     periodo = forms.ChoiceField(choices=PERIOD_CHOICES, required=False)

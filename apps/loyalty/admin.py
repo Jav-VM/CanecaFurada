@@ -14,6 +14,7 @@ Fidelización en el admin (solo propietarios).
 El QR del cliente no aparece en el admin.
 """
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.permissions import is_owner
 
@@ -76,15 +77,15 @@ class PromotionAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     readonly_fields = ("public_id", "uses")
     fieldsets = (
         (None, {"fields": ("name", "description", "kind", "status")}),
-        ("Bonificación", {"fields": ("bonus_type", "fixed_points", "multiplier")}),
+        (_("Bonificación"), {"fields": ("bonus_type", "fixed_points", "multiplier")}),
         # `birthday_window_days` no se usa desde la Fase 10 (el regalo es el día del cumpleaños).
-        ("Condiciones", {"fields": ("min_purchase_amount",)}),
-        ("Fechas", {"fields": ("starts_at", "ends_at")}),
-        ("Límites", {"fields": ("max_uses_per_customer", "max_total_uses", "uses")}),
-        ("Referencia", {"fields": ("public_id",)}),
+        (_("Condiciones"), {"fields": ("min_purchase_amount",)}),
+        (_("Fechas"), {"fields": ("starts_at", "ends_at")}),
+        (_("Límites"), {"fields": ("max_uses_per_customer", "max_total_uses", "uses")}),
+        (_("Referencia"), {"fields": ("public_id",)}),
     )
 
-    @admin.display(description="usos")
+    @admin.display(description=_("usos"))
     def uses(self, obj):
         if obj.pk is None:
             return 0

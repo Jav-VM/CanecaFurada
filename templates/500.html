@@ -1,22 +1,23 @@
-{% load static %}<!doctype html>
+{% load static i18n %}<!doctype html>
 {% comment %}
 Se renderiza sin contexto ni base.html (Django no ejecuta context processors en
 el error 500): solo usa etiquetas que no dependen de la petición ni de la BD.
 {% endcomment %}
-<html lang="es">
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Error del servidor · Caneca Furada</title>
+  <title>{% translate "Error del servidor" %} · Caneca Furada</title>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body class="flex min-h-screen items-center">
   <main class="container-page py-24 text-center">
     <img src="{% static 'img/brand/bannerknk.jpeg' %}" alt="Caneca Furada" width="966" height="240" class="logo-blend mx-auto mb-10 h-14 w-auto">
-    <p class="eyebrow mb-4">Error 500</p>
-    <h1 class="heading-xl mx-auto max-w-2xl">Algo ha fallado</h1>
-    <p class="lead mx-auto mt-5 max-w-xl">Ha ocurrido un error inesperado. Inténtalo de nuevo en unos minutos.</p>
-    <a href="/" class="btn btn-primary mt-10">Volver al inicio</a>
+    <p class="eyebrow mb-4">{% translate "Error 500" %}</p>
+    <h1 class="heading-xl mx-auto max-w-2xl">{% translate "Algo ha fallado" %}</h1>
+    <p class="lead mx-auto mt-5 max-w-xl">{% translate "Ha ocurrido un error inesperado. Inténtalo de nuevo en unos minutos." %}</p>
+    <a href="/" class="btn btn-primary mt-10">{% translate "Volver al inicio" %}</a>
   </main>
 </body>
 </html>

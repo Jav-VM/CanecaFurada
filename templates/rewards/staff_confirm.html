@@ -1,31 +1,32 @@
 {% extends "staff/_layout.html" %}
-{% block title %}Confirmar canje{% endblock %}
-{% block eyebrow %}Panel del personal{% endblock %}
-{% block heading %}Confirmar canje{% endblock %}
-{% block intro %}<p class="lead mt-3">Paso 2 de 2: comprueba la recompensa y entrégala.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Confirmar canje" %}{% endblock %}
+{% block eyebrow %}{% translate "Panel del personal" %}{% endblock %}
+{% block heading %}{% translate "Confirmar canje" %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "Paso 2 de 2: comprueba la recompensa y entrégala." %}</p>{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
   <div class="rounded-xl border border-gold/50 p-4">
-    <p class="text-sm text-mist">Recompensa</p>
+    <p class="text-sm text-mist">{% translate "Recompensa" %}</p>
     <p class="text-2xl font-extrabold" data-reward-name>{{ preview.reward_name }}</p>
   </div>
   <dl class="space-y-3 text-sm">
-    <div class="flex justify-between gap-4"><dt class="text-mist">Cliente</dt><dd class="font-semibold" data-customer-name>{{ preview.customer_name }}</dd></div>
-    <div class="flex justify-between gap-4"><dt class="text-mist">Estado</dt><dd><span class="badge {% if not preview.can_validate %}badge-muted{% endif %}" data-redemption-status>{{ preview.status_display }}</span></dd></div>
-    <div class="flex justify-between gap-4"><dt class="text-mist">Solicitado</dt><dd class="font-semibold">{{ preview.created_at|date:"d/m/Y H:i" }}</dd></div>
-    {% if preview.can_validate %}<div class="flex justify-between gap-4"><dt class="text-mist">Caduca</dt><dd class="font-semibold">{{ preview.expires_at|date:"d/m/Y H:i" }}</dd></div>{% endif %}
-    {% if preview.validated_at %}<div class="flex justify-between gap-4"><dt class="text-mist">Recogido</dt><dd class="font-semibold">{{ preview.validated_at|date:"d/m/Y H:i" }}</dd></div>{% endif %}
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Cliente" %}</dt><dd class="font-semibold" data-customer-name>{{ preview.customer_name }}</dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Estado" %}</dt><dd><span class="badge {% if not preview.can_validate %}badge-muted{% endif %}" data-redemption-status>{{ preview.status_display }}</span></dd></div>
+    <div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Solicitado" %}</dt><dd class="font-semibold">{{ preview.created_at|date:"d/m/Y H:i" }}</dd></div>
+    {% if preview.can_validate %}<div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Caduca" %}</dt><dd class="font-semibold">{{ preview.expires_at|date:"d/m/Y H:i" }}</dd></div>{% endif %}
+    {% if preview.validated_at %}<div class="flex justify-between gap-4"><dt class="text-mist">{% translate "Recogido" %}</dt><dd class="font-semibold">{{ preview.validated_at|date:"d/m/Y H:i" }}</dd></div>{% endif %}
   </dl>
   {% if preview.can_validate %}
-    <p class="text-sm text-mist">Pregúntale su nombre para confirmar que el canje es suyo.</p>
+    <p class="text-sm text-mist">{% translate "Pregúntale su nombre para confirmar que el canje es suyo." %}</p>
     <form method="post" action="{% url 'rewards_panel:validate' %}" data-loading>
       {% csrf_token %}
       {{ form.code }}
-      <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="Validando…">Validar y entregar</button>
+      <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="{% translate 'Validando…' %}">{% translate "Validar y entregar" %}</button>
     </form>
   {% else %}
-    <p class="alert alert-error text-lg font-bold" role="alert">Este código no se puede usar: no entregues la recompensa.</p>
+    <p class="alert alert-error text-lg font-bold" role="alert">{% translate "Este código no se puede usar: no entregues la recompensa." %}</p>
   {% endif %}
-  <p class="text-center text-sm"><a class="link" href="{% url 'rewards_panel:scan' %}">Volver a escanear</a></p>
+  <p class="text-center text-sm"><a class="link" href="{% url 'rewards_panel:scan' %}">{% translate "Volver a escanear" %}</a></p>
 </div>
 {% endblock %}

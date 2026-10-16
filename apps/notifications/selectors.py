@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.permissions import is_owner
 
@@ -12,16 +13,16 @@ from .models import Campaign, Channel, Notification
 
 # Backends de email que no envían nada (desarrollo y tests).
 _SIMULATED_EMAIL_BACKENDS = {
-    "django.core.mail.backends.console.EmailBackend": "Consola (desarrollo): los emails no se envían, se muestran en la terminal.",
-    "django.core.mail.backends.locmem.EmailBackend": "Memoria (tests): los emails no se envían.",
-    "django.core.mail.backends.filebased.EmailBackend": "Fichero (desarrollo): los emails no se envían.",
-    "django.core.mail.backends.dummy.EmailBackend": "Nulo: los emails no se envían.",
+    "django.core.mail.backends.console.EmailBackend": _("Consola (desarrollo): los emails no se envían, se muestran en la terminal."),
+    "django.core.mail.backends.locmem.EmailBackend": _("Memoria (tests): los emails no se envían."),
+    "django.core.mail.backends.filebased.EmailBackend": _("Fichero (desarrollo): los emails no se envían."),
+    "django.core.mail.backends.dummy.EmailBackend": _("Nulo: los emails no se envían."),
 }
 
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver las comunicaciones.")
+        raise PermissionDenied(_("Solo el propietario puede ver las comunicaciones."))
 
 
 @dataclass(frozen=True)
@@ -37,7 +38,7 @@ def channel_status(*, actor):
     note = _SIMULATED_EMAIL_BACKENDS.get(settings.EMAIL_BACKEND)
     return ChannelStatus(
         email_real=note is None,
-        email_note=note or "Proveedor configurado por variables de entorno (EMAIL_*).",
+        email_note=note or _("Proveedor configurado por variables de entorno (EMAIL_*)."),
         sms_configured=sms.is_configured(),
     )
 

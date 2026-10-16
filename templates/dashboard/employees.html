@@ -1,24 +1,25 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Empleados · Dashboard{% endblock %}
-{% block heading %}Empleados{% endblock %}
-{% block intro %}<p class="lead mt-2">Personal con acceso al panel y su actividad en el periodo.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Empleados" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Empleados" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Personal con acceso al panel y su actividad en el periodo." %}</p>{% endblock %}
 {% block body %}
-<form method="get" class="filters mb-4" aria-label="Filtrar por periodo">
+<form method="get" class="filters mb-4" aria-label="{% translate 'Filtrar por periodo' %}">
   {% include "dashboard/_period_fields.html" %}
-  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">{% translate "Aplicar" %}</button></div>
 </form>
 {% include "dashboard/_period_notice.html" %}
 
 <div class="table-wrap">
   <table class="data-table" data-staff-list>
-    <thead><tr><th scope="col">Nombre</th><th scope="col">Email de acceso</th><th scope="col">Rol</th><th scope="col">Estado</th><th scope="col" class="num">Compras</th><th scope="col" class="num">Importe</th><th scope="col" class="num">Canjes</th><th scope="col">Acciones</th></tr></thead>
+    <thead><tr><th scope="col">{% translate "Nombre" %}</th><th scope="col">{% translate "Email de acceso" %}</th><th scope="col">{% translate "Rol" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Compras" %}</th><th scope="col" class="num">{% translate "Importe" %}</th><th scope="col" class="num">{% translate "Canjes" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
     <tbody>
       {% for member, purchases, validations in rows %}
         <tr>
-          <td class="font-semibold">{{ member.get_full_name }}{% if member.pk == user.pk %} <span class="note">(tú)</span>{% endif %}</td>
+          <td class="font-semibold">{{ member.get_full_name }}{% if member.pk == user.pk %} <span class="note">{% translate "(tú)" %}</span>{% endif %}</td>
           <td class="break-all">{{ member.email }}</td>
           <td>{{ member.get_role_display }}</td>
-          <td>{% if member.is_active %}Activa{% else %}<span class="text-danger">Desactivada</span>{% endif %}</td>
+          <td>{% if member.is_active %}{% translate "Activa" %}{% else %}<span class="text-danger">{% translate "Desactivada" %}</span>{% endif %}</td>
           <td class="num">{{ purchases.0 }}</td>
           <td class="num">{% if purchases.1 is not None %}{{ purchases.1|floatformat:2 }} €{% else %}0,00 €{% endif %}</td>
           <td class="num">{{ validations }}</td>
@@ -27,19 +28,19 @@
               <div class="flex flex-col gap-2">
                 <form method="post" action="{% url 'dashboard:employee_status' member.public_id %}">
                   {% csrf_token %}
-                  {% if member.is_active %}<button type="submit" name="accion" value="desactivar" class="btn btn-secondary btn-sm">Dar de baja</button>
-                  {% else %}<button type="submit" name="accion" value="activar" class="btn btn-secondary btn-sm">Reactivar</button>{% endif %}
+                  {% if member.is_active %}<button type="submit" name="accion" value="desactivar" class="btn btn-secondary btn-sm">{% translate "Dar de baja" %}</button>
+                  {% else %}<button type="submit" name="accion" value="activar" class="btn btn-secondary btn-sm">{% translate "Reactivar" %}</button>{% endif %}
                 </form>
                 <details>
-                  <summary class="link cursor-pointer text-xs">Cambiar rol</summary>
+                  <summary class="link cursor-pointer text-xs">{% translate "Cambiar rol" %}</summary>
                   <form method="post" action="{% url 'dashboard:employee_role' member.public_id %}" class="mt-2 space-y-2">
                     {% csrf_token %}
-                    <label class="sr-only" for="rol-{{ member.public_id }}">Nuevo rol</label>
+                    <label class="sr-only" for="rol-{{ member.public_id }}">{% translate "Nuevo rol" %}</label>
                     <select name="role" id="rol-{{ member.public_id }}" class="min-h-9 rounded-lg border border-line bg-ink px-2 text-sm">
                       {% for value, label in role_form.fields.role.choices %}<option value="{{ value }}"{% if value == member.role %} selected{% endif %}>{{ label }}</option>{% endfor %}
                     </select>
                     <label class="flex items-start gap-2 text-xs"><input type="checkbox" name="confirm" value="on" required class="mt-0.5 accent-gold"> {{ role_form.fields.confirm.label }}</label>
-                    <button type="submit" class="btn btn-secondary btn-sm">Guardar rol</button>
+                    <button type="submit" class="btn btn-secondary btn-sm">{% translate "Guardar rol" %}</button>
                   </form>
                 </details>
               </div>
@@ -47,23 +48,23 @@
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="8" class="text-mist">No hay personal dado de alta.</td></tr>
+        <tr><td colspan="8" class="text-mist">{% translate "No hay personal dado de alta." %}</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-<p class="note mt-3">Compras e importe: compras registradas en el programa (no es la caja). Canjes: recompensas validadas en barra. Una cuenta dada de baja no puede entrar y se puede reactivar; nada se borra.</p>
+<p class="note mt-3">{% translate "Compras e importe: compras registradas en el programa (no es la caja). Canjes: recompensas validadas en barra. Una cuenta dada de baja no puede entrar y se puede reactivar; nada se borra." %}</p>
 
 <section aria-labelledby="alta" class="mt-10 max-w-2xl">
-  <h2 id="alta" class="heading-md mb-4">Dar de alta un empleado</h2>
+  <h2 id="alta" class="heading-md mb-4">{% translate "Dar de alta un empleado" %}</h2>
   {% include "components/form_errors.html" with form=create_form %}
   <form method="post" action="{% url 'dashboard:employee_create' %}" class="form-section" novalidate data-loading>
     {% csrf_token %}
     <div class="grid gap-5 sm:grid-cols-2">
       {% for field in create_form %}<div>{% include "accounts/_field.html" %}</div>{% endfor %}
     </div>
-    <p class="note">El empleado entra en el panel con su email y esta contraseña, y solo ve el nombre abreviado de los clientes.</p>
-    <button type="submit" class="btn btn-primary" data-loading-text="Creando…">Dar de alta</button>
+    <p class="note">{% translate "El empleado entra en el panel con su email y esta contraseña, y solo ve el nombre abreviado de los clientes." %}</p>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Creando…' %}">{% translate "Dar de alta" %}</button>
   </form>
 </section>
 {% endblock %}

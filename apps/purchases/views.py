@@ -13,6 +13,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
 from apps.accounts.permissions import role_required
@@ -24,7 +25,7 @@ from .forms import IdentifyForm, PurchaseForm
 
 staff_required = role_required(User.Role.OWNER, User.Role.EMPLOYEE)
 
-_TOO_MANY = "Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo."
+_TOO_MANY = _("Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo.")
 _QR_ERROR_CODES = {"invalid_qr", "email_not_verified"}
 
 
@@ -111,9 +112,9 @@ def register(request):
         return _render_confirm(request, form, customer.display_name, status=400)
 
     if result.created:
-        messages.success(request, "Compra registrada.")
+        messages.success(request, _("Compra registrada."))
     else:
-        messages.info(request, "Esta compra ya estaba registrada. No se ha duplicado.")
+        messages.info(request, _("Esta compra ya estaba registrada. No se ha duplicado."))
     return redirect("purchases:detail", public_id=result.purchase.public_id)
 
 

@@ -1,8 +1,9 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Solicitar reserva{% endblock %}
-{% block eyebrow %}Reservas{% endblock %}
-{% block heading %}{% if event %}Reservar: {{ event.title }}{% else %}Solicitar reserva de mesa{% endif %}{% endblock %}
-{% block intro %}<p class="lead mt-4">{% if event %}{{ event.starts_at|date:"l j \d\e F, H:i" }}.{% if seats_left is not None %} Plazas libres: {{ seats_left }}.{% endif %}{% else %}Elige día, hora y personas.{% endif %} La reserva queda pendiente hasta que el local la confirme por email.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Solicitar reserva" %}{% endblock %}
+{% block eyebrow %}{% translate "Reservas" %}{% endblock %}
+{% block heading %}{% if event %}{% blocktranslate trimmed with title=event.title %}Reservar: {{ title }}{% endblocktranslate %}{% else %}{% translate "Solicitar reserva de mesa" %}{% endif %}{% endblock %}
+{% block intro %}<p class="lead mt-4">{% if event %}{{ event.starts_at|date:"l j \d\e F, H:i" }}.{% if seats_left is not None %} {% blocktranslate trimmed with seats=seats_left %}Plazas libres: {{ seats }}.{% endblocktranslate %}{% endif %}{% else %}{% translate "Elige día, hora y personas." %}{% endif %} {% translate "La reserva queda pendiente hasta que el local la confirme por email." %}</p>{% endblock %}
 {% block body %}
 <div class="card p-6 sm:p-8">
   {% include "components/form_errors.html" %}
@@ -10,9 +11,9 @@
     {% csrf_token %}
     {{ form.idempotency_key }}
     {% for field in form.visible_fields %}{% include "accounts/_field.html" %}{% endfor %}
-    <p class="note">Te avisaremos al email de tu cuenta. Tus datos de contacto solo los ve el local.</p>
-    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Enviando…">Enviar solicitud</button>
+    <p class="note">{% translate "Te avisaremos al email de tu cuenta. Tus datos de contacto solo los ve el local." %}</p>
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="{% translate 'Enviando…' %}">{% translate "Enviar solicitud" %}</button>
   </form>
 </div>
-<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'events:my_reservations' %}">Mis reservas</a> · <a class="link" href="{% url 'web:events' %}">Eventos</a></p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'events:my_reservations' %}">{% translate "Mis reservas" %}</a> · <a class="link" href="{% url 'web:events' %}">{% translate "Eventos" %}</a></p>
 {% endblock %}

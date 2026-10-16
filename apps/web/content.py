@@ -10,7 +10,9 @@ redes, la presentación y (Fase 10) los textos del inicio en el dashboard (`mode
 son los de partida y `services.business_info()` los sustituye por lo guardado.
 """
 
-# Lema oficial, tal como aparece en el logotipo.
+from django.utils.translation import gettext_lazy as _
+
+# Lema oficial, tal como aparece en el logotipo (en gallego en los dos idiomas).
 TAGLINE = "A cervexería 100% artesá da Coruña"
 
 BUSINESS = {
@@ -28,10 +30,10 @@ BUSINESS = {
 
 # Navegación principal: (nombre de URL, etiqueta).
 MAIN_NAV = (
-    ("web:home", "Inicio"),
-    ("web:about", "La cervecería"),
-    ("web:menu", "Carta"),
-    ("web:rewards", "Recompensas"),
-    ("web:events", "Eventos"),
-    ("web:contact", "Contacto"),
+    ("web:home", _("Inicio")),
+    ("web:about", _("La cervecería")),
+    ("web:menu", _("Carta")),
+    ("web:rewards", _("Recompensas")),
+    ("web:events", _("Eventos")),
+    ("web:contact", _("Contacto")),
 )

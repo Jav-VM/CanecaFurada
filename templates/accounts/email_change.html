@@ -1,15 +1,16 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Cambiar email{% endblock %}
-{% block heading %}Cambiar email{% endblock %}
-{% block intro %}<p class="lead mt-3">Te enviaremos un enlace a la nueva dirección. Tu email actual seguirá siendo el de acceso hasta que confirmes la nueva, que quedará verificada al hacerlo.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Cambiar email" %}{% endblock %}
+{% block heading %}{% translate "Cambiar email" %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "Te enviaremos un enlace a la nueva dirección. Tu email actual seguirá siendo el de acceso hasta que confirmes la nueva, que quedará verificada al hacerlo." %}</p>{% endblock %}
 {% block body %}
 <div class="card p-6 sm:p-8">
   {% include "components/form_errors.html" %}
   <form method="post" novalidate data-loading class="space-y-5">
     {% csrf_token %}
     {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Enviando…">Enviar enlace de confirmación</button>
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="{% translate 'Enviando…' %}">{% translate "Enviar enlace de confirmación" %}</button>
   </form>
 </div>
-<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'accounts:home' %}">Volver</a></p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'accounts:home' %}">{% translate "Volver" %}</a></p>
 {% endblock %}

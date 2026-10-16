@@ -8,6 +8,11 @@ ALLOWED_HOSTS = ["testserver", "localhost"]
 # Hasher rápido: solo acelera los tests, nunca se usa fuera de ellos.
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
+# La suite comprueba los textos en castellano, el idioma fuente del código. El
+# gallego (idioma por defecto real) lo cubren tests propios con
+# override_settings(LANGUAGE_CODE="gl"): ver tests/web/test_i18n.py (Fase 15).
+LANGUAGE_CODE = "es"
+
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 # Sin proveedor de SMS por defecto; los tests que lo necesitan usan LocmemSmsBackend.
 SMS_BACKEND = ""

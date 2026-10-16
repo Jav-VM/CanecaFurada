@@ -1,0 +1,5207 @@
+# Catálogo castellano de Caneca Furada: cada msgstr repite su msgid.
+# Generado por `python scripts/i18n.py make`; no se edita a mano.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Caneca Furada\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 22:51+0200\n"
+"PO-Revision-Date: 2026-10-16 22:30+0200\n"
+"Last-Translator: Caneca Furada\n"
+"Language-Team: Castellano\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "No se puede desactivar al último propietario activo."
+msgstr "No se puede desactivar al último propietario activo."
+
+#, python-format
+msgid "Rol actualizado en %(changed)s usuario(s)."
+msgstr "Rol actualizado en %(changed)s usuario(s)."
+
+#, python-format
+msgid "Estado actualizado en %(changed)s usuario(s)."
+msgstr "Estado actualizado en %(changed)s usuario(s)."
+
+msgid "Datos personales"
+msgstr "Datos personales"
+
+msgid "Rol y estado"
+msgstr "Rol y estado"
+
+msgid "Fechas"
+msgstr "Fechas"
+
+msgid "Cambiar rol a Empleado"
+msgstr "Cambiar rol a Empleado"
+
+msgid "Cambiar rol a Cliente"
+msgstr "Cambiar rol a Cliente"
+
+msgid "Cambiar rol a Propietario"
+msgstr "Cambiar rol a Propietario"
+
+msgid "Activar (autorizar) cuentas"
+msgstr "Activar (autorizar) cuentas"
+
+msgid "Desactivar cuentas"
+msgstr "Desactivar cuentas"
+
+msgid "email verificado"
+msgstr "email verificado"
+
+msgid "Cuentas"
+msgstr "Cuentas"
+
+msgid "Afganistán"
+msgstr "Afganistán"
+
+msgid "Albania"
+msgstr "Albania"
+
+msgid "Alemania"
+msgstr "Alemania"
+
+msgid "Andorra"
+msgstr "Andorra"
+
+msgid "Angola"
+msgstr "Angola"
+
+msgid "Anguila"
+msgstr "Anguila"
+
+msgid "Antártida"
+msgstr "Antártida"
+
+msgid "Antigua y Barbuda"
+msgstr "Antigua y Barbuda"
+
+msgid "Arabia Saudí"
+msgstr "Arabia Saudí"
+
+msgid "Argelia"
+msgstr "Argelia"
+
+msgid "Argentina"
+msgstr "Argentina"
+
+msgid "Armenia"
+msgstr "Armenia"
+
+msgid "Aruba"
+msgstr "Aruba"
+
+msgid "Australia"
+msgstr "Australia"
+
+msgid "Austria"
+msgstr "Austria"
+
+msgid "Azerbaiyán"
+msgstr "Azerbaiyán"
+
+msgid "Bahamas"
+msgstr "Bahamas"
+
+msgid "Bangladés"
+msgstr "Bangladés"
+
+msgid "Barbados"
+msgstr "Barbados"
+
+msgid "Baréin"
+msgstr "Baréin"
+
+msgid "Bélgica"
+msgstr "Bélgica"
+
+msgid "Belice"
+msgstr "Belice"
+
+msgid "Benín"
+msgstr "Benín"
+
+msgid "Bermudas"
+msgstr "Bermudas"
+
+msgid "Bielorrusia"
+msgstr "Bielorrusia"
+
+msgid "Bolivia"
+msgstr "Bolivia"
+
+msgid "Bosnia y Herzegovina"
+msgstr "Bosnia y Herzegovina"
+
+msgid "Botsuana"
+msgstr "Botsuana"
+
+msgid "Brasil"
+msgstr "Brasil"
+
+msgid "Brunéi"
+msgstr "Brunéi"
+
+msgid "Bulgaria"
+msgstr "Bulgaria"
+
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+msgid "Burundi"
+msgstr "Burundi"
+
+msgid "Bután"
+msgstr "Bután"
+
+msgid "Cabo Verde"
+msgstr "Cabo Verde"
+
+msgid "Camboya"
+msgstr "Camboya"
+
+msgid "Camerún"
+msgstr "Camerún"
+
+msgid "Canadá"
+msgstr "Canadá"
+
+msgid "Caribe neerlandés"
+msgstr "Caribe neerlandés"
+
+msgid "Catar"
+msgstr "Catar"
+
+msgid "Chad"
+msgstr "Chad"
+
+msgid "Chequia"
+msgstr "Chequia"
+
+msgid "Chile"
+msgstr "Chile"
+
+msgid "China"
+msgstr "China"
+
+msgid "Chipre"
+msgstr "Chipre"
+
+msgid "Ciudad del Vaticano"
+msgstr "Ciudad del Vaticano"
+
+msgid "Colombia"
+msgstr "Colombia"
+
+msgid "Comoras"
+msgstr "Comoras"
+
+msgid "Congo"
+msgstr "Congo"
+
+msgid "Corea del Norte"
+msgstr "Corea del Norte"
+
+msgid "Corea del Sur"
+msgstr "Corea del Sur"
+
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+msgid "Côte d’Ivoire"
+msgstr "Côte d’Ivoire"
+
+msgid "Croacia"
+msgstr "Croacia"
+
+msgid "Cuba"
+msgstr "Cuba"
+
+msgid "Curazao"
+msgstr "Curazao"
+
+msgid "Dinamarca"
+msgstr "Dinamarca"
+
+msgid "Dominica"
+msgstr "Dominica"
+
+msgid "Ecuador"
+msgstr "Ecuador"
+
+msgid "Egipto"
+msgstr "Egipto"
+
+msgid "El Salvador"
+msgstr "El Salvador"
+
+msgid "Emiratos Árabes Unidos"
+msgstr "Emiratos Árabes Unidos"
+
+msgid "Eritrea"
+msgstr "Eritrea"
+
+msgid "Eslovaquia"
+msgstr "Eslovaquia"
+
+msgid "Eslovenia"
+msgstr "Eslovenia"
+
+msgid "España"
+msgstr "España"
+
+msgid "Estados Unidos"
+msgstr "Estados Unidos"
+
+msgid "Estonia"
+msgstr "Estonia"
+
+msgid "Esuatini"
+msgstr "Esuatini"
+
+msgid "Etiopía"
+msgstr "Etiopía"
+
+msgid "Filipinas"
+msgstr "Filipinas"
+
+msgid "Finlandia"
+msgstr "Finlandia"
+
+msgid "Fiyi"
+msgstr "Fiyi"
+
+msgid "Francia"
+msgstr "Francia"
+
+msgid "Gabón"
+msgstr "Gabón"
+
+msgid "Gambia"
+msgstr "Gambia"
+
+msgid "Georgia"
+msgstr "Georgia"
+
+msgid "Ghana"
+msgstr "Ghana"
+
+msgid "Gibraltar"
+msgstr "Gibraltar"
+
+msgid "Granada"
+msgstr "Granada"
+
+msgid "Grecia"
+msgstr "Grecia"
+
+msgid "Groenlandia"
+msgstr "Groenlandia"
+
+msgid "Guadalupe"
+msgstr "Guadalupe"
+
+msgid "Guam"
+msgstr "Guam"
+
+msgid "Guatemala"
+msgstr "Guatemala"
+
+msgid "Guayana Francesa"
+msgstr "Guayana Francesa"
+
+msgid "Guernsey"
+msgstr "Guernsey"
+
+msgid "Guinea"
+msgstr "Guinea"
+
+msgid "Guinea Ecuatorial"
+msgstr "Guinea Ecuatorial"
+
+msgid "Guinea-Bisáu"
+msgstr "Guinea-Bisáu"
+
+msgid "Guyana"
+msgstr "Guyana"
+
+msgid "Haití"
+msgstr "Haití"
+
+msgid "Honduras"
+msgstr "Honduras"
+
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+msgid "Hungría"
+msgstr "Hungría"
+
+msgid "India"
+msgstr "India"
+
+msgid "Indonesia"
+msgstr "Indonesia"
+
+msgid "Irak"
+msgstr "Irak"
+
+msgid "Irán"
+msgstr "Irán"
+
+msgid "Irlanda"
+msgstr "Irlanda"
+
+msgid "Isla Bouvet"
+msgstr "Isla Bouvet"
+
+msgid "Isla de Man"
+msgstr "Isla de Man"
+
+msgid "Isla de Navidad"
+msgstr "Isla de Navidad"
+
+msgid "Isla Norfolk"
+msgstr "Isla Norfolk"
+
+msgid "Islandia"
+msgstr "Islandia"
+
+msgid "Islas Aland"
+msgstr "Islas Aland"
+
+msgid "Islas Caimán"
+msgstr "Islas Caimán"
+
+msgid "Islas Cocos"
+msgstr "Islas Cocos"
+
+msgid "Islas Cook"
+msgstr "Islas Cook"
+
+msgid "Islas Feroe"
+msgstr "Islas Feroe"
+
+msgid "Islas Georgia del Sur y Sandwich del Sur"
+msgstr "Islas Georgia del Sur y Sandwich del Sur"
+
+msgid "Islas Heard y McDonald"
+msgstr "Islas Heard y McDonald"
+
+msgid "Islas Malvinas"
+msgstr "Islas Malvinas"
+
+msgid "Islas Marianas del Norte"
+msgstr "Islas Marianas del Norte"
+
+msgid "Islas Marshall"
+msgstr "Islas Marshall"
+
+msgid "Islas menores alejadas de EE. UU."
+msgstr "Islas menores alejadas de EE. UU."
+
+msgid "Islas Pitcairn"
+msgstr "Islas Pitcairn"
+
+msgid "Islas Salomón"
+msgstr "Islas Salomón"
+
+msgid "Islas Turcas y Caicos"
+msgstr "Islas Turcas y Caicos"
+
+msgid "Islas Vírgenes Británicas"
+msgstr "Islas Vírgenes Británicas"
+
+msgid "Islas Vírgenes de EE. UU."
+msgstr "Islas Vírgenes de EE. UU."
+
+msgid "Israel"
+msgstr "Israel"
+
+msgid "Italia"
+msgstr "Italia"
+
+msgid "Jamaica"
+msgstr "Jamaica"
+
+msgid "Japón"
+msgstr "Japón"
+
+msgid "Jersey"
+msgstr "Jersey"
+
+msgid "Jordania"
+msgstr "Jordania"
+
+msgid "Kazajistán"
+msgstr "Kazajistán"
+
+msgid "Kenia"
+msgstr "Kenia"
+
+msgid "Kirguistán"
+msgstr "Kirguistán"
+
+msgid "Kiribati"
+msgstr "Kiribati"
+
+msgid "Kuwait"
+msgstr "Kuwait"
+
+msgid "Laos"
+msgstr "Laos"
+
+msgid "Lesoto"
+msgstr "Lesoto"
+
+msgid "Letonia"
+msgstr "Letonia"
+
+msgid "Líbano"
+msgstr "Líbano"
+
+msgid "Liberia"
+msgstr "Liberia"
+
+msgid "Libia"
+msgstr "Libia"
+
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
+
+msgid "Lituania"
+msgstr "Lituania"
+
+msgid "Luxemburgo"
+msgstr "Luxemburgo"
+
+msgid "Macao"
+msgstr "Macao"
+
+msgid "Macedonia del Norte"
+msgstr "Macedonia del Norte"
+
+msgid "Madagascar"
+msgstr "Madagascar"
+
+msgid "Malasia"
+msgstr "Malasia"
+
+msgid "Malaui"
+msgstr "Malaui"
+
+msgid "Maldivas"
+msgstr "Maldivas"
+
+msgid "Mali"
+msgstr "Mali"
+
+msgid "Malta"
+msgstr "Malta"
+
+msgid "Marruecos"
+msgstr "Marruecos"
+
+msgid "Martinica"
+msgstr "Martinica"
+
+msgid "Mauricio"
+msgstr "Mauricio"
+
+msgid "Mauritania"
+msgstr "Mauritania"
+
+msgid "Mayotte"
+msgstr "Mayotte"
+
+msgid "México"
+msgstr "México"
+
+msgid "Micronesia"
+msgstr "Micronesia"
+
+msgid "Moldavia"
+msgstr "Moldavia"
+
+msgid "Mónaco"
+msgstr "Mónaco"
+
+msgid "Mongolia"
+msgstr "Mongolia"
+
+msgid "Montenegro"
+msgstr "Montenegro"
+
+msgid "Montserrat"
+msgstr "Montserrat"
+
+msgid "Mozambique"
+msgstr "Mozambique"
+
+msgid "Myanmar (Birmania)"
+msgstr "Myanmar (Birmania)"
+
+msgid "Namibia"
+msgstr "Namibia"
+
+msgid "Nauru"
+msgstr "Nauru"
+
+msgid "Nepal"
+msgstr "Nepal"
+
+msgid "Nicaragua"
+msgstr "Nicaragua"
+
+msgid "Níger"
+msgstr "Níger"
+
+msgid "Nigeria"
+msgstr "Nigeria"
+
+msgid "Niue"
+msgstr "Niue"
+
+msgid "Noruega"
+msgstr "Noruega"
+
+msgid "Nueva Caledonia"
+msgstr "Nueva Caledonia"
+
+msgid "Nueva Zelanda"
+msgstr "Nueva Zelanda"
+
+msgid "Omán"
+msgstr "Omán"
+
+msgid "Países Bajos"
+msgstr "Países Bajos"
+
+msgid "Pakistán"
+msgstr "Pakistán"
+
+msgid "Palaos"
+msgstr "Palaos"
+
+msgid "Palestina"
+msgstr "Palestina"
+
+msgid "Panamá"
+msgstr "Panamá"
+
+msgid "Papúa Nueva Guinea"
+msgstr "Papúa Nueva Guinea"
+
+msgid "Paraguay"
+msgstr "Paraguay"
+
+msgid "Perú"
+msgstr "Perú"
+
+msgid "Polinesia Francesa"
+msgstr "Polinesia Francesa"
+
+msgid "Polonia"
+msgstr "Polonia"
+
+msgid "Portugal"
+msgstr "Portugal"
+
+msgid "Puerto Rico"
+msgstr "Puerto Rico"
+
+msgid "Reino Unido"
+msgstr "Reino Unido"
+
+msgid "República Centroafricana"
+msgstr "República Centroafricana"
+
+msgid "República Democrática del Congo"
+msgstr "República Democrática del Congo"
+
+msgid "República Dominicana"
+msgstr "República Dominicana"
+
+msgid "Reunión"
+msgstr "Reunión"
+
+msgid "Ruanda"
+msgstr "Ruanda"
+
+msgid "Rumanía"
+msgstr "Rumanía"
+
+msgid "Rusia"
+msgstr "Rusia"
+
+msgid "Sáhara Occidental"
+msgstr "Sáhara Occidental"
+
+msgid "Samoa"
+msgstr "Samoa"
+
+msgid "Samoa Americana"
+msgstr "Samoa Americana"
+
+msgid "San Bartolomé"
+msgstr "San Bartolomé"
+
+msgid "San Cristóbal y Nieves"
+msgstr "San Cristóbal y Nieves"
+
+msgid "San Marino"
+msgstr "San Marino"
+
+msgid "San Martín"
+msgstr "San Martín"
+
+msgid "San Pedro y Miquelón"
+msgstr "San Pedro y Miquelón"
+
+msgid "San Vicente y las Granadinas"
+msgstr "San Vicente y las Granadinas"
+
+msgid "Santa Elena"
+msgstr "Santa Elena"
+
+msgid "Santa Lucía"
+msgstr "Santa Lucía"
+
+msgid "Santo Tomé y Príncipe"
+msgstr "Santo Tomé y Príncipe"
+
+msgid "Senegal"
+msgstr "Senegal"
+
+msgid "Serbia"
+msgstr "Serbia"
+
+msgid "Seychelles"
+msgstr "Seychelles"
+
+msgid "Sierra Leona"
+msgstr "Sierra Leona"
+
+msgid "Singapur"
+msgstr "Singapur"
+
+msgid "Sint Maarten"
+msgstr "Sint Maarten"
+
+msgid "Siria"
+msgstr "Siria"
+
+msgid "Somalia"
+msgstr "Somalia"
+
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
+
+msgid "Sudáfrica"
+msgstr "Sudáfrica"
+
+msgid "Sudán"
+msgstr "Sudán"
+
+msgid "Sudán del Sur"
+msgstr "Sudán del Sur"
+
+msgid "Suecia"
+msgstr "Suecia"
+
+msgid "Suiza"
+msgstr "Suiza"
+
+msgid "Surinam"
+msgstr "Surinam"
+
+msgid "Svalbard y Jan Mayen"
+msgstr "Svalbard y Jan Mayen"
+
+msgid "Tailandia"
+msgstr "Tailandia"
+
+msgid "Taiwán"
+msgstr "Taiwán"
+
+msgid "Tanzania"
+msgstr "Tanzania"
+
+msgid "Tayikistán"
+msgstr "Tayikistán"
+
+msgid "Territorio Británico del Océano Índico"
+msgstr "Territorio Británico del Océano Índico"
+
+msgid "Territorios Australes Franceses"
+msgstr "Territorios Australes Franceses"
+
+msgid "Timor-Leste"
+msgstr "Timor-Leste"
+
+msgid "Togo"
+msgstr "Togo"
+
+msgid "Tokelau"
+msgstr "Tokelau"
+
+msgid "Tonga"
+msgstr "Tonga"
+
+msgid "Trinidad y Tobago"
+msgstr "Trinidad y Tobago"
+
+msgid "Túnez"
+msgstr "Túnez"
+
+msgid "Turkmenistán"
+msgstr "Turkmenistán"
+
+msgid "Turquía"
+msgstr "Turquía"
+
+msgid "Tuvalu"
+msgstr "Tuvalu"
+
+msgid "Ucrania"
+msgstr "Ucrania"
+
+msgid "Uganda"
+msgstr "Uganda"
+
+msgid "Uruguay"
+msgstr "Uruguay"
+
+msgid "Uzbekistán"
+msgstr "Uzbekistán"
+
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+msgid "Venezuela"
+msgstr "Venezuela"
+
+msgid "Vietnam"
+msgstr "Vietnam"
+
+msgid "Wallis y Futuna"
+msgstr "Wallis y Futuna"
+
+msgid "Yemen"
+msgstr "Yemen"
+
+msgid "Yibuti"
+msgstr "Yibuti"
+
+msgid "Zambia"
+msgstr "Zambia"
+
+msgid "Zimbabue"
+msgstr "Zimbabue"
+
+msgid "Nombre"
+msgstr "Nombre"
+
+msgid "Apellidos"
+msgstr "Apellidos"
+
+msgid "Fecha de nacimiento"
+msgstr "Fecha de nacimiento"
+
+msgid "Solo la usaremos para tu edad y tus promociones de cumpleaños."
+msgstr "Solo la usaremos para tu edad y tus promociones de cumpleaños."
+
+msgid "Teléfono móvil"
+msgstr "Teléfono móvil"
+
+msgid "Dirección"
+msgstr "Dirección"
+
+msgid "Dirección (línea 2)"
+msgstr "Dirección (línea 2)"
+
+msgid "Código postal"
+msgstr "Código postal"
+
+msgid "Localidad"
+msgstr "Localidad"
+
+msgid "Provincia"
+msgstr "Provincia"
+
+msgid "País"
+msgstr "País"
+
+msgid "Con prefijo internacional si no es español (p. ej. +351…)."
+msgstr "Con prefijo internacional si no es español (p. ej. +351…)."
+
+msgid "Provincia, estado o región."
+msgstr "Provincia, estado o región."
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Contraseña"
+msgstr "Contraseña"
+
+msgid "Mínimo 10 caracteres; no uses una contraseña común ni solo números."
+msgstr "Mínimo 10 caracteres; no uses una contraseña común ni solo números."
+
+msgid "Repite la contraseña"
+msgstr "Repite la contraseña"
+
+msgid "Quiero recibir promociones y novedades por email."
+msgstr "Quiero recibir promociones y novedades por email."
+
+msgid "Quiero recibir promociones por SMS (requiere teléfono móvil)."
+msgstr "Quiero recibir promociones por SMS (requiere teléfono móvil)."
+
+msgid "Dirección postal"
+msgstr "Dirección postal"
+
+msgid "Acceso a la cuenta"
+msgstr "Acceso a la cuenta"
+
+msgid "Preferencias de comunicación"
+msgstr "Preferencias de comunicación"
+
+msgid "Las contraseñas no coinciden."
+msgstr "Las contraseñas no coinciden."
+
+msgid "Nuevo email"
+msgstr "Nuevo email"
+
+msgid "Contraseña actual"
+msgstr "Contraseña actual"
+
+msgid "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos."
+msgstr "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos."
+
+msgid "Email o contraseña incorrectos."
+msgstr "Email o contraseña incorrectos."
+
+msgid "Propietario"
+msgstr "Propietario"
+
+msgid "Empleado"
+msgstr "Empleado"
+
+msgid "Cliente"
+msgstr "Cliente"
+
+msgid "identificador público"
+msgstr "identificador público"
+
+msgid "email"
+msgstr "email"
+
+msgid "nombre"
+msgstr "nombre"
+
+msgid "apellidos"
+msgstr "apellidos"
+
+msgid "rol"
+msgstr "rol"
+
+msgid "activo"
+msgstr "activo"
+
+msgid "email verificado el"
+msgstr "email verificado el"
+
+msgid "Vacío mientras el email actual no se haya confirmado con un enlace."
+msgstr "Vacío mientras el email actual no se haya confirmado con un enlace."
+
+msgid "acceso al admin técnico"
+msgstr "acceso al admin técnico"
+
+msgid "Solo propietarios. Se deriva del rol."
+msgstr "Solo propietarios. Se deriva del rol."
+
+msgid "fecha de alta"
+msgstr "fecha de alta"
+
+msgid "usuario"
+msgstr "usuario"
+
+msgid "usuarios"
+msgstr "usuarios"
+
+msgid "dirección"
+msgstr "dirección"
+
+msgid "Calle, número, piso."
+msgstr "Calle, número, piso."
+
+msgid "dirección (línea 2)"
+msgstr "dirección (línea 2)"
+
+msgid "código postal"
+msgstr "código postal"
+
+msgid "localidad"
+msgstr "localidad"
+
+msgid "provincia"
+msgstr "provincia"
+
+msgid "país"
+msgstr "país"
+
+msgid "Código ISO 3166-1."
+msgstr "Código ISO 3166-1."
+
+msgid "fecha de nacimiento"
+msgstr "fecha de nacimiento"
+
+msgid "última modificación de la fecha de nacimiento"
+msgstr "última modificación de la fecha de nacimiento"
+
+msgid "Limita los cambios posteriores (promociones de cumpleaños)."
+msgstr "Limita los cambios posteriores (promociones de cumpleaños)."
+
+msgid "teléfono móvil"
+msgstr "teléfono móvil"
+
+msgid "Opcional. Formato internacional E.164. No está verificado."
+msgstr "Opcional. Formato internacional E.164. No está verificado."
+
+msgid "acepta emails promocionales"
+msgstr "acepta emails promocionales"
+
+msgid "acepta SMS promocionales"
+msgstr "acepta SMS promocionales"
+
+msgid "perfil de cliente"
+msgstr "perfil de cliente"
+
+msgid "perfiles de cliente"
+msgstr "perfiles de cliente"
+
+#, python-format
+msgid "Perfil de cliente %(public_id)s"
+msgstr "Perfil de cliente %(public_id)s"
+
+msgid "Para recibir SMS promocionales indica un teléfono móvil."
+msgstr "Para recibir SMS promocionales indica un teléfono móvil."
+
+msgid "Verificación del email"
+msgstr "Verificación del email"
+
+msgid "Cambio de email"
+msgstr "Cambio de email"
+
+msgid "finalidad"
+msgstr "finalidad"
+
+msgid "email a confirmar"
+msgstr "email a confirmar"
+
+msgid "hash del token"
+msgstr "hash del token"
+
+msgid "creado"
+msgstr "creado"
+
+msgid "caduca"
+msgstr "caduca"
+
+msgid "usado"
+msgstr "usado"
+
+msgid "revocado"
+msgstr "revocado"
+
+msgid "token de verificación de email"
+msgstr "token de verificación de email"
+
+msgid "tokens de verificación de email"
+msgstr "tokens de verificación de email"
+
+msgid "Email promocional"
+msgstr "Email promocional"
+
+msgid "SMS promocional"
+msgstr "SMS promocional"
+
+msgid "Registro"
+msgstr "Registro"
+
+msgid "Perfil del cliente"
+msgstr "Perfil del cliente"
+
+msgid "Automático (teléfono eliminado)"
+msgstr "Automático (teléfono eliminado)"
+
+msgid "Enlace de baja de un mensaje"
+msgstr "Enlace de baja de un mensaje"
+
+msgid "cliente"
+msgstr "cliente"
+
+msgid "canal"
+msgstr "canal"
+
+msgid "consiente"
+msgstr "consiente"
+
+msgid "origen"
+msgstr "origen"
+
+msgid "fecha"
+msgstr "fecha"
+
+msgid "cambio de preferencia de comunicación"
+msgstr "cambio de preferencia de comunicación"
+
+msgid "cambios de preferencias de comunicación"
+msgstr "cambios de preferencias de comunicación"
+
+msgid "Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. No se usa geolocalización por IP ni se deducen domicilios."
+msgstr "Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. No se usa geolocalización por IP ni se deducen domicilios."
+
+msgid "Solo el propietario puede consultar los datos de los clientes."
+msgstr "Solo el propietario puede consultar los datos de los clientes."
+
+msgid "Ya existe una cuenta con este email."
+msgstr "Ya existe una cuenta con este email."
+
+msgid "Operación reservada al propietario."
+msgstr "Operación reservada al propietario."
+
+msgid "Ya existe un propietario. Los siguientes deben crearse por un propietario."
+msgstr "Ya existe un propietario. Los siguientes deben crearse por un propietario."
+
+msgid "Rol no válido."
+msgstr "Rol no válido."
+
+msgid "No se puede retirar el rol al último propietario activo."
+msgstr "No se puede retirar el rol al último propietario activo."
+
+msgid "Introduce una fecha válida."
+msgstr "Introduce una fecha válida."
+
+msgid "Este campo es obligatorio."
+msgstr "Este campo es obligatorio."
+
+msgid "Espera un minuto antes de solicitar otro email."
+msgstr "Espera un minuto antes de solicitar otro email."
+
+msgid "Has alcanzado el máximo de emails de verificación por hoy."
+msgstr "Has alcanzado el máximo de emails de verificación por hoy."
+
+msgid "El enlace no es válido."
+msgstr "El enlace no es válido."
+
+msgid "El enlace ha caducado. Solicita uno nuevo."
+msgstr "El enlace ha caducado. Solicita uno nuevo."
+
+msgid "Este enlace ya se ha utilizado."
+msgstr "Este enlace ya se ha utilizado."
+
+msgid "Este enlace ha sido sustituido por uno más reciente."
+msgstr "Este enlace ha sido sustituido por uno más reciente."
+
+msgid "Ese email ya no está disponible."
+msgstr "Ese email ya no está disponible."
+
+msgid "La contraseña no es correcta."
+msgstr "La contraseña no es correcta."
+
+msgid "Introduce un email válido."
+msgstr "Introduce un email válido."
+
+msgid "El email es demasiado largo."
+msgstr "El email es demasiado largo."
+
+msgid "Ese ya es tu email actual."
+msgstr "Ese ya es tu email actual."
+
+msgid "Debes verificar tu email para usar esta función."
+msgstr "Debes verificar tu email para usar esta función."
+
+msgid "La contraseña actual no es correcta."
+msgstr "La contraseña actual no es correcta."
+
+msgid "El enlace no es válido o ha caducado. Solicita uno nuevo."
+msgstr "El enlace no es válido o ha caducado. Solicita uno nuevo."
+
+msgid "Solo los clientes tienen perfil de cliente."
+msgstr "Solo los clientes tienen perfil de cliente."
+
+#, python-format
+msgid "Campos no permitidos: %(join)s."
+msgstr "Campos no permitidos: %(join)s."
+
+msgid "La fecha de nacimiento solo puede cambiarse una vez al año."
+msgstr "La fecha de nacimiento solo puede cambiarse una vez al año."
+
+msgid "Para recibir SMS promocionales indica antes un teléfono móvil."
+msgstr "Para recibir SMS promocionales indica antes un teléfono móvil."
+
+msgid "Canal no válido."
+msgstr "Canal no válido."
+
+msgid "5 dígitos, por ejemplo 15001"
+msgstr "5 dígitos, por ejemplo 15001"
+
+msgid "formato 1234-567"
+msgstr "formato 1234-567"
+
+msgid "Selecciona un país válido."
+msgstr "Selecciona un país válido."
+
+#, python-format
+msgid "Código postal no válido (%(hint)s)."
+msgstr "Código postal no válido (%(hint)s)."
+
+msgid "Código postal no válido."
+msgstr "Código postal no válido."
+
+msgid "Número de teléfono no válido."
+msgstr "Número de teléfono no válido."
+
+msgid "Introduce un número de teléfono móvil."
+msgstr "Introduce un número de teléfono móvil."
+
+msgid "El teléfono debe guardarse en formato E.164."
+msgstr "El teléfono debe guardarse en formato E.164."
+
+msgid "La fecha de nacimiento no puede ser futura."
+msgstr "La fecha de nacimiento no puede ser futura."
+
+msgid "Revisa la fecha de nacimiento."
+msgstr "Revisa la fecha de nacimiento."
+
+#, python-format
+msgid "Debes tener al menos %(min_age)s años para registrarte."
+msgstr "Debes tener al menos %(min_age)s años para registrarte."
+
+msgid "Demasiados intentos desde tu conexión. Inténtalo más tarde."
+msgstr "Demasiados intentos desde tu conexión. Inténtalo más tarde."
+
+msgid "Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace."
+msgstr "Si existe una cuenta pendiente de verificación con ese email, recibirás un nuevo enlace."
+
+msgid "Te hemos enviado un nuevo enlace de verificación."
+msgstr "Te hemos enviado un nuevo enlace de verificación."
+
+msgid "Tu email ya está verificado."
+msgstr "Tu email ya está verificado."
+
+msgid "Datos actualizados."
+msgstr "Datos actualizados."
+
+msgid "Preferencias de comunicación guardadas."
+msgstr "Preferencias de comunicación guardadas."
+
+msgid "Si la dirección está disponible, te hemos enviado un enlace para confirmarla. Tu email actual seguirá siendo el de acceso hasta que lo confirmes."
+msgstr "Si la dirección está disponible, te hemos enviado un enlace para confirmarla. Tu email actual seguirá siendo el de acceso hasta que lo confirmes."
+
+msgid "Contraseña cambiada."
+msgstr "Contraseña cambiada."
+
+msgid "API REST v1"
+msgstr "API REST v1"
+
+msgid "La sesión ya no es válida. Vuelve a iniciar sesión."
+msgstr "La sesión ya no es válida. Vuelve a iniciar sesión."
+
+msgid "Demasiados intentos. Espera unos minutos antes de volver a intentarlo."
+msgstr "Demasiados intentos. Espera unos minutos antes de volver a intentarlo."
+
+msgid "Datos no válidos."
+msgstr "Datos no válidos."
+
+msgid "Revisa los datos enviados."
+msgstr "Revisa los datos enviados."
+
+msgid "Error."
+msgstr "Error."
+
+msgid "No tienes permiso para realizar esta acción."
+msgstr "No tienes permiso para realizar esta acción."
+
+msgid "Esta función es solo para clientes."
+msgstr "Esta función es solo para clientes."
+
+msgid "Solo el personal del local puede realizar esta acción."
+msgstr "Solo el personal del local puede realizar esta acción."
+
+msgid "Solo el propietario puede realizar esta acción."
+msgstr "Solo el propietario puede realizar esta acción."
+
+msgid "La fecha inicial debe ser anterior o igual a la final."
+msgstr "La fecha inicial debe ser anterior o igual a la final."
+
+msgid "El periodo no puede superar 10 años."
+msgstr "El periodo no puede superar 10 años."
+
+msgid "Si los datos son correctos, te hemos enviado un email para confirmar tu cuenta. Revisa tu bandeja de entrada."
+msgstr "Si los datos son correctos, te hemos enviado un email para confirmar tu cuenta. Revisa tu bandeja de entrada."
+
+msgid "Si existe una cuenta con ese email, recibirás un enlace para elegir una contraseña nueva."
+msgstr "Si existe una cuenta con ese email, recibirás un enlace para elegir una contraseña nueva."
+
+msgid "La sesión ha caducado o se ha cerrado. Vuelve a iniciar sesión."
+msgstr "La sesión ha caducado o se ha cerrado. Vuelve a iniciar sesión."
+
+msgid "Demasiados intentos desde tu conexión."
+msgstr "Demasiados intentos desde tu conexión."
+
+msgid "Email confirmado."
+msgstr "Email confirmado."
+
+msgid "Contraseña cambiada. Ya puedes iniciar sesión."
+msgstr "Contraseña cambiada. Ya puedes iniciar sesión."
+
+msgid "Este evento no existe o ya no está publicado."
+msgstr "Este evento no existe o ya no está publicado."
+
+msgid "Estado no válido."
+msgstr "Estado no válido."
+
+msgid "productos"
+msgstr "productos"
+
+#, python-format
+msgid "%(description)s: %(changed)s producto(s)."
+msgstr "%(description)s: %(changed)s producto(s)."
+
+msgid "Información permanente"
+msgstr "Información permanente"
+
+msgid "Precio"
+msgstr "Precio"
+
+msgid "Imagen"
+msgstr "Imagen"
+
+msgid "Presentación"
+msgstr "Presentación"
+
+msgid "Publicación"
+msgstr "Publicación"
+
+msgid "Los productos archivados no se ven en la web y se conservan como historial."
+msgstr "Los productos archivados no se ven en la web y se conservan como historial."
+
+msgid "Disponibilidad actual"
+msgstr "Disponibilidad actual"
+
+msgid "Identificador"
+msgstr "Identificador"
+
+msgid "Publicar"
+msgstr "Publicar"
+
+msgid "Pasar a borrador (ocultar)"
+msgstr "Pasar a borrador (ocultar)"
+
+msgid "Archivar"
+msgstr "Archivar"
+
+msgid "Marcar como agotado"
+msgstr "Marcar como agotado"
+
+msgid "Marcar como disponible"
+msgstr "Marcar como disponible"
+
+msgid "vista previa"
+msgstr "vista previa"
+
+msgid "Carta"
+msgstr "Carta"
+
+msgid "identificador en la URL"
+msgstr "identificador en la URL"
+
+msgid "Se usa como ancla en la página de la carta (/carta/#identificador)."
+msgstr "Se usa como ancla en la página de la carta (/carta/#identificador)."
+
+msgid "descripción"
+msgstr "descripción"
+
+msgid "orden"
+msgstr "orden"
+
+msgid "Las categorías se muestran de menor a mayor."
+msgstr "Las categorías se muestran de menor a mayor."
+
+msgid "publicada"
+msgstr "publicada"
+
+msgid "Si se desmarca, la categoría y todos sus productos dejan de verse en la web."
+msgstr "Si se desmarca, la categoría y todos sus productos dejan de verse en la web."
+
+msgid "categoría"
+msgstr "categoría"
+
+msgid "categorías"
+msgstr "categorías"
+
+msgid "estilo de cerveza"
+msgstr "estilo de cerveza"
+
+msgid "estilos de cerveza"
+msgstr "estilos de cerveza"
+
+msgid "Producto fijo"
+msgstr "Producto fijo"
+
+msgid "Cerveza propia"
+msgstr "Cerveza propia"
+
+msgid "Cerveza invitada"
+msgstr "Cerveza invitada"
+
+msgid "Cerveza rotativa"
+msgstr "Cerveza rotativa"
+
+msgid "Borrador"
+msgstr "Borrador"
+
+msgid "Publicado"
+msgstr "Publicado"
+
+msgid "Archivado"
+msgstr "Archivado"
+
+msgid "tipo"
+msgstr "tipo"
+
+msgid "estilo"
+msgstr "estilo"
+
+msgid "Obligatorio en las cervezas; vacío en los productos fijos."
+msgstr "Obligatorio en las cervezas; vacío en los productos fijos."
+
+msgid "graduación (% vol.)"
+msgstr "graduación (% vol.)"
+
+msgid "Obligatoria en las cervezas. Opcional en otros productos con alcohol."
+msgstr "Obligatoria en las cervezas. Opcional en otros productos con alcohol."
+
+msgid "cervecera"
+msgstr "cervecera"
+
+msgid "Elaborador de las cervezas invitadas."
+msgstr "Elaborador de las cervezas invitadas."
+
+msgid "precio (€)"
+msgstr "precio (€)"
+
+msgid "IVA incluido, con dos decimales (p. ej. 3.50). Máximo 9999.99."
+msgstr "IVA incluido, con dos decimales (p. ej. 3.50). Máximo 9999.99."
+
+msgid "formato"
+msgstr "formato"
+
+msgid "Opcional, p. ej. «33 cl» o «Ración»."
+msgstr "Opcional, p. ej. «33 cl» o «Ración»."
+
+msgid "imagen"
+msgstr "imagen"
+
+msgid "JPEG, PNG o WebP. Opcional."
+msgstr "JPEG, PNG o WebP. Opcional."
+
+msgid "Orden dentro de la categoría, de menor a mayor."
+msgstr "Orden dentro de la categoría, de menor a mayor."
+
+msgid "destacada en el inicio"
+msgstr "destacada en el inicio"
+
+msgid "Solo las cervezas publicadas y disponibles aparecen en la selección del inicio."
+msgstr "Solo las cervezas publicadas y disponibles aparecen en la selección del inicio."
+
+msgid "estado"
+msgstr "estado"
+
+msgid "publicado el"
+msgstr "publicado el"
+
+msgid "archivado el"
+msgstr "archivado el"
+
+msgid "disponible ahora"
+msgstr "disponible ahora"
+
+msgid "Desmárcalo cuando se agote. Seguirá en la carta como «Agotada»."
+msgstr "Desmárcalo cuando se agote. Seguirá en la carta como «Agotada»."
+
+msgid "disponibilidad cambiada el"
+msgstr "disponibilidad cambiada el"
+
+msgid "producto"
+msgstr "producto"
+
+msgid "Indica el estilo de la cerveza."
+msgstr "Indica el estilo de la cerveza."
+
+msgid "Indica la graduación de la cerveza."
+msgstr "Indica la graduación de la cerveza."
+
+msgid "Los productos fijos no tienen estilo de cerveza."
+msgstr "Los productos fijos no tienen estilo de cerveza."
+
+msgid "Solo se pueden destacar cervezas."
+msgstr "Solo se pueden destacar cervezas."
+
+msgid "título"
+msgstr "título"
+
+msgid "Carta de grifos"
+msgstr "Carta de grifos"
+
+msgid "JPEG, PNG o WebP."
+msgstr "JPEG, PNG o WebP."
+
+msgid "versión en texto"
+msgstr "versión en texto"
+
+msgid "Recomendado: las cervezas de la imagen en texto, para quien usa lector de pantalla o no puede ver bien la imagen."
+msgstr "Recomendado: las cervezas de la imagen en texto, para quien usa lector de pantalla o no puede ver bien la imagen."
+
+msgid "carta de grifos"
+msgstr "carta de grifos"
+
+msgid "cartas de grifos"
+msgstr "cartas de grifos"
+
+msgid "Solo el propietario puede gestionar la carta."
+msgstr "Solo el propietario puede gestionar la carta."
+
+msgid "Estado de publicación no válido."
+msgstr "Estado de publicación no válido."
+
+#, python-format
+msgid "La imagen ocupa demasiado. Máximo: %(max)s MB."
+msgstr "La imagen ocupa demasiado. Máximo: %(max)s MB."
+
+msgid "Formato no admitido. Usa JPEG, PNG o WebP."
+msgstr "Formato no admitido. Usa JPEG, PNG o WebP."
+
+#, python-format
+msgid "La imagen es demasiado grande. Máximo: %(max)s px por lado."
+msgstr "La imagen es demasiado grande. Máximo: %(max)s px por lado."
+
+msgid "El fichero no es una imagen válida."
+msgstr "El fichero no es una imagen válida."
+
+msgid "Núcleo"
+msgstr "Núcleo"
+
+msgid "actualizado"
+msgstr "actualizado"
+
+msgid "Propietario creado"
+msgstr "Propietario creado"
+
+msgid "Empleado creado"
+msgstr "Empleado creado"
+
+msgid "Cliente creado"
+msgstr "Cliente creado"
+
+msgid "Rol modificado"
+msgstr "Rol modificado"
+
+msgid "Cuenta activada"
+msgstr "Cuenta activada"
+
+msgid "Cuenta desactivada"
+msgstr "Cuenta desactivada"
+
+msgid "Email verificado"
+msgstr "Email verificado"
+
+msgid "Cambio de email solicitado"
+msgstr "Cambio de email solicitado"
+
+msgid "Email modificado"
+msgstr "Email modificado"
+
+msgid "Perfil modificado"
+msgstr "Perfil modificado"
+
+msgid "Publicación de producto modificada"
+msgstr "Publicación de producto modificada"
+
+msgid "Disponibilidad de producto modificada"
+msgstr "Disponibilidad de producto modificada"
+
+msgid "QR personal renovado"
+msgstr "QR personal renovado"
+
+msgid "Conversión de puntos modificada"
+msgstr "Conversión de puntos modificada"
+
+msgid "Promoción creada o modificada"
+msgstr "Promoción creada o modificada"
+
+msgid "Ajuste manual de puntos"
+msgstr "Ajuste manual de puntos"
+
+msgid "Movimiento de puntos compensado"
+msgstr "Movimiento de puntos compensado"
+
+msgid "Recompensa creada o modificada"
+msgstr "Recompensa creada o modificada"
+
+msgid "Canje validado"
+msgstr "Canje validado"
+
+msgid "Ficha de cliente consultada"
+msgstr "Ficha de cliente consultada"
+
+msgid "Contenido del local modificado"
+msgstr "Contenido del local modificado"
+
+msgid "Evento creado o modificado"
+msgstr "Evento creado o modificado"
+
+msgid "Estado de reserva modificado"
+msgstr "Estado de reserva modificado"
+
+msgid "Reserva consultada con datos de contacto"
+msgstr "Reserva consultada con datos de contacto"
+
+msgid "Campaña promocional modificada"
+msgstr "Campaña promocional modificada"
+
+msgid "Promociones de cumpleaños procesadas"
+msgstr "Promociones de cumpleaños procesadas"
+
+msgid "Contraseña cambiada"
+msgstr "Contraseña cambiada"
+
+msgid "Sesiones de la app cerradas"
+msgstr "Sesiones de la app cerradas"
+
+msgid "Caducidad de puntos modificada"
+msgstr "Caducidad de puntos modificada"
+
+msgid "Caducidad de puntos procesada"
+msgstr "Caducidad de puntos procesada"
+
+msgid "Regalo de cumpleaños modificado"
+msgstr "Regalo de cumpleaños modificado"
+
+msgid "actor"
+msgstr "actor"
+
+msgid "Vacío cuando la acción la ejecuta un procedimiento administrativo (CLI)."
+msgstr "Vacío cuando la acción la ejecuta un procedimiento administrativo (CLI)."
+
+msgid "acción"
+msgstr "acción"
+
+msgid "identificador del objetivo"
+msgstr "identificador del objetivo"
+
+msgid "metadatos"
+msgstr "metadatos"
+
+msgid "evento de auditoría"
+msgstr "evento de auditoría"
+
+msgid "eventos de auditoría"
+msgstr "eventos de auditoría"
+
+msgid "Dashboard del propietario"
+msgstr "Dashboard del propietario"
+
+msgid "Hoy"
+msgstr "Hoy"
+
+msgid "7 días"
+msgstr "7 días"
+
+msgid "30 días"
+msgstr "30 días"
+
+msgid "90 días"
+msgstr "90 días"
+
+msgid "12 meses"
+msgstr "12 meses"
+
+msgid "Todo"
+msgstr "Todo"
+
+msgid "Personalizado"
+msgstr "Personalizado"
+
+msgid "Desde"
+msgstr "Desde"
+
+msgid "Hasta"
+msgstr "Hasta"
+
+msgid "Indica las dos fechas del periodo personalizado."
+msgstr "Indica las dos fechas del periodo personalizado."
+
+msgid "El periodo personalizado no puede superar 10 años."
+msgstr "El periodo personalizado no puede superar 10 años."
+
+msgid "Todos"
+msgstr "Todos"
+
+msgid "Sí"
+msgstr "Sí"
+
+msgid "No"
+msgstr "No"
+
+msgid "Buscar cliente"
+msgstr "Buscar cliente"
+
+msgid "Clientes dados de alta"
+msgstr "Clientes dados de alta"
+
+msgid "Clientes con compras"
+msgstr "Clientes con compras"
+
+msgid "Próximas"
+msgstr "Próximas"
+
+msgid "Pasadas"
+msgstr "Pasadas"
+
+msgid "Todas"
+msgstr "Todas"
+
+msgid "Puntos"
+msgstr "Puntos"
+
+msgid "Positivo para sumar, negativo para restar. El saldo nunca puede quedar en negativo."
+msgstr "Positivo para sumar, negativo para restar. El saldo nunca puede quedar en negativo."
+
+msgid "Motivo"
+msgstr "Motivo"
+
+msgid "Obligatorio. Queda en el historial del cliente."
+msgstr "Obligatorio. Queda en el historial del cliente."
+
+msgid "Motivo de la compensación"
+msgstr "Motivo de la compensación"
+
+msgid "Email de acceso"
+msgstr "Email de acceso"
+
+msgid "Contraseña inicial"
+msgstr "Contraseña inicial"
+
+msgid "Al menos 10 caracteres. Pide al empleado que la cambie al entrar."
+msgstr "Al menos 10 caracteres. Pide al empleado que la cambie al entrar."
+
+msgid "Nuevo rol"
+msgstr "Nuevo rol"
+
+msgid "Confirmo el cambio. Un propietario tiene acceso a todos los datos de los clientes y a la configuración."
+msgstr "Confirmo el cambio. Un propietario tiene acceso a todos los datos de los clientes y a la configuración."
+
+msgid "Puntos por euro"
+msgstr "Puntos por euro"
+
+msgid "Por ejemplo 1,00. Se aplica a las compras registradas a partir de ahora; no cambia los puntos ya concedidos."
+msgstr "Por ejemplo 1,00. Se aplica a las compras registradas a partir de ahora; no cambia los puntos ya concedidos."
+
+msgid "Los puntos caducan"
+msgstr "Los puntos caducan"
+
+msgid "Meses de validez"
+msgstr "Meses de validez"
+
+msgid "Cada punto caduca estos meses después de ganarlo. Se gastan primero los más antiguos."
+msgstr "Cada punto caduca estos meses después de ganarlo. Se gastan primero los más antiguos."
+
+msgid "Días de aviso"
+msgstr "Días de aviso"
+
+msgid "Con cuántos días de antelación se avisa por email al cliente."
+msgstr "Con cuántos días de antelación se avisa por email al cliente."
+
+msgid "Indica cuántos meses son válidos los puntos."
+msgstr "Indica cuántos meses son válidos los puntos."
+
+msgid "Regalar puntos por el cumpleaños"
+msgstr "Regalar puntos por el cumpleaños"
+
+msgid "Puntos de regalo"
+msgstr "Puntos de regalo"
+
+msgid "Asunto del email"
+msgstr "Asunto del email"
+
+msgid "¡Feliz cumpleaños de parte de Caneca Furada!"
+msgstr "¡Feliz cumpleaños de parte de Caneca Furada!"
+
+msgid "Mensaje del email"
+msgstr "Mensaje del email"
+
+msgid "Vacío: se envía el mensaje por defecto."
+msgstr "Vacío: se envía el mensaje por defecto."
+
+#, python-format
+msgid "Texto plano. Escribe %(PLACEHOLDER)s donde quieras mostrar los puntos regalados. Se añade siempre el enlace de baja. No incluyas datos personales."
+msgstr "Texto plano. Escribe %(PLACEHOLDER)s donde quieras mostrar los puntos regalados. Se añade siempre el enlace de baja. No incluyas datos personales."
+
+msgid "Mensaje SMS"
+msgstr "Mensaje SMS"
+
+#, python-brace-format
+msgid "¡Feliz cumpleaños! Te hemos regalado {puntos} puntos."
+msgstr "¡Feliz cumpleaños! Te hemos regalado {puntos} puntos."
+
+#, python-format
+msgid "Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite %(PLACEHOLDER)s."
+msgstr "Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite %(PLACEHOLDER)s."
+
+msgid "Dirección pública del local"
+msgstr "Dirección pública del local"
+
+msgid "Horario"
+msgstr "Horario"
+
+msgid "Una línea por franja: «Días | horario». Vacío: «Pendiente de publicar»."
+msgstr "Una línea por franja: «Días | horario». Vacío: «Pendiente de publicar»."
+
+msgid "Email de contacto"
+msgstr "Email de contacto"
+
+msgid "Teléfono de contacto"
+msgstr "Teléfono de contacto"
+
+msgid "Redes sociales"
+msgstr "Redes sociales"
+
+msgid "Una línea por red: «Nombre | https://…». Solo enlaces https."
+msgstr "Una línea por red: «Nombre | https://…». Solo enlaces https."
+
+msgid "Presentación de la cervecería"
+msgstr "Presentación de la cervecería"
+
+msgid "Texto de bienvenida del inicio"
+msgstr "Texto de bienvenida del inicio"
+
+msgid "Frase bajo el lema en la portada. Vacío: el texto genérico de la marca."
+msgstr "Frase bajo el lema en la portada. Vacío: el texto genérico de la marca."
+
+msgid "Aviso destacado"
+msgstr "Aviso destacado"
+
+msgid "Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."
+msgstr "Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."
+
+msgid "Confirmar"
+msgstr "Confirmar"
+
+msgid "Rechazar"
+msgstr "Rechazar"
+
+msgid "Cancelar"
+msgstr "Cancelar"
+
+msgid "Completar"
+msgstr "Completar"
+
+msgid "Mensaje para el cliente"
+msgstr "Mensaje para el cliente"
+
+msgid "Opcional. Se muestra al cliente y va en el email. No incluyas datos personales."
+msgstr "Opcional. Se muestra al cliente y va en el email. No incluyas datos personales."
+
+msgid "Nombre interno"
+msgstr "Nombre interno"
+
+msgid "Solo lo ves tú."
+msgstr "Solo lo ves tú."
+
+msgid "Canal"
+msgstr "Canal"
+
+msgid "Asunto"
+msgstr "Asunto"
+
+msgid "Obligatorio en email."
+msgstr "Obligatorio en email."
+
+msgid "Mensaje"
+msgstr "Mensaje"
+
+#, python-format
+msgid "Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."
+msgstr "Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."
+
+msgid "Resumen"
+msgstr "Resumen"
+
+msgid "Clientes"
+msgstr "Clientes"
+
+msgid "Empleados"
+msgstr "Empleados"
+
+msgid "Compras"
+msgstr "Compras"
+
+msgid "Recompensas"
+msgstr "Recompensas"
+
+msgid "Cervezas"
+msgstr "Cervezas"
+
+msgid "Eventos"
+msgstr "Eventos"
+
+msgid "Reservas"
+msgstr "Reservas"
+
+msgid "Promociones"
+msgstr "Promociones"
+
+msgid "Comunicaciones"
+msgstr "Comunicaciones"
+
+msgid "Contenido"
+msgstr "Contenido"
+
+msgid "Configuración"
+msgstr "Configuración"
+
+#, python-format
+msgid "Ajuste registrado: %(points)s puntos."
+msgstr "Ajuste registrado: %(points)s puntos."
+
+msgid "Este ajuste ya estaba registrado; no se ha duplicado."
+msgstr "Este ajuste ya estaba registrado; no se ha duplicado."
+
+#, python-format
+msgid "Movimiento compensado: %(points)s puntos."
+msgstr "Movimiento compensado: %(points)s puntos."
+
+msgid "Ese movimiento ya estaba compensado."
+msgstr "Ese movimiento ya estaba compensado."
+
+msgid "Empleado dado de alta. Ya puede entrar con su email y la contraseña inicial."
+msgstr "Empleado dado de alta. Ya puede entrar con su email y la contraseña inicial."
+
+msgid "No puedes desactivar tu propia cuenta desde el dashboard."
+msgstr "No puedes desactivar tu propia cuenta desde el dashboard."
+
+msgid "Acción no válida."
+msgstr "Acción no válida."
+
+msgid "Cuenta activada."
+msgstr "Cuenta activada."
+
+msgid "Cuenta desactivada: ya no puede entrar."
+msgstr "Cuenta desactivada: ya no puede entrar."
+
+msgid "No puedes cambiar tu propio rol desde el dashboard."
+msgstr "No puedes cambiar tu propio rol desde el dashboard."
+
+msgid "Elige el nuevo rol y marca la casilla de confirmación."
+msgstr "Elige el nuevo rol y marca la casilla de confirmación."
+
+msgid "Rol actualizado."
+msgstr "Rol actualizado."
+
+#, python-format
+msgid "Estado de «%(name)s» actualizado."
+msgstr "Estado de «%(name)s» actualizado."
+
+#, python-format
+msgid "«%(name)s» marcado como disponible."
+msgstr "«%(name)s» marcado como disponible."
+
+#, python-format
+msgid "«%(name)s» marcado como agotado."
+msgstr "«%(name)s» marcado como agotado."
+
+#, python-format
+msgid "Evento «%(title)s» guardado."
+msgstr "Evento «%(title)s» guardado."
+
+#, python-format
+msgid "Estado de «%(title)s» actualizado."
+msgstr "Estado de «%(title)s» actualizado."
+
+msgid "Reserva confirmada. Se ha avisado al cliente."
+msgstr "Reserva confirmada. Se ha avisado al cliente."
+
+msgid "Reserva rechazada. Se ha avisado al cliente."
+msgstr "Reserva rechazada. Se ha avisado al cliente."
+
+msgid "Reserva cancelada. Se ha avisado al cliente."
+msgstr "Reserva cancelada. Se ha avisado al cliente."
+
+msgid "Reserva marcada como completada."
+msgstr "Reserva marcada como completada."
+
+msgid "La reserva ya estaba en ese estado."
+msgstr "La reserva ya estaba en ese estado."
+
+msgid "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
+msgstr "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
+
+msgid "Solo se pueden modificar las campañas en borrador."
+msgstr "Solo se pueden modificar las campañas en borrador."
+
+msgid "Campaña programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
+msgstr "Campaña programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
+
+msgid "Campaña cancelada."
+msgstr "Campaña cancelada."
+
+msgid "Contenido guardado."
+msgstr "Contenido guardado."
+
+msgid "No había cambios que guardar."
+msgstr "No había cambios que guardar."
+
+msgid "Importe máximo por compra"
+msgstr "Importe máximo por compra"
+
+msgid "Días para recoger una recompensa canjeada"
+msgstr "Días para recoger una recompensa canjeada"
+
+msgid "Ajuste manual máximo de puntos"
+msgstr "Ajuste manual máximo de puntos"
+
+msgid "Edad mínima para registrarse"
+msgstr "Edad mínima para registrarse"
+
+msgid "Nueva conversión en vigor para las próximas compras."
+msgstr "Nueva conversión en vigor para las próximas compras."
+
+msgid "Caducidad de los puntos actualizada."
+msgstr "Caducidad de los puntos actualizada."
+
+msgid "Los puntos ya no caducan."
+msgstr "Los puntos ya no caducan."
+
+msgid "Regalo de cumpleaños guardado."
+msgstr "Regalo de cumpleaños guardado."
+
+msgid "Eventos y reservas"
+msgstr "Eventos y reservas"
+
+msgid "Personas"
+msgstr "Personas"
+
+msgid "Comentarios"
+msgstr "Comentarios"
+
+msgid "Opcional. Solo lo verá el local. No incluyas datos de salud ni otros datos sensibles."
+msgstr "Opcional. Solo lo verá el local. No incluyas datos de salud ni otros datos sensibles."
+
+#, python-format
+msgid "Entre 1 y %(maximum)s. Para grupos mayores, contacta con el local."
+msgstr "Entre 1 y %(maximum)s. Para grupos mayores, contacta con el local."
+
+msgid "Día"
+msgstr "Día"
+
+msgid "Hora"
+msgstr "Hora"
+
+msgid "identificador"
+msgstr "identificador"
+
+msgid "resumen"
+msgstr "resumen"
+
+msgid "Una o dos frases para el listado."
+msgstr "Una o dos frases para el listado."
+
+msgid "empieza"
+msgstr "empieza"
+
+msgid "termina"
+msgstr "termina"
+
+msgid "destacado en el inicio"
+msgstr "destacado en el inicio"
+
+msgid "admite reservas"
+msgstr "admite reservas"
+
+msgid "plazas"
+msgstr "plazas"
+
+msgid "Personas en reservas confirmadas. Vacío: sin límite."
+msgstr "Personas en reservas confirmadas. Vacío: sin límite."
+
+msgid "evento"
+msgstr "evento"
+
+msgid "eventos"
+msgstr "eventos"
+
+msgid "La hora de fin debe ser posterior a la de inicio."
+msgstr "La hora de fin debe ser posterior a la de inicio."
+
+msgid "Pendiente de confirmar"
+msgstr "Pendiente de confirmar"
+
+msgid "Confirmada"
+msgstr "Confirmada"
+
+msgid "Rechazada"
+msgstr "Rechazada"
+
+msgid "Cancelada"
+msgstr "Cancelada"
+
+msgid "Completada"
+msgstr "Completada"
+
+msgid "fecha y hora"
+msgstr "fecha y hora"
+
+msgid "personas"
+msgstr "personas"
+
+msgid "comentarios del cliente"
+msgstr "comentarios del cliente"
+
+msgid "Solo los ve el propietario. No se envían por email."
+msgstr "Solo los ve el propietario. No se envían por email."
+
+msgid "mensaje del local"
+msgstr "mensaje del local"
+
+msgid "Se muestra al cliente y va en el email."
+msgstr "Se muestra al cliente y va en el email."
+
+msgid "último cambio de estado"
+msgstr "último cambio de estado"
+
+msgid "cambiado por"
+msgstr "cambiado por"
+
+msgid "referencia de idempotencia"
+msgstr "referencia de idempotencia"
+
+msgid "solicitada"
+msgstr "solicitada"
+
+msgid "actualizada"
+msgstr "actualizada"
+
+msgid "reserva"
+msgstr "reserva"
+
+msgid "reservas"
+msgstr "reservas"
+
+#, python-format
+msgid "Reserva %(public_id)s"
+msgstr "Reserva %(public_id)s"
+
+msgid "Solo el propietario puede ver los eventos y las reservas."
+msgstr "Solo el propietario puede ver los eventos y las reservas."
+
+msgid "Solo el propietario gestiona los eventos y las reservas."
+msgstr "Solo el propietario gestiona los eventos y las reservas."
+
+#, python-format
+msgid "Ya hay %(seats)s plazas confirmadas: el aforo no puede ser menor."
+msgstr "Ya hay %(seats)s plazas confirmadas: el aforo no puede ser menor."
+
+msgid "Estado de evento no válido."
+msgstr "Estado de evento no válido."
+
+msgid "Ese cambio de estado no está permitido."
+msgstr "Ese cambio de estado no está permitido."
+
+msgid "No se puede publicar un evento que ya ha empezado."
+msgstr "No se puede publicar un evento que ya ha empezado."
+
+msgid "La operación no es válida. Vuelve a intentarlo."
+msgstr "La operación no es válida. Vuelve a intentarlo."
+
+#, python-format
+msgid "Indica entre 1 y %(maximum)s personas."
+msgstr "Indica entre 1 y %(maximum)s personas."
+
+#, python-format
+msgid "Admite como máximo %(MAX_TEXT)s caracteres."
+msgstr "Admite como máximo %(MAX_TEXT)s caracteres."
+
+msgid "Indica la fecha y la hora de la reserva."
+msgstr "Indica la fecha y la hora de la reserva."
+
+#, python-format
+msgid "Reserva con al menos %(EVENTS_RESERVATION_MIN_NOTICE_HOURS)s horas de antelación."
+msgstr "Reserva con al menos %(EVENTS_RESERVATION_MIN_NOTICE_HOURS)s horas de antelación."
+
+#, python-format
+msgid "Solo se puede reservar hasta %(EVENTS_RESERVATION_MAX_DAYS_AHEAD)s días vista."
+msgstr "Solo se puede reservar hasta %(EVENTS_RESERVATION_MAX_DAYS_AHEAD)s días vista."
+
+msgid "Para reservar necesitas una cuenta de cliente con el email verificado."
+msgstr "Para reservar necesitas una cuenta de cliente con el email verificado."
+
+msgid "%d/%m/%Y a las %H:%M"
+msgstr "%d/%m/%Y a las %H:%M"
+
+msgid "Esta operación ya se registró con otros datos."
+msgstr "Esta operación ya se registró con otros datos."
+
+msgid "Este evento ya no admite reservas."
+msgstr "Este evento ya no admite reservas."
+
+msgid "Ya tienes una reserva activa para este evento."
+msgstr "Ya tienes una reserva activa para este evento."
+
+msgid "No quedan plazas suficientes para este evento."
+msgstr "No quedan plazas suficientes para este evento."
+
+#, python-format
+msgid "Ya tienes %(active)s reservas activas. Cancela alguna antes de pedir otra."
+msgstr "Ya tienes %(active)s reservas activas. Cancela alguna antes de pedir otra."
+
+msgid "Nueva solicitud de reserva"
+msgstr "Nueva solicitud de reserva"
+
+msgid "Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde."
+msgstr "Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde."
+
+#, python-format
+msgid "Una reserva %(current)s no puede pasar a %(new)s."
+msgstr "Una reserva %(current)s no puede pasar a %(new)s."
+
+msgid "La fecha de la reserva ya ha pasado."
+msgstr "La fecha de la reserva ya ha pasado."
+
+msgid "Confirmarla superaría el aforo del evento."
+msgstr "Confirmarla superaría el aforo del evento."
+
+msgid "Una reserva solo se completa a partir de su día."
+msgstr "Una reserva solo se completa a partir de su día."
+
+msgid "La hora de la reserva ya ha pasado: ya no se puede cancelar."
+msgstr "La hora de la reserva ya ha pasado: ya no se puede cancelar."
+
+msgid "Reserva cancelada por el cliente"
+msgstr "Reserva cancelada por el cliente"
+
+msgid "Solicitud enviada. Te avisaremos por email cuando el local la confirme."
+msgstr "Solicitud enviada. Te avisaremos por email cuando el local la confirme."
+
+msgid "Esta solicitud ya estaba enviada."
+msgstr "Esta solicitud ya estaba enviada."
+
+msgid "Este evento no admite reservas."
+msgstr "Este evento no admite reservas."
+
+msgid "Reserva cancelada."
+msgstr "Reserva cancelada."
+
+msgid "Bonificación"
+msgstr "Bonificación"
+
+msgid "Condiciones"
+msgstr "Condiciones"
+
+msgid "Límites"
+msgstr "Límites"
+
+msgid "Referencia"
+msgstr "Referencia"
+
+msgid "usos"
+msgstr "usos"
+
+msgid "Fidelización"
+msgstr "Fidelización"
+
+msgid "Regalo de cumpleaños"
+msgstr "Regalo de cumpleaños"
+
+#, python-format
+msgid "Admite como máximo %(max_length)s caracteres."
+msgstr "Admite como máximo %(max_length)s caracteres."
+
+msgid "Escríbelo en una sola línea."
+msgstr "Escríbelo en una sola línea."
+
+#, python-format
+msgid "El único marcador admitido es %(PLACEHOLDER)s; no uses otras llaves."
+msgstr "El único marcador admitido es %(PLACEHOLDER)s; no uses otras llaves."
+
+#, python-format
+msgid "Indica entre 1 y %(MAX_FIXED_POINTS)s puntos."
+msgstr "Indica entre 1 y %(MAX_FIXED_POINTS)s puntos."
+
+msgid "Solo el propietario configura el regalo de cumpleaños."
+msgstr "Solo el propietario configura el regalo de cumpleaños."
+
+msgid "Introduce un número válido, por ejemplo 1,00."
+msgstr "Introduce un número válido, por ejemplo 1,00."
+
+msgid "Solo el propietario puede cambiar la conversión de puntos."
+msgstr "Solo el propietario puede cambiar la conversión de puntos."
+
+msgid "Solo el propietario puede cambiar la caducidad de los puntos."
+msgstr "Solo el propietario puede cambiar la caducidad de los puntos."
+
+#, python-format
+msgid "Indica entre 1 y %(MAX_MONTHS)s meses."
+msgstr "Indica entre 1 y %(MAX_MONTHS)s meses."
+
+#, python-format
+msgid "Indica entre 1 y %(MAX_WARN_DAYS)s días."
+msgstr "Indica entre 1 y %(MAX_WARN_DAYS)s días."
+
+msgid "El cliente no tiene puntos suficientes para esta operación."
+msgstr "El cliente no tiene puntos suficientes para esta operación."
+
+msgid "Solo el propietario puede corregir puntos."
+msgstr "Solo el propietario puede corregir puntos."
+
+msgid "Indica el motivo."
+msgstr "Indica el motivo."
+
+msgid "El motivo admite como máximo 200 caracteres."
+msgstr "El motivo admite como máximo 200 caracteres."
+
+msgid "Indica un número entero de puntos distinto de cero."
+msgstr "Indica un número entero de puntos distinto de cero."
+
+#, python-format
+msgid "El ajuste no puede superar %(LOYALTY_MAX_ADJUSTMENT_POINTS)s puntos."
+msgstr "El ajuste no puede superar %(LOYALTY_MAX_ADJUSTMENT_POINTS)s puntos."
+
+msgid "Solo los clientes tienen puntos."
+msgstr "Solo los clientes tienen puntos."
+
+msgid "Una compensación no se compensa: registra un ajuste."
+msgstr "Una compensación no se compensa: registra un ajuste."
+
+msgid "Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento."
+msgstr "Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento."
+
+msgid "Los puntos caducados no se compensan: devuélvelos con un ajuste manual a favor."
+msgstr "Los puntos caducados no se compensan: devuélvelos con un ajuste manual a favor."
+
+#, python-format
+msgid "Regalo de cumpleaños %(year)s"
+msgstr "Regalo de cumpleaños %(year)s"
+
+msgid "Puntos caducados"
+msgstr "Puntos caducados"
+
+msgid "token"
+msgstr "token"
+
+msgid "renovado el"
+msgstr "renovado el"
+
+msgid "código QR de cliente"
+msgstr "código QR de cliente"
+
+msgid "códigos QR de cliente"
+msgstr "códigos QR de cliente"
+
+#, python-format
+msgid "QR de cliente #%(pk)s"
+msgstr "QR de cliente #%(pk)s"
+
+msgid "puntos por euro"
+msgstr "puntos por euro"
+
+msgid "Puntos por cada euro de compra. El resultado se redondea hacia abajo a puntos enteros."
+msgstr "Puntos por cada euro de compra. El resultado se redondea hacia abajo a puntos enteros."
+
+msgid "en vigor desde"
+msgstr "en vigor desde"
+
+msgid "motivo"
+msgstr "motivo"
+
+msgid "creada por"
+msgstr "creada por"
+
+msgid "creada"
+msgstr "creada"
+
+msgid "regla de conversión de puntos"
+msgstr "regla de conversión de puntos"
+
+msgid "reglas de conversión de puntos"
+msgstr "reglas de conversión de puntos"
+
+#, python-format
+msgid "%(points_per_euro)s puntos/€ desde %(localtime)s"
+msgstr "%(points_per_euro)s puntos/€ desde %(localtime)s"
+
+msgid "La nueva conversión no puede entrar en vigor en el pasado."
+msgstr "La nueva conversión no puede entrar en vigor en el pasado."
+
+msgid "meses de validez"
+msgstr "meses de validez"
+
+msgid "Vacío: los puntos no caducan."
+msgstr "Vacío: los puntos no caducan."
+
+msgid "días de aviso"
+msgstr "días de aviso"
+
+msgid "Con cuántos días de antelación se avisa por email de los puntos que van a caducar."
+msgstr "Con cuántos días de antelación se avisa por email de los puntos que van a caducar."
+
+msgid "el plazo cuenta desde"
+msgstr "el plazo cuenta desde"
+
+msgid "política de caducidad de puntos"
+msgstr "política de caducidad de puntos"
+
+msgid "políticas de caducidad de puntos"
+msgstr "políticas de caducidad de puntos"
+
+#, python-format
+msgid "Sin caducidad desde %(localtime)s"
+msgstr "Sin caducidad desde %(localtime)s"
+
+#, python-format
+msgid "%(months)s meses desde %(localtime)s"
+msgstr "%(months)s meses desde %(localtime)s"
+
+msgid "Por compra"
+msgstr "Por compra"
+
+msgid "Cumpleaños"
+msgstr "Cumpleaños"
+
+msgid "Puntos fijos"
+msgstr "Puntos fijos"
+
+msgid "Multiplicador de los puntos de la compra"
+msgstr "Multiplicador de los puntos de la compra"
+
+msgid "Activa"
+msgstr "Activa"
+
+msgid "Pausada"
+msgstr "Pausada"
+
+msgid "Finalizada"
+msgstr "Finalizada"
+
+msgid "descripción para el cliente"
+msgstr "descripción para el cliente"
+
+msgid "Texto público, sin datos personales."
+msgstr "Texto público, sin datos personales."
+
+msgid "bonificación"
+msgstr "bonificación"
+
+msgid "puntos fijos"
+msgstr "puntos fijos"
+
+msgid "multiplicador"
+msgstr "multiplicador"
+
+msgid "Por ejemplo 2,00 = puntos dobles: se suman los puntos de la compra × (multiplicador − 1)."
+msgstr "Por ejemplo 2,00 = puntos dobles: se suman los puntos de la compra × (multiplicador − 1)."
+
+msgid "importe mínimo de la compra (€)"
+msgstr "importe mínimo de la compra (€)"
+
+msgid "Vacío: sin fecha de fin."
+msgstr "Vacío: sin fecha de fin."
+
+msgid "usos máximos por cliente"
+msgstr "usos máximos por cliente"
+
+msgid "Vacío: sin límite. Las de cumpleaños son siempre una por cliente y año."
+msgstr "Vacío: sin límite. Las de cumpleaños son siempre una por cliente y año."
+
+msgid "usos máximos en total"
+msgstr "usos máximos en total"
+
+msgid "días de margen alrededor del cumpleaños"
+msgstr "días de margen alrededor del cumpleaños"
+
+msgid "Sin uso desde la Fase 10: el regalo de cumpleaños se concede el mismo día."
+msgstr "Sin uso desde la Fase 10: el regalo de cumpleaños se concede el mismo día."
+
+msgid "promoción"
+msgstr "promoción"
+
+msgid "promociones"
+msgstr "promociones"
+
+msgid "Indica los puntos que da la promoción."
+msgstr "Indica los puntos que da la promoción."
+
+msgid "Deja vacío el multiplicador en una promoción de puntos fijos."
+msgstr "Deja vacío el multiplicador en una promoción de puntos fijos."
+
+msgid "Indica el multiplicador."
+msgstr "Indica el multiplicador."
+
+msgid "Deja vacíos los puntos fijos en una promoción con multiplicador."
+msgstr "Deja vacíos los puntos fijos en una promoción con multiplicador."
+
+msgid "Las promociones de cumpleaños regalan puntos fijos: no admiten multiplicador."
+msgstr "Las promociones de cumpleaños regalan puntos fijos: no admiten multiplicador."
+
+msgid "La fecha de fin debe ser posterior a la de inicio."
+msgstr "La fecha de fin debe ser posterior a la de inicio."
+
+msgid "Compra"
+msgstr "Compra"
+
+msgid "Promoción"
+msgstr "Promoción"
+
+msgid "Ajuste manual"
+msgstr "Ajuste manual"
+
+msgid "Compensación"
+msgstr "Compensación"
+
+msgid "Canje"
+msgstr "Canje"
+
+msgid "puntos"
+msgstr "puntos"
+
+msgid "saldo resultante"
+msgstr "saldo resultante"
+
+msgid "compra"
+msgstr "compra"
+
+msgid "año del cumpleaños"
+msgstr "año del cumpleaños"
+
+msgid "Solo en promociones de cumpleaños: impide más de una por cliente y año."
+msgstr "Solo en promociones de cumpleaños: impide más de una por cliente y año."
+
+msgid "compensa a"
+msgstr "compensa a"
+
+msgid "regla de conversión"
+msgstr "regla de conversión"
+
+msgid "importe base (€)"
+msgstr "importe base (€)"
+
+msgid "puntos por euro aplicados"
+msgstr "puntos por euro aplicados"
+
+msgid "registrado por"
+msgstr "registrado por"
+
+msgid "movimiento de puntos"
+msgstr "movimiento de puntos"
+
+msgid "movimientos de puntos"
+msgstr "movimientos de puntos"
+
+msgid "asunto del email"
+msgstr "asunto del email"
+
+msgid "mensaje del email"
+msgstr "mensaje del email"
+
+msgid "mensaje SMS"
+msgstr "mensaje SMS"
+
+msgid "modificado por"
+msgstr "modificado por"
+
+msgid "aviso de cumpleaños"
+msgstr "aviso de cumpleaños"
+
+msgid "Aviso de cumpleaños"
+msgstr "Aviso de cumpleaños"
+
+msgid "Solo el propietario gestiona las promociones."
+msgstr "Solo el propietario gestiona las promociones."
+
+msgid "Estado de promoción no válido."
+msgstr "Estado de promoción no válido."
+
+msgid "Solo el propietario puede ver las estadísticas."
+msgstr "Solo el propietario puede ver las estadísticas."
+
+msgid "Solo el propietario puede ver todos los movimientos de puntos."
+msgstr "Solo el propietario puede ver todos los movimientos de puntos."
+
+msgid "Solo el propietario puede ver las promociones."
+msgstr "Solo el propietario puede ver las promociones."
+
+msgid "El código no es válido o la cuenta no está activa."
+msgstr "El código no es válido o la cuenta no está activa."
+
+msgid "El cliente tiene que verificar su email antes de poder sumar compras."
+msgstr "El cliente tiene que verificar su email antes de poder sumar compras."
+
+msgid "Solo los clientes tienen código QR."
+msgstr "Solo los clientes tienen código QR."
+
+msgid "Debes verificar tu email para usar tu código QR."
+msgstr "Debes verificar tu email para usar tu código QR."
+
+msgid "Has renovado tu código demasiadas veces hoy. Inténtalo mañana."
+msgstr "Has renovado tu código demasiadas veces hoy. Inténtalo mañana."
+
+msgid "Tu código QR se ha renovado. El anterior ya no sirve."
+msgstr "Tu código QR se ha renovado. El anterior ya no sirve."
+
+msgid "Notificaciones"
+msgstr "Notificaciones"
+
+msgid "Solo el propietario gestiona las campañas."
+msgstr "Solo el propietario gestiona las campañas."
+
+msgid "Escribe el mensaje."
+msgstr "Escribe el mensaje."
+
+#, python-format
+msgid "Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres."
+msgstr "Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres."
+
+msgid "Escribe el asunto del email."
+msgstr "Escribe el asunto del email."
+
+#, python-format
+msgid "El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres."
+msgstr "El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres."
+
+msgid "Esta campaña ya no se puede programar."
+msgstr "Esta campaña ya no se puede programar."
+
+msgid "No hay ningún proveedor de SMS configurado: la campaña no puede enviarse por SMS."
+msgstr "No hay ningún proveedor de SMS configurado: la campaña no puede enviarse por SMS."
+
+msgid "Una campaña ya repartida no se puede cancelar."
+msgstr "Una campaña ya repartida no se puede cancelar."
+
+msgid "Programada para envío"
+msgstr "Programada para envío"
+
+msgid "Repartida"
+msgstr "Repartida"
+
+msgid "nombre interno"
+msgstr "nombre interno"
+
+msgid "asunto"
+msgstr "asunto"
+
+msgid "Solo email."
+msgstr "Solo email."
+
+msgid "mensaje"
+msgstr "mensaje"
+
+msgid "Texto plano. No incluyas datos personales de clientes ni de empleados."
+msgstr "Texto plano. No incluyas datos personales de clientes ni de empleados."
+
+msgid "programada el"
+msgstr "programada el"
+
+msgid "repartida el"
+msgstr "repartida el"
+
+msgid "destinatarios"
+msgstr "destinatarios"
+
+msgid "campaña promocional"
+msgstr "campaña promocional"
+
+msgid "campañas promocionales"
+msgstr "campañas promocionales"
+
+msgid "Confirmación de cambio de email"
+msgstr "Confirmación de cambio de email"
+
+msgid "Aviso de email cambiado"
+msgstr "Aviso de email cambiado"
+
+msgid "Aviso de cuenta existente"
+msgstr "Aviso de cuenta existente"
+
+msgid "Recuperación de la cuenta"
+msgstr "Recuperación de la cuenta"
+
+msgid "Reserva recibida"
+msgstr "Reserva recibida"
+
+msgid "Reserva confirmada"
+msgstr "Reserva confirmada"
+
+msgid "Reserva rechazada"
+msgstr "Reserva rechazada"
+
+msgid "Reserva cancelada"
+msgstr "Reserva cancelada"
+
+msgid "Aviso de reserva al propietario"
+msgstr "Aviso de reserva al propietario"
+
+msgid "Campaña promocional"
+msgstr "Campaña promocional"
+
+msgid "Promoción de cumpleaños"
+msgstr "Promoción de cumpleaños"
+
+msgid "Aviso de puntos que van a caducar"
+msgstr "Aviso de puntos que van a caducar"
+
+msgid "Transaccional"
+msgstr "Transaccional"
+
+msgid "Promocional"
+msgstr "Promocional"
+
+msgid "Pendiente"
+msgstr "Pendiente"
+
+msgid "Enviando"
+msgstr "Enviando"
+
+msgid "Enviada"
+msgstr "Enviada"
+
+msgid "Fallida"
+msgstr "Fallida"
+
+msgid "No enviada"
+msgstr "No enviada"
+
+msgid "destinatario"
+msgstr "destinatario"
+
+msgid "datos del mensaje"
+msgstr "datos del mensaje"
+
+msgid "Sin tokens ni datos personales."
+msgstr "Sin tokens ni datos personales."
+
+msgid "clave de idempotencia"
+msgstr "clave de idempotencia"
+
+msgid "campaña"
+msgstr "campaña"
+
+msgid "intentos"
+msgstr "intentos"
+
+msgid "próximo intento"
+msgstr "próximo intento"
+
+msgid "último error"
+msgstr "último error"
+
+msgid "Tipo de error o motivo de no envío; nunca el mensaje."
+msgstr "Tipo de error o motivo de no envío; nunca el mensaje."
+
+msgid "enviada el"
+msgstr "enviada el"
+
+msgid "notificación"
+msgstr "notificación"
+
+msgid "notificaciones"
+msgstr "notificaciones"
+
+msgid "Consola (desarrollo): los emails no se envían, se muestran en la terminal."
+msgstr "Consola (desarrollo): los emails no se envían, se muestran en la terminal."
+
+msgid "Memoria (tests): los emails no se envían."
+msgstr "Memoria (tests): los emails no se envían."
+
+msgid "Fichero (desarrollo): los emails no se envían."
+msgstr "Fichero (desarrollo): los emails no se envían."
+
+msgid "Nulo: los emails no se envían."
+msgstr "Nulo: los emails no se envían."
+
+msgid "Solo el propietario puede ver las comunicaciones."
+msgstr "Solo el propietario puede ver las comunicaciones."
+
+msgid "Proveedor configurado por variables de entorno (EMAIL_*)."
+msgstr "Proveedor configurado por variables de entorno (EMAIL_*)."
+
+msgid "Código del cliente"
+msgstr "Código del cliente"
+
+msgid "Se rellena al escanear el QR. Si la cámara no funciona, escribe el código que aparece bajo el QR."
+msgstr "Se rellena al escanear el QR. Si la cámara no funciona, escribe el código que aparece bajo el QR."
+
+msgid "Importe (€)"
+msgstr "Importe (€)"
+
+msgid "Importe total pagado, por ejemplo 12,50."
+msgstr "Importe total pagado, por ejemplo 12,50."
+
+msgid "Manual (panel del personal)"
+msgstr "Manual (panel del personal)"
+
+msgid "Registrada"
+msgstr "Registrada"
+
+msgid "Anulada"
+msgstr "Anulada"
+
+msgid "registrada por"
+msgstr "registrada por"
+
+msgid "importe (€)"
+msgstr "importe (€)"
+
+msgid "La genera el servidor al mostrar el formulario; un reenvío no crea otra compra."
+msgstr "La genera el servidor al mostrar el formulario; un reenvío no crea otra compra."
+
+msgid "referencia externa"
+msgstr "referencia externa"
+
+msgid "Reservado para el identificador del ticket del TPV."
+msgstr "Reservado para el identificador del ticket del TPV."
+
+msgid "compras"
+msgstr "compras"
+
+#, python-format
+msgid "Compra %(public_id)s"
+msgstr "Compra %(public_id)s"
+
+msgid "Compras registradas en el programa de fidelización"
+msgstr "Compras registradas en el programa de fidelización"
+
+msgid "Solo incluye las compras que el personal registró con el QR de un cliente. No es la facturación total del local."
+msgstr "Solo incluye las compras que el personal registró con el QR de un cliente. No es la facturación total del local."
+
+msgid "Solo el propietario puede ver todas las compras."
+msgstr "Solo el propietario puede ver todas las compras."
+
+msgid "Solo el personal del local puede registrar compras."
+msgstr "Solo el personal del local puede registrar compras."
+
+msgid "Introduce un importe válido, por ejemplo 12,50."
+msgstr "Introduce un importe válido, por ejemplo 12,50."
+
+msgid "El importe admite como máximo dos decimales."
+msgstr "El importe admite como máximo dos decimales."
+
+msgid "El importe debe ser mayor que cero."
+msgstr "El importe debe ser mayor que cero."
+
+#, python-format
+msgid "El importe supera el máximo permitido (%(max)s €)."
+msgstr "El importe supera el máximo permitido (%(max)s €)."
+
+msgid "La operación no es válida. Vuelve a escanear el código."
+msgstr "La operación no es válida. Vuelve a escanear el código."
+
+msgid "Esta operación ya se registró con otros datos. Vuelve a escanear el código."
+msgstr "Esta operación ya se registró con otros datos. Vuelve a escanear el código."
+
+msgid "Esta operación ya no está vigente."
+msgstr "Esta operación ya no está vigente."
+
+msgid "Este origen de compras no está habilitado."
+msgstr "Este origen de compras no está habilitado."
+
+msgid "Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo."
+msgstr "Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo."
+
+msgid "Compra registrada."
+msgstr "Compra registrada."
+
+msgid "Esta compra ya estaba registrada. No se ha duplicado."
+msgstr "Esta compra ya estaba registrada. No se ha duplicado."
+
+msgid "unidades"
+msgstr "unidades"
+
+msgid "Sin límite"
+msgstr "Sin límite"
+
+msgid "canjes"
+msgstr "canjes"
+
+msgid "Código del canje"
+msgstr "Código del canje"
+
+msgid "Se rellena al escanear el QR del canje. Si la cámara no funciona, escribe el código (p. ej. ABCD-EFGH-JKMN)."
+msgstr "Se rellena al escanear el QR del canje. Si la cámara no funciona, escribe el código (p. ej. ABCD-EFGH-JKMN)."
+
+msgctxt "recompensa"
+msgid "Activa"
+msgstr "Activa"
+
+msgctxt "recompensa"
+msgid "Pausada"
+msgstr "Pausada"
+
+msgctxt "recompensa"
+msgid "Archivada"
+msgstr "Archivada"
+
+msgid "Texto público."
+msgstr "Texto público."
+
+msgid "coste en puntos"
+msgstr "coste en puntos"
+
+msgid "Cambiarlo no afecta a los canjes ya solicitados."
+msgstr "Cambiarlo no afecta a los canjes ya solicitados."
+
+msgid "Solo las activas se ven en la web y se pueden canjear."
+msgstr "Solo las activas se ven en la web y se pueden canjear."
+
+msgid "se puede canjear desde"
+msgstr "se puede canjear desde"
+
+msgid "se puede canjear hasta"
+msgstr "se puede canjear hasta"
+
+msgid "unidades disponibles"
+msgstr "unidades disponibles"
+
+msgid "Vacío: sin límite. Baja sola con cada canje y sube si un canje se cancela o caduca."
+msgstr "Vacío: sin límite. Baja sola con cada canje y sube si un canje se cancela o caduca."
+
+msgid "De menor a mayor."
+msgstr "De menor a mayor."
+
+msgid "recompensa"
+msgstr "recompensa"
+
+msgid "recompensas"
+msgstr "recompensas"
+
+msgid "Pendiente de recoger"
+msgstr "Pendiente de recoger"
+
+msgid "Canjeado"
+msgstr "Canjeado"
+
+msgid "Caducado"
+msgstr "Caducado"
+
+msgid "Cancelado"
+msgstr "Cancelado"
+
+msgid "puntos descontados"
+msgstr "puntos descontados"
+
+msgid "Copia del coste en el momento del canje."
+msgstr "Copia del coste en el momento del canje."
+
+msgid "código"
+msgstr "código"
+
+msgid "solicitado el"
+msgstr "solicitado el"
+
+msgid "caduca el"
+msgstr "caduca el"
+
+msgid "movimiento del canje"
+msgstr "movimiento del canje"
+
+msgid "movimiento de devolución"
+msgstr "movimiento de devolución"
+
+msgid "validado por"
+msgstr "validado por"
+
+msgid "validado el"
+msgstr "validado el"
+
+msgid "cancelado o caducado el"
+msgstr "cancelado o caducado el"
+
+msgid "canje"
+msgstr "canje"
+
+#, python-format
+msgid "Canje %(public_id)s"
+msgstr "Canje %(public_id)s"
+
+msgid "Solo el propietario puede ver todos los canjes."
+msgstr "Solo el propietario puede ver todos los canjes."
+
+msgid "Esta recompensa no está disponible ahora mismo."
+msgstr "Esta recompensa no está disponible ahora mismo."
+
+msgid "Esta recompensa se ha agotado."
+msgstr "Esta recompensa se ha agotado."
+
+msgid "Ya tienes un código pendiente de recoger para esta recompensa. Úsalo o cancélalo antes de pedir otro."
+msgstr "Ya tienes un código pendiente de recoger para esta recompensa. Úsalo o cancélalo antes de pedir otro."
+
+msgid "El código no es válido."
+msgstr "El código no es válido."
+
+#, python-format
+msgid "Este código ya se utilizó el %(when)s. No se puede volver a usar."
+msgstr "Este código ya se utilizó el %(when)s. No se puede volver a usar."
+
+msgid "Este código ha caducado. Los puntos se han devuelto al cliente."
+msgstr "Este código ha caducado. Los puntos se han devuelto al cliente."
+
+msgid "Este canje ya no está pendiente."
+msgstr "Este canje ya no está pendiente."
+
+msgid "Solo los clientes con el email verificado pueden canjear puntos."
+msgstr "Solo los clientes con el email verificado pueden canjear puntos."
+
+msgid "Solo el personal del local puede validar canjes."
+msgstr "Solo el personal del local puede validar canjes."
+
+msgid "Este canje no es tuyo."
+msgstr "Este canje no es tuyo."
+
+msgid "No puedes validar tu propio canje."
+msgstr "No puedes validar tu propio canje."
+
+msgid "Solo el propietario puede gestionar las recompensas."
+msgstr "Solo el propietario puede gestionar las recompensas."
+
+msgid "Estado de recompensa no válido."
+msgstr "Estado de recompensa no válido."
+
+msgid "¡Canje hecho! Enseña este código en la barra para recoger tu recompensa."
+msgstr "¡Canje hecho! Enseña este código en la barra para recoger tu recompensa."
+
+msgid "Este canje ya estaba hecho. No se han descontado más puntos."
+msgstr "Este canje ya estaba hecho. No se han descontado más puntos."
+
+#, python-format
+msgid "Canje cancelado. Te hemos devuelto %(points_cost)s puntos."
+msgstr "Canje cancelado. Te hemos devuelto %(points_cost)s puntos."
+
+msgid "Canje validado. Entrega la recompensa."
+msgstr "Canje validado. Entrega la recompensa."
+
+msgid "Panel del personal"
+msgstr "Panel del personal"
+
+msgid "Canjes"
+msgstr "Canjes"
+
+msgid "Web pública"
+msgstr "Web pública"
+
+msgid "Inicio"
+msgstr "Inicio"
+
+msgid "La cervecería"
+msgstr "La cervecería"
+
+msgid "Contacto"
+msgstr "Contacto"
+
+msgid "dirección pública del local"
+msgstr "dirección pública del local"
+
+msgid "horario"
+msgstr "horario"
+
+msgid "Una línea por franja: «Días | horario», por ejemplo «Lunes a jueves | 18:00–00:00»."
+msgstr "Una línea por franja: «Días | horario», por ejemplo «Lunes a jueves | 18:00–00:00»."
+
+msgid "email de contacto"
+msgstr "email de contacto"
+
+msgid "teléfono de contacto"
+msgstr "teléfono de contacto"
+
+msgid "redes sociales"
+msgstr "redes sociales"
+
+msgid "presentación de la cervecería"
+msgstr "presentación de la cervecería"
+
+msgid "texto de bienvenida del inicio"
+msgstr "texto de bienvenida del inicio"
+
+msgid "aviso destacado"
+msgstr "aviso destacado"
+
+msgid "contenido del local"
+msgstr "contenido del local"
+
+msgid "Contenido del local"
+msgstr "Contenido del local"
+
+msgid "Teléfono no válido: solo números, espacios y un + inicial."
+msgstr "Teléfono no válido: solo números, espacios y un + inicial."
+
+#, python-format
+msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario»."
+msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario»."
+
+#, python-format
+msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
+msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
+
+msgid "Solo el propietario puede editar el contenido del local."
+msgstr "Solo el propietario puede editar el contenido del local."
+
+msgid "Caneca Furada — Administración"
+msgstr "Caneca Furada — Administración"
+
+msgid "Petición no válida"
+msgstr "Petición no válida"
+
+msgid "No hemos podido procesar la petición. Vuelve a intentarlo desde el inicio."
+msgstr "No hemos podido procesar la petición. Vuelve a intentarlo desde el inicio."
+
+msgid "Acceso no permitido"
+msgstr "Acceso no permitido"
+
+msgid "No tienes permiso para ver esta página. Si crees que es un error, entra con otra cuenta."
+msgstr "No tienes permiso para ver esta página. Si crees que es un error, entra con otra cuenta."
+
+msgid "Esta jarra está vacía"
+msgstr "Esta jarra está vacía"
+
+msgid "La página que buscas no existe o se ha movido."
+msgstr "La página que buscas no existe o se ha movido."
+
+msgid "Error del servidor"
+msgstr "Error del servidor"
+
+msgid "Error 500"
+msgstr "Error 500"
+
+msgid "Algo ha fallado"
+msgstr "Algo ha fallado"
+
+msgid "Ha ocurrido un error inesperado. Inténtalo de nuevo en unos minutos."
+msgstr "Ha ocurrido un error inesperado. Inténtalo de nuevo en unos minutos."
+
+msgid "Volver al inicio"
+msgstr "Volver al inicio"
+
+msgid "(obligatorio)"
+msgstr "(obligatorio)"
+
+msgid "(opcional)"
+msgstr "(opcional)"
+
+msgid "Tu cuenta"
+msgstr "Tu cuenta"
+
+msgid "Tu email está pendiente de verificación."
+msgstr "Tu email está pendiente de verificación."
+
+msgid "Hasta que lo confirmes no podrás usar las funciones que lo requieren (puntos, canjes, reservas) ni recibirás promociones."
+msgstr "Hasta que lo confirmes no podrás usar las funciones que lo requieren (puntos, canjes, reservas) ni recibirás promociones."
+
+msgid "Enviando…"
+msgstr "Enviando…"
+
+msgid "Reenviar enlace de verificación"
+msgstr "Reenviar enlace de verificación"
+
+msgid "Cambiar email"
+msgstr "Cambiar email"
+
+msgid "Te enviaremos un enlace a la nueva dirección. Tu email actual seguirá siendo el de acceso hasta que confirmes la nueva, que quedará verificada al hacerlo."
+msgstr "Te enviaremos un enlace a la nueva dirección. Tu email actual seguirá siendo el de acceso hasta que confirmes la nueva, que quedará verificada al hacerlo."
+
+msgid "Enviar enlace de confirmación"
+msgstr "Enviar enlace de confirmación"
+
+msgid "Volver"
+msgstr "Volver"
+
+msgid "Entrar"
+msgstr "Entrar"
+
+msgid "Accede a tu cuenta de Caneca Furada."
+msgstr "Accede a tu cuenta de Caneca Furada."
+
+msgid "Entrando…"
+msgstr "Entrando…"
+
+msgid "¿Has olvidado tu contraseña?"
+msgstr "¿Has olvidado tu contraseña?"
+
+#, python-format
+msgid "¿No tienes cuenta? <a class=\"link\" href=\"%(register_url)s\">Regístrate</a>."
+msgstr "¿No tienes cuenta? <a class=\"link\" href=\"%(register_url)s\">Regístrate</a>."
+
+msgid "Reenviar el email de verificación"
+msgstr "Reenviar el email de verificación"
+
+msgid "Cambiar contraseña"
+msgstr "Cambiar contraseña"
+
+msgid "Guardando…"
+msgstr "Guardando…"
+
+msgid "Contraseña restablecida"
+msgstr "Contraseña restablecida"
+
+msgid "Ya puedes entrar con tu nueva contraseña."
+msgstr "Ya puedes entrar con tu nueva contraseña."
+
+msgid "Nueva contraseña"
+msgstr "Nueva contraseña"
+
+msgid "Elige una contraseña nueva"
+msgstr "Elige una contraseña nueva"
+
+msgid "Enlace no válido"
+msgstr "Enlace no válido"
+
+msgid "Guardar contraseña"
+msgstr "Guardar contraseña"
+
+msgid "El enlace ha caducado o ya se ha utilizado."
+msgstr "El enlace ha caducado o ya se ha utilizado."
+
+msgid "Solicita uno nuevo"
+msgstr "Solicita uno nuevo"
+
+msgid "Revisa tu correo"
+msgstr "Revisa tu correo"
+
+msgid "Si existe una cuenta activa con ese email, recibirás un enlace para restablecer la contraseña. El enlace caduca en unas horas."
+msgstr "Si existe una cuenta activa con ese email, recibirás un enlace para restablecer la contraseña. El enlace caduca en unas horas."
+
+msgid "Volver a entrar"
+msgstr "Volver a entrar"
+
+msgid "Recuperar contraseña"
+msgstr "Recuperar contraseña"
+
+msgid "Indica el email de tu cuenta y te enviaremos un enlace para elegir una contraseña nueva."
+msgstr "Indica el email de tu cuenta y te enviaremos un enlace para elegir una contraseña nueva."
+
+msgid "Enviar enlace"
+msgstr "Enviar enlace"
+
+msgid "Mi perfil"
+msgstr "Mi perfil"
+
+msgid "Acceso"
+msgstr "Acceso"
+
+msgid "Verificado"
+msgstr "Verificado"
+
+msgid "Pendiente de verificación"
+msgstr "Pendiente de verificación"
+
+msgid "Mi código QR"
+msgstr "Mi código QR"
+
+msgid "Mis puntos"
+msgstr "Mis puntos"
+
+msgid "Mis canjes"
+msgstr "Mis canjes"
+
+msgid "Mis reservas"
+msgstr "Mis reservas"
+
+msgid "Mis datos"
+msgstr "Mis datos"
+
+msgid "Los campos marcados con <span class=\"required-mark\">*</span> son obligatorios. La fecha de nacimiento solo puede cambiarse una vez al año."
+msgstr "Los campos marcados con <span class=\"required-mark\">*</span> son obligatorios. La fecha de nacimiento solo puede cambiarse una vez al año."
+
+msgid "Completa los datos obligatorios de tu perfil."
+msgstr "Completa los datos obligatorios de tu perfil."
+
+msgid "Guardar datos"
+msgstr "Guardar datos"
+
+msgid "Son opcionales. Los emails promocionales solo se envían a direcciones verificadas, y los SMS requieren un teléfono móvil."
+msgstr "Son opcionales. Los emails promocionales solo se envían a direcciones verificadas, y los SMS requieren un teléfono móvil."
+
+msgid "Guardar preferencias"
+msgstr "Guardar preferencias"
+
+msgid "Crear cuenta"
+msgstr "Crear cuenta"
+
+msgid "Únete al club"
+msgstr "Únete al club"
+
+msgid "Crear cuenta de cliente"
+msgstr "Crear cuenta de cliente"
+
+msgid "Regístrate para acceder al programa de puntos y a las novedades de la casa."
+msgstr "Regístrate para acceder al programa de puntos y a las novedades de la casa."
+
+msgid "Los campos marcados con <span class=\"required-mark\">*</span> son obligatorios. El teléfono móvil es opcional."
+msgstr "Los campos marcados con <span class=\"required-mark\">*</span> son obligatorios. El teléfono móvil es opcional."
+
+#, python-format
+msgid "Paso %(step)s: "
+msgstr "Paso %(step)s: "
+
+msgid "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil."
+msgstr "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil."
+
+msgid "Creando cuenta…"
+msgstr "Creando cuenta…"
+
+msgid "Después te enviaremos un email para verificar tu dirección."
+msgstr "Después te enviaremos un email para verificar tu dirección."
+
+#, python-format
+msgid "¿Ya tienes cuenta? <a class=\"link\" href=\"%(login_url)s\">Entra</a>."
+msgstr "¿Ya tienes cuenta? <a class=\"link\" href=\"%(login_url)s\">Entra</a>."
+
+msgid "Solicitud de registro recibida"
+msgstr "Solicitud de registro recibida"
+
+msgid "Falta un paso: verificar tu email."
+msgstr "Falta un paso: verificar tu email."
+
+msgid "Tu cuenta quedará pendiente de verificación hasta que confirmes tu dirección de correo."
+msgstr "Tu cuenta quedará pendiente de verificación hasta que confirmes tu dirección de correo."
+
+msgid "Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez."
+msgstr "Si los datos son correctos, te hemos enviado un email con un enlace para confirmar tu dirección. El enlace caduca y solo puede usarse una vez."
+
+msgid "Abre el email que te hemos enviado (revisa también la carpeta de spam)."
+msgstr "Abre el email que te hemos enviado (revisa también la carpeta de spam)."
+
+msgid "Pulsa el enlace y confirma tu dirección."
+msgstr "Pulsa el enlace y confirma tu dirección."
+
+msgid "Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles."
+msgstr "Hasta que confirmes tu email, algunas funciones (como acumular o canjear puntos) no estarán disponibles."
+
+#, python-format
+msgid "Mientras tanto ya puedes <a class=\"link\" href=\"%(login_url)s\">entrar</a> y revisar tu perfil."
+msgstr "Mientras tanto ya puedes <a class=\"link\" href=\"%(login_url)s\">entrar</a> y revisar tu perfil."
+
+#, python-format
+msgid "¿No te ha llegado? <a class=\"link\" href=\"%(resend_url)s\">Solicitar otro enlace</a>."
+msgstr "¿No te ha llegado? <a class=\"link\" href=\"%(resend_url)s\">Solicitar otro enlace</a>."
+
+msgid "Reenviar verificación"
+msgstr "Reenviar verificación"
+
+msgid "Indica el email con el que te registraste y te enviaremos un nuevo enlace."
+msgstr "Indica el email con el que te registraste y te enviaremos un nuevo enlace."
+
+msgid "Confirmar email"
+msgstr "Confirmar email"
+
+msgid "Confirmar tu email"
+msgstr "Confirmar tu email"
+
+msgid "Pulsa el botón para confirmar esta dirección de correo."
+msgstr "Pulsa el botón para confirmar esta dirección de correo."
+
+msgid "Confirmando…"
+msgstr "Confirmando…"
+
+msgid "Email confirmado"
+msgstr "Email confirmado"
+
+msgid "No se ha podido confirmar el email"
+msgstr "No se ha podido confirmar el email"
+
+msgid "Tu dirección de correo ha quedado verificada."
+msgstr "Tu dirección de correo ha quedado verificada."
+
+msgid "Continuar"
+msgstr "Continuar"
+
+msgid "Solicitar un nuevo enlace de verificación"
+msgstr "Solicitar un nuevo enlace de verificación"
+
+msgid "Saltar al contenido"
+msgstr "Saltar al contenido"
+
+msgid "Caneca Furada, ir al inicio"
+msgstr "Caneca Furada, ir al inicio"
+
+msgid "Menú"
+msgstr "Menú"
+
+msgid "Principal"
+msgstr "Principal"
+
+msgid "Cuenta"
+msgstr "Cuenta"
+
+msgid "Mi cuenta"
+msgstr "Mi cuenta"
+
+msgid "Panel"
+msgstr "Panel"
+
+msgid "Salir"
+msgstr "Salir"
+
+msgid "dirección pendiente de publicar"
+msgstr "dirección pendiente de publicar"
+
+msgid "Pendiente de publicar"
+msgstr "Pendiente de publicar"
+
+msgid "Redes"
+msgstr "Redes"
+
+msgid "Próximamente"
+msgstr "Próximamente"
+
+#, python-format
+msgid "Error %(code)s"
+msgstr "Error %(code)s"
+
+msgid "l j \\d\\e F · H:i"
+msgstr "l j \\d\\e F · H:i"
+
+msgid "Con reserva"
+msgstr "Con reserva"
+
+msgid "Ver evento"
+msgstr "Ver evento"
+
+msgid "Pie: secciones"
+msgstr "Pie: secciones"
+
+msgid "Explora"
+msgstr "Explora"
+
+msgid "Pie: cuenta"
+msgstr "Pie: cuenta"
+
+msgid "Programa de puntos"
+msgstr "Programa de puntos"
+
+msgid "Visítanos"
+msgstr "Visítanos"
+
+msgid "Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años."
+msgstr "Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años."
+
+msgid "No se ha podido enviar el formulario. Revisa lo siguiente:"
+msgstr "No se ha podido enviar el formulario. Revisa lo siguiente:"
+
+msgid "Idioma"
+msgstr "Idioma"
+
+msgid "Crea tu cuenta"
+msgstr "Crea tu cuenta"
+
+msgid "Regístrate gratis y confirma tu email desde el enlace que te enviamos."
+msgstr "Regístrate gratis y confirma tu email desde el enlace que te enviamos."
+
+msgid "Suma puntos"
+msgstr "Suma puntos"
+
+msgid "Enseña tu código personal en la barra y tus consumiciones sumarán puntos."
+msgstr "Enseña tu código personal en la barra y tus consumiciones sumarán puntos."
+
+msgid "Canjea recompensas"
+msgstr "Canjea recompensas"
+
+msgid "Cambia tus puntos por recompensas de la casa."
+msgstr "Cambia tus puntos por recompensas de la casa."
+
+msgid "Contenido pendiente:"
+msgstr "Contenido pendiente:"
+
+msgctxt "cerveza"
+msgid "Agotada"
+msgstr "Agotada"
+
+msgctxt "producto"
+msgid "Agotado"
+msgstr "Agotado"
+
+msgid "Estilo"
+msgstr "Estilo"
+
+msgid "Graduación"
+msgstr "Graduación"
+
+msgid "Cervecera"
+msgstr "Cervecera"
+
+msgid "En grifo"
+msgstr "En grifo"
+
+#, python-format
+msgid "%(title)s: cervezas que hay ahora en los grifos"
+msgstr "%(title)s: cervezas que hay ahora en los grifos"
+
+msgid "(versión en texto a continuación)"
+msgstr "(versión en texto a continuación)"
+
+msgid "Ver la carta de grifos en texto"
+msgstr "Ver la carta de grifos en texto"
+
+msgid "La carta de grifos se publicará aquí"
+msgstr "La carta de grifos se publicará aquí"
+
+msgid "Mientras tanto, pregunta en la barra qué hay hoy en los grifos."
+msgstr "Mientras tanto, pregunta en la barra qué hay hoy en los grifos."
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Secciones del dashboard"
+msgstr "Secciones del dashboard"
+
+msgid "Páginas"
+msgstr "Páginas"
+
+msgid "Anteriores"
+msgstr "Anteriores"
+
+#, python-format
+msgid "Página %(number)s de %(total)s · %(count)s resultados"
+msgstr "Página %(number)s de %(total)s · %(count)s resultados"
+
+msgid "Siguientes"
+msgstr "Siguientes"
+
+msgid "Periodo"
+msgstr "Periodo"
+
+msgid "(personalizado)"
+msgstr "(personalizado)"
+
+msgid "Se muestra el periodo por defecto."
+msgstr "Se muestra el periodo por defecto."
+
+msgid "Periodo:"
+msgstr "Periodo:"
+
+msgid "Editar campaña"
+msgstr "Editar campaña"
+
+msgid "Nueva campaña"
+msgstr "Nueva campaña"
+
+msgid "Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales."
+msgstr "Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales."
+
+msgid "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
+msgstr "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
+
+msgid "No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja."
+msgstr "No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja."
+
+msgid "Guardar borrador"
+msgstr "Guardar borrador"
+
+msgid "← Volver a comunicaciones"
+msgstr "← Volver a comunicaciones"
+
+msgid "Campañas promocionales y registro de todo lo que envía la plataforma."
+msgstr "Campañas promocionales y registro de todo lo que envía la plataforma."
+
+msgid "Canales"
+msgstr "Canales"
+
+msgid "Proveedor real"
+msgstr "Proveedor real"
+
+msgid "Sin envío real"
+msgstr "Sin envío real"
+
+msgid "SMS"
+msgstr "SMS"
+
+msgid "Proveedor configurado"
+msgstr "Proveedor configurado"
+
+msgid "No disponible"
+msgstr "No disponible"
+
+msgid "Solo a clientes con teléfono válido y consentimiento de SMS."
+msgstr "Solo a clientes con teléfono válido y consentimiento de SMS."
+
+msgid "No hay ningún proveedor de SMS integrado: no se envían SMS."
+msgstr "No hay ningún proveedor de SMS integrado: no se envían SMS."
+
+msgid "Campañas promocionales"
+msgstr "Campañas promocionales"
+
+#, python-format
+msgid "Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: %(email)s por email, %(sms)s por SMS). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja."
+msgstr "Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: %(email)s por email, %(sms)s por SMS). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja."
+
+#, python-format
+msgid "Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: %(email)s por email). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja."
+msgstr "Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: %(email)s por email). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja."
+
+msgid "Campaña"
+msgstr "Campaña"
+
+msgid "Estado"
+msgstr "Estado"
+
+msgid "Destinatarios"
+msgstr "Destinatarios"
+
+msgid "Enviadas"
+msgstr "Enviadas"
+
+msgid "No enviadas"
+msgstr "No enviadas"
+
+msgid "Fallidas"
+msgstr "Fallidas"
+
+msgid "Acciones"
+msgstr "Acciones"
+
+msgid "Editar"
+msgstr "Editar"
+
+msgid "Programar envío"
+msgstr "Programar envío"
+
+msgid "Todavía no hay campañas."
+msgstr "Todavía no hay campañas."
+
+msgid "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
+msgstr "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
+
+msgid "Registro de notificaciones"
+msgstr "Registro de notificaciones"
+
+msgid "Filtrar notificaciones"
+msgstr "Filtrar notificaciones"
+
+msgid "Tipo"
+msgstr "Tipo"
+
+msgid "Aplicar"
+msgstr "Aplicar"
+
+msgid "Fecha"
+msgstr "Fecha"
+
+msgid "Intentos"
+msgstr "Intentos"
+
+msgid "Motivo / error"
+msgstr "Motivo / error"
+
+msgid "No hay notificaciones con estos filtros."
+msgstr "No hay notificaciones con estos filtros."
+
+msgid "El registro no guarda destinatarios, enlaces ni el texto de los mensajes. «Enviada» significa que el proveedor aceptó el mensaje, no que el cliente lo haya leído."
+msgstr "El registro no guarda destinatarios, enlaces ni el texto de los mensajes. «Enviada» significa que el proveedor aceptó el mensaje, no que el cliente lo haya leído."
+
+msgid "Datos que se muestran en la web pública (inicio, La cervecería, Contacto y pie de página). Lo que dejes vacío aparece como «Pendiente de publicar»."
+msgstr "Datos que se muestran en la web pública (inicio, La cervecería, Contacto y pie de página). Lo que dejes vacío aparece como «Pendiente de publicar»."
+
+msgid "Son datos públicos del local: no escribas datos personales de clientes ni de empleados."
+msgstr "Son datos públicos del local: no escribas datos personales de clientes ni de empleados."
+
+msgid "Guardar contenido"
+msgstr "Guardar contenido"
+
+msgid "El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas."
+msgstr "El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas."
+
+msgid "Ficha de cliente"
+msgstr "Ficha de cliente"
+
+msgid "Volver a clientes"
+msgstr "Volver a clientes"
+
+msgid "Esta consulta queda registrada en la auditoría."
+msgstr "Esta consulta queda registrada en la auditoría."
+
+msgid "Sin dirección en el perfil"
+msgstr "Sin dirección en el perfil"
+
+msgid "Teléfono"
+msgstr "Teléfono"
+
+msgid "No indicado"
+msgstr "No indicado"
+
+msgid "No indicada"
+msgstr "No indicada"
+
+msgid "Fecha de registro"
+msgstr "Fecha de registro"
+
+msgid "Desactivada"
+msgstr "Desactivada"
+
+msgid "Emails promocionales"
+msgstr "Emails promocionales"
+
+msgid "Acepta"
+msgstr "Acepta"
+
+msgid "No acepta"
+msgstr "No acepta"
+
+msgid "SMS promocionales"
+msgstr "SMS promocionales"
+
+msgid "Últimos cambios"
+msgstr "Últimos cambios"
+
+msgctxt "preferencia"
+msgid "alta"
+msgstr "alta"
+
+msgctxt "preferencia"
+msgid "baja"
+msgstr "baja"
+
+msgid "Sin cambios registrados."
+msgstr "Sin cambios registrados."
+
+msgid "Actividad de fidelización"
+msgstr "Actividad de fidelización"
+
+msgid "Saldo"
+msgstr "Saldo"
+
+msgid "Obtenidos"
+msgstr "Obtenidos"
+
+msgid "Utilizados"
+msgstr "Utilizados"
+
+msgid "Corregidos"
+msgstr "Corregidos"
+
+msgid "Caducados"
+msgstr "Caducados"
+
+msgid "Últimas compras registradas"
+msgstr "Últimas compras registradas"
+
+msgid "Importe"
+msgstr "Importe"
+
+msgid "Registrada por"
+msgstr "Registrada por"
+
+msgid "Sin compras registradas."
+msgstr "Sin compras registradas."
+
+msgid "Últimos canjes"
+msgstr "Últimos canjes"
+
+msgid "Solicitado"
+msgstr "Solicitado"
+
+msgid "Recompensa"
+msgstr "Recompensa"
+
+msgid "Sin canjes."
+msgstr "Sin canjes."
+
+msgid "Últimos movimientos de puntos"
+msgstr "Últimos movimientos de puntos"
+
+msgid "Detalle"
+msgstr "Detalle"
+
+msgid "Compensar"
+msgstr "Compensar"
+
+msgid "Sin movimientos de puntos."
+msgstr "Sin movimientos de puntos."
+
+msgid "Para corregir errores. No modifica movimientos anteriores: añade uno nuevo con el motivo y queda auditado."
+msgstr "Para corregir errores. No modifica movimientos anteriores: añade uno nuevo con el motivo y queda auditado."
+
+msgid "Registrar ajuste"
+msgstr "Registrar ajuste"
+
+msgid "Estadísticas geográficas"
+msgstr "Estadísticas geográficas"
+
+msgid "De qué zonas procede tu base de clientes."
+msgstr "De qué zonas procede tu base de clientes."
+
+msgid "Listado"
+msgstr "Listado"
+
+msgid "Filtrar estadísticas geográficas"
+msgstr "Filtrar estadísticas geográficas"
+
+msgid "Agrupar por"
+msgstr "Agrupar por"
+
+msgid "Clientes activos con al menos una compra registrada en el periodo."
+msgstr "Clientes activos con al menos una compra registrada en el periodo."
+
+msgid "Clientes activos dados de alta en el periodo."
+msgstr "Clientes activos dados de alta en el periodo."
+
+msgid "Total:"
+msgstr "Total:"
+
+#, python-format
+msgid "Clientes por %(level)s"
+msgstr "Clientes por %(level)s"
+
+msgid "Proporción"
+msgstr "Proporción"
+
+msgid "Otras zonas"
+msgstr "Otras zonas"
+
+msgid "Sin dato en el perfil"
+msgstr "Sin dato en el perfil"
+
+msgid "Las barras son proporcionales a la zona con más clientes. Los porcentajes son sobre el total de la base filtrada. Pulsa una zona para ver sus clientes. Nunca se muestran direcciones completas."
+msgstr "Las barras son proporcionales a la zona con más clientes. Los porcentajes son sobre el total de la base filtrada. Pulsa una zona para ver sus clientes. Nunca se muestran direcciones completas."
+
+msgid "No hay clientes con este dato en el periodo seleccionado."
+msgstr "No hay clientes con este dato en el periodo seleccionado."
+
+#, python-format
+msgid "%(count)s clientes no lo tienen en su perfil."
+msgstr "%(count)s clientes no lo tienen en su perfil."
+
+msgid "Buscar por nombre, apellidos o email"
+msgstr "Buscar por nombre, apellidos o email"
+
+msgid "Buscar"
+msgstr "Buscar"
+
+msgid "Quitar búsqueda"
+msgstr "Quitar búsqueda"
+
+msgid "La búsqueda no se guarda en la dirección de la página para que no quede en el historial ni en los registros del servidor."
+msgstr "La búsqueda no se guarda en la dirección de la página para que no quede en el historial ni en los registros del servidor."
+
+msgid "Filtrar clientes"
+msgstr "Filtrar clientes"
+
+msgid "Cuenta activa"
+msgstr "Cuenta activa"
+
+msgid "Acepta emails promocionales"
+msgstr "Acepta emails promocionales"
+
+msgid "Filtrar"
+msgstr "Filtrar"
+
+msgid "Limpiar"
+msgstr "Limpiar"
+
+msgid "El periodo filtra por fecha de alta."
+msgstr "El periodo filtra por fecha de alta."
+
+msgid "Verificación"
+msgstr "Verificación"
+
+msgid "Alta"
+msgstr "Alta"
+
+msgid "No hay clientes que cumplan estos filtros."
+msgstr "No hay clientes que cumplan estos filtros."
+
+msgid "Personal con acceso al panel y su actividad en el periodo."
+msgstr "Personal con acceso al panel y su actividad en el periodo."
+
+msgid "Filtrar por periodo"
+msgstr "Filtrar por periodo"
+
+msgid "Rol"
+msgstr "Rol"
+
+msgid "(tú)"
+msgstr "(tú)"
+
+msgid "Dar de baja"
+msgstr "Dar de baja"
+
+msgid "Reactivar"
+msgstr "Reactivar"
+
+msgid "Cambiar rol"
+msgstr "Cambiar rol"
+
+msgid "Guardar rol"
+msgstr "Guardar rol"
+
+msgid "No hay personal dado de alta."
+msgstr "No hay personal dado de alta."
+
+msgid "Compras e importe: compras registradas en el programa (no es la caja). Canjes: recompensas validadas en barra. Una cuenta dada de baja no puede entrar y se puede reactivar; nada se borra."
+msgstr "Compras e importe: compras registradas en el programa (no es la caja). Canjes: recompensas validadas en barra. Una cuenta dada de baja no puede entrar y se puede reactivar; nada se borra."
+
+msgid "Dar de alta un empleado"
+msgstr "Dar de alta un empleado"
+
+msgid "El empleado entra en el panel con su email y esta contraseña, y solo ve el nombre abreviado de los clientes."
+msgstr "El empleado entra en el panel con su email y esta contraseña, y solo ve el nombre abreviado de los clientes."
+
+msgid "Creando…"
+msgstr "Creando…"
+
+msgid "Dar de alta"
+msgstr "Dar de alta"
+
+msgid "Editar evento"
+msgstr "Editar evento"
+
+msgid "Nuevo evento"
+msgstr "Nuevo evento"
+
+#, python-format
+msgid "Editar «%(title)s»"
+msgstr "Editar «%(title)s»"
+
+#, python-format
+msgid "Estado: %(status)s."
+msgstr "Estado: %(status)s."
+
+msgid "Se guarda como borrador; publícalo desde el listado."
+msgstr "Se guarda como borrador; publícalo desde el listado."
+
+msgid "Es contenido público: no escribas datos personales de clientes ni de empleados."
+msgstr "Es contenido público: no escribas datos personales de clientes ni de empleados."
+
+msgid "Guardar evento"
+msgstr "Guardar evento"
+
+msgid "← Volver a eventos"
+msgstr "← Volver a eventos"
+
+msgid "Crea, edita, publica y archiva los eventos del local. Solo los publicados se ven en la web."
+msgstr "Crea, edita, publica y archiva los eventos del local. Solo los publicados se ven en la web."
+
+msgid "Filtrar eventos"
+msgstr "Filtrar eventos"
+
+msgid "Evento"
+msgstr "Evento"
+
+msgid "Empieza"
+msgstr "Empieza"
+
+msgid "Pendientes"
+msgstr "Pendientes"
+
+msgid "Personas confirmadas"
+msgstr "Personas confirmadas"
+
+msgid "Destacado"
+msgstr "Destacado"
+
+#, python-format
+msgid "%(seats)s plazas"
+msgstr "%(seats)s plazas"
+
+msgid "Retirar de la web"
+msgstr "Retirar de la web"
+
+msgid "Recuperar como borrador"
+msgstr "Recuperar como borrador"
+
+msgid "Todavía no hay eventos con este estado."
+msgstr "Todavía no hay eventos con este estado."
+
+msgid "Todavía no hay eventos."
+msgstr "Todavía no hay eventos."
+
+msgid "Los eventos no se borran: se archivan. Solo se publica un evento que aún no ha empezado. Archivar o retirar un evento no cancela sus reservas: revísalas en Reservas."
+msgstr "Los eventos no se borran: se archivan. Solo se publica un evento que aún no ha empezado. Archivar o retirar un evento no cancela sus reservas: revísalas en Reservas."
+
+msgid "Cifras reales del programa de fidelización."
+msgstr "Cifras reales del programa de fidelización."
+
+msgid "Estadísticas del periodo"
+msgstr "Estadísticas del periodo"
+
+msgid "Clientes registrados"
+msgstr "Clientes registrados"
+
+#, python-format
+msgid "+%(count)s en el periodo"
+msgstr "+%(count)s en el periodo"
+
+msgid "Compras registradas"
+msgstr "Compras registradas"
+
+#, python-format
+msgid "%(count)s clientes distintos"
+msgstr "%(count)s clientes distintos"
+
+msgid "Importe de compras registradas"
+msgstr "Importe de compras registradas"
+
+#, python-format
+msgid "Media %(amount)s €"
+msgstr "Media %(amount)s €"
+
+msgid "Sin compras"
+msgstr "Sin compras"
+
+msgid "Puntos emitidos"
+msgstr "Puntos emitidos"
+
+#, python-format
+msgid "Saldo pendiente total: %(points)s"
+msgstr "Saldo pendiente total: %(points)s"
+
+msgid "Puntos canjeados"
+msgstr "Puntos canjeados"
+
+msgid "Descontadas las devoluciones"
+msgstr "Descontadas las devoluciones"
+
+msgid "Recompensas utilizadas"
+msgstr "Recompensas utilizadas"
+
+#, python-format
+msgid "%(count)s pendientes de recoger"
+msgstr "%(count)s pendientes de recoger"
+
+msgid "Reservas solicitadas"
+msgstr "Reservas solicitadas"
+
+#, python-format
+msgid "%(count)s confirmadas"
+msgstr "%(count)s confirmadas"
+
+#, python-format
+msgid "%(count)s pendientes"
+msgstr "%(count)s pendientes"
+
+msgid "Próximos eventos"
+msgstr "Próximos eventos"
+
+#, python-format
+msgid "Publicados · %(count)s reservas confirmadas por venir"
+msgstr "Publicados · %(count)s reservas confirmadas por venir"
+
+msgid "Localidades con más clientes"
+msgstr "Localidades con más clientes"
+
+msgid "Ver estadísticas geográficas"
+msgstr "Ver estadísticas geográficas"
+
+msgid "Todavía no hay clientes con localidad en su perfil."
+msgstr "Todavía no hay clientes con localidad en su perfil."
+
+#, python-format
+msgid "Total de la base: %(total)s clientes activos."
+msgstr "Total de la base: %(total)s clientes activos."
+
+#, python-format
+msgid "Conversión vigente: <strong class=\"text-paper\">%(rate)s puntos por euro</strong>"
+msgstr "Conversión vigente: <strong class=\"text-paper\">%(rate)s puntos por euro</strong>"
+
+msgid "(valor por defecto)"
+msgstr "(valor por defecto)"
+
+msgid "Cambiar"
+msgstr "Cambiar"
+
+msgid "Filtrar movimientos"
+msgstr "Filtrar movimientos"
+
+msgid "Tipo de movimiento"
+msgstr "Tipo de movimiento"
+
+msgid "Emitidos"
+msgstr "Emitidos"
+
+msgid "Compras, promociones y ajustes a favor"
+msgstr "Compras, promociones y ajustes a favor"
+
+msgid "Canjeados"
+msgstr "Canjeados"
+
+msgid "Compensaciones y ajustes en contra"
+msgstr "Compensaciones y ajustes en contra"
+
+msgid "Vencidos sin usar"
+msgstr "Vencidos sin usar"
+
+msgid "Saldo pendiente"
+msgstr "Saldo pendiente"
+
+msgid "Total actual, sin filtro de fechas"
+msgstr "Total actual, sin filtro de fechas"
+
+msgid "Para ajustar o compensar puntos abre la ficha del cliente. Los movimientos nunca se editan ni se borran."
+msgstr "Para ajustar o compensar puntos abre la ficha del cliente. Los movimientos nunca se editan ni se borran."
+
+msgid "No hay movimientos con estos filtros."
+msgstr "No hay movimientos con estos filtros."
+
+msgid "Cervezas propias, invitadas y rotativas."
+msgstr "Cervezas propias, invitadas y rotativas."
+
+msgid "Productos fijos de la carta. Las cervezas están en su propia sección."
+msgstr "Productos fijos de la carta. Las cervezas están en su propia sección."
+
+msgid "Nuevo producto"
+msgstr "Nuevo producto"
+
+msgid "Categorías"
+msgstr "Categorías"
+
+msgid "Estilos"
+msgstr "Estilos"
+
+msgid "Carta de grifos:"
+msgstr "Carta de grifos:"
+
+#, python-format
+msgid "publicada («%(title)s»)"
+msgstr "publicada («%(title)s»)"
+
+msgid "sin publicar"
+msgstr "sin publicar"
+
+msgid "Filtrar productos"
+msgstr "Filtrar productos"
+
+msgid "Categoría"
+msgstr "Categoría"
+
+msgid "Producto"
+msgstr "Producto"
+
+msgid "Disponibilidad"
+msgstr "Disponibilidad"
+
+msgid "Destacada"
+msgstr "Destacada"
+
+msgid "Disponible"
+msgstr "Disponible"
+
+msgid "Marcar agotado"
+msgstr "Marcar agotado"
+
+msgid "Marcar disponible"
+msgstr "Marcar disponible"
+
+msgid "A borrador"
+msgstr "A borrador"
+
+msgid "No hay productos con estos filtros."
+msgstr "No hay productos con estos filtros."
+
+msgid "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin."
+msgstr "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin."
+
+msgid "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)."
+msgstr "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)."
+
+msgid "Nueva promoción"
+msgstr "Nueva promoción"
+
+msgid "Vigencia"
+msgstr "Vigencia"
+
+msgid "Usos"
+msgstr "Usos"
+
+#, python-format
+msgid "+%(points)s pts"
+msgstr "+%(points)s pts"
+
+#, python-format
+msgid "desde %(amount)s €"
+msgstr "desde %(amount)s €"
+
+msgid "sin fin"
+msgstr "sin fin"
+
+msgid "Activar"
+msgstr "Activar"
+
+msgid "Pausar"
+msgstr "Pausar"
+
+msgid "Finalizar"
+msgstr "Finalizar"
+
+msgid "Todavía no hay promociones."
+msgstr "Todavía no hay promociones."
+
+msgid "Condiciones, fechas y límites se editan en el admin. Usos: bonificaciones concedidas hasta hoy."
+msgstr "Condiciones, fechas y límites se editan en el admin. Usos: bonificaciones concedidas hasta hoy."
+
+#, python-format
+msgid "Los puntos del regalo de cumpleaños y el texto de su aviso se configuran en <a class=\"link\" href=\"%(settings_url)s#cumpleanos\">Configuración</a>."
+msgstr "Los puntos del regalo de cumpleaños y el texto de su aviso se configuran en <a class=\"link\" href=\"%(settings_url)s#cumpleanos\">Configuración</a>."
+
+msgid "Filtrar compras"
+msgstr "Filtrar compras"
+
+msgid "Todo el personal"
+msgstr "Todo el personal"
+
+msgid "Importe registrado"
+msgstr "Importe registrado"
+
+msgid "Ticket medio"
+msgstr "Ticket medio"
+
+msgid "Clientes distintos"
+msgstr "Clientes distintos"
+
+msgid "Las cifras de arriba cuentan todo el personal y solo compras vigentes."
+msgstr "Las cifras de arriba cuentan todo el personal y solo compras vigentes."
+
+msgid "No hay compras registradas con estos filtros."
+msgstr "No hay compras registradas con estos filtros."
+
+msgid "Reserva"
+msgstr "Reserva"
+
+#, python-format
+msgid "Reserva para «%(title)s»"
+msgstr "Reserva para «%(title)s»"
+
+msgid "Reserva de mesa"
+msgstr "Reserva de mesa"
+
+msgid "Estado:"
+msgstr "Estado:"
+
+msgid "Datos de la reserva"
+msgstr "Datos de la reserva"
+
+msgid "Plazas libres del evento"
+msgstr "Plazas libres del evento"
+
+msgid "Solicitada"
+msgstr "Solicitada"
+
+msgid "Último cambio"
+msgstr "Último cambio"
+
+msgid "Comentarios del cliente"
+msgstr "Comentarios del cliente"
+
+msgid "Mensaje enviado al cliente"
+msgstr "Mensaje enviado al cliente"
+
+msgid "Contacto del cliente"
+msgstr "Contacto del cliente"
+
+msgid "Úsalos solo para gestionar esta reserva. Esta consulta queda registrada."
+msgstr "Úsalos solo para gestionar esta reserva. Esta consulta queda registrada."
+
+msgid "Cambiar estado"
+msgstr "Cambiar estado"
+
+msgid "Marcar como completada"
+msgstr "Marcar como completada"
+
+msgid "Confirmar, rechazar o cancelar envía un email al cliente. «Completada» solo a partir del día de la reserva."
+msgstr "Confirmar, rechazar o cancelar envía un email al cliente. «Completada» solo a partir del día de la reserva."
+
+#, python-format
+msgid "Esta reserva está %(status)s: ya no admite cambios."
+msgstr "Esta reserva está %(status)s: ya no admite cambios."
+
+msgid "← Volver a reservas"
+msgstr "← Volver a reservas"
+
+msgid "Solicitudes de los clientes. Se confirman a mano: el cliente recibe un email con cada cambio."
+msgstr "Solicitudes de los clientes. Se confirman a mano: el cliente recibe un email con cada cambio."
+
+msgid "Filtrar reservas"
+msgstr "Filtrar reservas"
+
+msgid "Mesa"
+msgstr "Mesa"
+
+msgid "Gestionar"
+msgstr "Gestionar"
+
+msgid "No hay reservas con estos filtros."
+msgstr "No hay reservas con estos filtros."
+
+msgid "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
+msgstr "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
+
+msgid "Catálogo"
+msgstr "Catálogo"
+
+msgid "Nueva recompensa"
+msgstr "Nueva recompensa"
+
+msgid "Coste"
+msgstr "Coste"
+
+msgid "Unidades"
+msgstr "Unidades"
+
+msgid "Utilizadas"
+msgstr "Utilizadas"
+
+#, python-format
+msgid "%(points)s pts"
+msgstr "%(points)s pts"
+
+msgid "Todavía no hay recompensas."
+msgstr "Todavía no hay recompensas."
+
+msgid "La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan."
+msgstr "La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan."
+
+msgid "Filtrar canjes"
+msgstr "Filtrar canjes"
+
+msgid "Solicitados"
+msgstr "Solicitados"
+
+msgid "Validados en barra"
+msgstr "Validados en barra"
+
+msgid "Cancelados o caducados"
+msgstr "Cancelados o caducados"
+
+msgid "Pendientes ahora"
+msgstr "Pendientes ahora"
+
+msgid "Sin filtro de fechas"
+msgstr "Sin filtro de fechas"
+
+msgid "Validado por"
+msgstr "Validado por"
+
+msgid "No hay canjes con estos filtros."
+msgstr "No hay canjes con estos filtros."
+
+msgid "Los códigos de canje no se muestran nunca en el dashboard."
+msgstr "Los códigos de canje no se muestran nunca en el dashboard."
+
+msgid "Conversión de puntos"
+msgstr "Conversión de puntos"
+
+#, python-format
+msgid "Vigente: <strong data-current-rate>%(rate)s puntos por euro</strong>"
+msgstr "Vigente: <strong data-current-rate>%(rate)s puntos por euro</strong>"
+
+msgid "(valor por defecto, pendiente de confirmar)"
+msgstr "(valor por defecto, pendiente de confirmar)"
+
+msgid "Los puntos se redondean hacia abajo."
+msgstr "Los puntos se redondean hacia abajo."
+
+msgid "Aplicar nueva conversión"
+msgstr "Aplicar nueva conversión"
+
+msgid "Historial"
+msgstr "Historial"
+
+#, python-format
+msgid "%(rate)s pts/€ desde %(date)s"
+msgstr "%(rate)s pts/€ desde %(date)s"
+
+msgid "Todavía no se ha creado ninguna regla: se aplica el valor por defecto."
+msgstr "Todavía no se ha creado ninguna regla: se aplica el valor por defecto."
+
+msgid "Caducidad de los puntos"
+msgstr "Caducidad de los puntos"
+
+#, python-format
+msgid "Vigente: <strong>los puntos caducan a los %(months)s meses</strong> de ganarlos (aviso por email %(days)s días antes). El plazo cuenta como pronto desde el %(date)s."
+msgstr "Vigente: <strong>los puntos caducan a los %(months)s meses</strong> de ganarlos (aviso por email %(days)s días antes). El plazo cuenta como pronto desde el %(date)s."
+
+msgid "Vigente: <strong>los puntos no caducan</strong>."
+msgstr "Vigente: <strong>los puntos no caducan</strong>."
+
+msgid "Se gastan primero los puntos más antiguos. Al activar la caducidad o acortar el plazo, el plazo nuevo empieza a contar desde ese momento: nadie pierde puntos de golpe. Al alargarlo, las fechas solo se retrasan. Los puntos vencidos se descuentan cada noche."
+msgstr "Se gastan primero los puntos más antiguos. Al activar la caducidad o acortar el plazo, el plazo nuevo empieza a contar desde ese momento: nadie pierde puntos de golpe. Al alargarlo, las fechas solo se retrasan. Los puntos vencidos se descuentan cada noche."
+
+msgid "Guardar caducidad"
+msgstr "Guardar caducidad"
+
+#, python-format
+msgid "%(months)s meses · aviso %(days)s días"
+msgstr "%(months)s meses · aviso %(days)s días"
+
+msgid "Sin caducidad"
+msgstr "Sin caducidad"
+
+#, python-format
+msgid "desde %(date)s"
+msgstr "desde %(date)s"
+
+msgid "Nunca se ha configurado: los puntos no caducan."
+msgstr "Nunca se ha configurado: los puntos no caducan."
+
+#, python-format
+msgid "El día de su cumpleaños, cada cliente con email verificado recibe los puntos en su saldo. El aviso solo se envía a quien ha aceptado comunicaciones promocionales (email y, si hay proveedor, SMS). Escribe <code>%(placeholder)s</code> donde quieras mostrar los puntos; deja un texto vacío para usar el mensaje por defecto."
+msgstr "El día de su cumpleaños, cada cliente con email verificado recibe los puntos en su saldo. El aviso solo se envía a quien ha aceptado comunicaciones promocionales (email y, si hay proveedor, SMS). Escribe <code>%(placeholder)s</code> donde quieras mostrar los puntos; deja un texto vacío para usar el mensaje por defecto."
+
+msgid "Guardar regalo de cumpleaños"
+msgstr "Guardar regalo de cumpleaños"
+
+msgid "Valores fijados en la configuración del servidor"
+msgstr "Valores fijados en la configuración del servidor"
+
+msgid "Se cambian en los ajustes del proyecto, no desde aquí."
+msgstr "Se cambian en los ajustes del proyecto, no desde aquí."
+
+#, python-format
+msgid "Administración técnica (auditoría, gestión avanzada): <a class=\"link\" href=\"%(url)s\">admin</a>."
+msgstr "Administración técnica (auditoría, gestión avanzada): <a class=\"link\" href=\"%(url)s\">admin</a>."
+
+#, python-format
+msgid "Hola, %(first_name)s:"
+msgstr "Hola, %(first_name)s:"
+
+msgid "Has solicitado usar esta dirección como nuevo email de tu cuenta de Caneca Furada. Para confirmarla abre este enlace y pulsa «Confirmar email»:"
+msgstr "Has solicitado usar esta dirección como nuevo email de tu cuenta de Caneca Furada. Para confirmarla abre este enlace y pulsa «Confirmar email»:"
+
+#, python-format
+msgid "El enlace caduca en %(ttl_hours)s horas y solo puede usarse una vez. Hasta que lo confirmes, tu email anterior sigue siendo el de acceso."
+msgstr "El enlace caduca en %(ttl_hours)s horas y solo puede usarse una vez. Hasta que lo confirmes, tu email anterior sigue siendo el de acceso."
+
+msgid "Si no lo has solicitado tú, ignora este mensaje."
+msgstr "Si no lo has solicitado tú, ignora este mensaje."
+
+msgid "Confirma tu nuevo email en Caneca Furada"
+msgstr "Confirma tu nuevo email en Caneca Furada"
+
+msgid "El email de acceso de tu cuenta de Caneca Furada se ha cambiado a otra dirección, que ya ha sido confirmada."
+msgstr "El email de acceso de tu cuenta de Caneca Furada se ha cambiado a otra dirección, que ya ha sido confirmada."
+
+msgid "Si no has sido tú, contacta con el local cuanto antes."
+msgstr "Si no has sido tú, contacta con el local cuanto antes."
+
+msgid "Se ha cambiado el email de tu cuenta de Caneca Furada"
+msgstr "Se ha cambiado el email de tu cuenta de Caneca Furada"
+
+msgid "Hola:"
+msgstr "Hola:"
+
+msgid "Alguien ha intentado crear una cuenta en Caneca Furada con esta dirección de correo, pero ya tienes una."
+msgstr "Alguien ha intentado crear una cuenta en Caneca Furada con esta dirección de correo, pero ya tienes una."
+
+msgid "Si has olvidado tu contraseña, puedes restablecerla aquí:"
+msgstr "Si has olvidado tu contraseña, puedes restablecerla aquí:"
+
+msgid "Si no has sido tú, ignora este mensaje: tu cuenta no ha cambiado."
+msgstr "Si no has sido tú, ignora este mensaje: tu cuenta no ha cambiado."
+
+msgid "Intento de registro con tu email en Caneca Furada"
+msgstr "Intento de registro con tu email en Caneca Furada"
+
+msgid "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de Caneca Furada. Para elegir una nueva abre este enlace:"
+msgstr "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de Caneca Furada. Para elegir una nueva abre este enlace:"
+
+msgid "El enlace caduca en unas horas y deja de funcionar en cuanto cambias la contraseña."
+msgstr "El enlace caduca en unas horas y deja de funcionar en cuanto cambias la contraseña."
+
+msgid "Si no lo has solicitado, ignora este mensaje."
+msgstr "Si no lo has solicitado, ignora este mensaje."
+
+msgid "Restablece tu contraseña de Caneca Furada"
+msgstr "Restablece tu contraseña de Caneca Furada"
+
+msgid "Gracias por registrarte en Caneca Furada. Para confirmar tu dirección de correo abre este enlace y pulsa «Confirmar email»:"
+msgstr "Gracias por registrarte en Caneca Furada. Para confirmar tu dirección de correo abre este enlace y pulsa «Confirmar email»:"
+
+#, python-format
+msgid "El enlace caduca en %(ttl_hours)s horas y solo puede usarse una vez."
+msgstr "El enlace caduca en %(ttl_hours)s horas y solo puede usarse una vez."
+
+msgid "Si no has creado esta cuenta, ignora este mensaje."
+msgstr "Si no has creado esta cuenta, ignora este mensaje."
+
+msgid "Confirma tu email en Caneca Furada"
+msgstr "Confirma tu email en Caneca Furada"
+
+msgid "Cuándo"
+msgstr "Cuándo"
+
+msgid "Termina"
+msgstr "Termina"
+
+msgid "Plazas libres"
+msgstr "Plazas libres"
+
+#, python-format
+msgid "Tienes una reserva %(status)s para este evento."
+msgstr "Tienes una reserva %(status)s para este evento."
+
+msgid "Ver mi reserva"
+msgstr "Ver mi reserva"
+
+msgid "No quedan plazas libres."
+msgstr "No quedan plazas libres."
+
+msgid "Solicitar reserva"
+msgstr "Solicitar reserva"
+
+msgid "Necesitas una cuenta con el email verificado. La reserva queda pendiente hasta que el local la confirma."
+msgstr "Necesitas una cuenta con el email verificado. La reserva queda pendiente hasta que el local la confirma."
+
+msgid "Las reservas para este evento están cerradas."
+msgstr "Las reservas para este evento están cerradas."
+
+msgid "Este evento no necesita reserva."
+msgstr "Este evento no necesita reserva."
+
+msgid "← Todos los eventos"
+msgstr "← Todos los eventos"
+
+msgid "Tus solicitudes de reserva y su estado."
+msgstr "Tus solicitudes de reserva y su estado."
+
+msgid "Nueva reserva de mesa"
+msgstr "Nueva reserva de mesa"
+
+#, python-format
+msgid "%(people)s persona"
+msgid_plural "%(people)s personas"
+msgstr[0] "%(people)s persona"
+msgstr[1] "%(people)s personas"
+
+msgid "Páginas de reservas"
+msgstr "Páginas de reservas"
+
+msgid "Todavía no has hecho ninguna reserva."
+msgstr "Todavía no has hecho ninguna reserva."
+
+msgid "Ver eventos"
+msgstr "Ver eventos"
+
+msgid "Volver a mi perfil"
+msgstr "Volver a mi perfil"
+
+msgid "Mi reserva"
+msgstr "Mi reserva"
+
+msgid "Tus comentarios"
+msgstr "Tus comentarios"
+
+msgid "Mensaje del local"
+msgstr "Mensaje del local"
+
+msgid "Pendiente de confirmar: te avisaremos por email."
+msgstr "Pendiente de confirmar: te avisaremos por email."
+
+msgid "Cancelando…"
+msgstr "Cancelando…"
+
+msgid "Cancelar la reserva"
+msgstr "Cancelar la reserva"
+
+#, python-format
+msgid "Reservar: %(title)s"
+msgstr "Reservar: %(title)s"
+
+msgid "Solicitar reserva de mesa"
+msgstr "Solicitar reserva de mesa"
+
+#, python-format
+msgid "Plazas libres: %(seats)s."
+msgstr "Plazas libres: %(seats)s."
+
+msgid "Elige día, hora y personas."
+msgstr "Elige día, hora y personas."
+
+msgid "La reserva queda pendiente hasta que el local la confirme por email."
+msgstr "La reserva queda pendiente hasta que el local la confirme por email."
+
+msgid "Te avisaremos al email de tu cuenta. Tus datos de contacto solo los ve el local."
+msgstr "Te avisaremos al email de tu cuenta. Tus datos de contacto solo los ve el local."
+
+msgid "Enviar solicitud"
+msgstr "Enviar solicitud"
+
+msgid "Sumas puntos cada vez que el personal registra una compra con tu código QR."
+msgstr "Sumas puntos cada vez que el personal registra una compra con tu código QR."
+
+msgid "Saldo disponible"
+msgstr "Saldo disponible"
+
+#, python-format
+msgid "<strong>%(points)s puntos</strong> caducan el <strong>%(date)s</strong>. Los puntos se gastan empezando por los más antiguos."
+msgstr "<strong>%(points)s puntos</strong> caducan el <strong>%(date)s</strong>. Los puntos se gastan empezando por los más antiguos."
+
+msgid "Movimientos"
+msgstr "Movimientos"
+
+msgid "Devolución de canje"
+msgstr "Devolución de canje"
+
+#, python-format
+msgid "compra de %(amount)s €"
+msgstr "compra de %(amount)s €"
+
+msgid "Páginas de movimientos"
+msgstr "Páginas de movimientos"
+
+msgid "Más recientes"
+msgstr "Más recientes"
+
+msgid "Todavía no tienes movimientos de puntos."
+msgstr "Todavía no tienes movimientos de puntos."
+
+msgid "Mis compras"
+msgstr "Mis compras"
+
+#, python-format
+msgid "%(points)s punto"
+msgid_plural "%(points)s puntos"
+msgstr[0] "%(points)s punto"
+msgstr[1] "%(points)s puntos"
+
+msgid "Páginas de compras"
+msgstr "Páginas de compras"
+
+msgid "Todavía no hay compras registradas con tu código."
+msgstr "Todavía no hay compras registradas con tu código."
+
+msgid "Los puntos se calculan en el local a partir del importe registrado: se redondean hacia abajo a puntos enteros. Si ves algún error, coméntalo en la barra."
+msgstr "Los puntos se calculan en el local a partir del importe registrado: se redondean hacia abajo a puntos enteros. Si ves algún error, coméntalo en la barra."
+
+msgid "Canjear puntos"
+msgstr "Canjear puntos"
+
+msgid "Enséñalo en la barra cuando pagues para que registremos tu compra."
+msgstr "Enséñalo en la barra cuando pagues para que registremos tu compra."
+
+msgid "Tu código QR personal"
+msgstr "Tu código QR personal"
+
+msgid "Si la cámara no lo lee, dicta este código:"
+msgstr "Si la cámara no lo lee, dicta este código:"
+
+msgid "El código no contiene tus datos personales ni tu saldo. Solo sirve para que el personal te identifique; nadie puede usarlo sin pasar por la barra."
+msgstr "El código no contiene tus datos personales ni tu saldo. Solo sirve para que el personal te identifique; nadie puede usarlo sin pasar por la barra."
+
+msgid "No lo publiques. Si crees que alguien lo ha copiado, renuévalo: el anterior dejará de funcionar."
+msgstr "No lo publiques. Si crees que alguien lo ha copiado, renuévalo: el anterior dejará de funcionar."
+
+#, python-format
+msgid "Última renovación: %(date)s."
+msgstr "Última renovación: %(date)s."
+
+msgid "Renovando…"
+msgstr "Renovando…"
+
+msgid "Renovar mi código"
+msgstr "Renovar mi código"
+
+msgid "¡Feliz cumpleaños!"
+msgstr "¡Feliz cumpleaños!"
+
+#, python-format
+msgid "Para celebrarlo te hemos regalado %(points)s puntos en tu cuenta de Caneca Furada. Ya los tienes en tu saldo:"
+msgstr "Para celebrarlo te hemos regalado %(points)s puntos en tu cuenta de Caneca Furada. Ya los tienes en tu saldo:"
+
+msgid "¡Salud!"
+msgstr "¡Salud!"
+
+msgid "Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:"
+msgstr "Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:"
+
+#, python-format
+msgid "¡Feliz cumpleaños! Te hemos regalado %(points)s puntos."
+msgstr "¡Feliz cumpleaños! Te hemos regalado %(points)s puntos."
+
+msgid "Baja:"
+msgstr "Baja:"
+
+#, python-format
+msgid "Hola %(first_name)s:"
+msgstr "Hola %(first_name)s:"
+
+#, python-format
+msgid "Te recordamos que %(points)s de tus puntos de Caneca Furada caducan el %(expires_on)s. Puedes usarlos antes en cualquiera de nuestras recompensas."
+msgstr "Te recordamos que %(points)s de tus puntos de Caneca Furada caducan el %(expires_on)s. Puedes usarlos antes en cualquiera de nuestras recompensas."
+
+msgid "Consulta tu saldo y las fechas de caducidad:"
+msgstr "Consulta tu saldo y las fechas de caducidad:"
+
+msgid "Los puntos se gastan siempre empezando por los más antiguos."
+msgstr "Los puntos se gastan siempre empezando por los más antiguos."
+
+msgid "Este es un aviso sobre el estado de tu cuenta de puntos."
+msgstr "Este es un aviso sobre el estado de tu cuenta de puntos."
+
+#, python-format
+msgid "Caneca Furada: tienes %(points)s puntos que caducan el %(expires_on)s"
+msgstr "Caneca Furada: tienes %(points)s puntos que caducan el %(expires_on)s"
+
+#, python-format
+msgid "Has cancelado tu reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+msgstr "Has cancelado tu reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+
+#, python-format
+msgid "Has cancelado tu reserva del %(when)s (%(party_size)s personas)."
+msgstr "Has cancelado tu reserva del %(when)s (%(party_size)s personas)."
+
+#, python-format
+msgid "El local ha cancelado tu reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+msgstr "El local ha cancelado tu reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+
+#, python-format
+msgid "El local ha cancelado tu reserva del %(when)s (%(party_size)s personas)."
+msgstr "El local ha cancelado tu reserva del %(when)s (%(party_size)s personas)."
+
+#, python-format
+msgid "Mensaje del local: %(message)s"
+msgstr "Mensaje del local: %(message)s"
+
+msgid "Tu reserva en Caneca Furada se ha cancelado"
+msgstr "Tu reserva en Caneca Furada se ha cancelado"
+
+#, python-format
+msgid "Tu reserva para «%(event_title)s» está confirmada:"
+msgstr "Tu reserva para «%(event_title)s» está confirmada:"
+
+msgid "Tu reserva está confirmada:"
+msgstr "Tu reserva está confirmada:"
+
+#, python-format
+msgid "Fecha: %(when)s"
+msgstr "Fecha: %(when)s"
+
+#, python-format
+msgid "Personas: %(party_size)s"
+msgstr "Personas: %(party_size)s"
+
+msgid "Si no puedes venir, cancélala desde tu cuenta para liberar el sitio:"
+msgstr "Si no puedes venir, cancélala desde tu cuenta para liberar el sitio:"
+
+msgid "Tu reserva en Caneca Furada está confirmada"
+msgstr "Tu reserva en Caneca Furada está confirmada"
+
+#, python-format
+msgid "%(alert)s para «%(event_title)s»:"
+msgstr "%(alert)s para «%(event_title)s»:"
+
+msgid "Los datos del cliente están en el dashboard (no se envían por email):"
+msgstr "Los datos del cliente están en el dashboard (no se envían por email):"
+
+#, python-format
+msgid "%(alert)s: reserva del %(when)s"
+msgstr "%(alert)s: reserva del %(when)s"
+
+#, python-format
+msgid "Hemos recibido tu solicitud de reserva para «%(event_title)s»:"
+msgstr "Hemos recibido tu solicitud de reserva para «%(event_title)s»:"
+
+msgid "Hemos recibido tu solicitud de reserva:"
+msgstr "Hemos recibido tu solicitud de reserva:"
+
+msgid "Todavía no está confirmada: te escribiremos en cuanto la revisemos. Puedes consultarla o cancelarla en tu cuenta:"
+msgstr "Todavía no está confirmada: te escribiremos en cuanto la revisemos. Puedes consultarla o cancelarla en tu cuenta:"
+
+msgid "Hemos recibido tu solicitud de reserva en Caneca Furada"
+msgstr "Hemos recibido tu solicitud de reserva en Caneca Furada"
+
+#, python-format
+msgid "Lo sentimos: no podemos confirmar tu solicitud de reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+msgstr "Lo sentimos: no podemos confirmar tu solicitud de reserva para «%(event_title)s» del %(when)s (%(party_size)s personas)."
+
+#, python-format
+msgid "Lo sentimos: no podemos confirmar tu solicitud de reserva del %(when)s (%(party_size)s personas)."
+msgstr "Lo sentimos: no podemos confirmar tu solicitud de reserva del %(when)s (%(party_size)s personas)."
+
+msgid "Puedes hacer otra solicitud cuando quieras desde la web."
+msgstr "Puedes hacer otra solicitud cuando quieras desde la web."
+
+msgid "No podemos confirmar tu reserva en Caneca Furada"
+msgstr "No podemos confirmar tu reserva en Caneca Furada"
+
+msgid "Darse de baja"
+msgstr "Darse de baja"
+
+msgid "Baja completada"
+msgstr "Baja completada"
+
+msgid "Este enlace de baja no es válido o ha caducado."
+msgstr "Este enlace de baja no es válido o ha caducado."
+
+msgid "Puedes retirar tus preferencias en cualquier momento desde tu perfil, en «Preferencias de comunicación»."
+msgstr "Puedes retirar tus preferencias en cualquier momento desde tu perfil, en «Preferencias de comunicación»."
+
+msgid "Ir a mi perfil"
+msgstr "Ir a mi perfil"
+
+#, python-format
+msgid "Ya no recibirás comunicaciones promocionales por %(channel)s."
+msgstr "Ya no recibirás comunicaciones promocionales por %(channel)s."
+
+msgid "Seguirás recibiendo los mensajes necesarios de tu cuenta y de tus reservas. Puedes volver a activarlas desde tu perfil."
+msgstr "Seguirás recibiendo los mensajes necesarios de tu cuenta y de tus reservas. Puedes volver a activarlas desde tu perfil."
+
+#, python-format
+msgid "¿Quieres dejar de recibir comunicaciones promocionales de Caneca Furada por %(channel)s?"
+msgstr "¿Quieres dejar de recibir comunicaciones promocionales de Caneca Furada por %(channel)s?"
+
+msgid "Darme de baja"
+msgstr "Darme de baja"
+
+msgid "Confirmar compra"
+msgstr "Confirmar compra"
+
+msgid "Paso 2 de 2: comprueba el cliente e introduce el importe."
+msgstr "Paso 2 de 2: comprueba el cliente e introduce el importe."
+
+msgid "Cliente identificado"
+msgstr "Cliente identificado"
+
+msgid "Pregúntale su nombre para confirmar que es su código."
+msgstr "Pregúntale su nombre para confirmar que es su código."
+
+msgid "Registrando…"
+msgstr "Registrando…"
+
+msgid "Registrar compra"
+msgstr "Registrar compra"
+
+msgid "No es este cliente: volver a escanear"
+msgstr "No es este cliente: volver a escanear"
+
+msgid "Compra registrada"
+msgstr "Compra registrada"
+
+#, python-format
+msgid "Compra %(status)s"
+msgstr "Compra %(status)s"
+
+msgid "Fecha y hora"
+msgstr "Fecha y hora"
+
+msgid "Origen"
+msgstr "Origen"
+
+msgid "Puntos generados"
+msgstr "Puntos generados"
+
+msgid "Registrar otra compra"
+msgstr "Registrar otra compra"
+
+msgid "Volver al panel"
+msgstr "Volver al panel"
+
+msgid "Paso 1 de 2: escanea el QR del cliente."
+msgstr "Paso 1 de 2: escanea el QR del cliente."
+
+msgid "Código leído. Comprobando…"
+msgstr "Código leído. Comprobando…"
+
+msgid "Abriendo la cámara…"
+msgstr "Abriendo la cámara…"
+
+msgid "Apunta la cámara al QR del cliente."
+msgstr "Apunta la cámara al QR del cliente."
+
+msgid "No se ha podido usar la cámara. Revisa el permiso del navegador o escribe el código."
+msgstr "No se ha podido usar la cámara. Revisa el permiso del navegador o escribe el código."
+
+msgid "Abrir la cámara"
+msgstr "Abrir la cámara"
+
+msgid "Cerrar la cámara"
+msgstr "Cerrar la cámara"
+
+msgid "Comprobando…"
+msgstr "Comprobando…"
+
+msgid "Tus últimos registros"
+msgstr "Tus últimos registros"
+
+msgid "Todavía no has registrado ninguna compra."
+msgstr "Todavía no has registrado ninguna compra."
+
+msgid "Las recompensas que has canjeado y su estado."
+msgstr "Las recompensas que has canjeado y su estado."
+
+msgid "Páginas de canjes"
+msgstr "Páginas de canjes"
+
+msgid "Todavía no has canjeado ninguna recompensa."
+msgstr "Todavía no has canjeado ninguna recompensa."
+
+msgid "Ver recompensas"
+msgstr "Ver recompensas"
+
+msgid "Mi canje"
+msgstr "Mi canje"
+
+msgid "Enseña este código en la barra para recoger tu recompensa. Solo sirve una vez."
+msgstr "Enseña este código en la barra para recoger tu recompensa. Solo sirve una vez."
+
+msgid "Código QR de tu canje"
+msgstr "Código QR de tu canje"
+
+#, python-format
+msgid "Válido hasta el %(date)s. Si no lo usas, te devolveremos los puntos."
+msgstr "Válido hasta el %(date)s. Si no lo usas, te devolveremos los puntos."
+
+#, python-format
+msgid "Recogido el %(date)s. ¡Que lo disfrutes!"
+msgstr "Recogido el %(date)s. ¡Que lo disfrutes!"
+
+#, python-format
+msgid "Este canje se cerró el %(date)s y te devolvimos %(points)s puntos."
+msgstr "Este canje se cerró el %(date)s y te devolvimos %(points)s puntos."
+
+#, python-format
+msgid "El plazo para recogerlo terminó el %(date)s. Te devolveremos los puntos."
+msgstr "El plazo para recogerlo terminó el %(date)s. Te devolveremos los puntos."
+
+msgid "Cancelar el canje y recuperar los puntos"
+msgstr "Cancelar el canje y recuperar los puntos"
+
+msgid "Tu saldo"
+msgstr "Tu saldo"
+
+msgid "Disponible hasta"
+msgstr "Disponible hasta"
+
+msgctxt "recompensa"
+msgid "Agotada"
+msgstr "Agotada"
+
+msgid "Ya tienes un código pendiente de recoger para esta recompensa."
+msgstr "Ya tienes un código pendiente de recoger para esta recompensa."
+
+msgid "Ver mi código"
+msgstr "Ver mi código"
+
+#, python-format
+msgid "Te faltan %(points)s puntos para esta recompensa."
+msgstr "Te faltan %(points)s puntos para esta recompensa."
+
+#, python-format
+msgid "Al confirmar se descontarán %(points)s puntos y recibirás un código para recogerla en la barra. Si no lo usas o lo cancelas, te devolvemos los puntos."
+msgstr "Al confirmar se descontarán %(points)s puntos y recibirás un código para recogerla en la barra. Si no lo usas o lo cancelas, te devolvemos los puntos."
+
+msgid "Canjeando…"
+msgstr "Canjeando…"
+
+#, python-format
+msgid "Canjear por %(points)s puntos"
+msgstr "Canjear por %(points)s puntos"
+
+msgid "Ver todas las recompensas"
+msgstr "Ver todas las recompensas"
+
+msgid "Confirmar canje"
+msgstr "Confirmar canje"
+
+msgid "Paso 2 de 2: comprueba la recompensa y entrégala."
+msgstr "Paso 2 de 2: comprueba la recompensa y entrégala."
+
+msgid "Caduca"
+msgstr "Caduca"
+
+msgid "Recogido"
+msgstr "Recogido"
+
+msgid "Pregúntale su nombre para confirmar que el canje es suyo."
+msgstr "Pregúntale su nombre para confirmar que el canje es suyo."
+
+msgid "Validando…"
+msgstr "Validando…"
+
+msgid "Validar y entregar"
+msgstr "Validar y entregar"
+
+msgid "Este código no se puede usar: no entregues la recompensa."
+msgstr "Este código no se puede usar: no entregues la recompensa."
+
+msgid "Volver a escanear"
+msgstr "Volver a escanear"
+
+#, python-format
+msgid "Canje %(status)s"
+msgstr "Canje %(status)s"
+
+msgid "Canje validado: entrega la recompensa"
+msgstr "Canje validado: entrega la recompensa"
+
+msgid "Validado el"
+msgstr "Validado el"
+
+msgid "Validar otro canje"
+msgstr "Validar otro canje"
+
+msgid "Validar canje"
+msgstr "Validar canje"
+
+msgid "Paso 1 de 2: escanea el código del canje que enseña el cliente."
+msgstr "Paso 1 de 2: escanea el código del canje que enseña el cliente."
+
+msgid "Comprobar código"
+msgstr "Comprobar código"
+
+msgid "Tus últimos canjes validados"
+msgstr "Tus últimos canjes validados"
+
+msgid "Todavía no has validado ningún canje."
+msgstr "Todavía no has validado ningún canje."
+
+msgid "Resultados"
+msgstr "Resultados"
+
+msgid "Perfil"
+msgstr "Perfil"
+
+#, python-format
+msgid "Hola, %(name)s"
+msgstr "Hola, %(name)s"
+
+msgid "¿Qué quieres hacer?"
+msgstr "¿Qué quieres hacer?"
+
+msgid "Escanea el QR del cliente e introduce el importe."
+msgstr "Escanea el QR del cliente e introduce el importe."
+
+msgid "Escanea el código del canje y entrega la recompensa."
+msgstr "Escanea el código del canje y entrega la recompensa."
+
+msgid "Mis resultados"
+msgstr "Mis resultados"
+
+msgid "Compras registradas y canjes validados por ti."
+msgstr "Compras registradas y canjes validados por ti."
+
+msgid "Tus datos de acceso, email y contraseña."
+msgstr "Tus datos de acceso, email y contraseña."
+
+msgid "Hoy, por ti"
+msgstr "Hoy, por ti"
+
+msgid "Solo cuenta lo que registraste en el programa de fidelización; no es la caja del local."
+msgstr "Solo cuenta lo que registraste en el programa de fidelización; no es la caja del local."
+
+msgid "Si tu nombre o tu rol no son correctos, pídeselo al propietario: solo él puede cambiarlos."
+msgstr "Si tu nombre o tu rol no son correctos, pídeselo al propietario: solo él puede cambiarlos."
+
+msgid "Cerrar sesión"
+msgstr "Cerrar sesión"
+
+msgid "Lo que has registrado y validado tú."
+msgstr "Lo que has registrado y validado tú."
+
+msgid "Tipo de operación"
+msgstr "Tipo de operación"
+
+msgid "Canjes validados"
+msgstr "Canjes validados"
+
+#, python-format
+msgid "Página %(number)s de %(total)s"
+msgstr "Página %(number)s de %(total)s"
+
+msgid "No has validado ningún canje en este periodo."
+msgstr "No has validado ningún canje en este periodo."
+
+msgid "No has registrado ninguna compra en este periodo."
+msgstr "No has registrado ninguna compra en este periodo."
+
+#, python-format
+msgid "Cerveza 100%% artesana"
+msgstr "Cerveza 100%% artesana"
+
+msgid "Nuestra historia"
+msgstr "Nuestra historia"
+
+msgid "Caneca Furada es una cervecería artesana de A Coruña."
+msgstr "Caneca Furada es una cervecería artesana de A Coruña."
+
+msgid "historia de la cervecería y del local"
+msgstr "historia de la cervecería y del local"
+
+msgid "Cartel del X aniversario de Caneca Furada: un corazón hecho de lúpulo con el logotipo de la casa"
+msgstr "Cartel del X aniversario de Caneca Furada: un corazón hecho de lúpulo con el logotipo de la casa"
+
+msgid "Imagen del X aniversario."
+msgstr "Imagen del X aniversario."
+
+msgid "La casa"
+msgstr "La casa"
+
+msgid "Cómo trabajamos"
+msgstr "Cómo trabajamos"
+
+msgid "elaboración, estilos de la casa y cervezas invitadas"
+msgstr "elaboración, estilos de la casa y cervezas invitadas"
+
+msgid "Ver la carta"
+msgstr "Ver la carta"
+
+msgid "Cómo llegar"
+msgstr "Cómo llegar"
+
+msgid "Ven a vernos"
+msgstr "Ven a vernos"
+
+msgid "El local"
+msgstr "El local"
+
+msgid "¿Tienes cuenta?"
+msgstr "¿Tienes cuenta?"
+
+msgid "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
+msgstr "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Lo que pasa en Caneca Furada."
+msgstr "Lo que pasa en Caneca Furada."
+
+msgid "No hay eventos publicados todavía"
+msgstr "No hay eventos publicados todavía"
+
+msgid "Cuando programemos el próximo, lo verás aquí."
+msgstr "Cuando programemos el próximo, lo verás aquí."
+
+msgid "¿Quieres reservar mesa?"
+msgstr "¿Quieres reservar mesa?"
+
+msgid "Envía una solicitud desde tu cuenta y te confirmaremos por email."
+msgstr "Envía una solicitud desde tu cuenta y te confirmaremos por email."
+
+msgid "Aviso"
+msgstr "Aviso"
+
+msgid "Cerveza artesana en A Coruña. Ven a probarla, descubre la carta y únete a nuestro programa de puntos."
+msgstr "Cerveza artesana en A Coruña. Ven a probarla, descubre la carta y únete a nuestro programa de puntos."
+
+msgid "Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada"
+msgstr "Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada"
+
+msgid "Somos Caneca Furada"
+msgstr "Somos Caneca Furada"
+
+#, python-format
+msgid "Una cervecería 100%% artesana en A Coruña."
+msgstr "Una cervecería 100%% artesana en A Coruña."
+
+msgid "presentación de la marca (historia, filosofía y cerveza)"
+msgstr "presentación de la marca (historia, filosofía y cerveza)"
+
+msgid "Conoce la cervecería →"
+msgstr "Conoce la cervecería →"
+
+msgid "La carta de la casa"
+msgstr "La carta de la casa"
+
+msgid "Consulta las cervezas y todo lo que servimos."
+msgstr "Consulta las cervezas y todo lo que servimos."
+
+msgid "Selección"
+msgstr "Selección"
+
+msgid "Nuestras cervezas"
+msgstr "Nuestras cervezas"
+
+msgid "Estamos preparando la selección de cervezas"
+msgstr "Estamos preparando la selección de cervezas"
+
+msgid "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
+msgstr "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
+
+msgid "Ir a la carta"
+msgstr "Ir a la carta"
+
+msgid "Cada visita suma"
+msgstr "Cada visita suma"
+
+msgid "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
+msgstr "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
+
+msgid "Eventos destacados"
+msgstr "Eventos destacados"
+
+msgid "Los próximos eventos de la casa aparecerán aquí."
+msgstr "Los próximos eventos de la casa aparecerán aquí."
+
+msgid "Te esperamos en A Coruña."
+msgstr "Te esperamos en A Coruña."
+
+msgid "Lo que servimos"
+msgstr "Lo que servimos"
+
+msgid "Cervezas de la casa, invitadas y de temporada."
+msgstr "Cervezas de la casa, invitadas y de temporada."
+
+msgid "Categorías de la carta"
+msgstr "Categorías de la carta"
+
+msgid "Grifos"
+msgstr "Grifos"
+
+msgid "Productos"
+msgstr "Productos"
+
+msgid "Estamos preparando la carta online"
+msgstr "Estamos preparando la carta online"
+
+msgid "Mientras tanto, pregunta en la barra por las cervezas de hoy."
+msgstr "Mientras tanto, pregunta en la barra por las cervezas de hoy."
+
+msgid "Dónde estamos"
+msgstr "Dónde estamos"
+
+msgid "Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa."
+msgstr "Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa."
+
+msgid "Cómo funciona"
+msgstr "Cómo funciona"
+
+msgid "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
+msgstr "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
+
+msgid "Recompensas disponibles"
+msgstr "Recompensas disponibles"
+
+#, python-format
+msgid "Hasta el %(date)s"
+msgstr "Hasta el %(date)s"
+
+msgid "Canjear"
+msgstr "Canjear"
+
+msgid "El catálogo de recompensas aún no está publicado"
+msgstr "El catálogo de recompensas aún no está publicado"
+
+msgid "Lo anunciaremos aquí y por email a quienes lo hayan aceptado."
+msgstr "Lo anunciaremos aquí y por email a quienes lo hayan aceptado."
+
+msgid "condiciones del programa de puntos"
+msgstr "condiciones del programa de puntos"
+
+msgid "Ya formas parte"
+msgstr "Ya formas parte"
+
+msgid "Consulta tus puntos y tus canjes en tu cuenta."
+msgstr "Consulta tus puntos y tus canjes en tu cuenta."
+
+msgid "Crea tu cuenta y empieza a sumar puntos con tus consumiciones."
+msgstr "Crea tu cuenta y empieza a sumar puntos con tus consumiciones."

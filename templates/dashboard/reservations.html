@@ -1,33 +1,34 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Reservas · Dashboard{% endblock %}
-{% block heading %}Reservas{% endblock %}
-{% block intro %}<p class="lead mt-2">Solicitudes de los clientes. Se confirman a mano: el cliente recibe un email con cada cambio.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Reservas" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Reservas" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Solicitudes de los clientes. Se confirman a mano: el cliente recibe un email con cada cambio." %}</p>{% endblock %}
 {% block body %}
-<form method="get" class="filters mb-4" aria-label="Filtrar reservas">
+<form method="get" class="filters mb-4" aria-label="{% translate 'Filtrar reservas' %}">
   <div class="field">
-    <label for="r-cuando">Fecha</label>
+    <label for="r-cuando">{% translate "Fecha" %}</label>
     <select name="cuando" id="r-cuando">{% for v, l in when_choices %}<option value="{{ v }}"{% if v == when %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
   </div>
   <div class="field">
-    <label for="r-estado">Estado</label>
+    <label for="r-estado">{% translate "Estado" %}</label>
     <select name="estado" id="r-estado">{% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
   </div>
-  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">{% translate "Aplicar" %}</button></div>
 </form>
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table" data-reservation-list>
-      <thead><tr><th scope="col">Fecha</th><th scope="col">Cliente</th><th scope="col" class="num">Personas</th><th scope="col">Evento</th><th scope="col">Estado</th><th scope="col">Solicitada</th><th scope="col"><span class="sr-only">Detalle</span></th></tr></thead>
+      <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Cliente" %}</th><th scope="col" class="num">{% translate "Personas" %}</th><th scope="col">{% translate "Evento" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col">{% translate "Solicitada" %}</th><th scope="col"><span class="sr-only">{% translate "Detalle" %}</span></th></tr></thead>
       <tbody>
         {% for r in page %}
           <tr>
             <td class="whitespace-nowrap">{{ r.requested_for|date:"D d/m/Y H:i" }}</td>
             <td>{{ r.customer.first_name }} {{ r.customer.last_name|slice:":1" }}.</td>
             <td class="num">{{ r.party_size }}</td>
-            <td>{% if r.event %}{{ r.event.title }}{% else %}Mesa{% endif %}</td>
+            <td>{% if r.event %}{{ r.event.title }}{% else %}{% translate "Mesa" %}{% endif %}</td>
             <td>{{ r.get_status_display }}</td>
             <td class="whitespace-nowrap">{{ r.created_at|date:"d/m H:i" }}</td>
-            <td><a class="btn btn-ghost btn-sm" href="{% url 'dashboard:reservation_detail' r.public_id %}">Gestionar</a></td>
+            <td><a class="btn btn-ghost btn-sm" href="{% url 'dashboard:reservation_detail' r.public_id %}">{% translate "Gestionar" %}</a></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -35,7 +36,7 @@
   </div>
   {% include "dashboard/_pagination.html" %}
 {% else %}
-  <p class="pending">No hay reservas con estos filtros.</p>
+  <p class="pending">{% translate "No hay reservas con estos filtros." %}</p>
 {% endif %}
-<p class="note mt-3">El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada.</p>
+<p class="note mt-3">{% translate "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada." %}</p>
 {% endblock %}

@@ -1,33 +1,34 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Resumen · Dashboard{% endblock %}
-{% block heading %}Resumen{% endblock %}
-{% block intro %}<p class="lead mt-2">Cifras reales del programa de fidelización.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Resumen" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Resumen" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Cifras reales del programa de fidelización." %}</p>{% endblock %}
 {% block body %}
-<form method="get" class="filters mb-4" aria-label="Filtrar por periodo">
+<form method="get" class="filters mb-4" aria-label="{% translate 'Filtrar por periodo' %}">
   {% include "dashboard/_period_fields.html" %}
-  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">{% translate "Aplicar" %}</button></div>
 </form>
 {% include "dashboard/_period_notice.html" %}
 
 <section aria-labelledby="negocio">
-  <h2 id="negocio" class="sr-only">Estadísticas del periodo</h2>
+  <h2 id="negocio" class="sr-only">{% translate "Estadísticas del periodo" %}</h2>
   <dl class="grid grid-cols-2 gap-3 md:grid-cols-4" data-business-stats>
-    <div class="stat"><dt class="stat-label">Clientes registrados</dt><dd class="stat-value" data-stat="customers">{{ customers.active }}</dd><dd class="stat-sub">+{{ customers.new_in_period }} en el periodo</dd></div>
-    <div class="stat"><dt class="stat-label">Compras registradas</dt><dd class="stat-value" data-stat="purchases">{{ purchases.purchases_count }}</dd><dd class="stat-sub">{{ purchases.customers_count }} clientes distintos</dd></div>
-    <div class="stat"><dt class="stat-label">Importe de compras registradas</dt><dd class="stat-value" data-stat="amount">{{ purchases.registered_amount|floatformat:2 }} €</dd><dd class="stat-sub">{% if purchases.average_amount %}Media {{ purchases.average_amount|floatformat:2 }} €{% else %}Sin compras{% endif %}</dd></div>
-    <div class="stat"><dt class="stat-label">Puntos emitidos</dt><dd class="stat-value" data-stat="issued">{{ points.issued }}</dd><dd class="stat-sub">Saldo pendiente total: {{ points.outstanding }}</dd></div>
-    <div class="stat"><dt class="stat-label">Puntos canjeados</dt><dd class="stat-value" data-stat="used">{{ points.used }}</dd><dd class="stat-sub">Descontadas las devoluciones</dd></div>
-    <div class="stat"><dt class="stat-label">Recompensas utilizadas</dt><dd class="stat-value" data-stat="redemptions">{{ redemptions.used }}</dd><dd class="stat-sub">{{ redemptions.pending_now }} pendientes de recoger</dd></div>
-    <div class="stat"><dt class="stat-label">Reservas solicitadas</dt><dd class="stat-value" data-stat="reservations">{{ reservations.requested }}</dd><dd class="stat-sub">{{ reservations.confirmed }} confirmadas · <a class="link" href="{% url 'dashboard:reservations' %}?estado=PENDING">{{ reservations.pending_now }} pendientes</a></dd></div>
-    <div class="stat"><dt class="stat-label">Próximos eventos</dt><dd class="stat-value" data-stat="events">{{ reservations.upcoming_events }}</dd><dd class="stat-sub">Publicados · {{ reservations.upcoming_confirmed }} reservas confirmadas por venir</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Clientes registrados" %}</dt><dd class="stat-value" data-stat="customers">{{ customers.active }}</dd><dd class="stat-sub">{% blocktranslate trimmed with count=customers.new_in_period %}+{{ count }} en el periodo{% endblocktranslate %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Compras registradas" %}</dt><dd class="stat-value" data-stat="purchases">{{ purchases.purchases_count }}</dd><dd class="stat-sub">{% blocktranslate trimmed with count=purchases.customers_count %}{{ count }} clientes distintos{% endblocktranslate %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Importe de compras registradas" %}</dt><dd class="stat-value" data-stat="amount">{{ purchases.registered_amount|floatformat:2 }} €</dd><dd class="stat-sub">{% if purchases.average_amount %}{% blocktranslate trimmed with amount=purchases.average_amount|floatformat:2 %}Media {{ amount }} €{% endblocktranslate %}{% else %}{% translate "Sin compras" %}{% endif %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Puntos emitidos" %}</dt><dd class="stat-value" data-stat="issued">{{ points.issued }}</dd><dd class="stat-sub">{% blocktranslate trimmed with points=points.outstanding %}Saldo pendiente total: {{ points }}{% endblocktranslate %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Puntos canjeados" %}</dt><dd class="stat-value" data-stat="used">{{ points.used }}</dd><dd class="stat-sub">{% translate "Descontadas las devoluciones" %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Recompensas utilizadas" %}</dt><dd class="stat-value" data-stat="redemptions">{{ redemptions.used }}</dd><dd class="stat-sub">{% blocktranslate trimmed with count=redemptions.pending_now %}{{ count }} pendientes de recoger{% endblocktranslate %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Reservas solicitadas" %}</dt><dd class="stat-value" data-stat="reservations">{{ reservations.requested }}</dd><dd class="stat-sub">{% blocktranslate trimmed with count=reservations.confirmed %}{{ count }} confirmadas{% endblocktranslate %} · <a class="link" href="{% url 'dashboard:reservations' %}?estado=PENDING">{% blocktranslate trimmed with count=reservations.pending_now %}{{ count }} pendientes{% endblocktranslate %}</a></dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Próximos eventos" %}</dt><dd class="stat-value" data-stat="events">{{ reservations.upcoming_events }}</dd><dd class="stat-sub">{% blocktranslate trimmed with count=reservations.upcoming_confirmed %}Publicados · {{ count }} reservas confirmadas por venir{% endblocktranslate %}</dd></div>
   </dl>
   <p class="note mt-3" data-not-revenue><strong class="text-paper">{{ purchases.label }}.</strong> {{ purchases.note }}</p>
 </section>
 
 <section aria-labelledby="zonas" class="mt-10">
   <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
-    <h2 id="zonas" class="heading-md">Localidades con más clientes</h2>
-    <a class="link text-sm" href="{% url 'dashboard:customer_zones' %}">Ver estadísticas geográficas</a>
+    <h2 id="zonas" class="heading-md">{% translate "Localidades con más clientes" %}</h2>
+    <a class="link text-sm" href="{% url 'dashboard:customer_zones' %}">{% translate "Ver estadísticas geográficas" %}</a>
   </div>
   {% if zones.rows %}
     <ul class="card space-y-3">
@@ -36,8 +37,8 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p class="pending">Todavía no hay clientes con localidad en su perfil.</p>
+    <p class="pending">{% translate "Todavía no hay clientes con localidad en su perfil." %}</p>
   {% endif %}
-  <p class="note mt-3">{{ zones.note }} Total de la base: {{ zones.total }} clientes activos.</p>
+  <p class="note mt-3">{{ zones.note }} {% blocktranslate trimmed with total=zones.total %}Total de la base: {{ total }} clientes activos.{% endblocktranslate %}</p>
 </section>
 {% endblock %}

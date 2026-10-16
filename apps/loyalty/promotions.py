@@ -35,6 +35,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.birthdays import birthday_in_year
 from apps.accounts.models import CustomerProfile
@@ -134,7 +135,7 @@ def bonuses_for_purchase(purchase, *, base_points):
 def save_promotion(*, actor, promotion, changed_fields=()):
     """Crea o modifica una promoción (solo propietario) y lo deja auditado."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario gestiona las promociones.")
+        raise PermissionDenied(_("Solo el propietario gestiona las promociones."))
     created = promotion.pk is None
     promotion.full_clean()
     promotion.save()
@@ -154,9 +155,9 @@ MANAGEABLE_STATUSES = (Promotion.Status.ACTIVE, Promotion.Status.PAUSED, Promoti
 def set_promotion_status(*, actor, promotion, status):
     """Activa, pausa o finaliza una promoción (solo propietario), validada y auditada."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario gestiona las promociones.")
+        raise PermissionDenied(_("Solo el propietario gestiona las promociones."))
     if status not in MANAGEABLE_STATUSES:
-        raise ValidationError("Estado de promoción no válido.")
+        raise ValidationError(_("Estado de promoción no válido."))
     with transaction.atomic():
         locked = Promotion.objects.select_for_update().get(pk=promotion.pk)
         if locked.status == status:

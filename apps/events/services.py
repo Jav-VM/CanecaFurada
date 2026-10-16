@@ -35,10 +35,13 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Sum
 from django.utils import timezone
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 
 from apps.accounts.models import User
 from apps.accounts.permissions import is_owner
 from apps.core import throttling
+from apps.core.i18n import site_text
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 from apps.notifications import services as notifications
@@ -74,7 +77,7 @@ _HOUR = 60 * 60
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario gestiona los eventos y las reservas.")
+        raise PermissionDenied(_("Solo el propietario gestiona los eventos y las reservas."))
 
 
 def _error(message, code):
@@ -97,7 +100,7 @@ def save_event(*, actor, event, data):
     _require_owner(actor)
     unknown = set(data) - set(EVENT_FIELDS)
     if unknown:
-        raise ValidationError(f"Campos no permitidos: {', '.join(sorted(unknown))}.")
+        raise ValidationError(_("Campos no permitidos: %(join)s.") % {"join": ', '.join(sorted(unknown))})
     created = event.pk is None
     if not created:
         event = Event.objects.select_for_update().get(pk=event.pk)
@@ -108,7 +111,7 @@ def save_event(*, actor, event, data):
     if not created and event.capacity is not None:
         seats = confirmed_seats(event)
         if event.capacity < seats:
-            raise ValidationError({"capacity": f"Ya hay {seats} plazas confirmadas: el aforo no puede ser menor."})
+            raise ValidationError({"capacity": _("Ya hay %(seats)s plazas confirmadas: el aforo no puede ser menor.") % {"seats": seats}})
     changed = sorted(name for name in EVENT_FIELDS if getattr(event, name) != before[name])
     event.save()
     if not created and "starts_at" in changed:
@@ -130,15 +133,15 @@ def save_event(*, actor, event, data):
 def set_event_status(*, actor, event, status):
     _require_owner(actor)
     if status not in EventStatus.values:
-        raise _error("Estado de evento no válido.", "invalid_status")
+        raise _error(_("Estado de evento no válido."), "invalid_status")
     locked = Event.objects.select_for_update().get(pk=event.pk)
     if locked.status == status:
         return locked
     if status not in EVENT_TRANSITIONS[locked.status]:
-        raise _error("Ese cambio de estado no está permitido.", "invalid_transition")
+        raise _error(_("Ese cambio de estado no está permitido."), "invalid_transition")
     if status == EventStatus.PUBLISHED:
         if locked.has_started():
-            raise _error("No se puede publicar un evento que ya ha empezado.", "event_started")
+            raise _error(_("No se puede publicar un evento que ya ha empezado."), "event_started")
         locked.published_at = timezone.now()
     old = locked.status
     locked.status = status
@@ -169,7 +172,7 @@ def parse_idempotency_key(value):
     try:
         return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
     except (TypeError, ValueError, AttributeError):
-        raise _error("La operación no es válida. Vuelve a intentarlo.", "idempotency_invalid") from None
+        raise _error(_("La operación no es válida. Vuelve a intentarlo."), "idempotency_invalid") from None
 
 
 def _parse_party_size(value):
@@ -181,7 +184,7 @@ def _parse_party_size(value):
         value = None
     maximum = settings.EVENTS_RESERVATION_MAX_PARTY_SIZE
     if value is None or not 1 <= value <= maximum:
-        raise ValidationError({"party_size": f"Indica entre 1 y {maximum} personas."})
+        raise ValidationError({"party_size": _("Indica entre 1 y %(maximum)s personas.") % {"maximum": maximum}})
     return value
 
 
@@ -190,22 +193,22 @@ def _parse_text(value, field):
     # Sin caracteres de control (salvo saltos de línea) en textos que se muestran.
     value = "".join(ch for ch in value if ch in "\n" or ch.isprintable())
     if len(value) > MAX_TEXT:
-        raise ValidationError({field: f"Admite como máximo {MAX_TEXT} caracteres."})
+        raise ValidationError({field: _("Admite como máximo %(MAX_TEXT)s caracteres.") % {"MAX_TEXT": MAX_TEXT}})
     return value
 
 
 def _validate_table_datetime(requested_for, now):
     if not isinstance(requested_for, datetime.datetime) or timezone.is_naive(requested_for):
-        raise ValidationError({"requested_for": "Indica la fecha y la hora de la reserva."})
+        raise ValidationError({"requested_for": _("Indica la fecha y la hora de la reserva.")})
     earliest = now + datetime.timedelta(hours=settings.EVENTS_RESERVATION_MIN_NOTICE_HOURS)
     latest = now + datetime.timedelta(days=settings.EVENTS_RESERVATION_MAX_DAYS_AHEAD)
     if requested_for < earliest:
         raise ValidationError(
-            {"requested_for": f"Reserva con al menos {settings.EVENTS_RESERVATION_MIN_NOTICE_HOURS} horas de antelación."}
+            {"requested_for": _("Reserva con al menos %(EVENTS_RESERVATION_MIN_NOTICE_HOURS)s horas de antelación.") % {"EVENTS_RESERVATION_MIN_NOTICE_HOURS": settings.EVENTS_RESERVATION_MIN_NOTICE_HOURS}}
         )
     if requested_for > latest:
         raise ValidationError(
-            {"requested_for": f"Solo se puede reservar hasta {settings.EVENTS_RESERVATION_MAX_DAYS_AHEAD} días vista."}
+            {"requested_for": _("Solo se puede reservar hasta %(EVENTS_RESERVATION_MAX_DAYS_AHEAD)s días vista.") % {"EVENTS_RESERVATION_MAX_DAYS_AHEAD": settings.EVENTS_RESERVATION_MAX_DAYS_AHEAD}}
         )
     return requested_for
 
@@ -218,11 +221,12 @@ def ensure_can_reserve(customer):
         and customer.role == User.Role.CUSTOMER
         and customer.is_email_verified
     ):
-        raise PermissionDenied("Para reservar necesitas una cuenta de cliente con el email verificado.")
+        raise PermissionDenied(_("Para reservar necesitas una cuenta de cliente con el email verificado."))
 
 
 def format_when(value):
-    return timezone.localtime(value).strftime("%d/%m/%Y a las %H:%M")
+    # Se guarda en el contexto del aviso, que se envía en el idioma del sitio.
+    return timezone.localtime(value).strftime(site_text(gettext_lazy("%d/%m/%Y a las %H:%M")))
 
 
 def _context(reservation, **extra):
@@ -249,7 +253,7 @@ def _notify_owners(reservation, alert):
         notifications.enqueue(
             kind=NKind.RESERVATION_OWNER_ALERT,
             recipient=owner,
-            context=_context(reservation, alert=alert),
+            context=_context(reservation, alert=site_text(alert)),
             dedup_key=f"reservation:{reservation.public_id}:owner:{owner.public_id}:{reservation.status}",
             deliver_on_commit=True,
         )
@@ -257,7 +261,7 @@ def _notify_owners(reservation, alert):
 
 def _replay(existing, customer):
     if existing.customer_id != customer.pk:
-        raise _error("Esta operación ya se registró con otros datos.", "idempotency_conflict")
+        raise _error(_("Esta operación ya se registró con otros datos."), "idempotency_conflict")
     return ReservationResult(reservation=existing, created=False)
 
 
@@ -275,12 +279,12 @@ def _create(customer, *, event, requested_for, party_size, notes, key, now):
         if event is not None:
             event = Event.objects.select_for_update().get(pk=event.pk)
             if not (event.status == EventStatus.PUBLISHED and event.accepts_reservations and not event.has_started(now)):
-                raise _error("Este evento ya no admite reservas.", "event_not_bookable")
+                raise _error(_("Este evento ya no admite reservas."), "event_not_bookable")
             requested_for = event.starts_at
             if Reservation.objects.filter(customer=customer, event=event, status__in=Reservation.ACTIVE_STATUSES).exists():
-                raise _error("Ya tienes una reserva activa para este evento.", "already_reserved")
+                raise _error(_("Ya tienes una reserva activa para este evento."), "already_reserved")
             if event.capacity is not None and confirmed_seats(event) + party_size > event.capacity:
-                raise _error("No quedan plazas suficientes para este evento.", "event_full")
+                raise _error(_("No quedan plazas suficientes para este evento."), "event_full")
         else:
             requested_for = _validate_table_datetime(requested_for, now)
         active = Reservation.objects.filter(
@@ -288,7 +292,7 @@ def _create(customer, *, event, requested_for, party_size, notes, key, now):
         ).count()
         if active >= settings.EVENTS_MAX_ACTIVE_RESERVATIONS_PER_CUSTOMER:
             raise _error(
-                f"Ya tienes {active} reservas activas. Cancela alguna antes de pedir otra.", "too_many_active"
+                _("Ya tienes %(active)s reservas activas. Cancela alguna antes de pedir otra.") % {"active": active}, "too_many_active"
             )
         reservation = Reservation.objects.create(
             customer=customer,
@@ -300,7 +304,7 @@ def _create(customer, *, event, requested_for, party_size, notes, key, now):
             created_at=now,
         )
         _notify_customer(reservation, NKind.RESERVATION_RECEIVED)
-        _notify_owners(reservation, "Nueva solicitud de reserva")
+        _notify_owners(reservation, gettext_lazy("Nueva solicitud de reserva"))
     return ReservationResult(reservation=reservation, created=True)
 
 
@@ -314,7 +318,7 @@ def request_reservation(*, customer, party_size, idempotency_key, requested_for=
         return _replay(existing, customer)
     scope, limit = "reservation-request", settings.EVENTS_RESERVATION_MAX_REQUESTS_PER_HOUR
     if throttling.is_limited(scope, customer.pk, limit):
-        raise _error("Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde.", "rate_limited")
+        raise _error(_("Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde."), "rate_limited")
     now = timezone.now()
     try:
         result = _create(
@@ -327,7 +331,7 @@ def request_reservation(*, customer, party_size, idempotency_key, requested_for=
         if event is not None and Reservation.objects.filter(
             customer=customer, event=event, status__in=Reservation.ACTIVE_STATUSES
         ).exists():
-            raise _error("Ya tienes una reserva activa para este evento.", "already_reserved") from None
+            raise _error(_("Ya tienes una reserva activa para este evento."), "already_reserved") from None
         raise
     throttling.register_attempt(scope, customer.pk, _HOUR)
     logger.info("Reserva solicitada %s", result.reservation.public_id)
@@ -355,21 +359,21 @@ def _transition(*, reservation, to_status, actor, message="", by_customer=False)
             return ReservationResult(reservation=locked, created=False)
         if not locked.can_transition_to(to_status):
             raise _error(
-                f"Una reserva {locked.get_status_display().lower()} no puede pasar a "
-                f"{Status(to_status).label.lower()}.",
+                _("Una reserva %(current)s no puede pasar a %(new)s.")
+                % {"current": locked.get_status_display().lower(), "new": Status(to_status).label.lower()},
                 "invalid_transition",
             )
         if to_status == Status.CONFIRMED:
             if locked.requested_for <= now:
-                raise _error("La fecha de la reserva ya ha pasado.", "in_the_past")
+                raise _error(_("La fecha de la reserva ya ha pasado."), "in_the_past")
             if locked.event_id:
                 event = Event.objects.select_for_update().get(pk=locked.event_id)
                 if event.capacity is not None and confirmed_seats(event) + locked.party_size > event.capacity:
-                    raise _error("Confirmarla superaría el aforo del evento.", "event_full")
+                    raise _error(_("Confirmarla superaría el aforo del evento."), "event_full")
         if to_status == Status.COMPLETED and timezone.localdate(locked.requested_for) > timezone.localdate(now):
-            raise _error("Una reserva solo se completa a partir de su día.", "too_early")
+            raise _error(_("Una reserva solo se completa a partir de su día."), "too_early")
         if by_customer and locked.requested_for <= now:
-            raise _error("La hora de la reserva ya ha pasado: ya no se puede cancelar.", "in_the_past")
+            raise _error(_("La hora de la reserva ya ha pasado: ya no se puede cancelar."), "in_the_past")
 
         old_status = locked.status
         locked.status = to_status
@@ -393,7 +397,7 @@ def _transition(*, reservation, to_status, actor, message="", by_customer=False)
         elif to_status == Status.CANCELLED:
             _notify_customer(locked, NKind.RESERVATION_CANCELLED, message=message, by_customer=by_customer)
             if by_customer:
-                _notify_owners(locked, "Reserva cancelada por el cliente")
+                _notify_owners(locked, gettext_lazy("Reserva cancelada por el cliente"))
     return ReservationResult(reservation=locked, created=True)
 
 

@@ -1,8 +1,9 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Mis canjes{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Mis canjes" %}{% endblock %}
 {% block width %}max-w-3xl{% endblock %}
-{% block heading %}Mis canjes{% endblock %}
-{% block intro %}<p class="lead mt-4">Las recompensas que has canjeado y su estado.</p>{% endblock %}
+{% block heading %}{% translate "Mis canjes" %}{% endblock %}
+{% block intro %}<p class="lead mt-4">{% translate "Las recompensas que has canjeado y su estado." %}</p>{% endblock %}
 {% block body %}
 {% if redemptions.object_list %}
   <ul class="card divide-y divide-line p-0">
@@ -10,20 +11,20 @@
       <li><a href="{% url 'rewards:redemption_detail' redemption.public_id %}" class="flex items-center justify-between gap-4 px-5 py-3 no-underline hover:text-gold">
         <span>
           <span class="block font-semibold">{{ redemption.reward.name }}</span>
-          <span class="block text-sm text-mist">{{ redemption.created_at|date:"d/m/Y H:i" }} · {{ redemption.points_cost }} puntos</span>
+          <span class="block text-sm text-mist">{{ redemption.created_at|date:"d/m/Y H:i" }} · {% blocktranslate count points=redemption.points_cost %}{{ points }} punto{% plural %}{{ points }} puntos{% endblocktranslate %}</span>
         </span>
         <span class="badge {% if redemption.status != 'PENDING' %}badge-muted{% endif %}">{{ redemption.get_status_display }}</span>
       </a></li>
     {% endfor %}
   </ul>
   {% if redemptions.has_other_pages %}
-    <nav aria-label="Páginas de canjes" class="mt-4 flex justify-between text-sm">
-      {% if redemptions.has_previous %}<a class="link" href="?page={{ redemptions.previous_page_number }}">Más recientes</a>{% else %}<span></span>{% endif %}
-      {% if redemptions.has_next %}<a class="link" href="?page={{ redemptions.next_page_number }}">Anteriores</a>{% endif %}
+    <nav aria-label="{% translate 'Páginas de canjes' %}" class="mt-4 flex justify-between text-sm">
+      {% if redemptions.has_previous %}<a class="link" href="?page={{ redemptions.previous_page_number }}">{% translate "Más recientes" %}</a>{% else %}<span></span>{% endif %}
+      {% if redemptions.has_next %}<a class="link" href="?page={{ redemptions.next_page_number }}">{% translate "Anteriores" %}</a>{% endif %}
     </nav>
   {% endif %}
 {% else %}
-  <p class="pending">Todavía no has canjeado ninguna recompensa.</p>
+  <p class="pending">{% translate "Todavía no has canjeado ninguna recompensa." %}</p>
 {% endif %}
-<p class="mt-8 text-center text-sm"><a class="link" href="{% url 'web:rewards' %}">Ver recompensas</a> · <a class="link" href="{% url 'loyalty:my_points' %}">Mis puntos</a> · <a class="link" href="{% url 'accounts:profile' %}">Volver a mi perfil</a></p>
+<p class="mt-8 text-center text-sm"><a class="link" href="{% url 'web:rewards' %}">{% translate "Ver recompensas" %}</a> · <a class="link" href="{% url 'loyalty:my_points' %}">{% translate "Mis puntos" %}</a> · <a class="link" href="{% url 'accounts:profile' %}">{% translate "Volver a mi perfil" %}</a></p>
 {% endblock %}

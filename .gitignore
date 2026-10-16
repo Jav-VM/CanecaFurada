@@ -32,6 +32,8 @@ backups/
 # Ficheros generados por Django
 media/
 staticfiles/
+# Traducciones compiladas: se generan desde los .po (scripts/i18n.py compile, Docker, CI).
+*.mo
 
 # Archivos del sistema / editor
 .DS_Store

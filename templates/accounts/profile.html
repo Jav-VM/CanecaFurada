@@ -1,47 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Mi perfil{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Mi perfil" %}{% endblock %}
 {% block content %}
 <div class="container-page py-12 sm:py-16">
   <header class="mb-8">
-    <p class="eyebrow mb-3">Tu cuenta</p>
-    <h1 class="heading-lg">Mi perfil</h1>
+    <p class="eyebrow mb-3">{% translate "Tu cuenta" %}</p>
+    <h1 class="heading-lg">{% translate "Mi perfil" %}</h1>
   </header>
 
   {% include "accounts/_verification_notice.html" %}
 
   <div class="grid gap-8 lg:grid-cols-[18rem_1fr] lg:items-start">
     <aside aria-labelledby="acceso" class="card space-y-5 lg:sticky lg:top-24">
-      <h2 id="acceso" class="heading-md">Acceso</h2>
+      <h2 id="acceso" class="heading-md">{% translate "Acceso" %}</h2>
       <dl class="space-y-3 text-sm">
         <div>
-          <dt class="text-mist">Nombre</dt>
+          <dt class="text-mist">{% translate "Nombre" %}</dt>
           <dd class="font-semibold">{{ user.get_full_name }}</dd>
         </div>
         <div>
-          <dt class="text-mist">Email</dt>
+          <dt class="text-mist">{% translate "Email" %}</dt>
           <dd class="break-all font-semibold">{{ user.email }}</dd>
           <dd class="mt-2">
-            {% if user.is_email_verified %}<span class="badge">Verificado</span>{% else %}<span class="badge badge-muted">Pendiente de verificación</span>{% endif %}
+            {% if user.is_email_verified %}<span class="badge">{% translate "Verificado" %}</span>{% else %}<span class="badge badge-muted">{% translate "Pendiente de verificación" %}</span>{% endif %}
           </dd>
         </div>
       </dl>
       <ul class="space-y-2 border-t border-line pt-4 text-sm">
-        {% if user.is_email_verified %}<li><a class="link font-semibold" href="{% url 'loyalty:my_qr' %}">Mi código QR</a></li>
-        <li><a class="link font-semibold" href="{% url 'loyalty:my_points' %}">Mis puntos</a></li>
-        <li><a class="link font-semibold" href="{% url 'rewards:my_redemptions' %}">Mis canjes</a></li>
-        <li><a class="link font-semibold" href="{% url 'events:my_reservations' %}">Mis reservas</a></li>{% endif %}
-        <li><a class="link" href="{% url 'accounts:email_change' %}">Cambiar email</a></li>
-        <li><a class="link" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></li>
-        <li><a class="link" href="#preferencias">Preferencias de comunicación</a></li>
+        {% if user.is_email_verified %}<li><a class="link font-semibold" href="{% url 'loyalty:my_qr' %}">{% translate "Mi código QR" %}</a></li>
+        <li><a class="link font-semibold" href="{% url 'loyalty:my_points' %}">{% translate "Mis puntos" %}</a></li>
+        <li><a class="link font-semibold" href="{% url 'rewards:my_redemptions' %}">{% translate "Mis canjes" %}</a></li>
+        <li><a class="link font-semibold" href="{% url 'events:my_reservations' %}">{% translate "Mis reservas" %}</a></li>{% endif %}
+        <li><a class="link" href="{% url 'accounts:email_change' %}">{% translate "Cambiar email" %}</a></li>
+        <li><a class="link" href="{% url 'accounts:password_change' %}">{% translate "Cambiar contraseña" %}</a></li>
+        <li><a class="link" href="#preferencias">{% translate "Preferencias de comunicación" %}</a></li>
       </ul>
     </aside>
 
     <div class="space-y-8">
       <section aria-labelledby="datos">
-        <h2 id="datos" class="heading-md mb-2">Mis datos</h2>
-        <p class="mb-6 text-sm text-mist">Los campos marcados con <span class="required-mark">*</span> son obligatorios. La fecha de nacimiento solo puede cambiarse una vez al año.</p>
+        <h2 id="datos" class="heading-md mb-2">{% translate "Mis datos" %}</h2>
+        <p class="mb-6 text-sm text-mist">{% blocktranslate trimmed %}Los campos marcados con <span class="required-mark">*</span> son obligatorios. La fecha de nacimiento solo puede cambiarse una vez al año.{% endblocktranslate %}</p>
         {% if missing_fields %}
-          <p class="alert alert-info mb-6">Completa los datos obligatorios de tu perfil.</p>
+          <p class="alert alert-info mb-6">{% translate "Completa los datos obligatorios de tu perfil." %}</p>
         {% endif %}
         {% include "components/form_errors.html" %}
         <form method="post" novalidate data-loading class="space-y-6">
@@ -58,17 +59,17 @@
               </div>
             </fieldset>
           {% endfor %}
-          <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar datos</button>
+          <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar datos" %}</button>
         </form>
       </section>
 
       <section aria-labelledby="preferencias-titulo" id="preferencias" class="form-section scroll-mt-24">
-        <h2 id="preferencias-titulo" class="form-legend">Preferencias de comunicación</h2>
-        <p class="text-sm text-mist">Son opcionales. Los emails promocionales solo se envían a direcciones verificadas, y los SMS requieren un teléfono móvil.</p>
+        <h2 id="preferencias-titulo" class="form-legend">{% translate "Preferencias de comunicación" %}</h2>
+        <p class="text-sm text-mist">{% translate "Son opcionales. Los emails promocionales solo se envían a direcciones verificadas, y los SMS requieren un teléfono móvil." %}</p>
         <form method="post" action="{% url 'accounts:preferences' %}" data-loading class="space-y-4">
           {% csrf_token %}
           {% for field in preferences_form %}{% include "accounts/_field.html" %}{% endfor %}
-          <button type="submit" class="btn btn-secondary" data-loading-text="Guardando…">Guardar preferencias</button>
+          <button type="submit" class="btn btn-secondary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar preferencias" %}</button>
         </form>
       </section>
     </div>

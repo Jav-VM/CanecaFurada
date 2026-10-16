@@ -1,26 +1,27 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Comunicaciones · Dashboard{% endblock %}
-{% block heading %}Comunicaciones{% endblock %}
-{% block intro %}<p class="lead mt-2">Campañas promocionales y registro de todo lo que envía la plataforma.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Comunicaciones" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Comunicaciones" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Campañas promocionales y registro de todo lo que envía la plataforma." %}</p>{% endblock %}
 {% block body %}
 <section aria-labelledby="canales">
-  <h2 id="canales" class="heading-md mb-4">Canales</h2>
+  <h2 id="canales" class="heading-md mb-4">{% translate "Canales" %}</h2>
   <dl class="grid gap-3 md:grid-cols-2" data-channels>
-    <div class="stat"><dt class="stat-label">Email</dt><dd class="stat-value text-lg" data-email-real="{{ channels.email_real|yesno:'si,no' }}">{% if channels.email_real %}Proveedor real{% else %}Sin envío real{% endif %}</dd><dd class="stat-sub">{{ channels.email_note }}</dd></div>
-    <div class="stat"><dt class="stat-label">SMS</dt><dd class="stat-value text-lg" data-sms-configured="{{ channels.sms_configured|yesno:'si,no' }}">{% if channels.sms_configured %}Proveedor configurado{% else %}No disponible{% endif %}</dd><dd class="stat-sub">{% if channels.sms_configured %}Solo a clientes con teléfono válido y consentimiento de SMS.{% else %}No hay ningún proveedor de SMS integrado: no se envían SMS.{% endif %}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Email" %}</dt><dd class="stat-value text-lg" data-email-real="{{ channels.email_real|yesno:'si,no' }}">{% if channels.email_real %}{% translate "Proveedor real" %}{% else %}{% translate "Sin envío real" %}{% endif %}</dd><dd class="stat-sub">{{ channels.email_note }}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "SMS" %}</dt><dd class="stat-value text-lg" data-sms-configured="{{ channels.sms_configured|yesno:'si,no' }}">{% if channels.sms_configured %}{% translate "Proveedor configurado" %}{% else %}{% translate "No disponible" %}{% endif %}</dd><dd class="stat-sub">{% if channels.sms_configured %}{% translate "Solo a clientes con teléfono válido y consentimiento de SMS." %}{% else %}{% translate "No hay ningún proveedor de SMS integrado: no se envían SMS." %}{% endif %}</dd></div>
   </dl>
 </section>
 
 <section aria-labelledby="campanas" class="mt-10">
   <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
-    <h2 id="campanas" class="heading-md">Campañas promocionales</h2>
-    <a class="btn btn-primary btn-sm" href="{% url 'dashboard:campaign_create' %}">Nueva campaña</a>
+    <h2 id="campanas" class="heading-md">{% translate "Campañas promocionales" %}</h2>
+    <a class="btn btn-primary btn-sm" href="{% url 'dashboard:campaign_create' %}">{% translate "Nueva campaña" %}</a>
   </div>
-  <p class="note mb-4">Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: {{ audience.email }} por email{% if channels.sms_configured %}, {{ audience.sms }} por SMS{% endif %}). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja.</p>
+  <p class="note mb-4">{% if channels.sms_configured %}{% blocktranslate trimmed with email=audience.email sms=audience.sms %}Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: {{ email }} por email, {{ sms }} por SMS). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja.{% endblocktranslate %}{% else %}{% blocktranslate trimmed with email=audience.email %}Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: {{ email }} por email). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja.{% endblocktranslate %}{% endif %}</p>
   {% if campaigns %}
     <div class="table-wrap">
       <table class="data-table" data-campaign-list>
-        <thead><tr><th scope="col">Campaña</th><th scope="col">Canal</th><th scope="col">Estado</th><th scope="col" class="num">Destinatarios</th><th scope="col" class="num">Enviadas</th><th scope="col" class="num">No enviadas</th><th scope="col" class="num">Fallidas</th><th scope="col">Acciones</th></tr></thead>
+        <thead><tr><th scope="col">{% translate "Campaña" %}</th><th scope="col">{% translate "Canal" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Destinatarios" %}</th><th scope="col" class="num">{% translate "Enviadas" %}</th><th scope="col" class="num">{% translate "No enviadas" %}</th><th scope="col" class="num">{% translate "Fallidas" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
         <tbody>
           {% for c in campaigns %}
             <tr>
@@ -34,11 +35,11 @@
               <td>
                 <div class="flex flex-wrap gap-2">
                   {% if c.status == "DRAFT" %}
-                    <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:campaign_edit' c.public_id %}">Editar</a>
-                    <form method="post" action="{% url 'dashboard:campaign_queue' c.public_id %}">{% csrf_token %}<button type="submit" class="btn btn-primary btn-sm">Programar envío</button></form>
+                    <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:campaign_edit' c.public_id %}">{% translate "Editar" %}</a>
+                    <form method="post" action="{% url 'dashboard:campaign_queue' c.public_id %}">{% csrf_token %}<button type="submit" class="btn btn-primary btn-sm">{% translate "Programar envío" %}</button></form>
                   {% endif %}
                   {% if c.status == "DRAFT" or c.status == "QUEUED" %}
-                    <form method="post" action="{% url 'dashboard:campaign_cancel' c.public_id %}">{% csrf_token %}<button type="submit" class="btn btn-secondary btn-sm">Cancelar</button></form>
+                    <form method="post" action="{% url 'dashboard:campaign_cancel' c.public_id %}">{% csrf_token %}<button type="submit" class="btn btn-secondary btn-sm">{% translate "Cancelar" %}</button></form>
                   {% endif %}
                 </div>
               </td>
@@ -48,31 +49,31 @@
       </table>
     </div>
   {% else %}
-    <p class="pending">Todavía no hay campañas.</p>
+    <p class="pending">{% translate "Todavía no hay campañas." %}</p>
   {% endif %}
-  <p class="note mt-3">«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes.</p>
+  <p class="note mt-3">{% blocktranslate trimmed %}«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes.{% endblocktranslate %}</p>
 </section>
 
 <section aria-labelledby="registro" class="mt-10">
-  <h2 id="registro" class="heading-md mb-4">Registro de notificaciones</h2>
+  <h2 id="registro" class="heading-md mb-4">{% translate "Registro de notificaciones" %}</h2>
   <dl class="mb-4 grid grid-cols-2 gap-3 md:grid-cols-5">
     {% for label, total in status_counts %}<div class="stat"><dt class="stat-label">{{ label }}</dt><dd class="stat-value">{{ total }}</dd></div>{% endfor %}
   </dl>
-  <form method="get" class="filters mb-4" aria-label="Filtrar notificaciones">
+  <form method="get" class="filters mb-4" aria-label="{% translate 'Filtrar notificaciones' %}">
     <div class="field">
-      <label for="n-estado">Estado</label>
+      <label for="n-estado">{% translate "Estado" %}</label>
       <select name="estado" id="n-estado">{% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
     </div>
     <div class="field">
-      <label for="n-tipo">Tipo</label>
+      <label for="n-tipo">{% translate "Tipo" %}</label>
       <select name="tipo" id="n-tipo">{% for v, l in kind_choices %}<option value="{{ v }}"{% if v == kind %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
     </div>
-    <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+    <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">{% translate "Aplicar" %}</button></div>
   </form>
   {% if page.object_list %}
     <div class="table-wrap">
       <table class="data-table" data-notification-log>
-        <thead><tr><th scope="col">Fecha</th><th scope="col">Tipo</th><th scope="col">Canal</th><th scope="col">Estado</th><th scope="col" class="num">Intentos</th><th scope="col">Motivo / error</th></tr></thead>
+        <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col">{% translate "Canal" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Intentos" %}</th><th scope="col">{% translate "Motivo / error" %}</th></tr></thead>
         <tbody>
           {% for n in page %}
             <tr>
@@ -89,8 +90,8 @@
     </div>
     {% include "dashboard/_pagination.html" %}
   {% else %}
-    <p class="pending">No hay notificaciones con estos filtros.</p>
+    <p class="pending">{% translate "No hay notificaciones con estos filtros." %}</p>
   {% endif %}
-  <p class="note mt-3">El registro no guarda destinatarios, enlaces ni el texto de los mensajes. «Enviada» significa que el proveedor aceptó el mensaje, no que el cliente lo haya leído.</p>
+  <p class="note mt-3">{% translate "El registro no guarda destinatarios, enlaces ni el texto de los mensajes. «Enviada» significa que el proveedor aceptó el mensaje, no que el cliente lo haya leído." %}</p>
 </section>
 {% endblock %}

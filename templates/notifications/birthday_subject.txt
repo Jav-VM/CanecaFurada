@@ -1,1 +1,1 @@
-{% autoescape off %}{% if custom_subject %}{{ custom_subject }}{% else %}¡Feliz cumpleaños de parte de Caneca Furada!{% endif %}{% endautoescape %}
+{% load i18n %}{% autoescape off %}{% if custom_subject %}{{ custom_subject }}{% else %}{% translate "¡Feliz cumpleaños de parte de Caneca Furada!" %}{% endif %}{% endautoescape %}

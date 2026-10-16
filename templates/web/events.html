@@ -1,23 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Eventos{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Eventos" %}{% endblock %}
 {% block content %}
-{% include "components/page_header.html" with eyebrow="Agenda" title="Eventos" intro="Lo que pasa en Caneca Furada." %}
+{% include "components/page_header.html" with eyebrow=_("Agenda") title=_("Eventos") intro=_("Lo que pasa en Caneca Furada.") %}
 
 <section aria-labelledby="eventos-listado" class="container-page py-16">
-  <h2 id="eventos-listado" class="sr-only">Próximos eventos</h2>
+  <h2 id="eventos-listado" class="sr-only">{% translate "Próximos eventos" %}</h2>
   {% if events %}
     <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-event-list>
       {% for event in events %}<li>{% include "components/event_card.html" %}</li>{% endfor %}
     </ul>
   {% else %}
-    {% include "components/empty_state.html" with title="No hay eventos publicados todavía" text="Cuando programemos el próximo, lo verás aquí." %}
+    {% include "components/empty_state.html" with title=_("No hay eventos publicados todavía") text=_("Cuando programemos el próximo, lo verás aquí.") %}
   {% endif %}
   <div class="card mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <p class="text-lg font-bold">¿Quieres reservar mesa?</p>
-      <p class="mt-1 text-mist">Envía una solicitud desde tu cuenta y te confirmaremos por email.</p>
+      <p class="text-lg font-bold">{% translate "¿Quieres reservar mesa?" %}</p>
+      <p class="mt-1 text-mist">{% translate "Envía una solicitud desde tu cuenta y te confirmaremos por email." %}</p>
     </div>
-    <a href="{% url 'events:reservation_new' %}" class="btn btn-secondary shrink-0">Solicitar reserva</a>
+    <a href="{% url 'events:reservation_new' %}" class="btn btn-secondary shrink-0">{% translate "Solicitar reserva" %}</a>
   </div>
 </section>
 {% endblock %}

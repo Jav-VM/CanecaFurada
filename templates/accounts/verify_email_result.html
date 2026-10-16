@@ -1,15 +1,16 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}{% if success %}Email confirmado{% else %}Enlace no válido{% endif %}{% endblock %}
-{% block eyebrow %}Verificación del email{% endblock %}
-{% block heading %}{% if success %}Email confirmado{% else %}No se ha podido confirmar el email{% endif %}{% endblock %}
+{% load i18n %}
+{% block title %}{% if success %}{% translate "Email confirmado" %}{% else %}{% translate "Enlace no válido" %}{% endif %}{% endblock %}
+{% block eyebrow %}{% translate "Verificación del email" %}{% endblock %}
+{% block heading %}{% if success %}{% translate "Email confirmado" %}{% else %}{% translate "No se ha podido confirmar el email" %}{% endif %}{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
   {% if success %}
-    <div class="alert alert-success"><p>Tu dirección de correo ha quedado verificada.</p></div>
-    <a class="btn btn-primary btn-block" href="{% if user.is_authenticated %}{% url 'accounts:home' %}{% else %}{% url 'accounts:login' %}{% endif %}">Continuar</a>
+    <div class="alert alert-success"><p>{% translate "Tu dirección de correo ha quedado verificada." %}</p></div>
+    <a class="btn btn-primary btn-block" href="{% if user.is_authenticated %}{% url 'accounts:home' %}{% else %}{% url 'accounts:login' %}{% endif %}">{% translate "Continuar" %}</a>
   {% else %}
     <div class="alert alert-error"><p>{{ error }}</p></div>
-    <a class="btn btn-primary btn-block" href="{% url 'accounts:resend_verification' %}">Solicitar un nuevo enlace de verificación</a>
+    <a class="btn btn-primary btn-block" href="{% url 'accounts:resend_verification' %}">{% translate "Solicitar un nuevo enlace de verificación" %}</a>
   {% endif %}
 </div>
 {% endblock %}

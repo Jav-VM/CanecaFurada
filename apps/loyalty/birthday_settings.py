@@ -18,8 +18,10 @@ from dataclasses import dataclass
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.permissions import is_owner
+from apps.core.i18n import site_text
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
@@ -28,7 +30,7 @@ from .models import BirthdayMessage, Promotion
 
 PLACEHOLDER = "{puntos}"
 TEXT_FIELDS = ("email_subject", "email_body", "sms_body")
-DEFAULT_NAME = "Regalo de cumpleaños"
+DEFAULT_NAME = _("Regalo de cumpleaños")
 _BRACES = re.compile(r"[{}]")
 
 
@@ -91,17 +93,17 @@ def current_state():
 def _clean_text(value, field, max_length, *, single_line=False):
     value = (value or "").replace("\r\n", "\n").replace("\r", "\n").strip() if isinstance(value, str) else ""
     if len(value) > max_length:
-        raise ValidationError({field: f"Admite como máximo {max_length} caracteres."})
+        raise ValidationError({field: _("Admite como máximo %(max_length)s caracteres.") % {"max_length": max_length}})
     if single_line and "\n" in value:
-        raise ValidationError({field: "Escríbelo en una sola línea."})
+        raise ValidationError({field: _("Escríbelo en una sola línea.")})
     if _BRACES.search(value.replace(PLACEHOLDER, "")):
-        raise ValidationError({field: f"El único marcador admitido es {PLACEHOLDER}; no uses otras llaves."})
+        raise ValidationError({field: _("El único marcador admitido es %(PLACEHOLDER)s; no uses otras llaves.") % {"PLACEHOLDER": PLACEHOLDER}})
     return value
 
 
 def _clean_points(points):
     if isinstance(points, bool) or not isinstance(points, int) or not 1 <= points <= Promotion.MAX_FIXED_POINTS:
-        raise ValidationError({"points": f"Indica entre 1 y {Promotion.MAX_FIXED_POINTS} puntos."})
+        raise ValidationError({"points": _("Indica entre 1 y %(MAX_FIXED_POINTS)s puntos.") % {"MAX_FIXED_POINTS": Promotion.MAX_FIXED_POINTS}})
     return points
 
 
@@ -112,7 +114,7 @@ def update_birthday_gift(*, actor, active, points, email_subject="", email_body=
     cambió algo. Validado en el servidor y auditado sin los textos.
     """
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario configura el regalo de cumpleaños.")
+        raise PermissionDenied(_("Solo el propietario configura el regalo de cumpleaños."))
     active = bool(active)
     points = _clean_points(points)
     texts = {
@@ -126,7 +128,7 @@ def update_birthday_gift(*, actor, active, points, email_subject="", email_body=
     promotion = _managed_promotion(lock=True)
     if promotion is None:
         promotion = Promotion(
-            name=DEFAULT_NAME,
+            name=site_text(DEFAULT_NAME),
             kind=Promotion.Kind.BIRTHDAY,
             bonus_type=Promotion.BonusType.FIXED_POINTS,
             fixed_points=points,

@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.models import AuditEvent
@@ -81,15 +82,15 @@ def set_policy(*, actor, months, warn_days=PointsExpiryPolicy.DEFAULT_WARN_DAYS,
     No modifica movimientos: se aplican en la siguiente ejecución de `expire_points`.
     """
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede cambiar la caducidad de los puntos.")
+        raise PermissionDenied(_("Solo el propietario puede cambiar la caducidad de los puntos."))
     if months is not None:
         months = _parse_int(
             months, "months", 1, PointsExpiryPolicy.MAX_MONTHS,
-            f"Indica entre 1 y {PointsExpiryPolicy.MAX_MONTHS} meses.",
+            _("Indica entre 1 y %(MAX_MONTHS)s meses.") % {"MAX_MONTHS": PointsExpiryPolicy.MAX_MONTHS},
         )
     warn_days = _parse_int(
         warn_days, "warn_days", 1, PointsExpiryPolicy.MAX_WARN_DAYS,
-        f"Indica entre 1 y {PointsExpiryPolicy.MAX_WARN_DAYS} días.",
+        _("Indica entre 1 y %(MAX_WARN_DAYS)s días.") % {"MAX_WARN_DAYS": PointsExpiryPolicy.MAX_WARN_DAYS},
     )
     now = timezone.now()
     # Bloquea la versión vigente: dos cambios simultáneos se aplican uno tras otro.

@@ -12,11 +12,13 @@ from dataclasses import dataclass
 
 from django import forms
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.countries import COUNTRIES
 from apps.accounts.selectors import GEO_LEVEL_LABELS
 from apps.catalog.models import Product
 from apps.events.models import Event, Reservation
+from apps.core.i18n import lazy_format
 from apps.loyalty.birthday_settings import PLACEHOLDER
 from apps.loyalty.models import BirthdayMessage, PointsExpiryPolicy, PointsTransaction, Promotion
 from apps.notifications.models import Campaign, Channel, Notification
@@ -26,12 +28,12 @@ from apps.rewards.models import Redemption
 # --- Periodo --------------------------------------------------------------------
 
 PERIOD_PRESETS = (
-    ("hoy", "Hoy", 1),
-    ("7d", "7 días", 7),
-    ("30d", "30 días", 30),
-    ("90d", "90 días", 90),
-    ("365d", "12 meses", 365),
-    ("todo", "Todo", None),
+    ("hoy", _("Hoy"), 1),
+    ("7d", _("7 días"), 7),
+    ("30d", _("30 días"), 30),
+    ("90d", _("90 días"), 90),
+    ("365d", _("12 meses"), 365),
+    ("todo", _("Todo"), None),
 )
 CUSTOM_PERIOD = "rango"
 DEFAULT_PERIOD = "30d"
@@ -65,11 +67,11 @@ class PeriodForm(forms.Form):
     """`periodo` predefinido o `rango` con `desde` y `hasta` (ambos incluidos)."""
 
     periodo = forms.ChoiceField(
-        choices=[(v, label) for v, label, _ in PERIOD_PRESETS] + [(CUSTOM_PERIOD, "Personalizado")],
+        choices=[(v, label) for v, label, _unused in PERIOD_PRESETS] + [(CUSTOM_PERIOD, _("Personalizado"))],
         required=False,
     )
-    desde = forms.DateField(required=False, label="Desde", widget=forms.DateInput(attrs={"type": "date"}))
-    hasta = forms.DateField(required=False, label="Hasta", widget=forms.DateInput(attrs={"type": "date"}))
+    desde = forms.DateField(required=False, label=_("Desde"), widget=forms.DateInput(attrs={"type": "date"}))
+    hasta = forms.DateField(required=False, label=_("Hasta"), widget=forms.DateInput(attrs={"type": "date"}))
 
     def __init__(self, data=None, *, default=DEFAULT_PERIOD):
         super().__init__(data)
@@ -81,11 +83,11 @@ class PeriodForm(forms.Form):
             return data
         since, until = data.get("desde"), data.get("hasta")
         if not since or not until:
-            raise forms.ValidationError("Indica las dos fechas del periodo personalizado.")
+            raise forms.ValidationError(_("Indica las dos fechas del periodo personalizado."))
         if since > until:
-            raise forms.ValidationError("La fecha inicial debe ser anterior o igual a la final.")
+            raise forms.ValidationError(_("La fecha inicial debe ser anterior o igual a la final."))
         if (until - since).days > MAX_RANGE_DAYS:
-            raise forms.ValidationError("El periodo personalizado no puede superar 10 años.")
+            raise forms.ValidationError(_("El periodo personalizado no puede superar 10 años."))
         return data
 
     def period(self):
@@ -108,7 +110,7 @@ def _text(data, name, max_length=100):
     return " ".join(str((data or {}).get(name, "")).split())[:max_length]
 
 
-YES_NO = (("", "Todos"), ("si", "Sí"), ("no", "No"))
+YES_NO = (("", _("Todos")), ("si", _("Sí")), ("no", _("No")))
 
 
 def yes_no(value):
@@ -121,7 +123,7 @@ def yes_no(value):
 class CustomerSearchForm(forms.Form):
     """Búsqueda por nombre, apellidos o email. Se envía por POST y se guarda en la sesión (no va en la URL)."""
 
-    q = forms.CharField(label="Buscar cliente", max_length=100, required=False)
+    q = forms.CharField(label=_("Buscar cliente"), max_length=100, required=False)
 
 
 @dataclass(frozen=True)
@@ -148,20 +150,20 @@ class CustomerFilters:
 
 
 GEO_LEVEL_CHOICES = tuple(GEO_LEVEL_LABELS.items())
-GEO_BASE_CHOICES = (("altas", "Clientes dados de alta"), ("compras", "Clientes con compras"))
+GEO_BASE_CHOICES = (("altas", _("Clientes dados de alta")), ("compras", _("Clientes con compras")))
 
 
 # --- Listados -------------------------------------------------------------------
 
-PURCHASE_STATUS_CHOICES = (("", "Todos"),) + tuple(Purchase.Status.choices)
-REDEMPTION_STATUS_CHOICES = (("", "Todos"),) + tuple(Redemption.Status.choices)
-MOVEMENT_KIND_CHOICES = (("", "Todos"),) + tuple(PointsTransaction.Kind.choices)
-PRODUCT_STATUS_CHOICES = (("", "Todos"),) + tuple(Product.Status.choices)
-EVENT_STATUS_CHOICES = (("", "Todos"),) + tuple(Event.Status.choices)
-RESERVATION_STATUS_CHOICES = (("", "Todos"),) + tuple(Reservation.Status.choices)
-RESERVATION_WHEN_CHOICES = (("proximas", "Próximas"), ("hoy", "Hoy"), ("pasadas", "Pasadas"), ("todas", "Todas"))
-NOTIFICATION_STATUS_CHOICES = (("", "Todos"),) + tuple(Notification.Status.choices)
-NOTIFICATION_KIND_CHOICES = (("", "Todos"),) + tuple(Notification.Kind.choices)
+PURCHASE_STATUS_CHOICES = (("", _("Todos")),) + tuple(Purchase.Status.choices)
+REDEMPTION_STATUS_CHOICES = (("", _("Todos")),) + tuple(Redemption.Status.choices)
+MOVEMENT_KIND_CHOICES = (("", _("Todos")),) + tuple(PointsTransaction.Kind.choices)
+PRODUCT_STATUS_CHOICES = (("", _("Todos")),) + tuple(Product.Status.choices)
+EVENT_STATUS_CHOICES = (("", _("Todos")),) + tuple(Event.Status.choices)
+RESERVATION_STATUS_CHOICES = (("", _("Todos")),) + tuple(Reservation.Status.choices)
+RESERVATION_WHEN_CHOICES = (("proximas", _("Próximas")), ("hoy", _("Hoy")), ("pasadas", _("Pasadas")), ("todas", _("Todas")))
+NOTIFICATION_STATUS_CHOICES = (("", _("Todos")),) + tuple(Notification.Status.choices)
+NOTIFICATION_KIND_CHOICES = (("", _("Todos")),) + tuple(Notification.Kind.choices)
 
 choice = _choice
 
@@ -171,11 +173,11 @@ choice = _choice
 
 class AdjustPointsForm(forms.Form):
     points = forms.IntegerField(
-        label="Puntos",
-        help_text="Positivo para sumar, negativo para restar. El saldo nunca puede quedar en negativo.",
+        label=_("Puntos"),
+        help_text=_("Positivo para sumar, negativo para restar. El saldo nunca puede quedar en negativo."),
         widget=forms.NumberInput(attrs={"inputmode": "numeric"}),
     )
-    reason = forms.CharField(label="Motivo", max_length=200, help_text="Obligatorio. Queda en el historial del cliente.")
+    reason = forms.CharField(label=_("Motivo"), max_length=200, help_text=_("Obligatorio. Queda en el historial del cliente."))
     idempotency_key = forms.UUIDField(widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
@@ -186,144 +188,143 @@ class AdjustPointsForm(forms.Form):
 
 class ReverseMovementForm(forms.Form):
     movement = forms.UUIDField(widget=forms.HiddenInput)
-    reason = forms.CharField(label="Motivo de la compensación", max_length=200)
+    reason = forms.CharField(label=_("Motivo de la compensación"), max_length=200)
 
 
 class EmployeeCreateForm(forms.Form):
-    first_name = forms.CharField(label="Nombre", max_length=150)
-    last_name = forms.CharField(label="Apellidos", max_length=150)
-    email = forms.EmailField(label="Email de acceso")
+    first_name = forms.CharField(label=_("Nombre"), max_length=150)
+    last_name = forms.CharField(label=_("Apellidos"), max_length=150)
+    email = forms.EmailField(label=_("Email de acceso"))
     password1 = forms.CharField(
-        label="Contraseña inicial",
+        label=_("Contraseña inicial"),
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
-        help_text="Al menos 10 caracteres. Pide al empleado que la cambie al entrar.",
+        help_text=_("Al menos 10 caracteres. Pide al empleado que la cambie al entrar."),
     )
     password2 = forms.CharField(
-        label="Repite la contraseña", strip=False, widget=forms.PasswordInput(attrs={"autocomplete": "new-password"})
+        label=_("Repite la contraseña"), strip=False, widget=forms.PasswordInput(attrs={"autocomplete": "new-password"})
     )
 
     def clean(self):
         data = super().clean()
         if data.get("password1") and data.get("password1") != data.get("password2"):
-            self.add_error("password2", "Las contraseñas no coinciden.")
+            self.add_error("password2", _("Las contraseñas no coinciden."))
         return data
 
 
 class RoleChangeForm(forms.Form):
-    ROLE_CHOICES = (("EMPLOYEE", "Empleado"), ("OWNER", "Propietario"))
+    ROLE_CHOICES = (("EMPLOYEE", _("Empleado")), ("OWNER", _("Propietario")))
 
-    role = forms.ChoiceField(label="Nuevo rol", choices=ROLE_CHOICES)
+    role = forms.ChoiceField(label=_("Nuevo rol"), choices=ROLE_CHOICES)
     confirm = forms.BooleanField(
-        label="Confirmo el cambio. Un propietario tiene acceso a todos los datos de los clientes y a la configuración.",
+        label=_("Confirmo el cambio. Un propietario tiene acceso a todos los datos de los clientes y a la configuración."),
     )
 
 
 class LoyaltyRuleForm(forms.Form):
     points_per_euro = forms.CharField(
-        label="Puntos por euro",
+        label=_("Puntos por euro"),
         max_length=10,
-        help_text="Por ejemplo 1,00. Se aplica a las compras registradas a partir de ahora; no cambia los puntos ya concedidos.",
+        help_text=_("Por ejemplo 1,00. Se aplica a las compras registradas a partir de ahora; no cambia los puntos ya concedidos."),
         widget=forms.TextInput(attrs={"inputmode": "decimal"}),
     )
-    note = forms.CharField(label="Motivo", max_length=200, required=False)
+    note = forms.CharField(label=_("Motivo"), max_length=200, required=False)
 
 
 class PointsExpiryForm(forms.Form):
     """Caducidad de los puntos (Fase 14). Desde cuándo cuenta el plazo lo decide el servicio."""
 
-    enabled = forms.BooleanField(label="Los puntos caducan", required=False)
+    enabled = forms.BooleanField(label=_("Los puntos caducan"), required=False)
     months = forms.IntegerField(
-        label="Meses de validez",
+        label=_("Meses de validez"),
         required=False,
         min_value=1,
         max_value=PointsExpiryPolicy.MAX_MONTHS,
-        help_text="Cada punto caduca estos meses después de ganarlo. Se gastan primero los más antiguos.",
+        help_text=_("Cada punto caduca estos meses después de ganarlo. Se gastan primero los más antiguos."),
     )
     warn_days = forms.IntegerField(
-        label="Días de aviso",
+        label=_("Días de aviso"),
         min_value=1,
         max_value=PointsExpiryPolicy.MAX_WARN_DAYS,
         initial=PointsExpiryPolicy.DEFAULT_WARN_DAYS,
-        help_text="Con cuántos días de antelación se avisa por email al cliente.",
+        help_text=_("Con cuántos días de antelación se avisa por email al cliente."),
     )
-    note = forms.CharField(label="Motivo", max_length=200, required=False)
+    note = forms.CharField(label=_("Motivo"), max_length=200, required=False)
 
     def clean(self):
         data = super().clean()
         if data.get("enabled") and not data.get("months"):
-            self.add_error("months", "Indica cuántos meses son válidos los puntos.")
+            self.add_error("months", _("Indica cuántos meses son válidos los puntos."))
         return data
 
 
 class BirthdayGiftForm(forms.Form):
     """Regalo y aviso de cumpleaños (Fase 14). Los textos vacíos usan el mensaje por defecto."""
 
-    active = forms.BooleanField(label="Regalar puntos por el cumpleaños", required=False)
+    active = forms.BooleanField(label=_("Regalar puntos por el cumpleaños"), required=False)
     points = forms.IntegerField(
-        label="Puntos de regalo", min_value=1, max_value=Promotion.MAX_FIXED_POINTS
+        label=_("Puntos de regalo"), min_value=1, max_value=Promotion.MAX_FIXED_POINTS
     )
     email_subject = forms.CharField(
-        label="Asunto del email",
+        label=_("Asunto del email"),
         max_length=BirthdayMessage.MAX_SUBJECT,
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "¡Feliz cumpleaños de parte de Caneca Furada!"}),
+        widget=forms.TextInput(attrs={"placeholder": _("¡Feliz cumpleaños de parte de Caneca Furada!")}),
     )
     email_body = forms.CharField(
-        label="Mensaje del email",
+        label=_("Mensaje del email"),
         max_length=BirthdayMessage.MAX_EMAIL_BODY,
         required=False,
-        widget=forms.Textarea(attrs={"rows": 6, "placeholder": "Vacío: se envía el mensaje por defecto."}),
+        widget=forms.Textarea(attrs={"rows": 6, "placeholder": _("Vacío: se envía el mensaje por defecto.")}),
         help_text=(
-            f"Texto plano. Escribe {PLACEHOLDER} donde quieras mostrar los puntos regalados. "
-            "Se añade siempre el enlace de baja. No incluyas datos personales."
+            lazy_format(_("Texto plano. Escribe %(PLACEHOLDER)s donde quieras mostrar los puntos regalados. Se añade siempre el enlace de baja. No incluyas datos personales."), {"PLACEHOLDER": PLACEHOLDER})
         ),
     )
     sms_body = forms.CharField(
-        label="Mensaje SMS",
+        label=_("Mensaje SMS"),
         max_length=BirthdayMessage.MAX_SMS_BODY,
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "¡Feliz cumpleaños! Te hemos regalado {puntos} puntos."}),
-        help_text=f"Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite {PLACEHOLDER}.",
+        widget=forms.TextInput(attrs={"placeholder": _("¡Feliz cumpleaños! Te hemos regalado {puntos} puntos.")}),
+        help_text=lazy_format(_("Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite %(PLACEHOLDER)s."), {"PLACEHOLDER": PLACEHOLDER}),
     )
 
 
 class BusinessInfoForm(forms.Form):
-    address = forms.CharField(label="Dirección pública del local", max_length=200, required=False)
+    address = forms.CharField(label=_("Dirección pública del local"), max_length=200, required=False)
     opening_hours = forms.CharField(
-        label="Horario",
+        label=_("Horario"),
         required=False,
         max_length=1000,
         widget=forms.Textarea(attrs={"rows": 4}),
-        help_text="Una línea por franja: «Días | horario». Vacío: «Pendiente de publicar».",
+        help_text=_("Una línea por franja: «Días | horario». Vacío: «Pendiente de publicar»."),
     )
-    email = forms.EmailField(label="Email de contacto", required=False)
-    phone = forms.CharField(label="Teléfono de contacto", max_length=20, required=False)
+    email = forms.EmailField(label=_("Email de contacto"), required=False)
+    phone = forms.CharField(label=_("Teléfono de contacto"), max_length=20, required=False)
     social_links = forms.CharField(
-        label="Redes sociales",
+        label=_("Redes sociales"),
         required=False,
         max_length=1000,
         widget=forms.Textarea(attrs={"rows": 3}),
-        help_text="Una línea por red: «Nombre | https://…». Solo enlaces https.",
+        help_text=_("Una línea por red: «Nombre | https://…». Solo enlaces https."),
     )
     about_text = forms.CharField(
-        label="Presentación de la cervecería",
+        label=_("Presentación de la cervecería"),
         required=False,
         max_length=2000,
         widget=forms.Textarea(attrs={"rows": 6}),
     )
     hero_text = forms.CharField(
-        label="Texto de bienvenida del inicio",
+        label=_("Texto de bienvenida del inicio"),
         required=False,
         max_length=300,
         widget=forms.Textarea(attrs={"rows": 2}),
-        help_text="Frase bajo el lema en la portada. Vacío: el texto genérico de la marca.",
+        help_text=_("Frase bajo el lema en la portada. Vacío: el texto genérico de la marca."),
     )
     announcement = forms.CharField(
-        label="Aviso destacado",
+        label=_("Aviso destacado"),
         required=False,
         max_length=200,
-        help_text="Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso.",
+        help_text=_("Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."),
     )
 
 
@@ -364,29 +365,28 @@ class EventForm(forms.ModelForm):
 
 
 class ReservationActionForm(forms.Form):
-    ACTIONS = (("confirmar", "Confirmar"), ("rechazar", "Rechazar"), ("cancelar", "Cancelar"), ("completar", "Completar"))
+    ACTIONS = (("confirmar", _("Confirmar")), ("rechazar", _("Rechazar")), ("cancelar", _("Cancelar")), ("completar", _("Completar")))
 
     accion = forms.ChoiceField(choices=ACTIONS)
     mensaje = forms.CharField(
-        label="Mensaje para el cliente",
+        label=_("Mensaje para el cliente"),
         required=False,
         max_length=300,
         widget=forms.Textarea(attrs={"rows": 2}),
-        help_text="Opcional. Se muestra al cliente y va en el email. No incluyas datos personales.",
+        help_text=_("Opcional. Se muestra al cliente y va en el email. No incluyas datos personales."),
     )
 
 
 class CampaignForm(forms.Form):
-    name = forms.CharField(label="Nombre interno", max_length=100, help_text="Solo lo ves tú.")
-    channel = forms.ChoiceField(label="Canal", choices=Channel.choices)
-    subject = forms.CharField(label="Asunto", max_length=120, required=False, help_text="Obligatorio en email.")
+    name = forms.CharField(label=_("Nombre interno"), max_length=100, help_text=_("Solo lo ves tú."))
+    channel = forms.ChoiceField(label=_("Canal"), choices=Channel.choices)
+    subject = forms.CharField(label=_("Asunto"), max_length=120, required=False, help_text=_("Obligatorio en email."))
     body = forms.CharField(
-        label="Mensaje",
+        label=_("Mensaje"),
         max_length=Campaign.MAX_EMAIL_BODY,
         widget=forms.Textarea(attrs={"rows": 8}),
         help_text=(
-            f"Texto plano. Email: hasta {Campaign.MAX_EMAIL_BODY} caracteres; SMS: hasta {Campaign.MAX_SMS_BODY}. "
-            "Se añade siempre el enlace de baja. No incluyas datos personales."
+            lazy_format(_("Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."), {"MAX_EMAIL_BODY": Campaign.MAX_EMAIL_BODY, "MAX_SMS_BODY": Campaign.MAX_SMS_BODY})
         ),
     )
 

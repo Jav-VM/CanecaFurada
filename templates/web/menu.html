@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Carta{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Carta" %}{% endblock %}
 {% block content %}
-{% include "components/page_header.html" with eyebrow="Carta" title="Lo que servimos" intro="Cervezas de la casa, invitadas y de temporada." %}
+{% include "components/page_header.html" with eyebrow=_("Carta") title=_("Lo que servimos") intro=_("Cervezas de la casa, invitadas y de temporada.") %}
 
 <div class="container-page py-16">
   {% if categories %}
-    <nav aria-label="Categorías de la carta" class="mb-12">
+    <nav aria-label="{% translate 'Categorías de la carta' %}" class="mb-12">
       <ul class="flex flex-wrap gap-2">
-        <li><a href="#carta-grifos" class="badge badge-muted no-underline hover:text-gold">Grifos</a></li>
+        <li><a href="#carta-grifos" class="badge badge-muted no-underline hover:text-gold">{% translate "Grifos" %}</a></li>
         {% for category in categories %}
           <li><a href="#{{ category.slug }}" class="badge badge-muted no-underline hover:text-gold">{{ category.name }}</a></li>
         {% endfor %}
@@ -30,9 +31,9 @@
     {% endfor %}
   {% else %}
     <section aria-labelledby="carta-listado">
-      <h2 id="carta-listado" class="sr-only">Productos</h2>
+      <h2 id="carta-listado" class="sr-only">{% translate "Productos" %}</h2>
       {% url 'web:contact' as contact_url %}
-      {% include "components/empty_state.html" with title="Estamos preparando la carta online" text="Mientras tanto, pregunta en la barra por las cervezas de hoy." cta_url=contact_url cta_label="Dónde estamos" %}
+      {% include "components/empty_state.html" with title=_("Estamos preparando la carta online") text=_("Mientras tanto, pregunta en la barra por las cervezas de hoy.") cta_url=contact_url cta_label=_("Dónde estamos") %}
     </section>
   {% endif %}
 </div>

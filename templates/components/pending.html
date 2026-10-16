@@ -1,2 +1,3 @@
+{% load i18n %}
 {% comment %}Contenido que debe aportar el propietario. Parámetro: what.{% endcomment %}
-<p class="pending"><span class="font-semibold text-paper">Contenido pendiente:</span> {{ what }}.</p>
+<p class="pending"><span class="font-semibold text-paper">{% translate "Contenido pendiente:" %}</span> {{ what }}.</p>

@@ -10,6 +10,7 @@ la futura API.
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.models import AuditEvent
@@ -20,7 +21,7 @@ from .models import Product
 
 def ensure_can_manage_catalog(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede gestionar la carta.")
+        raise PermissionDenied(_("Solo el propietario puede gestionar la carta."))
 
 
 @transaction.atomic
@@ -28,7 +29,7 @@ def set_product_status(*, actor, product, status):
     """Publica, pasa a borrador o archiva un producto. Nunca lo borra."""
     ensure_can_manage_catalog(actor)
     if status not in Product.Status.values:
-        raise ValidationError("Estado de publicación no válido.")
+        raise ValidationError(_("Estado de publicación no válido."))
 
     locked = Product.objects.select_for_update().get(pk=product.pk)
     previous = locked.status

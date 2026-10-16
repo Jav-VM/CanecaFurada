@@ -1,18 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Recompensas{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Recompensas" %}{% endblock %}
 {% block content %}
-{% include "components/page_header.html" with eyebrow="Programa de puntos" title="Recompensas" intro="Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa." %}
+{% include "components/page_header.html" with eyebrow=_("Programa de puntos") title=_("Recompensas") intro=_("Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa.") %}
 
 <section aria-labelledby="como-funciona" class="container-page py-16">
   <div class="mb-10 flex flex-wrap items-center gap-3">
-    <h2 id="como-funciona" class="heading-lg">Cómo funciona</h2>
+    <h2 id="como-funciona" class="heading-lg">{% translate "Cómo funciona" %}</h2>
   </div>
   {% include "components/loyalty_steps.html" %}
-  <p class="mt-6 text-sm text-mist">Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos.</p>
+  <p class="mt-6 text-sm text-mist">{% translate "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos." %}</p>
 </section>
 
 <section aria-labelledby="catalogo" class="container-page">
-  {% include "components/section_heading.html" with id="catalogo" eyebrow="Catálogo" title="Recompensas disponibles" %}
+  {% include "components/section_heading.html" with id="catalogo" eyebrow=_("Catálogo") title=_("Recompensas disponibles") %}
   {% if rewards %}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {% for reward in rewards %}
@@ -23,36 +24,36 @@
             {% if reward.description %}<p class="mt-2 text-mist">{{ reward.description|truncatechars:200 }}</p>{% endif %}
           </div>
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <span class="text-lg font-extrabold text-gold">{{ reward.points_cost }} puntos</span>
-            {% if not reward.is_in_stock %}<span class="badge badge-muted">Agotada</span>
-            {% elif reward.valid_until %}<span class="text-sm text-mist">Hasta el {{ reward.valid_until|date:"d/m/Y" }}</span>{% endif %}
+            <span class="text-lg font-extrabold text-gold">{% blocktranslate count points=reward.points_cost %}{{ points }} punto{% plural %}{{ points }} puntos{% endblocktranslate %}</span>
+            {% if not reward.is_in_stock %}<span class="badge badge-muted">{% translate "Agotada" context "recompensa" %}</span>
+            {% elif reward.valid_until %}<span class="text-sm text-mist">{% blocktranslate with date=reward.valid_until|date:"d/m/Y" %}Hasta el {{ date }}{% endblocktranslate %}</span>{% endif %}
           </div>
-          {% if reward.is_in_stock %}<a href="{% url 'rewards:reward_detail' reward.public_id %}" class="btn btn-secondary btn-block">Canjear</a>{% endif %}
+          {% if reward.is_in_stock %}<a href="{% url 'rewards:reward_detail' reward.public_id %}" class="btn btn-secondary btn-block">{% translate "Canjear" %}</a>{% endif %}
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    {% include "components/empty_state.html" with title="El catálogo de recompensas aún no está publicado" text="Lo anunciaremos aquí y por email a quienes lo hayan aceptado." %}
+    {% include "components/empty_state.html" with title=_("El catálogo de recompensas aún no está publicado") text=_("Lo anunciaremos aquí y por email a quienes lo hayan aceptado.") %}
   {% endif %}
-  <div class="mt-6">{% include "components/pending.html" with what="condiciones del programa de puntos" %}</div>
+  <div class="mt-6">{% include "components/pending.html" with what=_("condiciones del programa de puntos") %}</div>
 </section>
 
 <section aria-labelledby="unete" class="container-page pt-16">
   <div class="card flex flex-col gap-6 p-8 sm:p-12 md:flex-row md:items-center md:justify-between">
     {% if user.is_authenticated %}
       <div>
-        <h2 id="unete" class="heading-lg">Ya formas parte</h2>
-        <p class="lead mt-3">Consulta tus puntos y tus canjes en tu cuenta.</p>
+        <h2 id="unete" class="heading-lg">{% translate "Ya formas parte" %}</h2>
+        <p class="lead mt-3">{% translate "Consulta tus puntos y tus canjes en tu cuenta." %}</p>
       </div>
-      <a href="{% url 'accounts:home' %}" class="btn btn-primary shrink-0">Mi cuenta</a>
+      <a href="{% url 'accounts:home' %}" class="btn btn-primary shrink-0">{% translate "Mi cuenta" %}</a>
     {% else %}
       <div>
-        <h2 id="unete" class="heading-lg">Únete al club</h2>
-        <p class="lead mt-3">Crea tu cuenta y empieza a sumar puntos con tus consumiciones.</p>
+        <h2 id="unete" class="heading-lg">{% translate "Únete al club" %}</h2>
+        <p class="lead mt-3">{% translate "Crea tu cuenta y empieza a sumar puntos con tus consumiciones." %}</p>
       </div>
       <div class="flex shrink-0 flex-wrap gap-3">
-        <a href="{% url 'accounts:register' %}" class="btn btn-primary">Crear cuenta</a>
-        <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Entrar</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary">{% translate "Crear cuenta" %}</a>
+        <a href="{% url 'accounts:login' %}" class="btn btn-secondary">{% translate "Entrar" %}</a>
       </div>
     {% endif %}
   </div>

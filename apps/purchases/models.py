@@ -14,66 +14,67 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
 MIN_AMOUNT = Decimal("0.01")
 
 
 class Purchase(models.Model):
     class Source(models.TextChoices):
-        MANUAL = "MANUAL", "Manual (panel del personal)"
+        MANUAL = "MANUAL", _("Manual (panel del personal)")
         # Reservado para la futura integración con el TPV. No hay ningún flujo
         # que lo use: `services` rechaza los orígenes no habilitados.
         POS = "POS", "TPV"
 
     class Status(models.TextChoices):
-        COMPLETED = "COMPLETED", "Registrada"
+        COMPLETED = "COMPLETED", _("Registrada")
         # Reservado para anulaciones (fase posterior): una compra no se borra
         # ni se edita, se anula.
-        VOIDED = "VOIDED", "Anulada"
+        VOIDED = "VOIDED", _("Anulada")
 
     public_id = models.UUIDField(
-        "identificador", default=uuid.uuid4, unique=True, editable=False
+        _("identificador"), default=uuid.uuid4, unique=True, editable=False
     )
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="cliente",
+        verbose_name=_("cliente"),
         on_delete=models.PROTECT,
         related_name="purchases",
     )
     registered_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="registrada por",
+        verbose_name=_("registrada por"),
         on_delete=models.PROTECT,
         related_name="registered_purchases",
     )
     amount = models.DecimalField(
-        "importe (€)",
+        _("importe (€)"),
         max_digits=8,
         decimal_places=2,
         validators=[MinValueValidator(MIN_AMOUNT)],
     )
-    created_at = models.DateTimeField("fecha y hora", auto_now_add=True, db_index=True)
-    source = models.CharField("origen", max_length=10, choices=Source.choices, default=Source.MANUAL)
+    created_at = models.DateTimeField(_("fecha y hora"), auto_now_add=True, db_index=True)
+    source = models.CharField(_("origen"), max_length=10, choices=Source.choices, default=Source.MANUAL)
     status = models.CharField(
-        "estado", max_length=10, choices=Status.choices, default=Status.COMPLETED, db_index=True
+        _("estado"), max_length=10, choices=Status.choices, default=Status.COMPLETED, db_index=True
     )
     idempotency_key = models.UUIDField(
-        "referencia de idempotencia",
+        _("referencia de idempotencia"),
         unique=True,
         editable=False,
-        help_text="La genera el servidor al mostrar el formulario; un reenvío no crea otra compra.",
+        help_text=_("La genera el servidor al mostrar el formulario; un reenvío no crea otra compra."),
     )
     external_reference = models.CharField(
-        "referencia externa",
+        _("referencia externa"),
         max_length=64,
         blank=True,
         editable=False,
-        help_text="Reservado para el identificador del ticket del TPV.",
+        help_text=_("Reservado para el identificador del ticket del TPV."),
     )
 
     class Meta:
-        verbose_name = "compra"
-        verbose_name_plural = "compras"
+        verbose_name = _("compra")
+        verbose_name_plural = _("compras")
         ordering = ["-created_at", "-id"]
         indexes = [
             models.Index(fields=["customer", "created_at"]),
@@ -97,4 +98,4 @@ class Purchase(models.Model):
         ]
 
     def __str__(self):
-        return f"Compra {self.public_id}"
+        return _("Compra %(public_id)s") % {"public_id": self.public_id}

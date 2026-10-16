@@ -16,6 +16,7 @@ auditado sin el texto de la campaña.
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.models import CustomerProfile, User
 from apps.accounts.permissions import is_owner
@@ -31,7 +32,7 @@ EDITABLE_FIELDS = ("name", "channel", "subject", "body")
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario gestiona las campañas.")
+        raise PermissionDenied(_("Solo el propietario gestiona las campañas."))
 
 
 def _audit(actor, campaign, **metadata):
@@ -44,16 +45,16 @@ def _validate(campaign):
     campaign.body = (campaign.body or "").strip()
     errors = {}
     if not campaign.body:
-        errors["body"] = "Escribe el mensaje."
+        errors["body"] = _("Escribe el mensaje.")
     if campaign.channel == Channel.SMS:
         campaign.subject = ""
         if len(campaign.body) > Campaign.MAX_SMS_BODY:
-            errors["body"] = f"Un SMS admite como máximo {Campaign.MAX_SMS_BODY} caracteres."
+            errors["body"] = _("Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres.") % {"MAX_SMS_BODY": Campaign.MAX_SMS_BODY}
     else:
         if not campaign.subject:
-            errors["subject"] = "Escribe el asunto del email."
+            errors["subject"] = _("Escribe el asunto del email.")
         if len(campaign.body) > Campaign.MAX_EMAIL_BODY:
-            errors["body"] = f"El mensaje admite como máximo {Campaign.MAX_EMAIL_BODY} caracteres."
+            errors["body"] = _("El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres.") % {"MAX_EMAIL_BODY": Campaign.MAX_EMAIL_BODY}
     if errors:
         raise ValidationError(errors)
     campaign.full_clean(exclude=["created_by"])
@@ -66,7 +67,7 @@ def save_campaign(*, actor, campaign, data):
     if campaign.pk is not None:
         campaign = Campaign.objects.select_for_update().get(pk=campaign.pk)
         if campaign.status != Status.DRAFT:
-            raise ValidationError("Solo se pueden modificar las campañas en borrador.")
+            raise ValidationError(_("Solo se pueden modificar las campañas en borrador."))
     else:
         campaign.created_by = actor
     for name in EDITABLE_FIELDS:
@@ -87,9 +88,9 @@ def queue_campaign(*, actor, campaign):
     if campaign.status == Status.QUEUED:
         return campaign
     if campaign.status != Status.DRAFT:
-        raise ValidationError("Esta campaña ya no se puede programar.")
+        raise ValidationError(_("Esta campaña ya no se puede programar."))
     if campaign.channel == Channel.SMS and not services.sms_available():
-        raise ValidationError("No hay ningún proveedor de SMS configurado: la campaña no puede enviarse por SMS.")
+        raise ValidationError(_("No hay ningún proveedor de SMS configurado: la campaña no puede enviarse por SMS."))
     _validate(campaign)
     campaign.status = Status.QUEUED
     campaign.queued_at = timezone.now()
@@ -105,7 +106,7 @@ def cancel_campaign(*, actor, campaign):
     if campaign.status == Status.CANCELLED:
         return campaign
     if campaign.status not in (Status.DRAFT, Status.QUEUED):
-        raise ValidationError("Una campaña ya repartida no se puede cancelar.")
+        raise ValidationError(_("Una campaña ya repartida no se puede cancelar."))
     campaign.status = Status.CANCELLED
     campaign.save(update_fields=["status", "updated_at"])
     _audit(actor, campaign, event="cancelled")
@@ -137,7 +138,7 @@ def dispatch_queued(now=None):
                 continue
             count = 0
             for user in eligible_recipients(campaign.channel).iterator():
-                _, created = services.enqueue(
+                _unused, created = services.enqueue(
                     kind=Notification.Kind.CAMPAIGN,
                     recipient=user,
                     channel=campaign.channel,

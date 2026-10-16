@@ -1,31 +1,32 @@
 {% extends "staff/_layout.html" %}
-{% block title %}Panel del personal{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Panel del personal" %}{% endblock %}
 {% block width %}max-w-3xl{% endblock %}
-{% block heading %}Hola, {{ user.get_short_name }}{% endblock %}
-{% block intro %}<p class="lead mt-3">¿Qué quieres hacer?</p>{% endblock %}
+{% block heading %}{% blocktranslate trimmed with name=user.get_short_name %}Hola, {{ name }}{% endblocktranslate %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "¿Qué quieres hacer?" %}</p>{% endblock %}
 {% block body %}
 <div class="grid gap-4 sm:grid-cols-2">
   <a href="{% url 'purchases:scan' %}" class="panel-tile panel-tile-primary">
-    <span class="text-2xl font-extrabold uppercase">Registrar compra</span>
-    <span class="text-sm">Escanea el QR del cliente e introduce el importe.</span>
+    <span class="text-2xl font-extrabold uppercase">{% translate "Registrar compra" %}</span>
+    <span class="text-sm">{% translate "Escanea el QR del cliente e introduce el importe." %}</span>
   </a>
   <a href="{% url 'rewards_panel:scan' %}" class="panel-tile">
-    <span class="text-2xl font-extrabold uppercase">Validar canje</span>
-    <span class="text-sm text-mist">Escanea el código del canje y entrega la recompensa.</span>
+    <span class="text-2xl font-extrabold uppercase">{% translate "Validar canje" %}</span>
+    <span class="text-sm text-mist">{% translate "Escanea el código del canje y entrega la recompensa." %}</span>
   </a>
   <a href="{% url 'staff:results' %}" class="panel-tile">
-    <span class="text-xl font-extrabold uppercase">Mis resultados</span>
-    <span class="text-sm text-mist">Compras registradas y canjes validados por ti.</span>
+    <span class="text-xl font-extrabold uppercase">{% translate "Mis resultados" %}</span>
+    <span class="text-sm text-mist">{% translate "Compras registradas y canjes validados por ti." %}</span>
   </a>
   <a href="{% url 'staff:profile' %}" class="panel-tile">
-    <span class="text-xl font-extrabold uppercase">Mi perfil</span>
-    <span class="text-sm text-mist">Tus datos de acceso, email y contraseña.</span>
+    <span class="text-xl font-extrabold uppercase">{% translate "Mi perfil" %}</span>
+    <span class="text-sm text-mist">{% translate "Tus datos de acceso, email y contraseña." %}</span>
   </a>
 </div>
 
 <section aria-labelledby="hoy" class="mt-10">
-  <h2 id="hoy" class="heading-md mb-4">Hoy, por ti</h2>
+  <h2 id="hoy" class="heading-md mb-4">{% translate "Hoy, por ti" %}</h2>
   {% include "staff/_summary.html" with summary=today %}
-  <p class="mt-3 text-sm text-mist">Solo cuenta lo que registraste en el programa de fidelización; no es la caja del local.</p>
+  <p class="mt-3 text-sm text-mist">{% translate "Solo cuenta lo que registraste en el programa de fidelización; no es la caja del local." %}</p>
 </section>
 {% endblock %}

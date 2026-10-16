@@ -34,10 +34,13 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import F
 from django.utils import timezone
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _lazy
 
 from apps.accounts.models import User
 from apps.accounts.permissions import is_owner, is_staff_member
 from apps.core import throttling
+from apps.core.i18n import site_text
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 from apps.loyalty import ledger
@@ -57,41 +60,41 @@ _FAILURE_SCOPE = "redemption_code_failure"
 
 class RewardNotAvailable(ValidationError):
     def __init__(self):
-        super().__init__("Esta recompensa no está disponible ahora mismo.", code="reward_unavailable")
+        super().__init__(_("Esta recompensa no está disponible ahora mismo."), code="reward_unavailable")
 
 
 class RewardOutOfStock(ValidationError):
     def __init__(self):
-        super().__init__("Esta recompensa se ha agotado.", code="out_of_stock")
+        super().__init__(_("Esta recompensa se ha agotado."), code="out_of_stock")
 
 
 class PendingRedemptionExists(ValidationError):
     def __init__(self):
         super().__init__(
-            "Ya tienes un código pendiente de recoger para esta recompensa. Úsalo o cancélalo antes de pedir otro.",
+            _("Ya tienes un código pendiente de recoger para esta recompensa. Úsalo o cancélalo antes de pedir otro."),
             code="duplicate_pending",
         )
 
 
 class InvalidRedemptionCode(ValidationError):
     def __init__(self):
-        super().__init__("El código no es válido.", code="invalid_code")
+        super().__init__(_("El código no es válido."), code="invalid_code")
 
 
 class RedemptionAlreadyUsed(ValidationError):
     def __init__(self, used_at):
         when = timezone.localtime(used_at).strftime("%d/%m/%Y %H:%M")
-        super().__init__(f"Este código ya se utilizó el {when}. No se puede volver a usar.", code="code_used")
+        super().__init__(_("Este código ya se utilizó el %(when)s. No se puede volver a usar.") % {"when": when}, code="code_used")
 
 
 class RedemptionExpired(ValidationError):
     def __init__(self):
-        super().__init__("Este código ha caducado. Los puntos se han devuelto al cliente.", code="code_expired")
+        super().__init__(_("Este código ha caducado. Los puntos se han devuelto al cliente."), code="code_expired")
 
 
 class RedemptionNotPending(ValidationError):
     def __init__(self):
-        super().__init__("Este canje ya no está pendiente.", code="code_not_pending")
+        super().__init__(_("Este canje ya no está pendiente."), code="code_not_pending")
 
 
 class TooManyFailedAttempts(Exception):
@@ -136,19 +139,19 @@ def _is_eligible_customer(user):
 
 def ensure_can_redeem(user):
     if not _is_eligible_customer(user):
-        raise PermissionDenied("Solo los clientes con el email verificado pueden canjear puntos.")
+        raise PermissionDenied(_("Solo los clientes con el email verificado pueden canjear puntos."))
 
 
 def ensure_can_validate(staff):
     if not is_staff_member(staff):
-        raise PermissionDenied("Solo el personal del local puede validar canjes.")
+        raise PermissionDenied(_("Solo el personal del local puede validar canjes."))
 
 
 def parse_idempotency_key(value):
     try:
         return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
     except (TypeError, ValueError, AttributeError):
-        raise ValidationError("La operación no es válida. Vuelve a intentarlo.", code="idempotency_invalid")
+        raise ValidationError(_("La operación no es válida. Vuelve a intentarlo."), code="idempotency_invalid")
 
 
 def new_idempotency_key():
@@ -169,7 +172,7 @@ def _new_code():
 
 def _replay(existing, customer, reward):
     if existing.customer_id != customer.pk or existing.reward_id != reward.pk:
-        raise ValidationError("Esta operación ya se registró con otros datos.", code="idempotency_conflict")
+        raise ValidationError(_("Esta operación ya se registró con otros datos."), code="idempotency_conflict")
     return RedemptionResult(redemption=existing, created=False)
 
 
@@ -195,7 +198,7 @@ def _create_redemption(customer, reward, key, now):
         # Lanza InsufficientPoints si el saldo (recalculado aquí) no alcanza;
         # la excepción deshace también la resta de unidades.
         movement = ledger.spend_points(
-            customer=customer, points=reward.points_cost, reason=f"Canje: {reward.name}"[:200]
+            customer=customer, points=reward.points_cost, reason=site_text(_lazy("Canje: %(name)s"), name=reward.name)[:200]
         )
         redemption = Redemption.objects.create(
             customer=customer,
@@ -254,7 +257,7 @@ def _close(redemption, *, status, actor, now):
         current = Redemption.objects.select_for_update().get(pk=redemption.pk)
         if current.status != Status.PENDING:
             return False
-        reason = "Canje cancelado" if status == Status.CANCELLED else "Canje caducado"
+        reason = site_text(_lazy("Canje cancelado") if status == Status.CANCELLED else _lazy("Canje caducado"))
         refund = ledger.refund_spent_points(movement=current.spend_movement, actor=actor, reason=reason)
         updated = Redemption.objects.filter(pk=current.pk, status=Status.PENDING).update(
             status=status, closed_at=now, refund_movement=refund.movement
@@ -285,7 +288,7 @@ def cancel_redemption(*, customer, redemption):
     """
     ensure_can_redeem(customer)
     if redemption.customer_id != customer.pk:
-        raise PermissionDenied("Este canje no es tuyo.")
+        raise PermissionDenied(_("Este canje no es tuyo."))
     if _close_safely(redemption, status=Status.CANCELLED, actor=customer, now=timezone.now()):
         return RedemptionResult(redemption=Redemption.objects.get(pk=redemption.pk), created=True)
     redemption.refresh_from_db()
@@ -381,7 +384,7 @@ def validate_redemption(*, staff, code):
     with transaction.atomic():
         redemption = _find(staff, code, for_update=True)
         if redemption.customer_id == staff.pk:
-            raise PermissionDenied("No puedes validar tu propio canje.")
+            raise PermissionDenied(_("No puedes validar tu propio canje."))
         expired = redemption.is_expired(now)
         if not expired:
             updated = Redemption.objects.filter(pk=redemption.pk, status=Status.PENDING, expires_at__gt=now).update(
@@ -414,7 +417,7 @@ def validate_redemption(*, staff, code):
 def save_reward(*, actor, reward, changed_fields=()):
     """Crea o modifica una recompensa (solo propietario), validada y auditada."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede gestionar las recompensas.")
+        raise PermissionDenied(_("Solo el propietario puede gestionar las recompensas."))
     creating = reward.pk is None
     reward.full_clean()
     with transaction.atomic():
@@ -447,9 +450,9 @@ MANAGEABLE_REWARD_STATUSES = (Reward.Status.ACTIVE, Reward.Status.PAUSED, Reward
 def set_reward_status(*, actor, reward, status):
     """Activa, pausa o archiva una recompensa (solo propietario). Nunca la borra."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede gestionar las recompensas.")
+        raise PermissionDenied(_("Solo el propietario puede gestionar las recompensas."))
     if status not in MANAGEABLE_REWARD_STATUSES:
-        raise ValidationError("Estado de recompensa no válido.")
+        raise ValidationError(_("Estado de recompensa no válido."))
     with transaction.atomic():
         locked = Reward.objects.select_for_update().get(pk=reward.pk)
         if locked.status == status:

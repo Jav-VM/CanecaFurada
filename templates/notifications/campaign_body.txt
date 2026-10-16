@@ -1,8 +1,8 @@
-{% autoescape off %}{{ campaign_body }}
+{% load i18n %}{% autoescape off %}{{ campaign_body }}
 
 —
 Caneca Furada
 
-Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:
+{% translate "Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:" %}
 {{ unsubscribe_url }}
 {% endautoescape %}

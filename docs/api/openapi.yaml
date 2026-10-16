@@ -305,13 +305,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       tags:
@@ -477,13 +477,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       tags:
@@ -619,13 +619,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       tags:
@@ -699,13 +699,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       tags:
@@ -794,13 +794,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       tags:
@@ -971,13 +971,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       - in: query
@@ -1113,13 +1113,13 @@ paths:
       - name: page
         required: false
         in: query
-        description: Un número de página dentro del conjunto de resultados paginado.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - name: page_size
         required: false
         in: query
-        description: Número de resultados a devolver por página.
+        description: Number of results to return per page.
         schema:
           type: integer
       tags:
@@ -1611,10 +1611,10 @@ components:
       description: |-
         * `EARN_PURCHASE` - Compra
         * `PROMOTION_BONUS` - Promoción
-        * `ADJUSTMENT` - Ajuste manual
+        * `ADJUSTMENT` - Axuste manual
         * `REVERSAL` - Compensación
-        * `REDEMPTION` - Canje
-        * `BIRTHDAY_GIFT` - Regalo de cumpleaños
+        * `REDEMPTION` - Canxe
+        * `BIRTHDAY_GIFT` - Agasallo de aniversario
         * `EXPIRATION` - Puntos caducados
     LoginRequest:
       type: object
@@ -2131,7 +2131,7 @@ components:
       - VOIDED
       type: string
       description: |-
-        * `COMPLETED` - Registrada
+        * `COMPLETED` - Rexistrada
         * `VOIDED` - Anulada
     QRCode:
       type: object
@@ -2309,8 +2309,8 @@ components:
       - CANCELLED
       type: string
       description: |-
-        * `PENDING` - Pendiente de recoger
-        * `USED` - Canjeado
+        * `PENDING` - Pendente de recoller
+        * `USED` - Canxeado
         * `EXPIRED` - Caducado
         * `CANCELLED` - Cancelado
     RefreshRequest:
@@ -2487,9 +2487,9 @@ components:
       - COMPLETED
       type: string
       description: |-
-        * `PENDING` - Pendiente de confirmar
+        * `PENDING` - Pendente de confirmar
         * `CONFIRMED` - Confirmada
-        * `REJECTED` - Rechazada
+        * `REJECTED` - Rexeitada
         * `CANCELLED` - Cancelada
         * `COMPLETED` - Completada
     Reward:
@@ -2539,7 +2539,7 @@ components:
       type: string
       description: |-
         * `OWNER` - Propietario
-        * `EMPLOYEE` - Empleado
+        * `EMPLOYEE` - Empregado
         * `CUSTOMER` - Cliente
     SourceEnum:
       enum:
@@ -2547,7 +2547,7 @@ components:
       - POS
       type: string
       description: |-
-        * `MANUAL` - Manual (panel del personal)
+        * `MANUAL` - Manual (panel do persoal)
         * `POS` - TPV
     StaffPurchase:
       type: object

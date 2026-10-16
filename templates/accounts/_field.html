@@ -1,3 +1,4 @@
+{% load i18n %}
 {% comment %}
 Campo de formulario accesible. Django 5.2 ya añade aria-invalid y enlaza la
 ayuda y los errores con aria-describedby; las contraseñas no se vuelven a
@@ -16,7 +17,7 @@ rellenar tras un error (PasswordInput no renderiza su valor).
 <div class="field">
   <label for="{{ field.id_for_label }}">
     {{ field.label }}
-    {% if field.field.required %}<span class="required-mark" aria-hidden="true">*</span><span class="sr-only"> (obligatorio)</span>{% else %}<span class="optional-mark">(opcional)</span>{% endif %}
+    {% if field.field.required %}<span class="required-mark" aria-hidden="true">*</span><span class="sr-only"> {% translate "(obligatorio)" %}</span>{% else %}<span class="optional-mark">{% translate "(opcional)" %}</span>{% endif %}
   </label>
   {{ field }}
   {% if field.help_text %}<p class="help" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}

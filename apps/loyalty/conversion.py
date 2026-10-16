@@ -17,6 +17,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.models import AuditEvent
@@ -73,7 +74,7 @@ def _parse_rate(value):
     except InvalidOperation:
         rate = None
     if rate is None or not rate.is_finite():
-        raise ValidationError({"points_per_euro": "Introduce un número válido, por ejemplo 1,00."})
+        raise ValidationError({"points_per_euro": _("Introduce un número válido, por ejemplo 1,00.")})
     return rate
 
 
@@ -81,7 +82,7 @@ def _parse_rate(value):
 def create_rule(*, actor, points_per_euro, valid_from=None, note=""):
     """Nueva conversión (solo propietario). No modifica reglas anteriores ni puntos concedidos."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede cambiar la conversión de puntos.")
+        raise PermissionDenied(_("Solo el propietario puede cambiar la conversión de puntos."))
     rule = LoyaltyRule(
         points_per_euro=_parse_rate(points_per_euro),
         valid_from=valid_from or timezone.now(),

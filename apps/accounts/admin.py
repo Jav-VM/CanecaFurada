@@ -12,6 +12,7 @@ from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.forms import BaseUserCreationForm, UserChangeForm
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from . import services
 from .models import CommunicationPreferenceChange, User
@@ -34,7 +35,7 @@ class UserAdminChangeForm(UserChangeForm):
         if user.pk and user.is_owner and not is_active:
             others = User.objects.filter(role=User.Role.OWNER, is_active=True).exclude(pk=user.pk)
             if not others.exists():
-                raise forms.ValidationError("No se puede desactivar al último propietario activo.")
+                raise forms.ValidationError(_("No se puede desactivar al último propietario activo."))
         return is_active
 
 
@@ -48,7 +49,7 @@ def _change_role_action(new_role, description):
             except (PermissionDenied, ValidationError) as exc:
                 messages.error(request, f"{user}: {'; '.join(getattr(exc, 'messages', [str(exc)]))}")
         if changed:
-            messages.success(request, f"Rol actualizado en {changed} usuario(s).")
+            messages.success(request, _("Rol actualizado en %(changed)s usuario(s).") % {"changed": changed})
 
     action.__name__ = f"make_{new_role.lower()}"
     action.short_description = description
@@ -65,7 +66,7 @@ def _set_active_action(is_active, description):
             except (PermissionDenied, ValidationError) as exc:
                 messages.error(request, f"{user}: {'; '.join(getattr(exc, 'messages', [str(exc)]))}")
         if changed:
-            messages.success(request, f"Estado actualizado en {changed} usuario(s).")
+            messages.success(request, _("Estado actualizado en %(changed)s usuario(s).") % {"changed": changed})
 
     action.__name__ = "activate_users" if is_active else "deactivate_users"
     action.short_description = description
@@ -93,9 +94,9 @@ class UserAdmin(DjangoUserAdmin):
 
     fieldsets = (
         (None, {"fields": ("public_id", "email", "email_verified_at", "password")}),
-        ("Datos personales", {"fields": ("first_name", "last_name")}),
-        ("Rol y estado", {"fields": ("role", "is_active", "is_staff", "is_superuser")}),
-        ("Fechas", {"fields": ("last_login", "date_joined")}),
+        (_("Datos personales"), {"fields": ("first_name", "last_name")}),
+        (_("Rol y estado"), {"fields": ("role", "is_active", "is_staff", "is_superuser")}),
+        (_("Fechas"), {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
         (
@@ -109,14 +110,14 @@ class UserAdmin(DjangoUserAdmin):
     filter_horizontal = ()
 
     actions = [
-        _change_role_action(User.Role.EMPLOYEE, "Cambiar rol a Empleado"),
-        _change_role_action(User.Role.CUSTOMER, "Cambiar rol a Cliente"),
-        _change_role_action(User.Role.OWNER, "Cambiar rol a Propietario"),
-        _set_active_action(True, "Activar (autorizar) cuentas"),
-        _set_active_action(False, "Desactivar cuentas"),
+        _change_role_action(User.Role.EMPLOYEE, _("Cambiar rol a Empleado")),
+        _change_role_action(User.Role.CUSTOMER, _("Cambiar rol a Cliente")),
+        _change_role_action(User.Role.OWNER, _("Cambiar rol a Propietario")),
+        _set_active_action(True, _("Activar (autorizar) cuentas")),
+        _set_active_action(False, _("Desactivar cuentas")),
     ]
 
-    @admin.display(boolean=True, description="email verificado")
+    @admin.display(boolean=True, description=_("email verificado"))
     def email_verified(self, obj):
         return obj.is_email_verified
 

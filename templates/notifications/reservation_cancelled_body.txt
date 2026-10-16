@@ -1,8 +1,8 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-{% if by_customer %}Has cancelado tu reserva{% else %}El local ha cancelado tu reserva{% endif %}{% if event_title %} para «{{ event_title }}»{% endif %} del {{ when }} ({{ party_size }} personas).
+{% if by_customer %}{% if event_title %}{% blocktranslate %}Has cancelado tu reserva para «{{ event_title }}» del {{ when }} ({{ party_size }} personas).{% endblocktranslate %}{% else %}{% blocktranslate %}Has cancelado tu reserva del {{ when }} ({{ party_size }} personas).{% endblocktranslate %}{% endif %}{% else %}{% if event_title %}{% blocktranslate %}El local ha cancelado tu reserva para «{{ event_title }}» del {{ when }} ({{ party_size }} personas).{% endblocktranslate %}{% else %}{% blocktranslate %}El local ha cancelado tu reserva del {{ when }} ({{ party_size }} personas).{% endblocktranslate %}{% endif %}{% endif %}
 {% if message %}
-Mensaje del local: {{ message }}
+{% blocktranslate %}Mensaje del local: {{ message }}{% endblocktranslate %}
 {% endif %}
 Caneca Furada
 {% endautoescape %}

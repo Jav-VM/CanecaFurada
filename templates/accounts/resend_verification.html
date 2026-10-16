@@ -1,16 +1,17 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Reenviar verificación{% endblock %}
-{% block eyebrow %}Verificación del email{% endblock %}
-{% block heading %}Reenviar el email de verificación{% endblock %}
-{% block intro %}<p class="lead mt-3">Indica el email con el que te registraste y te enviaremos un nuevo enlace.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Reenviar verificación" %}{% endblock %}
+{% block eyebrow %}{% translate "Verificación del email" %}{% endblock %}
+{% block heading %}{% translate "Reenviar el email de verificación" %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "Indica el email con el que te registraste y te enviaremos un nuevo enlace." %}</p>{% endblock %}
 {% block body %}
 <div class="card p-6 sm:p-8">
   {% include "components/form_errors.html" %}
   <form method="post" novalidate data-loading class="space-y-5">
     {% csrf_token %}
     {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Enviando…">Enviar enlace</button>
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="{% translate 'Enviando…' %}">{% translate "Enviar enlace" %}</button>
   </form>
 </div>
-<p class="mt-6 text-center text-sm text-mist"><a class="link" href="{% url 'accounts:login' %}">Volver a entrar</a></p>
+<p class="mt-6 text-center text-sm text-mist"><a class="link" href="{% url 'accounts:login' %}">{% translate "Volver a entrar" %}</a></p>
 {% endblock %}

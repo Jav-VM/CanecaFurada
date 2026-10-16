@@ -1,11 +1,11 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-{{ alert }}{% if event_title %} para «{{ event_title }}»{% endif %}:
+{% if event_title %}{% blocktranslate %}{{ alert }} para «{{ event_title }}»:{% endblocktranslate %}{% else %}{{ alert }}:{% endif %}
 
-- Fecha: {{ when }}
-- Personas: {{ party_size }}
+- {% blocktranslate %}Fecha: {{ when }}{% endblocktranslate %}
+- {% blocktranslate %}Personas: {{ party_size }}{% endblocktranslate %}
 
-Los datos del cliente están en el dashboard (no se envían por email):
+{% translate "Los datos del cliente están en el dashboard (no se envían por email):" %}
 
 {{ site_base_url }}{% url "dashboard:reservations" %}
 

@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
+from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
 from apps.accounts.permissions import verified_email_required
@@ -71,7 +72,7 @@ def rotate(request):
     try:
         services.rotate_customer_qr(request.user)
     except services.RotationRateLimited:
-        messages.error(request, "Has renovado tu código demasiadas veces hoy. Inténtalo mañana.")
+        messages.error(request, _("Has renovado tu código demasiadas veces hoy. Inténtalo mañana."))
     else:
-        messages.success(request, "Tu código QR se ha renovado. El anterior ya no sirve.")
+        messages.success(request, _("Tu código QR se ha renovado. El anterior ya no sirve."))
     return redirect("loyalty:my_qr")

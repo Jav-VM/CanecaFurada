@@ -1,1 +1,1 @@
-Hemos recibido tu solicitud de reserva en Caneca Furada
+{% load i18n %}{% translate "Hemos recibido tu solicitud de reserva en Caneca Furada" %}

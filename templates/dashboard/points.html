@@ -1,31 +1,32 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Puntos · Dashboard{% endblock %}
-{% block heading %}Puntos{% endblock %}
-{% block intro %}<p class="lead mt-2">Conversión vigente: <strong class="text-paper">{{ rate.points_per_euro }} puntos por euro</strong>{% if not rate.rule %} (valor por defecto){% endif %}. <a class="link text-base" href="{% url 'dashboard:settings' %}">Cambiar</a></p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Puntos" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Puntos" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% blocktranslate trimmed with rate=rate.points_per_euro %}Conversión vigente: <strong class="text-paper">{{ rate }} puntos por euro</strong>{% endblocktranslate %}{% if not rate.rule %} {% translate "(valor por defecto)" %}{% endif %}. <a class="link text-base" href="{% url 'dashboard:settings' %}">{% translate "Cambiar" %}</a></p>{% endblock %}
 {% block body %}
-<form method="get" class="filters mb-4" aria-label="Filtrar movimientos">
+<form method="get" class="filters mb-4" aria-label="{% translate 'Filtrar movimientos' %}">
   {% include "dashboard/_period_fields.html" %}
   <div class="field">
-    <label for="p-tipo">Tipo de movimiento</label>
+    <label for="p-tipo">{% translate "Tipo de movimiento" %}</label>
     <select name="tipo" id="p-tipo">{% for v, l in kind_choices %}<option value="{{ v }}"{% if v == kind %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
   </div>
-  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Aplicar</button></div>
+  <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">{% translate "Aplicar" %}</button></div>
 </form>
 {% include "dashboard/_period_notice.html" %}
 
 <dl class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-  <div class="stat"><dt class="stat-label">Emitidos</dt><dd class="stat-value">{{ stats.issued }}</dd><dd class="stat-sub">Compras, promociones y ajustes a favor</dd></div>
-  <div class="stat"><dt class="stat-label">Canjeados</dt><dd class="stat-value">{{ stats.used }}</dd><dd class="stat-sub">Descontadas las devoluciones</dd></div>
-  <div class="stat"><dt class="stat-label">Corregidos</dt><dd class="stat-value">{{ stats.corrected }}</dd><dd class="stat-sub">Compensaciones y ajustes en contra</dd></div>
-  <div class="stat"><dt class="stat-label">Caducados</dt><dd class="stat-value">{{ stats.expired }}</dd><dd class="stat-sub">Vencidos sin usar</dd></div>
-  <div class="stat"><dt class="stat-label">Saldo pendiente</dt><dd class="stat-value">{{ stats.outstanding }}</dd><dd class="stat-sub">Total actual, sin filtro de fechas</dd></div>
+  <div class="stat"><dt class="stat-label">{% translate "Emitidos" %}</dt><dd class="stat-value">{{ stats.issued }}</dd><dd class="stat-sub">{% translate "Compras, promociones y ajustes a favor" %}</dd></div>
+  <div class="stat"><dt class="stat-label">{% translate "Canjeados" %}</dt><dd class="stat-value">{{ stats.used }}</dd><dd class="stat-sub">{% translate "Descontadas las devoluciones" %}</dd></div>
+  <div class="stat"><dt class="stat-label">{% translate "Corregidos" %}</dt><dd class="stat-value">{{ stats.corrected }}</dd><dd class="stat-sub">{% translate "Compensaciones y ajustes en contra" %}</dd></div>
+  <div class="stat"><dt class="stat-label">{% translate "Caducados" %}</dt><dd class="stat-value">{{ stats.expired }}</dd><dd class="stat-sub">{% translate "Vencidos sin usar" %}</dd></div>
+  <div class="stat"><dt class="stat-label">{% translate "Saldo pendiente" %}</dt><dd class="stat-value">{{ stats.outstanding }}</dd><dd class="stat-sub">{% translate "Total actual, sin filtro de fechas" %}</dd></div>
 </dl>
-<p class="note mt-3 mb-6">Para ajustar o compensar puntos abre la ficha del cliente. Los movimientos nunca se editan ni se borran.</p>
+<p class="note mt-3 mb-6">{% translate "Para ajustar o compensar puntos abre la ficha del cliente. Los movimientos nunca se editan ni se borran." %}</p>
 
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table" data-movement-list>
-      <thead><tr><th scope="col">Fecha</th><th scope="col">Cliente</th><th scope="col">Tipo</th><th scope="col" class="num">Puntos</th><th scope="col">Detalle</th></tr></thead>
+      <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Cliente" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col">{% translate "Detalle" %}</th></tr></thead>
       <tbody>
         {% for m in page %}
           <tr>
@@ -41,6 +42,6 @@
   </div>
   {% include "dashboard/_pagination.html" %}
 {% else %}
-  <p class="pending">No hay movimientos con estos filtros.</p>
+  <p class="pending">{% translate "No hay movimientos con estos filtros." %}</p>
 {% endif %}
 {% endblock %}

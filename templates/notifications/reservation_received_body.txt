@@ -1,11 +1,11 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-Hemos recibido tu solicitud de reserva{% if event_title %} para «{{ event_title }}»{% endif %}:
+{% if event_title %}{% blocktranslate %}Hemos recibido tu solicitud de reserva para «{{ event_title }}»:{% endblocktranslate %}{% else %}{% translate "Hemos recibido tu solicitud de reserva:" %}{% endif %}
 
-- Fecha: {{ when }}
-- Personas: {{ party_size }}
+- {% blocktranslate %}Fecha: {{ when }}{% endblocktranslate %}
+- {% blocktranslate %}Personas: {{ party_size }}{% endblocktranslate %}
 
-Todavía no está confirmada: te escribiremos en cuanto la revisemos. Puedes consultarla o cancelarla en tu cuenta:
+{% translate "Todavía no está confirmada: te escribiremos en cuanto la revisemos. Puedes consultarla o cancelarla en tu cuenta:" %}
 
 {{ site_base_url }}{% url "events:my_reservations" %}
 

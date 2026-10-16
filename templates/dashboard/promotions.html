@@ -1,27 +1,28 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Promociones · Dashboard{% endblock %}
-{% block heading %}Promociones{% endblock %}
-{% block intro %}<p class="lead mt-2">Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales).</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Promociones" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Promociones" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)." %}</p>{% endblock %}
 {% block body %}
-<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'admin:loyalty_promotion_add' %}">Nueva promoción</a></div>
+<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'admin:loyalty_promotion_add' %}">{% translate "Nueva promoción" %}</a></div>
 {% if promotions %}
   <div class="table-wrap">
     <table class="data-table" data-promotion-list>
-      <thead><tr><th scope="col">Promoción</th><th scope="col">Tipo</th><th scope="col">Bonificación</th><th scope="col">Vigencia</th><th scope="col">Estado</th><th scope="col" class="num">Usos</th><th scope="col">Acciones</th></tr></thead>
+      <thead><tr><th scope="col">{% translate "Promoción" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col">{% translate "Bonificación" %}</th><th scope="col">{% translate "Vigencia" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Usos" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for promo in promotions %}
           <tr>
             <td class="font-semibold">{{ promo.name }}</td>
             <td>{{ promo.get_kind_display }}</td>
-            <td>{% if promo.bonus_type == "FIXED_POINTS" %}+{{ promo.fixed_points }} pts{% else %}×{{ promo.multiplier }}{% endif %}{% if promo.min_purchase_amount %} · desde {{ promo.min_purchase_amount|floatformat:2 }} €{% endif %}</td>
-            <td class="whitespace-nowrap">{{ promo.starts_at|date:"d/m/Y" }} – {% if promo.ends_at %}{{ promo.ends_at|date:"d/m/Y" }}{% else %}sin fin{% endif %}</td>
+            <td>{% if promo.bonus_type == "FIXED_POINTS" %}{% blocktranslate trimmed with points=promo.fixed_points %}+{{ points }} pts{% endblocktranslate %}{% else %}×{{ promo.multiplier }}{% endif %}{% if promo.min_purchase_amount %} · {% blocktranslate trimmed with amount=promo.min_purchase_amount|floatformat:2 %}desde {{ amount }} €{% endblocktranslate %}{% endif %}</td>
+            <td class="whitespace-nowrap">{{ promo.starts_at|date:"d/m/Y" }} – {% if promo.ends_at %}{{ promo.ends_at|date:"d/m/Y" }}{% else %}{% translate "sin fin" %}{% endif %}</td>
             <td>{{ promo.get_status_display }}</td>
             <td class="num">{{ promo.uses }}{% if promo.max_total_uses %} / {{ promo.max_total_uses }}{% endif %}</td>
             <td>
               <form method="post" action="{% url 'dashboard:promotion_status' promo.public_id %}" class="flex flex-wrap gap-2">
                 {% csrf_token %}
-                {% for value in manageable %}{% if value != promo.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "ACTIVE" %}Activar{% elif value == "PAUSED" %}Pausar{% else %}Finalizar{% endif %}</button>{% endif %}{% endfor %}
-                <a class="btn btn-ghost btn-sm" href="{% url 'admin:loyalty_promotion_change' promo.pk %}">Editar</a>
+                {% for value in manageable %}{% if value != promo.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "ACTIVE" %}{% translate "Activar" %}{% elif value == "PAUSED" %}{% translate "Pausar" %}{% else %}{% translate "Finalizar" %}{% endif %}</button>{% endif %}{% endfor %}
+                <a class="btn btn-ghost btn-sm" href="{% url 'admin:loyalty_promotion_change' promo.pk %}">{% translate "Editar" %}</a>
               </form>
             </td>
           </tr>
@@ -30,8 +31,8 @@
     </table>
   </div>
 {% else %}
-  <p class="pending">Todavía no hay promociones.</p>
+  <p class="pending">{% translate "Todavía no hay promociones." %}</p>
 {% endif %}
-<p class="note mt-3">Condiciones, fechas y límites se editan en el admin. Usos: bonificaciones concedidas hasta hoy.</p>
-<p class="note mt-1">Los puntos del regalo de cumpleaños y el texto de su aviso se configuran en <a class="link" href="{% url 'dashboard:settings' %}#cumpleanos">Configuración</a>.</p>
+<p class="note mt-3">{% translate "Condiciones, fechas y límites se editan en el admin. Usos: bonificaciones concedidas hasta hoy." %}</p>
+<p class="note mt-1">{% url 'dashboard:settings' as settings_url %}{% blocktranslate trimmed %}Los puntos del regalo de cumpleaños y el texto de su aviso se configuran en <a class="link" href="{{ settings_url }}#cumpleanos">Configuración</a>.{% endblocktranslate %}</p>
 {% endblock %}

@@ -25,9 +25,10 @@
 
   --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --tracking-brand: 0.14em;
-  /* Ancho desde el que la cabecera va en una sola línea: 1104 px. El caso más ancho, el
-     propietario (Mi cuenta · Panel · Salir), necesita 1098 px (medido con Chrome). */
-  --breakpoint-nav: 69rem;
+  /* Ancho desde el que la cabecera va en una sola línea. Hasta la Fase 14 era 69rem (1104 px,
+     medido con Chrome para el propietario: Mi cuenta · Panel · Salir). La Fase 15 añade las
+     banderas (~80 px) y textos en gallego algo más largos: 75rem (1200 px), estimado, sin medir. */
+  --breakpoint-nav: 75rem;
 }
 
 /* --- Base ------------------------------------------------------------------ */
@@ -165,4 +166,9 @@
   .logo-blend { mix-blend-mode: lighten; }
 
   .sr-only-focusable:not(:focus) { @apply sr-only; }
+
+  /* Selector de idioma (Fase 15): banderas tamaño icono; la activa, con borde dorado */
+  .flag-btn { @apply block cursor-pointer rounded-sm opacity-60 ring-1 ring-line transition-opacity hover:opacity-100 focus-visible:opacity-100; }
+  .flag-btn > svg { @apply rounded-[2px]; }
+  .flag-btn-active { @apply opacity-100 ring-2 ring-gold ring-offset-2 ring-offset-ink; }
 }

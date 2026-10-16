@@ -13,16 +13,17 @@ from decimal import ROUND_HALF_UP, Decimal
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db.models.functions import Coalesce
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.querysets import period_q
 
 from .models import Purchase
 
-REGISTERED_PURCHASES_LABEL = "Compras registradas en el programa de fidelización"
+REGISTERED_PURCHASES_LABEL = _("Compras registradas en el programa de fidelización")
 NOT_REVENUE_NOTE = (
-    "Solo incluye las compras que el personal registró con el QR de un cliente. "
-    "No es la facturación total del local."
+    _("Solo incluye las compras que el personal registró con el QR de un cliente. "
+    "No es la facturación total del local.")
 )
 
 
@@ -50,7 +51,7 @@ class RegisteredPurchasesStats:
 def registered_purchases_stats(*, actor, start=None, end=None):
     """Totales de compras registradas vigentes (no anuladas) en `[start, end)`. Solo propietario."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver las estadísticas.")
+        raise PermissionDenied(_("Solo el propietario puede ver las estadísticas."))
     purchases = Purchase.objects.filter(period_q("created_at", start, end), status=Purchase.Status.COMPLETED)
     totals = purchases.aggregate(
         count=Count("id"),
@@ -98,7 +99,7 @@ def staff_purchases_summary(staff, *, since):
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver todas las compras.")
+        raise PermissionDenied(_("Solo el propietario puede ver todas las compras."))
 
 
 def all_purchases(*, actor, start=None, end=None, registered_by=None, status=None):

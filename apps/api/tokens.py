@@ -124,7 +124,7 @@ def revoke_all_tokens(*, user, reason):
     outstanding = OutstandingToken.objects.filter(user=user, blacklistedtoken__isnull=True)
     revoked = 0
     for token in outstanding:
-        _, created = BlacklistedToken.objects.get_or_create(token=token)
+        _unused, created = BlacklistedToken.objects.get_or_create(token=token)
         revoked += int(created)
     record_audit_event(
         action=AuditEvent.Action.API_SESSIONS_REVOKED,

@@ -1,12 +1,12 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-Gracias por registrarte en Caneca Furada. Para confirmar tu dirección de correo abre este enlace y pulsa «Confirmar email»:
+{% translate "Gracias por registrarte en Caneca Furada. Para confirmar tu dirección de correo abre este enlace y pulsa «Confirmar email»:" %}
 
 {{ verification_url }}
 
-El enlace caduca en {{ ttl_hours }} horas y solo puede usarse una vez.
+{% blocktranslate %}El enlace caduca en {{ ttl_hours }} horas y solo puede usarse una vez.{% endblocktranslate %}
 
-Si no has creado esta cuenta, ignora este mensaje.
+{% translate "Si no has creado esta cuenta, ignora este mensaje." %}
 
 Caneca Furada
 {% endautoescape %}

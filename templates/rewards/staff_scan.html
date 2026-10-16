@@ -1,23 +1,24 @@
 {% extends "staff/_layout.html" %}
+{% load i18n %}
 {% load static %}
-{% block title %}Validar canje{% endblock %}
+{% block title %}{% translate "Validar canje" %}{% endblock %}
 {% block extra_scripts %}<script src="{% static 'js/qr-scanner.js' %}" defer></script>{% endblock %}
-{% block eyebrow %}Panel del personal{% endblock %}
-{% block heading %}Validar canje{% endblock %}
-{% block intro %}<p class="lead mt-3">Paso 1 de 2: escanea el código del canje que enseña el cliente.</p>{% endblock %}
+{% block eyebrow %}{% translate "Panel del personal" %}{% endblock %}
+{% block heading %}{% translate "Validar canje" %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "Paso 1 de 2: escanea el código del canje que enseña el cliente." %}</p>{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 sm:p-8">
   {% include "components/form_errors.html" %}
   {% if scan_error %}<div class="alert alert-error" role="alert" tabindex="-1" data-error-summary><p class="font-bold">{{ scan_error }}</p></div>{% endif %}
 
   {# Lector con cámara: solo aparece si el navegador permite usarla (mejora progresiva). #}
-  <div class="space-y-4" data-qr-scanner data-form="form-canje" data-jsqr-src="{% static 'vendor/jsqr/jsQR.js' %}" hidden>
+  <div class="space-y-4" data-qr-scanner data-form="form-canje" data-text-read="{% translate 'Código leído. Comprobando…' %}" data-text-opening="{% translate 'Abriendo la cámara…' %}" data-text-aim="{% translate 'Apunta la cámara al QR del cliente.' %}" data-text-error="{% translate 'No se ha podido usar la cámara. Revisa el permiso del navegador o escribe el código.' %}" data-jsqr-src="{% static 'vendor/jsqr/jsQR.js' %}" hidden>
     <div class="overflow-hidden rounded-xl border border-line bg-ink">
       <video class="aspect-square w-full object-cover" playsinline muted hidden data-qr-video></video>
     </div>
     <div class="flex flex-wrap gap-3">
-      <button type="button" class="btn btn-primary btn-lg grow" data-qr-start>Abrir la cámara</button>
-      <button type="button" class="btn btn-secondary btn-lg grow" data-qr-stop hidden>Cerrar la cámara</button>
+      <button type="button" class="btn btn-primary btn-lg grow" data-qr-start>{% translate "Abrir la cámara" %}</button>
+      <button type="button" class="btn btn-secondary btn-lg grow" data-qr-stop hidden>{% translate "Cerrar la cámara" %}</button>
     </div>
     <p class="text-sm text-mist" role="status" aria-live="polite" data-qr-status></p>
   </div>
@@ -25,12 +26,12 @@
   <form method="post" action="{% url 'rewards_panel:lookup' %}" id="form-canje" novalidate data-loading class="space-y-5">
     {% csrf_token %}
     {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-    <button type="submit" class="btn btn-secondary btn-lg btn-block" data-loading-text="Comprobando…">Comprobar código</button>
+    <button type="submit" class="btn btn-secondary btn-lg btn-block" data-loading-text="{% translate 'Comprobando…' %}">{% translate "Comprobar código" %}</button>
   </form>
 </div>
 
 <section aria-labelledby="ultimos" class="mt-10">
-  <h2 id="ultimos" class="heading-md mb-4">Tus últimos canjes validados</h2>
+  <h2 id="ultimos" class="heading-md mb-4">{% translate "Tus últimos canjes validados" %}</h2>
   {% if recent_validations %}
     <ul class="card divide-y divide-line p-0">
       {% for redemption in recent_validations %}
@@ -41,7 +42,7 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p class="pending">Todavía no has validado ningún canje.</p>
+    <p class="pending">{% translate "Todavía no has validado ningún canje." %}</p>
   {% endif %}
 </section>
 {% endblock %}

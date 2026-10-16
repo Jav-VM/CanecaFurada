@@ -1,8 +1,8 @@
-{% autoescape off %}Hola, {{ first_name }}:
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Hola, {{ first_name }}:{% endblocktranslate %}
 
-El email de acceso de tu cuenta de Caneca Furada se ha cambiado a otra dirección, que ya ha sido confirmada.
+{% translate "El email de acceso de tu cuenta de Caneca Furada se ha cambiado a otra dirección, que ya ha sido confirmada." %}
 
-Si no has sido tú, contacta con el local cuanto antes.
+{% translate "Si no has sido tú, contacta con el local cuanto antes." %}
 
 Caneca Furada
 {% endautoescape %}

@@ -1,1 +1,1 @@
-{% autoescape off %}Caneca Furada: {% if custom_sms %}{{ custom_sms }}{% else %}¡Feliz cumpleaños! Te hemos regalado {{ points }} puntos.{% endif %} Baja: {{ unsubscribe_url }}{% endautoescape %}
+{% load i18n %}{% autoescape off %}Caneca Furada: {% if custom_sms %}{{ custom_sms }}{% else %}{% blocktranslate %}¡Feliz cumpleaños! Te hemos regalado {{ points }} puntos.{% endblocktranslate %}{% endif %} {% translate "Baja:" %} {{ unsubscribe_url }}{% endautoescape %}

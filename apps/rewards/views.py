@@ -17,6 +17,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
 from apps.accounts.permissions import role_required, verified_email_required
@@ -85,7 +86,7 @@ def redeem(request, public_id):
         messages.error(request, services.RewardNotAvailable().messages[0])
         return redirect("web:rewards")
     if not form.is_valid():
-        return _render_reward(request, reward, status=400, error="La operación no es válida. Vuelve a intentarlo.")
+        return _render_reward(request, reward, status=400, error=_("La operación no es válida. Vuelve a intentarlo."))
     try:
         result = services.request_redemption(
             customer=request.user, reward=reward, idempotency_key=form.cleaned_data["idempotency_key"]
@@ -93,9 +94,9 @@ def redeem(request, public_id):
     except ValidationError as exc:
         return _render_reward(request, reward, status=400, error=exc.messages[0])
     if result.created:
-        messages.success(request, "¡Canje hecho! Enseña este código en la barra para recoger tu recompensa.")
+        messages.success(request, _("¡Canje hecho! Enseña este código en la barra para recoger tu recompensa."))
     else:
-        messages.info(request, "Este canje ya estaba hecho. No se han descontado más puntos.")
+        messages.info(request, _("Este canje ya estaba hecho. No se han descontado más puntos."))
     return redirect("rewards:redemption_detail", public_id=result.redemption.public_id)
 
 
@@ -143,13 +144,13 @@ def cancel(request, public_id):
         messages.error(request, exc.messages[0])
     else:
         if result.created:
-            messages.success(request, f"Canje cancelado. Te hemos devuelto {redemption.points_cost} puntos.")
+            messages.success(request, _("Canje cancelado. Te hemos devuelto %(points_cost)s puntos.") % {"points_cost": redemption.points_cost})
     return redirect("rewards:redemption_detail", public_id=redemption.public_id)
 
 
 # --- Personal -----------------------------------------------------------------------
 
-_TOO_MANY = "Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo."
+_TOO_MANY = _("Demasiados códigos no válidos seguidos. Espera unos minutos antes de volver a intentarlo.")
 
 
 def _render_scan(request, form=None, status=200, error=None):
@@ -195,7 +196,7 @@ def staff_lookup(request):
 def staff_validate(request):
     form = ValidateRedemptionForm(request.POST)
     if not form.is_valid():
-        return _render_scan(request, status=400, error="El código no es válido.")
+        return _render_scan(request, status=400, error=_("El código no es válido."))
     try:
         result = services.validate_redemption(staff=request.user, code=form.cleaned_data["code"])
     except services.TooManyFailedAttempts:
@@ -203,7 +204,7 @@ def staff_validate(request):
     except (ValidationError, PermissionDenied) as exc:
         message = exc.messages[0] if isinstance(exc, ValidationError) else str(exc)
         return _render_scan(request, status=400, error=message)
-    messages.success(request, "Canje validado. Entrega la recompensa.")
+    messages.success(request, _("Canje validado. Entrega la recompensa."))
     return redirect("rewards_panel:detail", public_id=result.redemption.public_id)
 
 

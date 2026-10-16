@@ -2,10 +2,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.forms import ThrottledAdminAuthenticationForm
 
-admin.site.site_header = "Caneca Furada — Administración"
+admin.site.site_header = _("Caneca Furada — Administración")
 admin.site.site_title = "Caneca Furada"
 # Mismo límite de intentos fallidos que el login web y la API.
 admin.site.login_form = ThrottledAdminAuthenticationForm
@@ -13,6 +14,8 @@ admin.site.login_form = ThrottledAdminAuthenticationForm
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("api/v1/", include("apps.api.urls")),
+    # Cambio de idioma con las banderas: POST con CSRF (django.views.i18n.set_language).
+    path("i18n/", include("django.conf.urls.i18n")),
     path("cuenta/", include("apps.loyalty.urls")),
     path("cuenta/", include("apps.rewards.urls")),
     path("cuenta/", include("apps.accounts.urls")),

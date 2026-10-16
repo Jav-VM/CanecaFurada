@@ -4,6 +4,7 @@ disponibilidad, permisos, códigos) las aplica `services`, que es lo que usará
 también la API.
 """
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 
 class RedeemForm(forms.Form):
@@ -12,9 +13,9 @@ class RedeemForm(forms.Form):
 
 class RedemptionCodeForm(forms.Form):
     code = forms.CharField(
-        label="Código del canje",
+        label=_("Código del canje"),
         max_length=100,
-        help_text="Se rellena al escanear el QR del canje. Si la cámara no funciona, escribe el código (p. ej. ABCD-EFGH-JKMN).",
+        help_text=_("Se rellena al escanear el QR del canje. Si la cámara no funciona, escribe el código (p. ej. ABCD-EFGH-JKMN)."),
         widget=forms.TextInput(
             attrs={"autocomplete": "off", "autocapitalize": "characters", "spellcheck": "false"}
         ),

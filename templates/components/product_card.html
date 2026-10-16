@@ -1,3 +1,4 @@
+{% load i18n %}
 {% comment %}
 Producto de la carta. Parámetro: product (de apps.catalog.selectors).
 Un producto agotado nunca se presenta como disponible: lleva la etiqueta
@@ -16,15 +17,15 @@ Un producto agotado nunca se presenta como disponible: lleva la etiqueta
   </div>
   <div class="flex flex-wrap gap-2">
     {% if not product.is_available %}
-      <span class="badge badge-muted">{% if product.is_beer %}Agotada{% else %}Agotado{% endif %}</span>
+      <span class="badge badge-muted">{% if product.is_beer %}{% translate "Agotada" context "cerveza" %}{% else %}{% translate "Agotado" context "producto" %}{% endif %}</span>
     {% endif %}
     {% if product.is_beer %}<span class="badge">{{ product.get_kind_display }}</span>{% endif %}
   </div>
   {% if product.is_beer or product.abv is not None %}
     <dl class="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-      {% if product.style %}<div><dt class="sr-only">Estilo</dt><dd class="font-semibold">{{ product.style.name }}</dd></div>{% endif %}
-      {% if product.abv is not None %}<div><dt class="sr-only">Graduación</dt><dd class="text-mist">{{ product.abv|floatformat:1 }} % vol.</dd></div>{% endif %}
-      {% if product.brewery %}<div><dt class="sr-only">Cervecera</dt><dd class="text-mist">{{ product.brewery }}</dd></div>{% endif %}
+      {% if product.style %}<div><dt class="sr-only">{% translate "Estilo" %}</dt><dd class="font-semibold">{{ product.style.name }}</dd></div>{% endif %}
+      {% if product.abv is not None %}<div><dt class="sr-only">{% translate "Graduación" %}</dt><dd class="text-mist">{{ product.abv|floatformat:1 }} % vol.</dd></div>{% endif %}
+      {% if product.brewery %}<div><dt class="sr-only">{% translate "Cervecera" %}</dt><dd class="text-mist">{{ product.brewery }}</dd></div>{% endif %}
     </dl>
   {% endif %}
   {% if product.description %}<p class="text-sm text-mist">{{ product.description|linebreaksbr }}</p>{% endif %}

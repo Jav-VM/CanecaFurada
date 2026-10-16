@@ -1,0 +1,29 @@
+{% load i18n %}
+{% comment %}
+Selector de idioma (Fase 15): dos minibanderas que envían un POST con CSRF a
+`django.views.i18n.set_language`, que guarda la elección en una cookie y vuelve
+a la misma página por la cabecera Referer (Django solo acepta una del propio
+sitio). No se envía `next`: la URL de algunas páginas lleva tokens (verificación
+de email, recuperación de contraseña) y no deben escribirse en el HTML.
+La bandera del idioma activo lleva el borde dorado y `aria-pressed="true"`.
+A tamaño icono se dibujan sin escudo. Funciona sin JavaScript.
+{% endcomment %}
+{% get_current_language as LANGUAGE_CODE %}
+<form method="post" action="{% url 'set_language' %}" class="flex items-center gap-3 px-1" data-language-switch>
+  {% csrf_token %}
+  <span class="sr-only">{% translate "Idioma" %}</span>
+  <button type="submit" name="language" value="gl" title="Galego" aria-label="Galego" aria-pressed="{% if LANGUAGE_CODE == 'gl' %}true{% else %}false{% endif %}"
+          class="flag-btn{% if LANGUAGE_CODE == 'gl' %} flag-btn-active{% endif %}">
+    <svg aria-hidden="true" viewBox="0 0 3 2" width="24" height="16" class="block">
+      <rect width="3" height="2" fill="#ffffff"/>
+      <path d="M0 0 L3 2" stroke="#0099cc" stroke-width="0.62"/>
+    </svg>
+  </button>
+  <button type="submit" name="language" value="es" title="Castellano" aria-label="Castellano" aria-pressed="{% if LANGUAGE_CODE == 'es' %}true{% else %}false{% endif %}"
+          class="flag-btn{% if LANGUAGE_CODE == 'es' %} flag-btn-active{% endif %}">
+    <svg aria-hidden="true" viewBox="0 0 3 2" width="24" height="16" class="block">
+      <rect width="3" height="2" fill="#aa151b"/>
+      <rect y="0.5" width="3" height="1" fill="#f1bf00"/>
+    </svg>
+  </button>
+</form>

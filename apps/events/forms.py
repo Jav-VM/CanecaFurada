@@ -8,24 +8,25 @@ import datetime
 from django import forms
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .models import Reservation
 
 
 class _ReservationBaseForm(forms.Form):
     party_size = forms.IntegerField(
-        label="Personas",
+        label=_("Personas"),
         min_value=1,
         max_value=Reservation.MAX_PARTY_SIZE,
         initial=2,
         widget=forms.NumberInput(attrs={"inputmode": "numeric"}),
     )
     notes = forms.CharField(
-        label="Comentarios",
+        label=_("Comentarios"),
         required=False,
         max_length=300,
         widget=forms.Textarea(attrs={"rows": 3}),
-        help_text="Opcional. Solo lo verá el local. No incluyas datos de salud ni otros datos sensibles.",
+        help_text=_("Opcional. Solo lo verá el local. No incluyas datos de salud ni otros datos sensibles."),
     )
     idempotency_key = forms.CharField(widget=forms.HiddenInput, max_length=36)
 
@@ -34,7 +35,7 @@ class _ReservationBaseForm(forms.Form):
         maximum = settings.EVENTS_RESERVATION_MAX_PARTY_SIZE
         self.fields["party_size"].max_value = maximum
         self.fields["party_size"].widget.attrs["max"] = maximum
-        self.fields["party_size"].help_text = f"Entre 1 y {maximum}. Para grupos mayores, contacta con el local."
+        self.fields["party_size"].help_text = _("Entre 1 y %(maximum)s. Para grupos mayores, contacta con el local.") % {"maximum": maximum}
 
     def service_kwargs(self):
         data = self.cleaned_data
@@ -42,8 +43,8 @@ class _ReservationBaseForm(forms.Form):
 
 
 class TableReservationForm(_ReservationBaseForm):
-    date = forms.DateField(label="Día", widget=forms.DateInput(attrs={"type": "date"}))
-    time = forms.TimeField(label="Hora", widget=forms.TimeInput(attrs={"type": "time", "step": 900}))
+    date = forms.DateField(label=_("Día"), widget=forms.DateInput(attrs={"type": "date"}))
+    time = forms.TimeField(label=_("Hora"), widget=forms.TimeInput(attrs={"type": "time", "step": 900}))
 
     field_order = ["date", "time", "party_size", "notes", "idempotency_key"]
 

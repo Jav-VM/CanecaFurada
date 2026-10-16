@@ -59,7 +59,8 @@ MIDDLEWARE = [
     "apps.core.middleware.HealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
+    # Idioma: gallego por defecto; castellano en la web pública y el área de cliente si se elige (Fase 15).
+    "apps.core.middleware.SiteLanguageMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -300,9 +301,18 @@ SECURE_REFERRER_POLICY = "same-origin"
 
 # --- Internacionalización ---------------------------------------------------
 
-LANGUAGE_CODE = "es-es"
+# Fase 15: gallego por defecto. Las cadenas del código están en castellano
+# (son los msgid) y la traducción al gallego está en locale/gl/. Ver
+# docs/fase-15-idioma-gallego.md.
+LANGUAGE_CODE = "gl"
+LANGUAGES = [("gl", "Galego"), ("es", "Castellano")]  # cada idioma en su propia lengua
+LOCALE_PATHS = [BASE_DIR / "locale"]
 TIME_ZONE = "Europe/Madrid"
 USE_I18N = True
+# Cookie de la bandera elegida: solo guarda "gl" o "es", sin datos personales.
+LANGUAGE_COOKIE_AGE = 60 * 60 * 24 * 365
+LANGUAGE_COOKIE_SAMESITE = "Lax"
+LANGUAGE_COOKIE_HTTPONLY = True
 USE_TZ = True
 
 # --- Ficheros estáticos y subidos -------------------------------------------

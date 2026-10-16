@@ -27,6 +27,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.catalog.validators import validate_image_extension, validate_image_file
 from apps.core.models import TimeStampedModel
@@ -41,44 +42,44 @@ def event_image_path(instance, filename):
 
 class Event(TimeStampedModel):
     class Status(models.TextChoices):
-        DRAFT = "DRAFT", "Borrador"
-        PUBLISHED = "PUBLISHED", "Publicado"
-        ARCHIVED = "ARCHIVED", "Archivado"
+        DRAFT = "DRAFT", _("Borrador")
+        PUBLISHED = "PUBLISHED", _("Publicado")
+        ARCHIVED = "ARCHIVED", _("Archivado")
 
     MAX_CAPACITY = 1000
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
-    title = models.CharField("título", max_length=120)
-    summary = models.CharField("resumen", max_length=300, blank=True, help_text="Una o dos frases para el listado.")
-    description = models.TextField("descripción", max_length=3000, blank=True)
-    starts_at = models.DateTimeField("empieza")
-    ends_at = models.DateTimeField("termina", null=True, blank=True)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
+    title = models.CharField(_("título"), max_length=120)
+    summary = models.CharField(_("resumen"), max_length=300, blank=True, help_text=_("Una o dos frases para el listado."))
+    description = models.TextField(_("descripción"), max_length=3000, blank=True)
+    starts_at = models.DateTimeField(_("empieza"))
+    ends_at = models.DateTimeField(_("termina"), null=True, blank=True)
     image = models.ImageField(
-        "imagen",
+        _("imagen"),
         upload_to=event_image_path,
         blank=True,
         width_field="image_width",
         height_field="image_height",
         validators=[validate_image_extension, validate_image_file],
-        help_text="JPEG, PNG o WebP. Opcional.",
+        help_text=_("JPEG, PNG o WebP. Opcional."),
     )
     image_width = models.PositiveIntegerField(null=True, blank=True, editable=False)
     image_height = models.PositiveIntegerField(null=True, blank=True, editable=False)
-    status = models.CharField("estado", max_length=10, choices=Status.choices, default=Status.DRAFT, db_index=True)
-    is_featured = models.BooleanField("destacado en el inicio", default=False)
-    accepts_reservations = models.BooleanField("admite reservas", default=False)
+    status = models.CharField(_("estado"), max_length=10, choices=Status.choices, default=Status.DRAFT, db_index=True)
+    is_featured = models.BooleanField(_("destacado en el inicio"), default=False)
+    accepts_reservations = models.BooleanField(_("admite reservas"), default=False)
     capacity = models.PositiveIntegerField(
-        "plazas",
+        _("plazas"),
         null=True,
         blank=True,
         validators=[MinValueValidator(1), MaxValueValidator(MAX_CAPACITY)],
-        help_text="Personas en reservas confirmadas. Vacío: sin límite.",
+        help_text=_("Personas en reservas confirmadas. Vacío: sin límite."),
     )
-    published_at = models.DateTimeField("publicado el", null=True, blank=True, editable=False)
+    published_at = models.DateTimeField(_("publicado el"), null=True, blank=True, editable=False)
 
     class Meta:
-        verbose_name = "evento"
-        verbose_name_plural = "eventos"
+        verbose_name = _("evento")
+        verbose_name_plural = _("eventos")
         ordering = ["starts_at", "id"]
         constraints = [
             models.CheckConstraint(
@@ -103,7 +104,7 @@ class Event(TimeStampedModel):
         self.summary = " ".join((self.summary or "").split())
         self.description = (self.description or "").strip()
         if self.starts_at and self.ends_at and self.ends_at <= self.starts_at:
-            raise ValidationError({"ends_at": "La hora de fin debe ser posterior a la de inicio."})
+            raise ValidationError({"ends_at": _("La hora de fin debe ser posterior a la de inicio.")})
 
     def has_started(self, now=None):
         return self.starts_at <= (now or timezone.now())
@@ -111,11 +112,11 @@ class Event(TimeStampedModel):
 
 class Reservation(models.Model):
     class Status(models.TextChoices):
-        PENDING = "PENDING", "Pendiente de confirmar"
-        CONFIRMED = "CONFIRMED", "Confirmada"
-        REJECTED = "REJECTED", "Rechazada"
-        CANCELLED = "CANCELLED", "Cancelada"
-        COMPLETED = "COMPLETED", "Completada"
+        PENDING = "PENDING", _("Pendiente de confirmar")
+        CONFIRMED = "CONFIRMED", _("Confirmada")
+        REJECTED = "REJECTED", _("Rechazada")
+        CANCELLED = "CANCELLED", _("Cancelada")
+        COMPLETED = "COMPLETED", _("Completada")
 
     ACTIVE_STATUSES = (Status.PENDING, Status.CONFIRMED)
     TRANSITIONS = {
@@ -124,43 +125,43 @@ class Reservation(models.Model):
     }
     MAX_PARTY_SIZE = 50
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     customer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name="cliente", on_delete=models.PROTECT, related_name="reservations"
+        settings.AUTH_USER_MODEL, verbose_name=_("cliente"), on_delete=models.PROTECT, related_name="reservations"
     )
     event = models.ForeignKey(
-        Event, verbose_name="evento", null=True, blank=True, on_delete=models.PROTECT, related_name="reservations"
+        Event, verbose_name=_("evento"), null=True, blank=True, on_delete=models.PROTECT, related_name="reservations"
     )
-    requested_for = models.DateTimeField("fecha y hora", db_index=True)
+    requested_for = models.DateTimeField(_("fecha y hora"), db_index=True)
     party_size = models.PositiveSmallIntegerField(
-        "personas", validators=[MinValueValidator(1), MaxValueValidator(MAX_PARTY_SIZE)]
+        _("personas"), validators=[MinValueValidator(1), MaxValueValidator(MAX_PARTY_SIZE)]
     )
     notes = models.CharField(
-        "comentarios del cliente",
+        _("comentarios del cliente"),
         max_length=300,
         blank=True,
-        help_text="Solo los ve el propietario. No se envían por email.",
+        help_text=_("Solo los ve el propietario. No se envían por email."),
     )
-    status = models.CharField("estado", max_length=10, choices=Status.choices, default=Status.PENDING, db_index=True)
+    status = models.CharField(_("estado"), max_length=10, choices=Status.choices, default=Status.PENDING, db_index=True)
     owner_message = models.CharField(
-        "mensaje del local", max_length=300, blank=True, help_text="Se muestra al cliente y va en el email."
+        _("mensaje del local"), max_length=300, blank=True, help_text=_("Se muestra al cliente y va en el email.")
     )
-    status_changed_at = models.DateTimeField("último cambio de estado", null=True, blank=True)
+    status_changed_at = models.DateTimeField(_("último cambio de estado"), null=True, blank=True)
     status_changed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="cambiado por",
+        verbose_name=_("cambiado por"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    idempotency_key = models.UUIDField("referencia de idempotencia", unique=True)
-    created_at = models.DateTimeField("solicitada", default=timezone.now, db_index=True)
-    updated_at = models.DateTimeField("actualizada", auto_now=True)
+    idempotency_key = models.UUIDField(_("referencia de idempotencia"), unique=True)
+    created_at = models.DateTimeField(_("solicitada"), default=timezone.now, db_index=True)
+    updated_at = models.DateTimeField(_("actualizada"), auto_now=True)
 
     class Meta:
-        verbose_name = "reserva"
-        verbose_name_plural = "reservas"
+        verbose_name = _("reserva")
+        verbose_name_plural = _("reservas")
         ordering = ["-requested_for", "-id"]
         indexes = [models.Index(fields=["customer", "status"])]
         constraints = [
@@ -184,7 +185,7 @@ class Reservation(models.Model):
         ]
 
     def __str__(self):
-        return f"Reserva {self.public_id}"
+        return _("Reserva %(public_id)s") % {"public_id": self.public_id}
 
     @property
     def is_active(self):

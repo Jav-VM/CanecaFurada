@@ -11,6 +11,7 @@ Contenido del local (Fase 9): lectura para la web y edición por el propietario.
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.models import AuditEvent
@@ -71,7 +72,7 @@ def editable_business_info():
 def update_business_info(*, actor, data):
     """Guarda los campos editables (lista blanca contra asignación masiva)."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede editar el contenido del local.")
+        raise PermissionDenied(_("Solo el propietario puede editar el contenido del local."))
     info = BusinessInfo.objects.select_for_update().filter(pk=1).first() or BusinessInfo()
     before = {name: getattr(info, name) for name in EDITABLE_FIELDS}
     for name in EDITABLE_FIELDS:

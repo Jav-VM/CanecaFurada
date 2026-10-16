@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% comment %}
 Layout del dashboard del propietario (Fase 9): menú de secciones lateral en
 escritorio y barra deslizable en móvil. Bloques: heading, intro, body.
 `section` (clave de la sección activa) y `sections` llegan de la vista.
 {% endcomment %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}{% translate "Dashboard" %}{% endblock %}
 {% block content %}
 <div class="container-page py-6 sm:py-10 lg:grid lg:grid-cols-[13rem_1fr] lg:gap-10">
-  <nav aria-label="Secciones del dashboard" class="border-b border-line lg:border-0">
+  <nav aria-label="{% translate 'Secciones del dashboard' %}" class="border-b border-line lg:border-0">
     <ul class="dash-nav">
       {% for key, label, url_name in sections %}
         <li><a href="{% url url_name %}" class="dash-nav-link"{% if key == section %} aria-current="page"{% endif %}>{{ label }}</a></li>
@@ -16,7 +17,7 @@ escritorio y barra deslizable en móvil. Bloques: heading, intro, body.
   </nav>
   <div class="min-w-0 pt-6 lg:pt-0">
     <header class="mb-6">
-      <p class="eyebrow mb-2">Dashboard del propietario</p>
+      <p class="eyebrow mb-2">{% translate "Dashboard del propietario" %}</p>
       <h1 class="heading-lg">{% block heading %}{% endblock %}</h1>
       {% block intro %}{% endblock %}
     </header>

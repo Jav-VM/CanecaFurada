@@ -162,6 +162,11 @@ python manage.py shell -c "from collections import Counter; from apps.events.mod
 # Comprobaciones rápidas
 python manage.py check
 python manage.py makemigrations --check --dry-run        # no crea migraciones: solo avisa si faltan
+python scripts/i18n.py check                             # traducciones al gallego al día y completas (Fase 15; requiere gettext)
+python scripts/i18n.py compile                           # genera los .mo: hazlo tras clonar o tras cambiar el .po
+
+# Idioma (Fase 15): la web se abre en gallego. La bandera de España guarda la
+# cookie django_language=es; para volver a empezar, bórrala en el navegador.
 
 # Suite completa en SQLite en memoria (rápida; omite los 18 tests de concurrencia)
 $env:DATABASE_URL = "sqlite:///pruebas_dev/tests.sqlite3"

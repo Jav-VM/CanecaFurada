@@ -1,25 +1,26 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Mi código QR{% endblock %}
-{% block heading %}Mi código QR{% endblock %}
-{% block intro %}<p class="lead mt-4">Enséñalo en la barra cuando pagues para que registremos tu compra.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Mi código QR" %}{% endblock %}
+{% block heading %}{% translate "Mi código QR" %}{% endblock %}
+{% block intro %}<p class="lead mt-4">{% translate "Enséñalo en la barra cuando pagues para que registremos tu compra." %}</p>{% endblock %}
 {% block body %}
 <div class="card space-y-6 p-6 text-center sm:p-8">
   <div class="mx-auto w-full max-w-xs rounded-2xl bg-paper p-3">
-    <img src="{{ qr_image }}" alt="Tu código QR personal" width="296" height="296" class="h-auto w-full" data-qr-image>
+    <img src="{{ qr_image }}" alt="{% translate 'Tu código QR personal' %}" width="296" height="296" class="h-auto w-full" data-qr-image>
   </div>
   <div>
-    <p class="text-sm text-mist">Si la cámara no lo lee, dicta este código:</p>
+    <p class="text-sm text-mist">{% translate "Si la cámara no lo lee, dicta este código:" %}</p>
     <p class="mt-2 break-words font-mono text-lg font-bold tracking-wider text-gold" data-qr-code-text>{{ qr_code_text }}</p>
   </div>
   <div class="space-y-2 border-t border-line pt-6 text-left text-sm text-mist">
-    <p>El código no contiene tus datos personales ni tu saldo. Solo sirve para que el personal te identifique; nadie puede usarlo sin pasar por la barra.</p>
-    <p>No lo publiques. Si crees que alguien lo ha copiado, renuévalo: el anterior dejará de funcionar.</p>
-    {% if qr_rotated_at %}<p>Última renovación: {{ qr_rotated_at|date:"j \d\e F \d\e Y, H:i" }}.</p>{% endif %}
+    <p>{% translate "El código no contiene tus datos personales ni tu saldo. Solo sirve para que el personal te identifique; nadie puede usarlo sin pasar por la barra." %}</p>
+    <p>{% translate "No lo publiques. Si crees que alguien lo ha copiado, renuévalo: el anterior dejará de funcionar." %}</p>
+    {% if qr_rotated_at %}<p>{% blocktranslate trimmed with date=qr_rotated_at|date:"j \d\e F \d\e Y, H:i" %}Última renovación: {{ date }}.{% endblocktranslate %}</p>{% endif %}
   </div>
-  <form method="post" action="{% url 'loyalty:rotate' %}" data-loading data-loading-text="Renovando…">
+  <form method="post" action="{% url 'loyalty:rotate' %}" data-loading data-loading-text="{% translate 'Renovando…' %}">
     {% csrf_token %}
-    <button type="submit" class="btn btn-secondary">Renovar mi código</button>
+    <button type="submit" class="btn btn-secondary">{% translate "Renovar mi código" %}</button>
   </form>
 </div>
-<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'accounts:profile' %}">Volver a mi perfil</a></p>
+<p class="mt-6 text-center text-sm"><a class="link" href="{% url 'accounts:profile' %}">{% translate "Volver a mi perfil" %}</a></p>
 {% endblock %}

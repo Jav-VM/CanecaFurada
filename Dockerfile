@@ -37,6 +37,15 @@ with open("/usr/local/bin/supercronic", "wb") as f:
 os.chmod("/usr/local/bin/supercronic", 0o755)
 EOF
 
+# --- Traducciones compiladas (Fase 15) ----------------------------------------------
+# gettext solo existe en esta etapa: la imagen final recibe únicamente los .mo.
+FROM ${PYTHON_IMAGE} AS messages
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends gettext \
+ && rm -rf /var/lib/apt/lists/*
+COPY locale/ /locale/
+RUN find /locale -name '*.po' -exec sh -c 'msgfmt --check -o "${1%.po}.mo" "$1"' _ {} \;
+
 # --- Aplicación ------------------------------------------------------------------
 FROM ${PYTHON_IMAGE} AS app
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -56,6 +65,7 @@ COPY --from=build /opt/venv /opt/venv
 COPY --from=supercronic /usr/local/bin/supercronic /usr/local/bin/supercronic
 # El código pertenece a root: el usuario `app` solo puede leerlo.
 COPY . .
+COPY --from=messages /locale/ /app/locale/
 
 # collectstatic con valores ficticios que existen solo en este paso (no quedan en
 # la imagen). No se conecta a la BD ni a la caché. Falla si falta un fichero.

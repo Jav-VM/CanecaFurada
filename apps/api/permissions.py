@@ -6,6 +6,7 @@ Se evalúan siempre con el usuario cargado de la base de datos en la petición
 Los servicios de dominio vuelven a comprobar los permisos por su cuenta.
 """
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import BasePermission
 
 from apps.accounts.models import User
@@ -14,7 +15,7 @@ from apps.accounts.permissions import has_role, is_owner
 
 class HasRole(BasePermission):
     allowed_roles = ()
-    message = "No tienes permiso para realizar esta acción."
+    message = _("No tienes permiso para realizar esta acción.")
 
     def has_permission(self, request, view):
         return has_role(request.user, *self.allowed_roles)
@@ -22,13 +23,13 @@ class HasRole(BasePermission):
 
 class IsCustomer(HasRole):
     allowed_roles = (User.Role.CUSTOMER,)
-    message = "Esta función es solo para clientes."
+    message = _("Esta función es solo para clientes.")
 
 
 class IsVerifiedCustomer(IsCustomer):
     """Cliente activo con el email verificado (puntos, QR, canjes y reservas)."""
 
-    message = "Debes verificar tu email para usar esta función."
+    message = _("Debes verificar tu email para usar esta función.")
     code = "email_not_verified"
 
     def has_permission(self, request, view):
@@ -37,12 +38,12 @@ class IsVerifiedCustomer(IsCustomer):
 
 class IsStaffMember(HasRole):
     allowed_roles = (User.Role.OWNER, User.Role.EMPLOYEE)
-    message = "Solo el personal del local puede realizar esta acción."
+    message = _("Solo el personal del local puede realizar esta acción.")
 
 
 class IsOwner(HasRole):
     allowed_roles = (User.Role.OWNER,)
-    message = "Solo el propietario puede realizar esta acción."
+    message = _("Solo el propietario puede realizar esta acción.")
 
 
 class CanReadApiDocs(BasePermission):

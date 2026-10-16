@@ -46,3 +46,6 @@ README.md
 CLAUDE.md
 compose*.yaml
 Dockerfile
+
+# Traducciones compiladas en local: la imagen las genera desde los .po (etapa messages).
+*.mo

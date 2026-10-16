@@ -1,76 +1,77 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}Ficha de cliente · Dashboard{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Ficha de cliente" %} · Dashboard{% endblock %}
 {% block heading %}{{ customer.get_full_name }}{% endblock %}
-{% block intro %}<p class="note mt-2"><a class="link" href="{% url 'dashboard:customers' %}">Volver a clientes</a> · Esta consulta queda registrada en la auditoría.</p>{% endblock %}
+{% block intro %}<p class="note mt-2"><a class="link" href="{% url 'dashboard:customers' %}">{% translate "Volver a clientes" %}</a> · {% translate "Esta consulta queda registrada en la auditoría." %}</p>{% endblock %}
 {% block body %}
 <div class="grid gap-6 xl:grid-cols-2">
   <section aria-labelledby="datos" class="card">
-    <h2 id="datos" class="heading-md mb-4">Datos personales</h2>
+    <h2 id="datos" class="heading-md mb-4">{% translate "Datos personales" %}</h2>
     <dl class="grid gap-3 text-sm sm:grid-cols-2">
-      <div><dt class="text-mist">Nombre</dt><dd class="font-semibold">{{ customer.first_name }}</dd></div>
-      <div><dt class="text-mist">Apellidos</dt><dd class="font-semibold">{{ customer.last_name }}</dd></div>
-      <div class="sm:col-span-2"><dt class="text-mist">Email</dt><dd class="break-all font-semibold">{{ customer.email }}
-        {% if customer.is_email_verified %}<span class="badge ml-2">Verificado</span>{% else %}<span class="badge badge-muted ml-2">Pendiente de verificación</span>{% endif %}</dd></div>
-      <div class="sm:col-span-2"><dt class="text-mist">Dirección postal</dt><dd>
+      <div><dt class="text-mist">{% translate "Nombre" %}</dt><dd class="font-semibold">{{ customer.first_name }}</dd></div>
+      <div><dt class="text-mist">{% translate "Apellidos" %}</dt><dd class="font-semibold">{{ customer.last_name }}</dd></div>
+      <div class="sm:col-span-2"><dt class="text-mist">{% translate "Email" %}</dt><dd class="break-all font-semibold">{{ customer.email }}
+        {% if customer.is_email_verified %}<span class="badge ml-2">{% translate "Verificado" %}</span>{% else %}<span class="badge badge-muted ml-2">{% translate "Pendiente de verificación" %}</span>{% endif %}</dd></div>
+      <div class="sm:col-span-2"><dt class="text-mist">{% translate "Dirección postal" %}</dt><dd>
         {% if profile and profile.address_line_1 %}
           {{ profile.address_line_1 }}{% if profile.address_line_2 %}, {{ profile.address_line_2 }}{% endif %}<br>
           {{ profile.postal_code }} {{ profile.city }} ({{ profile.province }}) · {{ country_name }}
-        {% else %}<span class="italic text-mist">Sin dirección en el perfil</span>{% endif %}</dd></div>
-      <div><dt class="text-mist">Teléfono</dt><dd>{% if profile and profile.phone_number %}{{ profile.phone_number }}{% else %}<span class="italic text-mist">No indicado</span>{% endif %}</dd></div>
-      <div><dt class="text-mist">Fecha de nacimiento</dt><dd>{% if profile and profile.date_of_birth %}{{ profile.date_of_birth|date:"d/m/Y" }}{% else %}<span class="italic text-mist">No indicada</span>{% endif %}</dd></div>
-      <div><dt class="text-mist">Fecha de registro</dt><dd>{{ customer.date_joined|date:"d/m/Y H:i" }}</dd></div>
-      <div><dt class="text-mist">Cuenta</dt><dd>{% if customer.is_active %}Activa{% else %}<span class="text-danger">Desactivada</span>{% endif %}</dd></div>
+        {% else %}<span class="italic text-mist">{% translate "Sin dirección en el perfil" %}</span>{% endif %}</dd></div>
+      <div><dt class="text-mist">{% translate "Teléfono" %}</dt><dd>{% if profile and profile.phone_number %}{{ profile.phone_number }}{% else %}<span class="italic text-mist">{% translate "No indicado" %}</span>{% endif %}</dd></div>
+      <div><dt class="text-mist">{% translate "Fecha de nacimiento" %}</dt><dd>{% if profile and profile.date_of_birth %}{{ profile.date_of_birth|date:"d/m/Y" }}{% else %}<span class="italic text-mist">{% translate "No indicada" %}</span>{% endif %}</dd></div>
+      <div><dt class="text-mist">{% translate "Fecha de registro" %}</dt><dd>{{ customer.date_joined|date:"d/m/Y H:i" }}</dd></div>
+      <div><dt class="text-mist">{% translate "Cuenta" %}</dt><dd>{% if customer.is_active %}{% translate "Activa" %}{% else %}<span class="text-danger">{% translate "Desactivada" %}</span>{% endif %}</dd></div>
     </dl>
   </section>
 
   <section aria-labelledby="preferencias" class="card">
-    <h2 id="preferencias" class="heading-md mb-4">Preferencias de comunicación</h2>
+    <h2 id="preferencias" class="heading-md mb-4">{% translate "Preferencias de comunicación" %}</h2>
     <dl class="grid grid-cols-2 gap-3 text-sm">
-      <div><dt class="text-mist">Emails promocionales</dt><dd class="font-semibold">{% if profile.promo_email_opt_in %}Acepta{% else %}No acepta{% endif %}</dd></div>
-      <div><dt class="text-mist">SMS promocionales</dt><dd class="font-semibold">{% if profile.promo_sms_opt_in %}Acepta{% else %}No acepta{% endif %}</dd></div>
+      <div><dt class="text-mist">{% translate "Emails promocionales" %}</dt><dd class="font-semibold">{% if profile.promo_email_opt_in %}{% translate "Acepta" %}{% else %}{% translate "No acepta" %}{% endif %}</dd></div>
+      <div><dt class="text-mist">{% translate "SMS promocionales" %}</dt><dd class="font-semibold">{% if profile.promo_sms_opt_in %}{% translate "Acepta" %}{% else %}{% translate "No acepta" %}{% endif %}</dd></div>
     </dl>
-    <h3 class="mt-5 mb-2 text-sm font-semibold uppercase tracking-wider text-mist">Últimos cambios</h3>
+    <h3 class="mt-5 mb-2 text-sm font-semibold uppercase tracking-wider text-mist">{% translate "Últimos cambios" %}</h3>
     {% if preference_history %}
-      <ul class="space-y-1 text-sm">{% for change in preference_history %}<li>{{ change.created_at|date:"d/m/Y H:i" }} · {{ change.get_channel_display }}: {% if change.opted_in %}alta{% else %}baja{% endif %} ({{ change.get_source_display }})</li>{% endfor %}</ul>
-    {% else %}<p class="note">Sin cambios registrados.</p>{% endif %}
+      <ul class="space-y-1 text-sm">{% for change in preference_history %}<li>{{ change.created_at|date:"d/m/Y H:i" }} · {{ change.get_channel_display }}: {% if change.opted_in %}{% translate "alta" context "preferencia" %}{% else %}{% translate "baja" context "preferencia" %}{% endif %} ({{ change.get_source_display }})</li>{% endfor %}</ul>
+    {% else %}<p class="note">{% translate "Sin cambios registrados." %}</p>{% endif %}
   </section>
 </div>
 
 <section aria-labelledby="fidelizacion" class="mt-8">
-  <h2 id="fidelizacion" class="heading-md mb-4">Actividad de fidelización</h2>
+  <h2 id="fidelizacion" class="heading-md mb-4">{% translate "Actividad de fidelización" %}</h2>
   <dl class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-    <div class="stat"><dt class="stat-label">Saldo</dt><dd class="stat-value" data-balance>{{ points_summary.balance }}</dd></div>
-    <div class="stat"><dt class="stat-label">Obtenidos</dt><dd class="stat-value">{{ points_summary.earned }}</dd></div>
-    <div class="stat"><dt class="stat-label">Utilizados</dt><dd class="stat-value">{{ points_summary.used }}</dd></div>
-    <div class="stat"><dt class="stat-label">Corregidos</dt><dd class="stat-value">{{ points_summary.corrected }}</dd></div>
-    <div class="stat"><dt class="stat-label">Caducados</dt><dd class="stat-value">{{ points_summary.expired }}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Saldo" %}</dt><dd class="stat-value" data-balance>{{ points_summary.balance }}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Obtenidos" %}</dt><dd class="stat-value">{{ points_summary.earned }}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Utilizados" %}</dt><dd class="stat-value">{{ points_summary.used }}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Corregidos" %}</dt><dd class="stat-value">{{ points_summary.corrected }}</dd></div>
+    <div class="stat"><dt class="stat-label">{% translate "Caducados" %}</dt><dd class="stat-value">{{ points_summary.expired }}</dd></div>
   </dl>
 
   <div class="mt-6 grid gap-6 xl:grid-cols-2">
     <div>
-      <h3 class="mb-2 font-semibold uppercase tracking-wider">Últimas compras registradas</h3>
+      <h3 class="mb-2 font-semibold uppercase tracking-wider">{% translate "Últimas compras registradas" %}</h3>
       {% if purchases %}
         <div class="table-wrap"><table class="data-table">
-          <thead><tr><th scope="col">Fecha</th><th scope="col" class="num">Importe</th><th scope="col" class="num">Puntos</th><th scope="col">Registrada por</th></tr></thead>
+          <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col" class="num">{% translate "Importe" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col">{% translate "Registrada por" %}</th></tr></thead>
           <tbody>{% for p in purchases %}<tr><td>{{ p.created_at|date:"d/m/Y H:i" }}{% if p.status != "COMPLETED" %} · {{ p.get_status_display }}{% endif %}</td><td class="num">{{ p.amount|floatformat:2 }} €</td><td class="num">+{{ p.points }}</td><td>{{ p.registered_by.get_full_name }}</td></tr>{% endfor %}</tbody>
         </table></div>
-      {% else %}<p class="pending">Sin compras registradas.</p>{% endif %}
+      {% else %}<p class="pending">{% translate "Sin compras registradas." %}</p>{% endif %}
     </div>
     <div>
-      <h3 class="mb-2 font-semibold uppercase tracking-wider">Últimos canjes</h3>
+      <h3 class="mb-2 font-semibold uppercase tracking-wider">{% translate "Últimos canjes" %}</h3>
       {% if redemptions %}
         <div class="table-wrap"><table class="data-table">
-          <thead><tr><th scope="col">Solicitado</th><th scope="col">Recompensa</th><th scope="col" class="num">Puntos</th><th scope="col">Estado</th></tr></thead>
+          <thead><tr><th scope="col">{% translate "Solicitado" %}</th><th scope="col">{% translate "Recompensa" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col">{% translate "Estado" %}</th></tr></thead>
           <tbody>{% for r in redemptions %}<tr><td>{{ r.created_at|date:"d/m/Y" }}</td><td>{{ r.reward.name }}</td><td class="num">{{ r.points_cost }}</td><td>{{ r.get_status_display }}</td></tr>{% endfor %}</tbody>
         </table></div>
-      {% else %}<p class="pending">Sin canjes.</p>{% endif %}
+      {% else %}<p class="pending">{% translate "Sin canjes." %}</p>{% endif %}
     </div>
   </div>
 
-  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">Últimos movimientos de puntos</h3>
+  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">{% translate "Últimos movimientos de puntos" %}</h3>
   {% if movements %}
     <div class="table-wrap"><table class="data-table" data-movements>
-      <thead><tr><th scope="col">Fecha</th><th scope="col">Tipo</th><th scope="col" class="num">Puntos</th><th scope="col" class="num">Saldo</th><th scope="col">Detalle</th><th scope="col">Compensar</th></tr></thead>
+      <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col" class="num">{% translate "Saldo" %}</th><th scope="col">{% translate "Detalle" %}</th><th scope="col">{% translate "Compensar" %}</th></tr></thead>
       <tbody>
         {% for m in movements %}
           <tr>
@@ -84,9 +85,9 @@
                 <form method="post" action="{% url 'dashboard:customer_reverse_movement' customer.public_id %}" class="flex flex-wrap items-center gap-2">
                   {% csrf_token %}
                   <input type="hidden" name="movement" value="{{ m.public_id }}">
-                  <label class="sr-only" for="motivo-{{ m.public_id }}">Motivo</label>
-                  <input class="min-h-9 w-40 rounded-lg border border-line bg-ink px-2 text-sm" id="motivo-{{ m.public_id }}" name="reason" maxlength="200" required placeholder="Motivo">
-                  <button type="submit" class="btn btn-secondary btn-sm">Compensar</button>
+                  <label class="sr-only" for="motivo-{{ m.public_id }}">{% translate "Motivo" %}</label>
+                  <input class="min-h-9 w-40 rounded-lg border border-line bg-ink px-2 text-sm" id="motivo-{{ m.public_id }}" name="reason" maxlength="200" required placeholder="{% translate 'Motivo' %}">
+                  <button type="submit" class="btn btn-secondary btn-sm">{% translate "Compensar" %}</button>
                 </form>
               {% else %}<span class="note">—</span>{% endif %}
             </td>
@@ -94,19 +95,19 @@
         {% endfor %}
       </tbody>
     </table></div>
-  {% else %}<p class="pending">Sin movimientos de puntos.</p>{% endif %}
+  {% else %}<p class="pending">{% translate "Sin movimientos de puntos." %}</p>{% endif %}
 </section>
 
 {% if customer.is_active %}
 <section aria-labelledby="ajuste" class="mt-8 max-w-xl">
-  <h2 id="ajuste" class="heading-md mb-2">Ajuste manual de puntos</h2>
-  <p class="note mb-4">Para corregir errores. No modifica movimientos anteriores: añade uno nuevo con el motivo y queda auditado.</p>
+  <h2 id="ajuste" class="heading-md mb-2">{% translate "Ajuste manual de puntos" %}</h2>
+  <p class="note mb-4">{% translate "Para corregir errores. No modifica movimientos anteriores: añade uno nuevo con el motivo y queda auditado." %}</p>
   <form method="post" action="{% url 'dashboard:customer_adjust_points' customer.public_id %}" class="form-section" data-loading>
     {% csrf_token %}
     {{ adjust_form.idempotency_key }}
     {% with field=adjust_form.points %}{% include "accounts/_field.html" %}{% endwith %}
     {% with field=adjust_form.reason %}{% include "accounts/_field.html" %}{% endwith %}
-    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Registrar ajuste</button>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Registrar ajuste" %}</button>
   </form>
 </section>
 {% endif %}

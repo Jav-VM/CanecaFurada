@@ -1,7 +1,8 @@
 {% extends "accounts/_layout.html" %}
-{% block title %}Entrar{% endblock %}
-{% block heading %}Entrar{% endblock %}
-{% block intro %}<p class="lead mt-3">Accede a tu cuenta de Caneca Furada.</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Entrar" %}{% endblock %}
+{% block heading %}{% translate "Entrar" %}{% endblock %}
+{% block intro %}<p class="lead mt-3">{% translate "Accede a tu cuenta de Caneca Furada." %}</p>{% endblock %}
 {% block body %}
 <div class="card p-6 sm:p-8">
   {% include "components/form_errors.html" %}
@@ -9,12 +10,12 @@
     {% csrf_token %}
     {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
     <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit" class="btn btn-primary btn-block" data-loading-text="Entrando…">Entrar</button>
+    <button type="submit" class="btn btn-primary btn-block" data-loading-text="{% translate 'Entrando…' %}">{% translate "Entrar" %}</button>
   </form>
-  <p class="mt-5 text-center text-sm"><a class="link" href="{% url 'accounts:password_reset' %}">¿Has olvidado tu contraseña?</a></p>
+  <p class="mt-5 text-center text-sm"><a class="link" href="{% url 'accounts:password_reset' %}">{% translate "¿Has olvidado tu contraseña?" %}</a></p>
 </div>
 <div class="mt-6 space-y-2 text-center text-sm text-mist">
-  <p>¿No tienes cuenta? <a class="link" href="{% url 'accounts:register' %}">Regístrate</a>.</p>
-  <p><a class="link" href="{% url 'accounts:resend_verification' %}">Reenviar el email de verificación</a></p>
+  {% url 'accounts:register' as register_url %}<p>{% blocktranslate trimmed %}¿No tienes cuenta? <a class="link" href="{{ register_url }}">Regístrate</a>.{% endblocktranslate %}</p>
+  <p><a class="link" href="{% url 'accounts:resend_verification' %}">{% translate "Reenviar el email de verificación" %}</a></p>
 </div>
 {% endblock %}

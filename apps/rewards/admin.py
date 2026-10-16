@@ -8,6 +8,7 @@ Recompensas en el admin (solo propietarios).
 """
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.permissions import is_owner
 
@@ -40,21 +41,21 @@ class RewardAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
     readonly_fields = ("public_id", "image_preview", "redemptions_count")
     fieldsets = (
         (None, {"fields": ("name", "description", "image", "image_preview", "status", "position")}),
-        ("Canje", {"fields": ("points_cost", "stock", "valid_from", "valid_until")}),
-        ("Referencia", {"fields": ("public_id", "redemptions_count")}),
+        (_("Canje"), {"fields": ("points_cost", "stock", "valid_from", "valid_until")}),
+        (_("Referencia"), {"fields": ("public_id", "redemptions_count")}),
     )
 
-    @admin.display(description="unidades")
+    @admin.display(description=_("unidades"))
     def stock_display(self, obj):
-        return "Sin límite" if obj.stock is None else obj.stock
+        return _("Sin límite") if obj.stock is None else obj.stock
 
-    @admin.display(description="vista previa")
+    @admin.display(description=_("vista previa"))
     def image_preview(self, obj):
         if not obj.image:
             return "—"
         return format_html('<img src="{}" alt="" style="height:96px;width:auto">', obj.image.url)
 
-    @admin.display(description="canjes")
+    @admin.display(description=_("canjes"))
     def redemptions_count(self, obj):
         return obj.redemptions.count() if obj.pk else 0
 

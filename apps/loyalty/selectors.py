@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
+from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
 from apps.core.querysets import period_q
@@ -93,7 +94,7 @@ def points_stats(*, actor, start=None, end=None):
     saldo pendiente total de todos los clientes, sin filtrar por fechas.
     """
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver las estadísticas.")
+        raise PermissionDenied(_("Solo el propietario puede ver las estadísticas."))
     period = PointsTransaction.objects.filter(period_q("created_at", start, end)).aggregate(**_totals())
     overall = PointsTransaction.objects.aggregate(
         outstanding=Coalesce(Sum("points"), 0), customers=Count("customer", distinct=True)
@@ -114,7 +115,7 @@ def points_stats(*, actor, start=None, end=None):
 def all_movements(*, actor, start=None, end=None, kind=None):
     """Movimientos del ledger de todos los clientes (solo propietario), del más reciente al más antiguo."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver todos los movimientos de puntos.")
+        raise PermissionDenied(_("Solo el propietario puede ver todos los movimientos de puntos."))
     movements = PointsTransaction.objects.filter(period_q("created_at", start, end))
     if kind:
         movements = movements.filter(kind=kind)
@@ -138,7 +139,7 @@ def reversible_ids(movements):
 def promotions_overview(*, actor):
     """Promociones con el número de bonificaciones concedidas."""
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede ver las promociones.")
+        raise PermissionDenied(_("Solo el propietario puede ver las promociones."))
     return Promotion.objects.annotate(
         uses=Count(
             "points_transactions",

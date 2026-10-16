@@ -19,6 +19,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from apps.catalog.validators import validate_image_extension, validate_image_file
 from apps.core.models import TimeStampedModel
@@ -35,55 +37,55 @@ def reward_image_path(instance, filename):
 
 class Reward(TimeStampedModel):
     class Status(models.TextChoices):
-        DRAFT = "DRAFT", "Borrador"
-        ACTIVE = "ACTIVE", "Activa"
-        PAUSED = "PAUSED", "Pausada"
-        ARCHIVED = "ARCHIVED", "Archivada"
+        DRAFT = "DRAFT", _("Borrador")
+        ACTIVE = "ACTIVE", pgettext_lazy("recompensa", "Activa")
+        PAUSED = "PAUSED", pgettext_lazy("recompensa", "Pausada")
+        ARCHIVED = "ARCHIVED", pgettext_lazy("recompensa", "Archivada")
 
     MAX_POINTS_COST = 100000
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
-    name = models.CharField("nombre", max_length=100)
-    description = models.TextField("descripción", blank=True, max_length=1000, help_text="Texto público.")
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
+    name = models.CharField(_("nombre"), max_length=100)
+    description = models.TextField(_("descripción"), blank=True, max_length=1000, help_text=_("Texto público."))
     image = models.ImageField(
-        "imagen",
+        _("imagen"),
         upload_to=reward_image_path,
         blank=True,
         width_field="image_width",
         height_field="image_height",
         validators=[validate_image_extension, validate_image_file],
-        help_text="JPEG, PNG o WebP. Opcional.",
+        help_text=_("JPEG, PNG o WebP. Opcional."),
     )
     image_width = models.PositiveIntegerField(null=True, blank=True, editable=False)
     image_height = models.PositiveIntegerField(null=True, blank=True, editable=False)
     points_cost = models.PositiveIntegerField(
-        "coste en puntos",
+        _("coste en puntos"),
         validators=[MinValueValidator(1), MaxValueValidator(MAX_POINTS_COST)],
-        help_text="Cambiarlo no afecta a los canjes ya solicitados.",
+        help_text=_("Cambiarlo no afecta a los canjes ya solicitados."),
     )
     status = models.CharField(
-        "estado",
+        _("estado"),
         max_length=10,
         choices=Status.choices,
         default=Status.DRAFT,
         db_index=True,
-        help_text="Solo las activas se ven en la web y se pueden canjear.",
+        help_text=_("Solo las activas se ven en la web y se pueden canjear."),
     )
-    valid_from = models.DateTimeField("se puede canjear desde", default=timezone.now)
+    valid_from = models.DateTimeField(_("se puede canjear desde"), default=timezone.now)
     valid_until = models.DateTimeField(
-        "se puede canjear hasta", null=True, blank=True, help_text="Vacío: sin fecha de fin."
+        _("se puede canjear hasta"), null=True, blank=True, help_text=_("Vacío: sin fecha de fin.")
     )
     stock = models.PositiveIntegerField(
-        "unidades disponibles",
+        _("unidades disponibles"),
         null=True,
         blank=True,
-        help_text="Vacío: sin límite. Baja sola con cada canje y sube si un canje se cancela o caduca.",
+        help_text=_("Vacío: sin límite. Baja sola con cada canje y sube si un canje se cancela o caduca."),
     )
-    position = models.PositiveSmallIntegerField("orden", default=0, help_text="De menor a mayor.")
+    position = models.PositiveSmallIntegerField(_("orden"), default=0, help_text=_("De menor a mayor."))
 
     class Meta:
-        verbose_name = "recompensa"
-        verbose_name_plural = "recompensas"
+        verbose_name = _("recompensa")
+        verbose_name_plural = _("recompensas")
         ordering = ["position", "points_cost", "name"]
         constraints = [
             models.CheckConstraint(
@@ -109,7 +111,7 @@ class Reward(TimeStampedModel):
         super().clean()
         errors = {}
         if self.valid_from and self.valid_until and self.valid_until <= self.valid_from:
-            errors["valid_until"] = "La fecha de fin debe ser posterior a la de inicio."
+            errors["valid_until"] = _("La fecha de fin debe ser posterior a la de inicio.")
         if errors:
             raise ValidationError(errors)
 
@@ -132,36 +134,36 @@ class Reward(TimeStampedModel):
 
 class Redemption(models.Model):
     class Status(models.TextChoices):
-        PENDING = "PENDING", "Pendiente de recoger"
-        USED = "USED", "Canjeado"
-        EXPIRED = "EXPIRED", "Caducado"
-        CANCELLED = "CANCELLED", "Cancelado"
+        PENDING = "PENDING", _("Pendiente de recoger")
+        USED = "USED", _("Canjeado")
+        EXPIRED = "EXPIRED", _("Caducado")
+        CANCELLED = "CANCELLED", _("Cancelado")
 
     CLOSED_STATUSES = (Status.EXPIRED, Status.CANCELLED)
 
-    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     customer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name="cliente", on_delete=models.PROTECT, related_name="redemptions"
+        settings.AUTH_USER_MODEL, verbose_name=_("cliente"), on_delete=models.PROTECT, related_name="redemptions"
     )
-    reward = models.ForeignKey(Reward, verbose_name="recompensa", on_delete=models.PROTECT, related_name="redemptions")
-    points_cost = models.PositiveIntegerField("puntos descontados", help_text="Copia del coste en el momento del canje.")
-    code = models.CharField("código", max_length=CODE_LENGTH, unique=True, editable=False)
+    reward = models.ForeignKey(Reward, verbose_name=_("recompensa"), on_delete=models.PROTECT, related_name="redemptions")
+    points_cost = models.PositiveIntegerField(_("puntos descontados"), help_text=_("Copia del coste en el momento del canje."))
+    code = models.CharField(_("código"), max_length=CODE_LENGTH, unique=True, editable=False)
     status = models.CharField(
-        "estado", max_length=10, choices=Status.choices, default=Status.PENDING, db_index=True
+        _("estado"), max_length=10, choices=Status.choices, default=Status.PENDING, db_index=True
     )
-    created_at = models.DateTimeField("solicitado el", default=timezone.now, editable=False, db_index=True)
-    expires_at = models.DateTimeField("caduca el", editable=False)
-    idempotency_key = models.UUIDField("referencia de idempotencia", unique=True, editable=False)
+    created_at = models.DateTimeField(_("solicitado el"), default=timezone.now, editable=False, db_index=True)
+    expires_at = models.DateTimeField(_("caduca el"), editable=False)
+    idempotency_key = models.UUIDField(_("referencia de idempotencia"), unique=True, editable=False)
     spend_movement = models.OneToOneField(
         "loyalty.PointsTransaction",
-        verbose_name="movimiento del canje",
+        verbose_name=_("movimiento del canje"),
         on_delete=models.PROTECT,
         related_name="redemption",
         editable=False,
     )
     refund_movement = models.OneToOneField(
         "loyalty.PointsTransaction",
-        verbose_name="movimiento de devolución",
+        verbose_name=_("movimiento de devolución"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
@@ -170,21 +172,21 @@ class Redemption(models.Model):
     )
     validated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="validado por",
+        verbose_name=_("validado por"),
         null=True,
         blank=True,
         on_delete=models.PROTECT,
         related_name="validated_redemptions",
         editable=False,
     )
-    validated_at = models.DateTimeField("validado el", null=True, blank=True, editable=False)
+    validated_at = models.DateTimeField(_("validado el"), null=True, blank=True, editable=False)
     closed_at = models.DateTimeField(
-        "cancelado o caducado el", null=True, blank=True, editable=False
+        _("cancelado o caducado el"), null=True, blank=True, editable=False
     )
 
     class Meta:
-        verbose_name = "canje"
-        verbose_name_plural = "canjes"
+        verbose_name = _("canje")
+        verbose_name_plural = _("canjes")
         ordering = ["-created_at", "-id"]
         indexes = [
             models.Index(fields=["customer", "created_at"]),
@@ -226,7 +228,7 @@ class Redemption(models.Model):
 
     def __str__(self):
         # Sin el código: el admin, los logs o los errores nunca lo muestran.
-        return f"Canje {self.public_id}"
+        return _("Canje %(public_id)s") % {"public_id": self.public_id}
 
     def is_expired(self, now=None):
         return self.status == self.Status.PENDING and self.expires_at <= (now or timezone.now())

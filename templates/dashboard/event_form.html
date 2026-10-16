@@ -1,16 +1,17 @@
 {% extends "dashboard/_layout.html" %}
-{% block title %}{% if event.pk %}Editar evento{% else %}Nuevo evento{% endif %} · Dashboard{% endblock %}
-{% block heading %}{% if event.pk %}Editar «{{ event.title }}»{% else %}Nuevo evento{% endif %}{% endblock %}
-{% block intro %}<p class="lead mt-2">{% if event.pk %}Estado: {{ event.get_status_display }}.{% else %}Se guarda como borrador; publícalo desde el listado.{% endif %}</p>{% endblock %}
+{% load i18n %}
+{% block title %}{% if event.pk %}{% translate "Editar evento" %}{% else %}{% translate "Nuevo evento" %}{% endif %} · Dashboard{% endblock %}
+{% block heading %}{% if event.pk %}{% blocktranslate trimmed with title=event.title %}Editar «{{ title }}»{% endblocktranslate %}{% else %}{% translate "Nuevo evento" %}{% endif %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% if event.pk %}{% blocktranslate trimmed with status=event.get_status_display %}Estado: {{ status }}.{% endblocktranslate %}{% else %}{% translate "Se guarda como borrador; publícalo desde el listado." %}{% endif %}</p>{% endblock %}
 {% block body %}
 <div class="max-w-2xl">
   {% include "components/form_errors.html" %}
   <form method="post" enctype="multipart/form-data" class="form-section" novalidate data-loading>
     {% csrf_token %}
     {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
-    <p class="note">Es contenido público: no escribas datos personales de clientes ni de empleados.</p>
-    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar evento</button>
+    <p class="note">{% translate "Es contenido público: no escribas datos personales de clientes ni de empleados." %}</p>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar evento" %}</button>
   </form>
-  <p class="mt-4 text-sm"><a class="link" href="{% url 'dashboard:events' %}">← Volver a eventos</a></p>
+  <p class="mt-4 text-sm"><a class="link" href="{% url 'dashboard:events' %}">{% translate "← Volver a eventos" %}</a></p>
 </div>
 {% endblock %}

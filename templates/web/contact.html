@@ -1,23 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Contacto{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Contacto" %}{% endblock %}
 {% block content %}
-{% include "components/page_header.html" with eyebrow="Contacto" title="Ven a vernos" intro=business.city %}
+{% include "components/page_header.html" with eyebrow=_("Contacto") title=_("Ven a vernos") intro=business.city %}
 
 <section aria-labelledby="datos-local" class="container-page py-16">
   <div class="grid gap-6 md:grid-cols-[1.2fr_1fr]">
     <div class="card p-8">
-      <h2 id="datos-local" class="heading-md mb-6">El local</h2>
+      <h2 id="datos-local" class="heading-md mb-6">{% translate "El local" %}</h2>
       {% include "components/business_info.html" %}
     </div>
     <div class="card p-8">
-      <h2 class="heading-md mb-4">¿Tienes cuenta?</h2>
-      <p class="text-mist">Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil.</p>
+      <h2 class="heading-md mb-4">{% translate "¿Tienes cuenta?" %}</h2>
+      <p class="text-mist">{% translate "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil." %}</p>
       <div class="mt-6 flex flex-wrap gap-3">
         {% if user.is_authenticated %}
-          <a href="{% url 'accounts:home' %}" class="btn btn-primary">Mi cuenta</a>
+          <a href="{% url 'accounts:home' %}" class="btn btn-primary">{% translate "Mi cuenta" %}</a>
         {% else %}
-          <a href="{% url 'accounts:login' %}" class="btn btn-primary">Entrar</a>
-          <a href="{% url 'accounts:register' %}" class="btn btn-secondary">Crear cuenta</a>
+          <a href="{% url 'accounts:login' %}" class="btn btn-primary">{% translate "Entrar" %}</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-secondary">{% translate "Crear cuenta" %}</a>
         {% endif %}
       </div>
     </div>

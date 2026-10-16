@@ -32,9 +32,12 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Sum
 from django.utils import timezone
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 
 from apps.accounts.models import User
 from apps.accounts.permissions import is_owner
+from apps.core.i18n import site_text
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
@@ -48,7 +51,7 @@ Kind = PointsTransaction.Kind
 
 class InsufficientPoints(ValidationError):
     def __init__(self):
-        super().__init__("El cliente no tiene puntos suficientes para esta operación.", code="insufficient_points")
+        super().__init__(_("El cliente no tiene puntos suficientes para esta operación."), code="insufficient_points")
 
 
 @dataclass(frozen=True)
@@ -139,15 +142,15 @@ def award_points_for_purchase(purchase):
 
 def _require_owner(actor):
     if not is_owner(actor):
-        raise PermissionDenied("Solo el propietario puede corregir puntos.")
+        raise PermissionDenied(_("Solo el propietario puede corregir puntos."))
 
 
 def _parse_reason(reason):
     reason = (reason or "").strip() if isinstance(reason, str) else ""
     if not reason:
-        raise ValidationError({"reason": "Indica el motivo."})
+        raise ValidationError({"reason": _("Indica el motivo.")})
     if len(reason) > 200:
-        raise ValidationError({"reason": "El motivo admite como máximo 200 caracteres."})
+        raise ValidationError({"reason": _("El motivo admite como máximo 200 caracteres.")})
     return reason
 
 
@@ -160,10 +163,10 @@ def _parse_adjustment(points):
     elif not isinstance(points, int):
         points = None
     if not points:
-        raise ValidationError({"points": "Indica un número entero de puntos distinto de cero."})
+        raise ValidationError({"points": _("Indica un número entero de puntos distinto de cero.")})
     if abs(points) > settings.LOYALTY_MAX_ADJUSTMENT_POINTS:
         raise ValidationError(
-            {"points": f"El ajuste no puede superar {settings.LOYALTY_MAX_ADJUSTMENT_POINTS} puntos."}
+            {"points": _("El ajuste no puede superar %(LOYALTY_MAX_ADJUSTMENT_POINTS)s puntos.") % {"LOYALTY_MAX_ADJUSTMENT_POINTS": settings.LOYALTY_MAX_ADJUSTMENT_POINTS}}
         )
     return points
 
@@ -172,12 +175,12 @@ def _parse_key(value):
     try:
         return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
     except (TypeError, ValueError, AttributeError):
-        raise ValidationError("La operación no es válida. Vuelve a intentarlo.", code="idempotency_invalid")
+        raise ValidationError(_("La operación no es válida. Vuelve a intentarlo."), code="idempotency_invalid")
 
 
 def _replay_adjustment(existing, customer, points):
     if existing.kind != Kind.ADJUSTMENT or existing.customer_id != customer.pk or existing.points != points:
-        raise ValidationError("Esta operación ya se registró con otros datos.", code="idempotency_conflict")
+        raise ValidationError(_("Esta operación ya se registró con otros datos."), code="idempotency_conflict")
     return MovementResult(movement=existing, created=False)
 
 
@@ -196,7 +199,7 @@ def adjust_points(*, actor, customer, points, reason, idempotency_key):
             return _replay_adjustment(existing, customer, points)
         customer = _lock_customer(customer)
         if customer.role != User.Role.CUSTOMER:
-            raise ValidationError("Solo los clientes tienen puntos.", code="not_customer")
+            raise ValidationError(_("Solo los clientes tienen puntos."), code="not_customer")
         try:
             with transaction.atomic():
                 movement = _append(
@@ -226,7 +229,7 @@ def _compensate(movement, *, actor, reason):
     """Movimiento de signo contrario a `movement`, una sola vez (`OneToOne` en BD)."""
     original = PointsTransaction.objects.select_for_update().get(pk=movement.pk)
     if original.kind == Kind.REVERSAL:
-        raise ValidationError("Una compensación no se compensa: registra un ajuste.", code="reversal_of_reversal")
+        raise ValidationError(_("Una compensación no se compensa: registra un ajuste."), code="reversal_of_reversal")
     existing = PointsTransaction.objects.filter(reverses=original).first()
     if existing is not None:
         return MovementResult(movement=existing, created=False)
@@ -260,14 +263,14 @@ def reverse_movement(*, actor, movement, reason):
         # Devolverlo aquí dejaría el canje pendiente o usado con los puntos
         # devueltos: los canjes se devuelven cancelándolos o al caducar.
         raise ValidationError(
-            "Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento.",
+            _("Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento."),
             code="redemption_reversal",
         )
     if movement.kind == Kind.EXPIRATION:
         # Compensarla dejaría esos puntos "sin consumir" y volverían a caducar en
         # la siguiente ejecución: los puntos caducados se devuelven con un ajuste.
         raise ValidationError(
-            "Los puntos caducados no se compensan: devuélvelos con un ajuste manual a favor.",
+            _("Los puntos caducados no se compensan: devuélvelos con un ajuste manual a favor."),
             code="expiration_reversal",
         )
     with transaction.atomic():
@@ -364,7 +367,7 @@ def grant_birthday_gift(*, customer, promotion, day, at=None):
                     points=promo.fixed_points,
                     promotion=promo,
                     birthday_year=year,
-                    reason=f"Regalo de cumpleaños {year}",
+                    reason=site_text(gettext_lazy("Regalo de cumpleaños %(year)s"), year=year),
                 )
         except IntegrityError:
             # Otra ejecución lo concedió a la vez.
@@ -392,6 +395,6 @@ def expire_points(*, customer, policy, at=None):
         points = expiry.expirable_points(expiry.customer_movements(customer), policy, at)
         if points <= 0:
             return None
-        movement = _append(customer, kind=Kind.EXPIRATION, points=-points, reason="Puntos caducados")
+        movement = _append(customer, kind=Kind.EXPIRATION, points=-points, reason=site_text(gettext_lazy("Puntos caducados")))
     logger.info("Caducidad %s: %s puntos", movement.public_id, movement.points)
     return movement

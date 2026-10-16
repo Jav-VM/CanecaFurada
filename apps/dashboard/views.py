@@ -24,6 +24,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts import selectors as accounts_selectors
 from apps.accounts import services as accounts
@@ -57,20 +58,20 @@ CUSTOMER_QUERY_SESSION_KEY = "dashboard_customer_query"
 
 # (clave, etiqueta, nombre de URL).
 SECTIONS = (
-    ("resumen", "Resumen", "dashboard:home"),
-    ("clientes", "Clientes", "dashboard:customers"),
-    ("empleados", "Empleados", "dashboard:employees"),
-    ("compras", "Compras", "dashboard:purchases"),
-    ("puntos", "Puntos", "dashboard:points"),
-    ("recompensas", "Recompensas", "dashboard:rewards"),
-    ("carta", "Carta", "dashboard:menu"),
-    ("cervezas", "Cervezas", "dashboard:beers"),
-    ("eventos", "Eventos", "dashboard:events"),
-    ("reservas", "Reservas", "dashboard:reservations"),
-    ("promociones", "Promociones", "dashboard:promotions"),
-    ("comunicaciones", "Comunicaciones", "dashboard:communications"),
-    ("contenido", "Contenido", "dashboard:content"),
-    ("configuracion", "Configuración", "dashboard:settings"),
+    ("resumen", _("Resumen"), "dashboard:home"),
+    ("clientes", _("Clientes"), "dashboard:customers"),
+    ("empleados", _("Empleados"), "dashboard:employees"),
+    ("compras", _("Compras"), "dashboard:purchases"),
+    ("puntos", _("Puntos"), "dashboard:points"),
+    ("recompensas", _("Recompensas"), "dashboard:rewards"),
+    ("carta", _("Carta"), "dashboard:menu"),
+    ("cervezas", _("Cervezas"), "dashboard:beers"),
+    ("eventos", _("Eventos"), "dashboard:events"),
+    ("reservas", _("Reservas"), "dashboard:reservations"),
+    ("promociones", _("Promociones"), "dashboard:promotions"),
+    ("comunicaciones", _("Comunicaciones"), "dashboard:communications"),
+    ("contenido", _("Contenido"), "dashboard:content"),
+    ("configuracion", _("Configuración"), "dashboard:settings"),
 )
 
 owner_required = role_required(User.Role.OWNER)
@@ -246,9 +247,9 @@ def customer_adjust_points(request, public_id):
             _error(request, exc)
         else:
             if result.created:
-                messages.success(request, f"Ajuste registrado: {result.movement.points:+d} puntos.")
+                messages.success(request, _("Ajuste registrado: %(points)s puntos.") % {"points": format(result.movement.points, "+d")})
             else:
-                messages.info(request, "Este ajuste ya estaba registrado; no se ha duplicado.")
+                messages.info(request, _("Este ajuste ya estaba registrado; no se ha duplicado."))
     return redirect("dashboard:customer_detail", public_id=customer.public_id)
 
 
@@ -271,9 +272,9 @@ def customer_reverse_movement(request, public_id):
         _error(request, exc)
     else:
         if result.created:
-            messages.success(request, f"Movimiento compensado: {result.movement.points:+d} puntos.")
+            messages.success(request, _("Movimiento compensado: %(points)s puntos.") % {"points": format(result.movement.points, "+d")})
         else:
-            messages.info(request, "Ese movimiento ya estaba compensado.")
+            messages.info(request, _("Ese movimiento ya estaba compensado."))
     return redirect("dashboard:customer_detail", public_id=customer.public_id)
 
 
@@ -384,7 +385,7 @@ def employee_create(request):
                 # Errores del validador de contraseñas.
                 form.add_error("password1", exc.messages)
         else:
-            messages.success(request, "Empleado dado de alta. Ya puede entrar con su email y la contraseña inicial.")
+            messages.success(request, _("Empleado dado de alta. Ya puede entrar con su email y la contraseña inicial."))
             return redirect("dashboard:employees")
     return _render_employees(request, create_form=form, status=400)
 
@@ -395,18 +396,18 @@ def employee_create(request):
 def employee_status(request, public_id):
     member = _staff_or_404(request, public_id)
     if member.pk == request.user.pk:
-        messages.error(request, "No puedes desactivar tu propia cuenta desde el dashboard.")
+        messages.error(request, _("No puedes desactivar tu propia cuenta desde el dashboard."))
         return redirect("dashboard:employees")
     action = request.POST.get("accion")
     if action not in ("activar", "desactivar"):
-        messages.error(request, "Acción no válida.")
+        messages.error(request, _("Acción no válida."))
         return redirect("dashboard:employees")
     try:
         accounts.set_user_active(actor=request.user, user=member, is_active=action == "activar")
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, "Cuenta activada." if action == "activar" else "Cuenta desactivada: ya no puede entrar.")
+        messages.success(request, _("Cuenta activada.") if action == "activar" else _("Cuenta desactivada: ya no puede entrar."))
     return redirect("dashboard:employees")
 
 
@@ -416,18 +417,18 @@ def employee_status(request, public_id):
 def employee_role(request, public_id):
     member = _staff_or_404(request, public_id)
     if member.pk == request.user.pk:
-        messages.error(request, "No puedes cambiar tu propio rol desde el dashboard.")
+        messages.error(request, _("No puedes cambiar tu propio rol desde el dashboard."))
         return redirect("dashboard:employees")
     form = forms.RoleChangeForm(request.POST)
     if not form.is_valid():
-        messages.error(request, "Elige el nuevo rol y marca la casilla de confirmación.")
+        messages.error(request, _("Elige el nuevo rol y marca la casilla de confirmación."))
         return redirect("dashboard:employees")
     try:
         accounts.change_role(actor=request.user, user=member, new_role=form.cleaned_data["role"])
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, "Rol actualizado.")
+        messages.success(request, _("Rol actualizado."))
     return redirect("dashboard:employees")
 
 
@@ -528,7 +529,7 @@ def reward_status(request, public_id):
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, f"Estado de «{reward.name}» actualizado.")
+        messages.success(request, _("Estado de «%(name)s» actualizado.") % {"name": reward.name})
     return redirect("dashboard:rewards")
 
 
@@ -559,7 +560,7 @@ def promotion_status(request, public_id):
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, f"Estado de «{promotion.name}» actualizado.")
+        messages.success(request, _("Estado de «%(name)s» actualizado.") % {"name": promotion.name})
     return redirect("dashboard:promotions")
 
 
@@ -626,7 +627,7 @@ def product_status(request, public_id):
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, f"Estado de «{product.name}» actualizado.")
+        messages.success(request, _("Estado de «%(name)s» actualizado.") % {"name": product.name})
     return _back_to_products(request, product)
 
 
@@ -637,12 +638,11 @@ def product_availability(request, public_id):
     product = _product_or_404(public_id)
     available = request.POST.get("disponible")
     if available not in ("si", "no"):
-        messages.error(request, "Acción no válida.")
+        messages.error(request, _("Acción no válida."))
     else:
         catalog.set_product_availability(actor=request.user, product=product, is_available=available == "si")
-        messages.success(
-            request, f"«{product.name}» marcado como {'disponible' if available == 'si' else 'agotado'}."
-        )
+        text = _("«%(name)s» marcado como disponible.") if available == "si" else _("«%(name)s» marcado como agotado.")
+        messages.success(request, text % {"name": product.name})
     return _back_to_products(request, product)
 
 
@@ -686,7 +686,7 @@ def _event_form_view(request, event):
             except ValidationError as exc:
                 _apply_errors(form, exc)
             else:
-                messages.success(request, f"Evento «{saved.title}» guardado.")
+                messages.success(request, _("Evento «%(title)s» guardado.") % {"title": saved.title})
                 return redirect("dashboard:events")
         status = 400
     return _render(request, "event_form.html", "eventos", {"form": form, "event": event}, status=status)
@@ -716,7 +716,7 @@ def event_status(request, public_id):
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, f"Estado de «{event.title}» actualizado.")
+        messages.success(request, _("Estado de «%(title)s» actualizado.") % {"title": event.title})
     return redirect("dashboard:events")
 
 
@@ -784,9 +784,9 @@ def reservation_detail(request, public_id):
 
 
 _RESERVATION_ACTIONS = {
-    "confirmar": (events_services.confirm_reservation, "Reserva confirmada. Se ha avisado al cliente."),
-    "rechazar": (events_services.reject_reservation, "Reserva rechazada. Se ha avisado al cliente."),
-    "cancelar": (events_services.cancel_reservation, "Reserva cancelada. Se ha avisado al cliente."),
+    "confirmar": (events_services.confirm_reservation, _("Reserva confirmada. Se ha avisado al cliente.")),
+    "rechazar": (events_services.reject_reservation, _("Reserva rechazada. Se ha avisado al cliente.")),
+    "cancelar": (events_services.cancel_reservation, _("Reserva cancelada. Se ha avisado al cliente.")),
 }
 
 
@@ -803,7 +803,7 @@ def reservation_action(request, public_id):
     try:
         if action == "completar":
             result = events_services.complete_reservation(actor=request.user, reservation=reservation)
-            success = "Reserva marcada como completada."
+            success = _("Reserva marcada como completada.")
         else:
             service, success = _RESERVATION_ACTIONS[action]
             result = service(actor=request.user, reservation=reservation, message=message)
@@ -813,7 +813,7 @@ def reservation_action(request, public_id):
         if result.created:
             messages.success(request, success)
         else:
-            messages.info(request, "La reserva ya estaba en ese estado.")
+            messages.info(request, _("La reserva ya estaba en ese estado."))
     return redirect("dashboard:reservation_detail", public_id=public_id)
 
 
@@ -869,7 +869,7 @@ def _campaign_form_view(request, campaign):
             except ValidationError as exc:
                 _apply_errors(form, exc)
             else:
-                messages.success(request, "Campaña guardada como borrador. Revísala y prográmala cuando quieras.")
+                messages.success(request, _("Campaña guardada como borrador. Revísala y prográmala cuando quieras."))
                 return redirect("dashboard:communications")
         status = 400
     context = {"form": form, "campaign": campaign, "sms_available": notification_services.sms_available()}
@@ -889,7 +889,7 @@ def campaign_create(request):
 def campaign_edit(request, public_id):
     campaign = _campaign_or_404(request, public_id)
     if campaign.status != Campaign.Status.DRAFT:
-        messages.error(request, "Solo se pueden modificar las campañas en borrador.")
+        messages.error(request, _("Solo se pueden modificar las campañas en borrador."))
         return redirect("dashboard:communications")
     return _campaign_form_view(request, campaign)
 
@@ -906,7 +906,7 @@ def campaign_queue(request, public_id):
     else:
         messages.success(
             request,
-            "Campaña programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado.",
+            _("Campaña programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."),
         )
     return redirect("dashboard:communications")
 
@@ -921,7 +921,7 @@ def campaign_cancel(request, public_id):
     except ValidationError as exc:
         _error(request, exc)
     else:
-        messages.success(request, "Campaña cancelada.")
+        messages.success(request, _("Campaña cancelada."))
     return redirect("dashboard:communications")
 
 
@@ -936,11 +936,11 @@ def content(request):
         form = forms.BusinessInfoForm(request.POST)
         if form.is_valid():
             try:
-                _, changed = web.update_business_info(actor=request.user, data=form.cleaned_data)
+                _unused, changed = web.update_business_info(actor=request.user, data=form.cleaned_data)
             except ValidationError as exc:
                 _apply_errors(form, exc)
             else:
-                messages.success(request, "Contenido guardado." if changed else "No había cambios que guardar.")
+                messages.success(request, _("Contenido guardado.") if changed else _("No había cambios que guardar."))
                 return redirect("dashboard:content")
         status = 400
     else:
@@ -989,10 +989,10 @@ def _settings_page(request, *, form=None, expiry_form=None, birthday_form=None, 
             or forms.BirthdayGiftForm(prefix=BIRTHDAY_PREFIX, initial=_birthday_initial()),
             "birthday_placeholder": birthday_settings.PLACEHOLDER,
             "read_only_settings": (
-                ("Importe máximo por compra", f"{settings.PURCHASES_MAX_AMOUNT} €"),
-                ("Días para recoger una recompensa canjeada", settings.REWARDS_CODE_VALIDITY_DAYS),
-                ("Ajuste manual máximo de puntos", settings.LOYALTY_MAX_ADJUSTMENT_POINTS),
-                ("Edad mínima para registrarse", settings.ACCOUNTS_MIN_CUSTOMER_AGE),
+                (_("Importe máximo por compra"), f"{settings.PURCHASES_MAX_AMOUNT} €"),
+                (_("Días para recoger una recompensa canjeada"), settings.REWARDS_CODE_VALIDITY_DAYS),
+                (_("Ajuste manual máximo de puntos"), settings.LOYALTY_MAX_ADJUSTMENT_POINTS),
+                (_("Edad mínima para registrarse"), settings.ACCOUNTS_MIN_CUSTOMER_AGE),
             ),
             "admin_url": reverse("admin:index"),
         },
@@ -1017,7 +1017,7 @@ def settings_view(request):
         except ValidationError as exc:
             _apply_errors(form, exc)
         else:
-            messages.success(request, "Nueva conversión en vigor para las próximas compras.")
+            messages.success(request, _("Nueva conversión en vigor para las próximas compras."))
             return redirect("dashboard:settings")
     return _settings_page(request, form=form, status=400)
 
@@ -1030,7 +1030,7 @@ def settings_expiry(request):
     if form.is_valid():
         data = form.cleaned_data
         try:
-            _, created = expiry.set_policy(
+            _unused, created = expiry.set_policy(
                 actor=request.user,
                 months=data["months"] if data["enabled"] else None,
                 warn_days=data["warn_days"],
@@ -1040,11 +1040,11 @@ def settings_expiry(request):
             _apply_errors(form, exc)
         else:
             if not created:
-                messages.info(request, "No había cambios que guardar.")
+                messages.info(request, _("No había cambios que guardar."))
             elif data["enabled"]:
-                messages.success(request, "Caducidad de los puntos actualizada.")
+                messages.success(request, _("Caducidad de los puntos actualizada."))
             else:
-                messages.success(request, "Los puntos ya no caducan.")
+                messages.success(request, _("Los puntos ya no caducan."))
             return redirect("dashboard:settings")
     return _settings_page(request, expiry_form=form, status=400)
 
@@ -1060,6 +1060,6 @@ def settings_birthday(request):
         except ValidationError as exc:
             _apply_errors(form, exc)
         else:
-            messages.success(request, "Regalo de cumpleaños guardado." if changed else "No había cambios que guardar.")
+            messages.success(request, _("Regalo de cumpleaños guardado.") if changed else _("No había cambios que guardar."))
             return redirect("dashboard:settings")
     return _settings_page(request, birthday_form=form, status=400)

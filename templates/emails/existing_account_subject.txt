@@ -1,1 +1,1 @@
-Intento de registro con tu email en Caneca Furada
+{% load i18n %}{% translate "Intento de registro con tu email en Caneca Furada" %}

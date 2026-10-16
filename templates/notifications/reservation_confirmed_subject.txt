@@ -1,1 +1,1 @@
-Tu reserva en Caneca Furada está confirmada
+{% load i18n %}{% translate "Tu reserva en Caneca Furada está confirmada" %}

@@ -9,6 +9,7 @@ cliente ni de la recompensa.
 El código se guarda en claro porque el cliente debe poder volver a verlo; por
 eso nunca se escribe en logs, auditoría, URLs ni mensajes de error.
 """
+from django.utils.translation import gettext_lazy as _
 import re
 import secrets
 
@@ -24,7 +25,7 @@ _SEPARATORS_RE = re.compile(r"[\s\-]+")
 
 
 def generate_code():
-    return "".join(secrets.choice(ALPHABET) for _ in range(CODE_LENGTH))
+    return "".join(secrets.choice(ALPHABET) for _unused in range(CODE_LENGTH))
 
 
 def format_code(code):

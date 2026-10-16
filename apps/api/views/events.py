@@ -1,6 +1,7 @@
 """Eventos publicados y reservas del cliente verificado."""
 from django.core.exceptions import ValidationError
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
@@ -73,7 +74,7 @@ class MyReservationListView(ListApiView):
             event = selectors.public_event(data["event"])
             if event is None:
                 raise ValidationError(
-                    {"event": ValidationError("Este evento no existe o ya no está publicado.", code="event_not_found")}
+                    {"event": ValidationError(_("Este evento no existe o ya no está publicado."), code="event_not_found")}
                 )
         result = services.request_reservation(
             customer=request.user,
