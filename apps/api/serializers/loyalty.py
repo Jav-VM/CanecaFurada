@@ -10,6 +10,7 @@ class PointsSummarySerializer(serializers.Serializer):
     earned = serializers.IntegerField(help_text="Obtenidos: compras, promociones y ajustes a favor.")
     used = serializers.IntegerField(help_text="Gastados en canjes, descontadas las devoluciones.")
     corrected = serializers.IntegerField(help_text="Restados por compensaciones o ajustes en contra.")
+    expired = serializers.IntegerField(help_text="Caducados según la caducidad de los puntos (Fase 14).")
 
 
 class _PromotionRefSerializer(serializers.Serializer):

@@ -51,6 +51,10 @@ class AuditEvent(models.Model):
         # Fase 11: auditoría y API.
         PASSWORD_CHANGED = "PASSWORD_CHANGED", "Contraseña cambiada"
         API_SESSIONS_REVOKED = "API_SESSIONS_REVOKED", "Sesiones de la app cerradas"
+        # Fase 14: caducidad de puntos y regalo de cumpleaños configurables.
+        POINTS_EXPIRY_POLICY_CREATED = "POINTS_EXPIRY_POLICY_CREATED", "Caducidad de puntos modificada"
+        POINTS_EXPIRY_RUN = "POINTS_EXPIRY_RUN", "Caducidad de puntos procesada"
+        BIRTHDAY_SETTINGS_UPDATED = "BIRTHDAY_SETTINGS_UPDATED", "Regalo de cumpleaños modificado"
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -36,9 +36,9 @@ from apps.catalog.models import Category, Product
 from apps.events import selectors as event_selectors
 from apps.events import services as events_services
 from apps.events.models import Event, Reservation
-from apps.loyalty import conversion, ledger, promotions
+from apps.loyalty import birthday_settings, conversion, expiry, ledger, promotions
 from apps.loyalty import selectors as loyalty_selectors
-from apps.loyalty.models import PointsTransaction, Promotion
+from apps.loyalty.models import PointsExpiryPolicy, PointsTransaction, Promotion
 from apps.notifications import campaigns
 from apps.notifications import selectors as notification_selectors
 from apps.notifications import services as notification_services
@@ -950,34 +950,44 @@ def content(request):
     return _render(request, "content.html", "contenido", {"form": form}, status=status)
 
 
-@never_cache
-@require_http_methods(["GET", "POST"])
-@owner_required
-def settings_view(request):
-    form = forms.LoyaltyRuleForm(request.POST or None)
-    status = 200
-    if request.method == "POST":
-        if form.is_valid():
-            try:
-                conversion.create_rule(
-                    actor=request.user,
-                    points_per_euro=form.cleaned_data["points_per_euro"],
-                    note=form.cleaned_data["note"],
-                )
-            except ValidationError as exc:
-                _apply_errors(form, exc)
-            else:
-                messages.success(request, "Nueva conversión en vigor para las próximas compras.")
-                return redirect("dashboard:settings")
-        status = 400
+EXPIRY_PREFIX = "caducidad"
+BIRTHDAY_PREFIX = "cumple"
+
+
+def _expiry_initial():
+    policy = expiry.current_policy()
+    if policy is None:
+        return {"enabled": False, "warn_days": PointsExpiryPolicy.DEFAULT_WARN_DAYS}
+    return {"enabled": policy.is_active, "months": policy.months, "warn_days": policy.warn_days}
+
+
+def _birthday_initial():
+    state = birthday_settings.current_state()
+    return {
+        "active": state.active,
+        "points": state.points,
+        "email_subject": state.message.email_subject,
+        "email_body": state.message.email_body,
+        "sms_body": state.message.sms_body,
+    }
+
+
+def _settings_page(request, *, form=None, expiry_form=None, birthday_form=None, status=200):
+    """Configuración: conversión, caducidad de puntos y regalo de cumpleaños (cada uno con su formulario)."""
     return _render(
         request,
         "settings.html",
         "configuracion",
         {
-            "form": form,
+            "form": form or forms.LoyaltyRuleForm(),
             "rate": conversion.current_rate(),
             "rules": conversion.rule_history(),
+            "expiry_form": expiry_form or forms.PointsExpiryForm(prefix=EXPIRY_PREFIX, initial=_expiry_initial()),
+            "expiry_policy": expiry.active_policy(),
+            "expiry_history": expiry.policy_history(),
+            "birthday_form": birthday_form
+            or forms.BirthdayGiftForm(prefix=BIRTHDAY_PREFIX, initial=_birthday_initial()),
+            "birthday_placeholder": birthday_settings.PLACEHOLDER,
             "read_only_settings": (
                 ("Importe máximo por compra", f"{settings.PURCHASES_MAX_AMOUNT} €"),
                 ("Días para recoger una recompensa canjeada", settings.REWARDS_CODE_VALIDITY_DAYS),
@@ -988,3 +998,68 @@ def settings_view(request):
         },
         status=status,
     )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def settings_view(request):
+    if request.method != "POST":
+        return _settings_page(request)
+    form = forms.LoyaltyRuleForm(request.POST)
+    if form.is_valid():
+        try:
+            conversion.create_rule(
+                actor=request.user,
+                points_per_euro=form.cleaned_data["points_per_euro"],
+                note=form.cleaned_data["note"],
+            )
+        except ValidationError as exc:
+            _apply_errors(form, exc)
+        else:
+            messages.success(request, "Nueva conversión en vigor para las próximas compras.")
+            return redirect("dashboard:settings")
+    return _settings_page(request, form=form, status=400)
+
+
+@never_cache
+@require_POST
+@owner_required
+def settings_expiry(request):
+    form = forms.PointsExpiryForm(request.POST, prefix=EXPIRY_PREFIX)
+    if form.is_valid():
+        data = form.cleaned_data
+        try:
+            _, created = expiry.set_policy(
+                actor=request.user,
+                months=data["months"] if data["enabled"] else None,
+                warn_days=data["warn_days"],
+                note=data["note"],
+            )
+        except ValidationError as exc:
+            _apply_errors(form, exc)
+        else:
+            if not created:
+                messages.info(request, "No había cambios que guardar.")
+            elif data["enabled"]:
+                messages.success(request, "Caducidad de los puntos actualizada.")
+            else:
+                messages.success(request, "Los puntos ya no caducan.")
+            return redirect("dashboard:settings")
+    return _settings_page(request, expiry_form=form, status=400)
+
+
+@never_cache
+@require_POST
+@owner_required
+def settings_birthday(request):
+    form = forms.BirthdayGiftForm(request.POST, prefix=BIRTHDAY_PREFIX)
+    if form.is_valid():
+        try:
+            changed = birthday_settings.update_birthday_gift(actor=request.user, **form.cleaned_data)
+        except ValidationError as exc:
+            _apply_errors(form, exc)
+        else:
+            messages.success(request, "Regalo de cumpleaños guardado." if changed else "No había cambios que guardar.")
+            return redirect("dashboard:settings")
+    return _settings_page(request, birthday_form=form, status=400)

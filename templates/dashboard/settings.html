@@ -17,6 +17,36 @@
   {% else %}<p class="note">Todavía no se ha creado ninguna regla: se aplica el valor por defecto.</p>{% endif %}
 </section>
 
+<section aria-labelledby="caducidad" class="mt-10 max-w-2xl" data-expiry-settings>
+  <h2 id="caducidad" class="heading-md mb-2">Caducidad de los puntos</h2>
+  <p class="mb-2" data-expiry-status>
+    {% if expiry_policy %}Vigente: <strong>los puntos caducan a los {{ expiry_policy.months }} meses</strong> de ganarlos (aviso por email {{ expiry_policy.warn_days }} días antes). El plazo cuenta como pronto desde el {{ expiry_policy.counts_from|date:"d/m/Y H:i" }}.
+    {% else %}Vigente: <strong>los puntos no caducan</strong>.{% endif %}
+  </p>
+  <p class="note mb-4">Se gastan primero los puntos más antiguos. Al activar la caducidad o acortar el plazo, el plazo nuevo empieza a contar desde ese momento: nadie pierde puntos de golpe. Al alargarlo, las fechas solo se retrasan. Los puntos vencidos se descuentan cada noche.</p>
+  {% with form=expiry_form %}{% include "components/form_errors.html" %}{% endwith %}
+  <form method="post" action="{% url 'dashboard:settings_expiry' %}" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in expiry_form %}{% include "accounts/_field.html" %}{% endfor %}
+    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar caducidad</button>
+  </form>
+  <h3 class="mt-6 mb-2 font-semibold uppercase tracking-wider">Historial</h3>
+  {% if expiry_history %}
+    <ul class="card space-y-2 text-sm">{% for policy in expiry_history %}<li>{% if policy.months %}{{ policy.months }} meses · aviso {{ policy.warn_days }} días{% else %}Sin caducidad{% endif %} desde {{ policy.valid_from|date:"d/m/Y H:i" }}{% if policy.created_by %} · {{ policy.created_by.get_full_name }}{% endif %}{% if policy.note %} · {{ policy.note }}{% endif %}</li>{% endfor %}</ul>
+  {% else %}<p class="note">Nunca se ha configurado: los puntos no caducan.</p>{% endif %}
+</section>
+
+<section aria-labelledby="cumpleanos" class="mt-10 max-w-2xl" data-birthday-settings>
+  <h2 id="cumpleanos" class="heading-md mb-2">Regalo de cumpleaños</h2>
+  <p class="note mb-4">El día de su cumpleaños, cada cliente con email verificado recibe los puntos en su saldo. El aviso solo se envía a quien ha aceptado comunicaciones promocionales (email y, si hay proveedor, SMS). Escribe <code>{{ birthday_placeholder }}</code> donde quieras mostrar los puntos; deja un texto vacío para usar el mensaje por defecto.</p>
+  {% with form=birthday_form %}{% include "components/form_errors.html" %}{% endwith %}
+  <form method="post" action="{% url 'dashboard:settings_birthday' %}" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in birthday_form %}{% include "accounts/_field.html" %}{% endfor %}
+    <button type="submit" class="btn btn-primary" data-loading-text="Guardando…">Guardar regalo de cumpleaños</button>
+  </form>
+</section>
+
 <section aria-labelledby="fijos" class="mt-10 max-w-2xl">
   <h2 id="fijos" class="heading-md mb-2">Valores fijados en la configuración del servidor</h2>
   <p class="note mb-4">Se cambian en los ajustes del proyecto, no desde aquí.</p>

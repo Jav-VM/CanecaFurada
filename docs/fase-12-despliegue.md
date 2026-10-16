@@ -115,6 +115,7 @@ El resto, igual que en [despliegue.md §2](despliegue.md#2-variables-de-entorno)
 | `process_notifications` | Cada 5 min |
 | `run_birthday_promotions` y después `process_notifications` | 09:00 |
 | `expire_redemptions` | 04:30 |
+| `expire_points` y después `process_notifications` (Fase 14) | 04:40 |
 | `purge_email_tokens`, `flushexpiredtokens` y `clearsessions` | 04:45. **`clearsessions` es nueva** (P3-5) |
 
 supercronic no lanza una tarea si la anterior sigue en marcha. La protección contra dobles envíos ya estaba en los propios comandos (claves `dedup_key`, estado «enviando» con caducidad). Las órdenes registran recuentos y `public_id`, no datos personales.

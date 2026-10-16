@@ -11,8 +11,9 @@ Definiciones del resumen:
 - **Utilizados:** puntos gastados en canjes, descontadas las devoluciones de
   canjes cancelados o caducados (Fase 7).
 - **Obtenidos** no incluye esas devoluciones.
+- **Caducados** (Fase 14): puntos vencidos según la política de caducidad.
 - **Corregidos:** resto de movimientos negativos (compensaciones y ajustes en
-  contra). Saldo = obtenidos − utilizados − corregidos.
+  contra). Saldo = obtenidos − utilizados − caducados − corregidos.
 """
 from dataclasses import dataclass
 
@@ -29,13 +30,15 @@ Kind = PointsTransaction.Kind
 
 # Canjes y sus devoluciones forman "utilizados"; el resto, obtenidos o corregidos.
 _REDEMPTION_FLOW = Q(kind=Kind.REDEMPTION) | Q(kind=Kind.REVERSAL, reverses__kind=Kind.REDEMPTION)
+_EXPIRED = Q(kind=Kind.EXPIRATION)
 
 
 def _totals():
     return {
         "earned": Coalesce(Sum("points", filter=Q(points__gt=0) & ~_REDEMPTION_FLOW), 0),
         "used": Coalesce(Sum("points", filter=_REDEMPTION_FLOW), 0),
-        "corrected": Coalesce(Sum("points", filter=Q(points__lt=0) & ~_REDEMPTION_FLOW), 0),
+        "expired": Coalesce(Sum("points", filter=_EXPIRED), 0),
+        "corrected": Coalesce(Sum("points", filter=Q(points__lt=0) & ~_REDEMPTION_FLOW & ~_EXPIRED), 0),
     }
 
 
@@ -45,6 +48,7 @@ class PointsSummary:
     earned: int
     used: int
     corrected: int
+    expired: int = 0
 
 
 def points_summary(customer):
@@ -56,6 +60,7 @@ def points_summary(customer):
         earned=totals["earned"],
         used=-totals["used"],
         corrected=-totals["corrected"],
+        expired=-totals["expired"],
     )
 
 
@@ -79,6 +84,7 @@ class PointsStats:
     corrected: int
     outstanding: int
     customers_with_points: int
+    expired: int = 0
 
 
 def points_stats(*, actor, start=None, end=None):
@@ -98,6 +104,7 @@ def points_stats(*, actor, start=None, end=None):
         corrected=-period["corrected"],
         outstanding=overall["outstanding"],
         customers_with_points=overall["customers"],
+        expired=-period["expired"],
     )
 
 
@@ -118,9 +125,10 @@ def reversible_ids(movements):
     """
     Ids de los movimientos que el propietario puede compensar desde el
     dashboard: no se compensan compensaciones ni canjes (los canjes se
-    devuelven cancelándolos o al caducar) ni movimientos ya compensados.
+    devuelven cancelándolos o al caducar), caducidades (se devuelven con un
+    ajuste) ni movimientos ya compensados.
     """
-    candidates = [m.pk for m in movements if m.kind not in (Kind.REVERSAL, Kind.REDEMPTION)]
+    candidates = [m.pk for m in movements if m.kind not in (Kind.REVERSAL, Kind.REDEMPTION, Kind.EXPIRATION)]
     reversed_ids = set(
         PointsTransaction.objects.filter(reverses__in=candidates).values_list("reverses_id", flat=True)
     )

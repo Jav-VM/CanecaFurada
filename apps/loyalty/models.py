@@ -109,6 +109,79 @@ class LoyaltyRule(models.Model):
             raise ValidationError({"valid_from": "La nueva conversión no puede entrar en vigor en el pasado."})
 
 
+class PointsExpiryPolicy(models.Model):
+    """
+    Caducidad de los puntos (Fase 14).
+
+    Versionada como `LoyaltyRule`: no se edita ni se borra, cada cambio añade
+    una versión y la vigente es la última. `months` vacío = los puntos no
+    caducan. Cada punto caduca `months` meses después de ganarse, pero nunca
+    antes de `counts_from` + `months`: así activar la caducidad o acortar el
+    plazo no hace perder puntos de golpe. `counts_from` lo calcula el servicio
+    (`expiry.set_policy`), nunca el formulario. Reglas en `expiry.py`.
+    """
+
+    MAX_MONTHS = 60
+    MAX_WARN_DAYS = 60
+    DEFAULT_WARN_DAYS = 15
+
+    public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
+    months = models.PositiveSmallIntegerField(
+        "meses de validez",
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(MAX_MONTHS)],
+        help_text="Vacío: los puntos no caducan.",
+    )
+    warn_days = models.PositiveSmallIntegerField(
+        "días de aviso",
+        default=DEFAULT_WARN_DAYS,
+        validators=[MinValueValidator(1), MaxValueValidator(MAX_WARN_DAYS)],
+        help_text="Con cuántos días de antelación se avisa por email de los puntos que van a caducar.",
+    )
+    counts_from = models.DateTimeField("el plazo cuenta desde", null=True, blank=True, editable=False)
+    valid_from = models.DateTimeField("en vigor desde", default=timezone.now, db_index=True, editable=False)
+    note = models.CharField("motivo", max_length=200, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="creada por",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        editable=False,
+    )
+    created_at = models.DateTimeField("creada", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "política de caducidad de puntos"
+        verbose_name_plural = "políticas de caducidad de puntos"
+        ordering = ["-valid_from", "-id"]
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(months__isnull=True) | (Q(months__gte=1) & Q(months__lte=60)),
+                name="loyalty_expiry_months_range",
+            ),
+            models.CheckConstraint(
+                condition=Q(warn_days__gte=1) & Q(warn_days__lte=60), name="loyalty_expiry_warn_days_range"
+            ),
+            # Con caducidad tiene que saberse desde cuándo cuenta el plazo.
+            models.CheckConstraint(
+                condition=Q(months__isnull=True) | Q(counts_from__isnull=False),
+                name="loyalty_expiry_counts_from_required",
+            ),
+        ]
+
+    def __str__(self):
+        if self.months is None:
+            return f"Sin caducidad desde {timezone.localtime(self.valid_from):%d/%m/%Y %H:%M}"
+        return f"{self.months} meses desde {timezone.localtime(self.valid_from):%d/%m/%Y %H:%M}"
+
+    @property
+    def is_active(self):
+        return self.months is not None
+
+
 class Promotion(TimeStampedModel):
     """
     Promoción configurable que da puntos extra al registrar una compra.
@@ -292,6 +365,8 @@ class PointsTransaction(models.Model):
         REDEMPTION = "REDEMPTION", "Canje"
         # Regalo de cumpleaños sin compra (Fase 10, `ledger.grant_birthday_gift`).
         BIRTHDAY_GIFT = "BIRTHDAY_GIFT", "Regalo de cumpleaños"
+        # Puntos vencidos según la política de caducidad (Fase 14, `ledger.expire_points`).
+        EXPIRATION = "EXPIRATION", "Puntos caducados"
 
     public_id = models.UUIDField("identificador", default=uuid.uuid4, unique=True, editable=False)
     customer = models.ForeignKey(
@@ -300,7 +375,7 @@ class PointsTransaction(models.Model):
         on_delete=models.PROTECT,
         related_name="points_transactions",
     )
-    kind = models.CharField("tipo", max_length=16, choices=Kind.choices)
+    kind =models.CharField("tipo", max_length=16, choices=Kind.choices)
     points = models.IntegerField("puntos")
     balance_after = models.IntegerField("saldo resultante")
     purchase = models.ForeignKey(
@@ -365,7 +440,15 @@ class PointsTransaction(models.Model):
         constraints = [
             models.CheckConstraint(
                 condition=Q(
-                    kind__in=["EARN_PURCHASE", "PROMOTION_BONUS", "ADJUSTMENT", "REVERSAL", "REDEMPTION", "BIRTHDAY_GIFT"]
+                    kind__in=[
+                        "EARN_PURCHASE",
+                        "PROMOTION_BONUS",
+                        "ADJUSTMENT",
+                        "REVERSAL",
+                        "REDEMPTION",
+                        "BIRTHDAY_GIFT",
+                        "EXPIRATION",
+                    ]
                 ),
                 name="loyalty_points_kind_valid",
             ),
@@ -401,6 +484,10 @@ class PointsTransaction(models.Model):
                 | Q(purchase__isnull=True, promotion__isnull=False, birthday_year__isnull=False, points__gt=0),
                 name="loyalty_points_birthday_gift_shape",
             ),
+            models.CheckConstraint(
+                condition=~Q(kind="EXPIRATION") | Q(purchase__isnull=True, promotion__isnull=True, points__lt=0),
+                name="loyalty_points_expiration_shape",
+            ),
             # Una compra genera como máximo un movimiento de puntos base...
             models.UniqueConstraint(
                 fields=["purchase"], condition=Q(kind="EARN_PURCHASE"), name="loyalty_points_one_earn_per_purchase"
@@ -421,3 +508,46 @@ class PointsTransaction(models.Model):
 
     def __str__(self):
         return f"{self.get_kind_display()} {self.points:+d} · {self.public_id}"
+
+
+class BirthdayMessage(models.Model):
+    """
+    Textos del aviso de cumpleaños que edita el propietario (Fase 14).
+
+    Una sola fila (id = 1, también restringido en la BD). Un campo vacío
+    significa "usar el texto por defecto" de `templates/notifications/birthday_*`.
+    El único marcador admitido es `{puntos}` y se sustituye sin el motor de
+    plantillas (`birthday_settings.render_text`). El enlace de baja lo añade
+    siempre la plantilla: no forma parte del texto editable.
+    """
+
+    SINGLETON_ID = 1
+    MAX_SUBJECT = 120
+    MAX_EMAIL_BODY = 2000
+    MAX_SMS_BODY = 200
+
+    email_subject = models.CharField("asunto del email", max_length=MAX_SUBJECT, blank=True)
+    email_body = models.TextField("mensaje del email", max_length=MAX_EMAIL_BODY, blank=True)
+    sms_body = models.CharField("mensaje SMS", max_length=MAX_SMS_BODY, blank=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="modificado por",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+        editable=False,
+    )
+    updated_at = models.DateTimeField("actualizado", auto_now=True)
+
+    class Meta:
+        verbose_name = "aviso de cumpleaños"
+        verbose_name_plural = "aviso de cumpleaños"
+        constraints = [models.CheckConstraint(condition=Q(id=1), name="loyalty_birthdaymessage_singleton")]
+
+    def __str__(self):
+        return "Aviso de cumpleaños"
+
+    def save(self, *args, **kwargs):
+        self.pk = self.SINGLETON_ID
+        super().save(*args, **kwargs)

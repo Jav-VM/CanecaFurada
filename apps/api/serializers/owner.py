@@ -45,6 +45,7 @@ class _PointsStats(serializers.Serializer):
     issued = serializers.IntegerField()
     used = serializers.IntegerField()
     corrected = serializers.IntegerField()
+    expired = serializers.IntegerField(help_text="Puntos caducados en el periodo.")
     outstanding = serializers.IntegerField(help_text="Saldo pendiente de todos los clientes (sin filtro de fechas).")
     customers_with_points = serializers.IntegerField()
 

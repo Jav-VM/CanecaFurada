@@ -179,7 +179,8 @@ class SeedDemoDataTests(TempMediaMixin, TransactionTestCase):
         tiny = Purchase.objects.get(amount="0.99")
         self.assertFalse(tiny.points_transactions.filter(kind="EARN_PURCHASE").exists())
         kinds = set(PointsTransaction.objects.values_list("kind", flat=True))
-        self.assertEqual(kinds, set(PointsTransaction.Kind.values))
+        # La demo no configura caducidad (Fase 14): sus puntos no caducan.
+        self.assertEqual(kinds, set(PointsTransaction.Kind.values) - {PointsTransaction.Kind.EXPIRATION})
 
     def test_operations_cover_every_state(self):
         self.assertEqual(set(Reservation.objects.values_list("status", flat=True)), set(Reservation.Status.values))

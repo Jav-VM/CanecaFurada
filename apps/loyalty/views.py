@@ -15,7 +15,7 @@ from apps.accounts.models import User
 from apps.accounts.permissions import verified_email_required
 from apps.purchases import selectors as purchase_selectors
 
-from . import selectors, services
+from . import expiry, selectors, services
 
 
 def _require_customer(user):
@@ -57,6 +57,7 @@ def my_points(request):
         "loyalty/my_points.html",
         {
             "summary": selectors.points_summary(customer),
+            "next_expiry": expiry.customer_next_expiry(customer),
             "movements": movements,
             "purchases": purchases,
         },

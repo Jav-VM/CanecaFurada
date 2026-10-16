@@ -18,7 +18,9 @@ Flujo de las promociones de cumpleaños (Fase 10).
 6. **Comprueba las preferencias** y, solo si el cliente ha autorizado el canal,
    encola el aviso (email; SMS solo si además hay proveedor configurado y
    teléfono válido). El consentimiento se vuelve a comprobar justo antes de
-   enviar (`notifications.services.deliver`).
+   enviar (`notifications.services.deliver`). Desde la Fase 14 el aviso lleva
+   los textos que haya escrito el propietario (`birthday_settings`), ya
+   resueltos al encolar: editarlos después no cambia los avisos en cola.
 7. **Registra el resultado**: el movimiento del ledger, las notificaciones y un
    evento de auditoría con los totales (sin datos personales).
 
@@ -39,7 +41,7 @@ from apps.core.services import record_audit_event
 from apps.notifications import services as notifications
 from apps.notifications.models import Channel, Notification
 
-from . import ledger, promotions
+from . import birthday_settings, ledger, promotions
 
 MAX_DAYS_BACK = 7
 
@@ -60,7 +62,11 @@ def _notify(customer, movement, channel):
         kind=Notification.Kind.BIRTHDAY,
         recipient=customer,
         channel=channel,
-        context={"points": movement.points, "year": movement.birthday_year},
+        context={
+            "points": movement.points,
+            "year": movement.birthday_year,
+            **birthday_settings.notification_texts(movement.points),
+        },
         dedup_key=f"birthday:{customer.public_id}:{movement.birthday_year}:{channel}",
     )
     return created

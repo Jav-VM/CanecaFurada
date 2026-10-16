@@ -1,0 +1,1 @@
+{% autoescape off %}Caneca Furada: tienes {{ points }} puntos que caducan el {{ expires_on }}{% endautoescape %}

@@ -5,6 +5,9 @@ Fidelización en el admin (solo propietarios).
   editan ni se borran, así queda la historia de cada cambio.
 - **Promociones:** se crean y modifican con `promotions.save_promotion`, que
   valida y deja auditoría. No se borran: se pausan o finalizan.
+- **Caducidad de los puntos** (Fase 14): solo lectura; se cambia en el
+  dashboard (`expiry.set_policy`), que calcula desde cuándo cuenta el plazo.
+  El aviso de cumpleaños también se edita solo en el dashboard.
 - **Movimientos de puntos:** solo lectura. Las correcciones se hacen con
   movimientos compensatorios (`ledger`), nunca editando filas.
 
@@ -15,7 +18,7 @@ from django.contrib import admin
 from apps.accounts.permissions import is_owner
 
 from . import conversion, promotions
-from .models import LoyaltyRule, PointsTransaction, Promotion
+from .models import LoyaltyRule, PointsExpiryPolicy, PointsTransaction, Promotion
 
 
 class OwnerOnlyAdminMixin:
@@ -52,6 +55,17 @@ class LoyaltyRuleAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
             note=obj.note,
         )
         obj.pk, obj.public_id, obj.created_by = rule.pk, rule.public_id, rule.created_by
+
+
+@admin.register(PointsExpiryPolicy)
+class PointsExpiryPolicyAdmin(OwnerOnlyAdminMixin, admin.ModelAdmin):
+    list_display = ("months", "warn_days", "counts_from", "valid_from", "note", "created_by")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Promotion)

@@ -1,11 +1,11 @@
-{% autoescape off %}¡Feliz cumpleaños!
+{% autoescape off %}{% if custom_body %}{{ custom_body }}{% else %}¡Feliz cumpleaños!
 
 Para celebrarlo te hemos regalado {{ points }} puntos en tu cuenta de Caneca Furada. Ya los tienes en tu saldo:
 
 {{ site_base_url }}{% url "loyalty:my_points" %}
 
 ¡Salud!
-Caneca Furada
+Caneca Furada{% endif %}
 
 Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:
 {{ unsubscribe_url }}

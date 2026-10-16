@@ -13,6 +13,8 @@ Ledger de puntos: única vía para escribir movimientos.
   devolución si se cancela o caduca (Fase 7, desde `apps.rewards.services`).
 - `grant_birthday_gift(...)`: regalo de cumpleaños sin compra (Fase 10, desde
   `birthdays.run_birthday_promotions`).
+- `expire_points(...)`: descuenta los puntos vencidos según la política de
+  caducidad (Fase 14, desde `expirations.run_expirations`).
 
 Concurrencia: cada escritura bloquea la fila del cliente (`select_for_update`)
 y recalcula el saldo dentro de la transacción, de modo que dos operaciones
@@ -36,7 +38,7 @@ from apps.accounts.permissions import is_owner
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
-from . import conversion, promotions
+from . import conversion, expiry, promotions
 from .models import PointsTransaction, Promotion
 
 logger = logging.getLogger(__name__)
@@ -261,6 +263,13 @@ def reverse_movement(*, actor, movement, reason):
             "Los puntos de un canje se devuelven cancelando el canje, no compensando el movimiento.",
             code="redemption_reversal",
         )
+    if movement.kind == Kind.EXPIRATION:
+        # Compensarla dejaría esos puntos "sin consumir" y volverían a caducar en
+        # la siguiente ejecución: los puntos caducados se devuelven con un ajuste.
+        raise ValidationError(
+            "Los puntos caducados no se compensan: devuélvelos con un ajuste manual a favor.",
+            code="expiration_reversal",
+        )
     with transaction.atomic():
         result = _compensate(movement, actor=actor, reason=reason)
         if not result.created:
@@ -361,4 +370,28 @@ def grant_birthday_gift(*, customer, promotion, day, at=None):
             # Otra ejecución lo concedió a la vez.
             return None
     logger.info("Regalo de cumpleaños %s: %s puntos", movement.public_id, movement.points)
+    return movement
+
+
+# --- Caducidad (Fase 14) ---------------------------------------------------------------
+
+
+def expire_points(*, customer, policy, at=None):
+    """
+    Descuenta con un movimiento `EXPIRATION` los puntos de `customer` vencidos
+    en `at` según `policy` (FIFO, `expiry.expirable_points`). Devuelve el
+    movimiento o `None` si no caduca nada.
+
+    Se calcula con el cliente bloqueado, así que una compra o un canje
+    simultáneos se serializan con la caducidad. Idempotente: lo caducado
+    cuenta como consumido y una segunda ejecución no descuenta nada.
+    """
+    at = at or timezone.now()
+    with transaction.atomic():
+        customer = _lock_customer(customer)
+        points = expiry.expirable_points(expiry.customer_movements(customer), policy, at)
+        if points <= 0:
+            return None
+        movement = _append(customer, kind=Kind.EXPIRATION, points=-points, reason="Puntos caducados")
+    logger.info("Caducidad %s: %s puntos", movement.public_id, movement.points)
     return movement

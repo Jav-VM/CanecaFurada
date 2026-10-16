@@ -91,6 +91,8 @@ class Notification(models.Model):
         RESERVATION_OWNER_ALERT = "RESERVATION_OWNER_ALERT", "Aviso de reserva al propietario"
         CAMPAIGN = "CAMPAIGN", "Campaña promocional"
         BIRTHDAY = "BIRTHDAY", "Promoción de cumpleaños"
+        # Fase 14: informa del estado de la cuenta, sin publicidad (transaccional).
+        POINTS_EXPIRING = "POINTS_EXPIRING", "Aviso de puntos que van a caducar"
 
     class Category(models.TextChoices):
         TRANSACTIONAL = "TRANSACTIONAL", "Transaccional"

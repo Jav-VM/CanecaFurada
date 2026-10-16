@@ -27,7 +27,7 @@ class PointsAndPurchasesTests(ApiTestCase):
         self.authenticate(self.customer)
 
     def test_summary_movements_and_purchases_are_only_mine(self):
-        self.assertEqual(self.client.get(api_url("points")).json(), {"balance": 12, "earned": 12, "used": 0, "corrected": 0})
+        self.assertEqual(self.client.get(api_url("points")).json(), {"balance": 12, "earned": 12, "used": 0, "corrected": 0, "expired": 0})
         movements = self.client.get(api_url("movements")).json()
         self.assertEqual(movements["count"], 1)
         movement = movements["results"][0]

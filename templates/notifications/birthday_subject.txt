@@ -1,1 +1,1 @@
-¡Feliz cumpleaños de parte de Caneca Furada!
+{% autoescape off %}{% if custom_subject %}{{ custom_subject }}{% else %}¡Feliz cumpleaños de parte de Caneca Furada!{% endif %}{% endautoescape %}

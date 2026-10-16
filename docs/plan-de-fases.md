@@ -18,6 +18,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 11 | API, auditoría, seguridad y preparación final para la app móvil | **Completa** ([detalle](fase-11-api-auditoria.md)) |
 | 12 | Despliegue y endurecimiento | **Completa en local** ([detalle](fase-12-despliegue.md)); CI en verde; pendiente el VPS |
 | 13 | Datos de demostración | **Completa** ([detalle](fase-13-datos-demo.md)) |
+| 14 | Caducidad de puntos y regalo de cumpleaños configurables | **Completa** ([detalle](fase-14-caducidad-puntos-cumpleanos.md)); pendiente revisión visual |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -155,6 +156,24 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
   - 18 tests nuevos;
   - **867 tests OK** en PostgreSQL 17 y en SQLite.
 - Ver [fase-13-datos-demo.md](fase-13-datos-demo.md).
+
+## Fase 14 — Caducidad de puntos y regalo de cumpleaños configurables
+- **Numeración:** fase añadida por el usuario el 2026-10-16.
+- **Incluye:**
+  - en Dashboard → Configuración, la caducidad de los puntos (activar, cambiar el plazo, quitar), versionada;
+  - cálculo FIFO sin retroactividad, movimiento `EXPIRATION`, comando diario `expire_points` y email transaccional de aviso previo;
+  - regalo de cumpleaños editable (activación, puntos y textos del aviso con el marcador `{puntos}`).
+- **Decisiones del usuario:** caducidad por antigüedad de cada punto; sin retroactividad; regalo en puntos con texto editable; fecha en «Mis puntos» y email previo.
+- **Criterios:**
+  - autorización y validación en el servidor;
+  - caducidad atómica, idempotente y segura frente a concurrencia;
+  - los textos del propietario nunca pasan por el motor de plantillas;
+  - migraciones pequeñas;
+  - tests de permisos, límites, idempotencia y concurrencia.
+- **Resultado (2026-10-16):**
+  - 63 tests nuevos;
+  - **930 tests OK** en PostgreSQL 17.
+- Ver [fase-14-caducidad-puntos-cumpleanos.md](fase-14-caducidad-puntos-cumpleanos.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

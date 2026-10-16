@@ -38,11 +38,12 @@
 
 <section aria-labelledby="fidelizacion" class="mt-8">
   <h2 id="fidelizacion" class="heading-md mb-4">Actividad de fidelización</h2>
-  <dl class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  <dl class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
     <div class="stat"><dt class="stat-label">Saldo</dt><dd class="stat-value" data-balance>{{ points_summary.balance }}</dd></div>
     <div class="stat"><dt class="stat-label">Obtenidos</dt><dd class="stat-value">{{ points_summary.earned }}</dd></div>
     <div class="stat"><dt class="stat-label">Utilizados</dt><dd class="stat-value">{{ points_summary.used }}</dd></div>
     <div class="stat"><dt class="stat-label">Corregidos</dt><dd class="stat-value">{{ points_summary.corrected }}</dd></div>
+    <div class="stat"><dt class="stat-label">Caducados</dt><dd class="stat-value">{{ points_summary.expired }}</dd></div>
   </dl>
 
   <div class="mt-6 grid gap-6 xl:grid-cols-2">

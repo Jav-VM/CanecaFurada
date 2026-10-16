@@ -41,4 +41,6 @@ urlpatterns = [
     path("promociones/<uuid:public_id>/estado/", views.promotion_status, name="promotion_status"),
     path("contenido/", views.content, name="content"),
     path("configuracion/", views.settings_view, name="settings"),
+    path("configuracion/caducidad/", views.settings_expiry, name="settings_expiry"),
+    path("configuracion/cumpleanos/", views.settings_birthday, name="settings_birthday"),
 ]

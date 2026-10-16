@@ -1606,6 +1606,7 @@ components:
       - REVERSAL
       - REDEMPTION
       - BIRTHDAY_GIFT
+      - EXPIRATION
       type: string
       description: |-
         * `EARN_PURCHASE` - Compra
@@ -1614,6 +1615,7 @@ components:
         * `REVERSAL` - Compensación
         * `REDEMPTION` - Canje
         * `BIRTHDAY_GIFT` - Regalo de cumpleaños
+        * `EXPIRATION` - Puntos caducados
     LoginRequest:
       type: object
       properties:
@@ -2029,10 +2031,14 @@ components:
         corrected:
           type: integer
           description: Restados por compensaciones o ajustes en contra.
+        expired:
+          type: integer
+          description: Caducados según la caducidad de los puntos (Fase 14).
       required:
       - balance
       - corrected
       - earned
+      - expired
       - used
     Preferences:
       type: object
@@ -2680,6 +2686,9 @@ components:
           type: integer
         corrected:
           type: integer
+        expired:
+          type: integer
+          description: Puntos caducados en el periodo.
         outstanding:
           type: integer
           description: Saldo pendiente de todos los clientes (sin filtro de fechas).
@@ -2688,6 +2697,7 @@ components:
       required:
       - corrected
       - customers_with_points
+      - expired
       - issued
       - outstanding
       - used

@@ -117,6 +117,8 @@ Ejecútalas **solo** con `DATABASE_URL` apuntando a la base de pruebas (§2). En
 python manage.py process_notifications                   # envía las notificaciones pendientes
 python manage.py expire_redemptions                      # caduca los canjes vencidos y devuelve los puntos
 python manage.py run_birthday_promotions --date 2026-10-16   # regalos de cumpleaños de ese día (no futuro)
+python manage.py expire_points                          # avisos y caducidad de puntos (Fase 14); sin caducidad configurada no hace nada
+python manage.py expire_points --at 2027-12-01          # solo con DEBUG: simula otra fecha para ver avisos y caducidades
 python manage.py purge_email_tokens --days 30            # borra los enlaces de verificación caducados
 python manage.py clearsessions
 ```

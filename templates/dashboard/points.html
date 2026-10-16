@@ -13,10 +13,11 @@
 </form>
 {% include "dashboard/_period_notice.html" %}
 
-<dl class="grid grid-cols-2 gap-3 md:grid-cols-4">
+<dl class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
   <div class="stat"><dt class="stat-label">Emitidos</dt><dd class="stat-value">{{ stats.issued }}</dd><dd class="stat-sub">Compras, promociones y ajustes a favor</dd></div>
   <div class="stat"><dt class="stat-label">Canjeados</dt><dd class="stat-value">{{ stats.used }}</dd><dd class="stat-sub">Descontadas las devoluciones</dd></div>
   <div class="stat"><dt class="stat-label">Corregidos</dt><dd class="stat-value">{{ stats.corrected }}</dd><dd class="stat-sub">Compensaciones y ajustes en contra</dd></div>
+  <div class="stat"><dt class="stat-label">Caducados</dt><dd class="stat-value">{{ stats.expired }}</dd><dd class="stat-sub">Vencidos sin usar</dd></div>
   <div class="stat"><dt class="stat-label">Saldo pendiente</dt><dd class="stat-value">{{ stats.outstanding }}</dd><dd class="stat-sub">Total actual, sin filtro de fechas</dd></div>
 </dl>
 <p class="note mt-3 mb-6">Para ajustar o compensar puntos abre la ficha del cliente. Los movimientos nunca se editan ni se borran.</p>

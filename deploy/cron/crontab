@@ -14,5 +14,9 @@
 # Canjes vencidos: caducan y devuelven los puntos.
 30     4     *    *    *    python manage.py expire_redemptions
 
+# Caducidad de puntos (Fase 14): avisos previos por email y descuento de los vencidos.
+# Después de expire_redemptions: los puntos devueltos por un canje caducado recuperan su fecha.
+40     4     *    *    *    python manage.py expire_points && python manage.py process_notifications
+
 # Limpieza: tokens de verificación caducados, refresh de la app caducados y sesiones web caducadas.
 45     4     *    *    *    python manage.py purge_email_tokens && python manage.py flushexpiredtokens && python manage.py clearsessions

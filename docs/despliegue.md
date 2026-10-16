@@ -117,6 +117,7 @@ Servicio `scheduler` (supercronic, `deploy/cron/crontab`, `TZ=Europe/Madrid`). N
 | `process_notifications` | Cada 5 min |
 | `run_birthday_promotions` y después `process_notifications` | 09:00 |
 | `expire_redemptions` | 04:30 |
+| `expire_points` y después `process_notifications` (Fase 14) | 04:40 |
 | `purge_email_tokens`, `flushexpiredtokens` y `clearsessions` | 04:45 |
 
 Ejecución manual: `dc exec scheduler python manage.py <comando>`.

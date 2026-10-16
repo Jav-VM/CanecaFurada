@@ -17,7 +17,8 @@ from apps.accounts.countries import COUNTRIES
 from apps.accounts.selectors import GEO_LEVEL_LABELS
 from apps.catalog.models import Product
 from apps.events.models import Event, Reservation
-from apps.loyalty.models import PointsTransaction
+from apps.loyalty.birthday_settings import PLACEHOLDER
+from apps.loyalty.models import BirthdayMessage, PointsExpiryPolicy, PointsTransaction, Promotion
 from apps.notifications.models import Campaign, Channel, Notification
 from apps.purchases.models import Purchase
 from apps.rewards.models import Redemption
@@ -226,6 +227,65 @@ class LoyaltyRuleForm(forms.Form):
         widget=forms.TextInput(attrs={"inputmode": "decimal"}),
     )
     note = forms.CharField(label="Motivo", max_length=200, required=False)
+
+
+class PointsExpiryForm(forms.Form):
+    """Caducidad de los puntos (Fase 14). Desde cuándo cuenta el plazo lo decide el servicio."""
+
+    enabled = forms.BooleanField(label="Los puntos caducan", required=False)
+    months = forms.IntegerField(
+        label="Meses de validez",
+        required=False,
+        min_value=1,
+        max_value=PointsExpiryPolicy.MAX_MONTHS,
+        help_text="Cada punto caduca estos meses después de ganarlo. Se gastan primero los más antiguos.",
+    )
+    warn_days = forms.IntegerField(
+        label="Días de aviso",
+        min_value=1,
+        max_value=PointsExpiryPolicy.MAX_WARN_DAYS,
+        initial=PointsExpiryPolicy.DEFAULT_WARN_DAYS,
+        help_text="Con cuántos días de antelación se avisa por email al cliente.",
+    )
+    note = forms.CharField(label="Motivo", max_length=200, required=False)
+
+    def clean(self):
+        data = super().clean()
+        if data.get("enabled") and not data.get("months"):
+            self.add_error("months", "Indica cuántos meses son válidos los puntos.")
+        return data
+
+
+class BirthdayGiftForm(forms.Form):
+    """Regalo y aviso de cumpleaños (Fase 14). Los textos vacíos usan el mensaje por defecto."""
+
+    active = forms.BooleanField(label="Regalar puntos por el cumpleaños", required=False)
+    points = forms.IntegerField(
+        label="Puntos de regalo", min_value=1, max_value=Promotion.MAX_FIXED_POINTS
+    )
+    email_subject = forms.CharField(
+        label="Asunto del email",
+        max_length=BirthdayMessage.MAX_SUBJECT,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "¡Feliz cumpleaños de parte de Caneca Furada!"}),
+    )
+    email_body = forms.CharField(
+        label="Mensaje del email",
+        max_length=BirthdayMessage.MAX_EMAIL_BODY,
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 6, "placeholder": "Vacío: se envía el mensaje por defecto."}),
+        help_text=(
+            f"Texto plano. Escribe {PLACEHOLDER} donde quieras mostrar los puntos regalados. "
+            "Se añade siempre el enlace de baja. No incluyas datos personales."
+        ),
+    )
+    sms_body = forms.CharField(
+        label="Mensaje SMS",
+        max_length=BirthdayMessage.MAX_SMS_BODY,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "¡Feliz cumpleaños! Te hemos regalado {puntos} puntos."}),
+        help_text=f"Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite {PLACEHOLDER}.",
+    )
 
 
 class BusinessInfoForm(forms.Form):

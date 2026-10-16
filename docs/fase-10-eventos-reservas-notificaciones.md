@@ -4,6 +4,8 @@
 **Fecha:** 2026-10-14.
 **Depende de:** Fases 2 (cuentas, verificación, preferencias), 3 (sistema de diseño), 6 (ledger y cumpleaños), 7 (canjes) y 9 (dashboard).
 
+> **Nota (Fase 14, 2026-10-16):** los puntos del regalo de cumpleaños, su activación y los textos del aviso (asunto, email y SMS) se editan ahora en Dashboard → Configuración. Hay además un aviso transaccional nuevo, `POINTS_EXPIRING`, para los puntos que van a caducar. Ver [Fase 14](fase-14-caducidad-puntos-cumpleanos.md).
+
 ## 1. Objetivo y decisiones
 
 Completar eventos, reservas con confirmación manual, edición de los contenidos principales de la web y un sistema reutilizable de notificaciones (verificación del email, recuperación de la cuenta, reservas, transaccionales, promociones autorizadas y cumpleaños).
