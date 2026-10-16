@@ -18,6 +18,8 @@ from .countries import COUNTRY_CODES
 
 # Edad máxima plausible: evita años como 1800 o 0001 introducidos por error.
 MAX_AGE_YEARS = 120
+# También lo muestra el aviso inmediato del formulario (JS), para que coincidan.
+UNDER_MIN_AGE_MESSAGE = _("Para registrarte tienes que ser mayor de edad.")
 
 _WHITESPACE_RE = re.compile(r"\s+")
 _GENERIC_POSTAL_CODE_RE = re.compile(r"^[A-Z0-9](?:[A-Z0-9 -]{0,10}[A-Z0-9])$")
@@ -104,8 +106,6 @@ def validate_date_of_birth(value, today=None):
     age = age_on(value, today)
     if age > MAX_AGE_YEARS:
         raise ValidationError(_("Revisa la fecha de nacimiento."), code="implausible_date")
-    min_age = settings.ACCOUNTS_MIN_CUSTOMER_AGE
-    if age < min_age:
-        raise ValidationError(
-            _("Debes tener al menos %(min_age)s años para registrarte.") % {"min_age": min_age}, code="under_min_age"
-        )
+    # El texto habla de mayoría de edad: si se cambia ACCOUNTS_MIN_CUSTOMER_AGE (18), revisarlo.
+    if age < settings.ACCOUNTS_MIN_CUSTOMER_AGE:
+        raise ValidationError(UNDER_MIN_AGE_MESSAGE, code="under_min_age")

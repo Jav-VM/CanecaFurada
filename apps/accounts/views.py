@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.cache import never_cache
@@ -16,7 +17,7 @@ from django.utils.translation import gettext as _
 
 from apps.core.http import ip_limited
 
-from . import services
+from . import postal, services, validators
 from .forms import (
     CommunicationPreferencesForm,
     EmailChangeForm,
@@ -36,6 +37,26 @@ def _ip_limited(request, scope):
 
 
 # --- Registro y verificación -----------------------------------------------------
+
+
+@require_http_methods(["GET"])
+def localities(request):
+    """
+    Localidades de un código postal español (`?cp=15001`) para el desplegable
+    del registro y del perfil. Público (el registro es anónimo) y limitado por
+    IP; solo devuelve datos públicos (GeoNames). Un CP no válido da 400 sin
+    repetir el valor recibido.
+    """
+    if ip_limited(request, "postal-lookup-ip", settings.POSTAL_LOOKUP_MAX_PER_IP_PER_HOUR):
+        return JsonResponse({"localities": [], "error": _("Demasiadas consultas. Inténtalo más tarde.")}, status=429)
+    postal_code = validators.normalize_postal_code(request.GET.get("cp", ""))[:12]
+    try:
+        validators.validate_postal_code(postal_code, "ES")
+    except ValidationError:
+        return JsonResponse({"localities": [], "error": _("Código postal no válido.")}, status=400)
+    response = JsonResponse({"localities": postal.localities_for("ES", postal_code)})
+    response["Cache-Control"] = "public, max-age=86400"
+    return response
 
 
 @never_cache

@@ -62,4 +62,95 @@
   // Lleva el foco al resumen de errores para que se anuncie y se vea.
   var summary = document.querySelector("[data-error-summary]");
   if (summary) summary.focus();
+
+  // Aviso inmediato de edad mínima al elegir la fecha de nacimiento. Solo informa:
+  // el servidor vuelve a comprobarlo al enviar (misma regla que validators.age_on).
+  document.querySelectorAll("input[data-min-age]").forEach(function (input) {
+    var notice = input.closest(".field") && input.closest(".field").querySelector("[data-min-age-notice]");
+    if (!notice) return;
+    function check() {
+      var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input.value);
+      var underAge = false;
+      if (match) {
+        var today = new Date();
+        var year = +match[1], month = +match[2], day = +match[3];
+        var age = today.getFullYear() - year;
+        if (today.getMonth() + 1 < month || (today.getMonth() + 1 === month && today.getDate() < day)) age -= 1;
+        underAge = age >= 0 && age < Number(input.dataset.minAge);
+      }
+      notice.textContent = underAge ? input.dataset.minAgeMessage : "";
+    }
+    input.addEventListener("change", check);
+    input.addEventListener("input", check);
+  });
+
+  // Localidad según el código postal (España): desplegable con las del CP,
+  // marcada sola si solo hay una; sin datos, texto libre. Sin JS el servidor
+  // valida igual y pinta el desplegable tras un envío con errores.
+  document.querySelectorAll("[data-locality-for]").forEach(function (initial) {
+    var form = initial.form;
+    var postal = form && form.elements[initial.dataset.localityFor];
+    var country = form && form.elements.country;
+    if (!postal) return;
+    var current = initial;
+    var lastQuery = null;
+    var timer = null;
+
+    function replaceWith(tag) {
+      if (current.tagName.toLowerCase() === tag) return current;
+      var next = document.createElement(tag);
+      ["id", "name", "class", "autocomplete", "aria-describedby", "aria-invalid"].forEach(function (attr) {
+        if (current.hasAttribute(attr)) next.setAttribute(attr, current.getAttribute(attr));
+      });
+      Object.keys(current.dataset).forEach(function (key) { next.dataset[key] = current.dataset[key]; });
+      if (tag === "input") { next.type = "text"; next.maxLength = 100; }
+      current.replaceWith(next);
+      current = next;
+      return next;
+    }
+
+    function show(localities) {
+      if (!localities.length) {
+        var keep = current.tagName === "INPUT" ? current.value : "";
+        replaceWith("input").value = keep;
+        return;
+      }
+      var previous = current.value;
+      var select = replaceWith("select");
+      select.innerHTML = "";
+      if (localities.length > 1) {
+        var empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = select.dataset.chooseText || "";
+        select.appendChild(empty);
+      }
+      localities.forEach(function (name) {
+        var option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        if (localities.length === 1 || name.toLowerCase() === String(previous).toLowerCase()) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    function lookup() {
+      var code = postal.value.replace(/\s+/g, "");
+      var spain = !country || country.value === "ES";
+      if (!spain || !/^\d{5}$/.test(code)) {
+        lastQuery = null;
+        show([]);
+        return;
+      }
+      if (code === lastQuery) return;
+      lastQuery = code;
+      fetch(initial.dataset.localitiesUrl + "?cp=" + encodeURIComponent(code), { headers: { Accept: "application/json" } })
+        .then(function (response) { return response.ok ? response.json() : { localities: [] }; })
+        .then(function (data) { if (lastQuery === code) show(data.localities || []); })
+        .catch(function () { if (lastQuery === code) show([]); });
+    }
+
+    postal.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(lookup, 250); });
+    if (country) country.addEventListener("change", lookup);
+    if (postal.value) lookup();
+  });
 })();

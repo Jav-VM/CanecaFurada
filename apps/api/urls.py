@@ -5,7 +5,7 @@ from rest_framework.authentication import SessionAuthentication
 
 from .authentication import JWTAuthentication
 from .permissions import CanReadApiDocs
-from .views import auth, events, loyalty, me, owner, rewards, staff
+from .views import auth, events, loyalty, me, owner, postal, rewards, staff
 
 app_name = "api"
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path("auth/password/change/", auth.PasswordChangeView.as_view(), name="password_change"),
     path("auth/password/reset/", auth.PasswordResetView.as_view(), name="password_reset"),
     path("auth/password/reset/confirm/", auth.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("postal-codes/<str:postal_code>/localities/", postal.LocalitiesView.as_view(), name="localities"),
     # Mi cuenta
     path("me/", me.MeView.as_view(), name="me"),
     path("me/profile/", me.ProfileView.as_view(), name="profile"),

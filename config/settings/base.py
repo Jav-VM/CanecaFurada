@@ -150,6 +150,8 @@ LOGIN_FAILURE_WINDOW_SECONDS = 15 * 60
 
 # Límite de registros y reenvíos públicos por IP y hora.
 PUBLIC_FORM_MAX_PER_IP_PER_HOUR = 20
+# Consultas de localidades por código postal (registro y perfil): una por CP tecleado.
+POSTAL_LOOKUP_MAX_PER_IP_PER_HOUR = 120
 
 # Proxies inversos de confianza delante de Django (0 = ninguno). Con N > 0 la
 # IP del cliente se toma de `X-Forwarded-For` contando N entradas desde la

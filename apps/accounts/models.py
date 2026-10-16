@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import TimeStampedModel
 
-from . import validators
+from . import postal, validators
 from .countries import COUNTRY_NAMES, DEFAULT_COUNTRY
 from .managers import UserManager
 from .normalization import normalize_email_address
@@ -166,15 +166,22 @@ class CustomerProfile(TimeStampedModel):
     Los campos personales admiten vacío en BD porque los clientes anteriores a
     la Fase 2 (y quien pasa a cliente desde otro rol) no los tienen; el registro
     público y la edición del perfil los exigen (`REQUIRED_FIELDS`).
+
+    Desde la Fase 16 de la dirección solo se exige el código postal: la
+    provincia se deduce de él (España) y la localidad se elige entre las del CP
+    cuando hay datos (`postal`). Calle y línea 2 son opcionales.
     """
 
+    class Sex(models.TextChoices):
+        MALE = "MALE", _("Hombre")
+        FEMALE = "FEMALE", _("Mujer")
+        UNDISCLOSED = "UNDISCLOSED", _("Prefiero no decirlo")
+
     REQUIRED_FIELDS = (
-        "address_line_1",
         "postal_code",
-        "city",
-        "province",
         "country",
         "date_of_birth",
+        "sex",
     )
 
     user = models.OneToOneField(
@@ -198,6 +205,8 @@ class CustomerProfile(TimeStampedModel):
         _("país"), max_length=2, default=DEFAULT_COUNTRY, blank=True, help_text=_("Código ISO 3166-1.")
     )
     date_of_birth = models.DateField(_("fecha de nacimiento"), null=True, blank=True)
+    # Vacío solo en los clientes anteriores a la Fase 16; el registro lo exige.
+    sex = models.CharField(_("sexo"), max_length=12, choices=Sex.choices, blank=True)
     date_of_birth_changed_at = models.DateTimeField(
         _("última modificación de la fecha de nacimiento"),
         null=True,
@@ -222,6 +231,10 @@ class CustomerProfile(TimeStampedModel):
                 condition=Q(promo_sms_opt_in=False) | ~Q(phone_number=""),
                 name="accounts_profile_sms_opt_in_requires_phone",
             ),
+            models.CheckConstraint(
+                condition=Q(sex__in=["", "MALE", "FEMALE", "UNDISCLOSED"]),
+                name="accounts_profile_sex_valid",
+            ),
         ]
 
     def __str__(self):
@@ -243,6 +256,12 @@ class CustomerProfile(TimeStampedModel):
                 validators.validate_postal_code(self.postal_code, self.country)
             except ValidationError as exc:
                 errors["postal_code"] = exc.messages
+        if self.postal_code and "postal_code" not in errors and "country" not in errors:
+            self.province = postal.province_for(self.country, self.postal_code) or self.province
+            try:
+                self.city = postal.canonical_locality(self.country, self.postal_code, self.city)
+            except ValidationError as exc:
+                errors["city"] = exc.messages
         if self.date_of_birth is not None:
             try:
                 validators.validate_date_of_birth(self.date_of_birth)

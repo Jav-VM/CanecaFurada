@@ -14,7 +14,7 @@ class RegisterFormUITests(TestCase):
 
     def test_sections_are_numbered_fieldsets_in_order(self):
         html = self.client.get(self.url).content.decode()
-        titles = ["Datos personales", "Dirección postal", "Acceso a la cuenta", "Preferencias de comunicación"]
+        titles = ["Datos personales", "Dónde vives", "Acceso a la cuenta", "Preferencias de comunicación"]
         positions = [html.index(f"Paso {n}: </span>{title}") for n, title in enumerate(titles, start=1)]
         self.assertEqual(positions, sorted(positions))
         self.assertEqual(html.count('<fieldset class="form-section">'), 4)
@@ -49,8 +49,13 @@ class RegisterFormUITests(TestCase):
         self.assertContains(response, 'aria-describedby="id_last_name_error"')
         # Los datos no sensibles se conservan.
         self.assertContains(response, 'value="Lúa"')
-        self.assertContains(response, 'value="Rúa Ficticia 1, 2º"')
+        self.assertContains(response, 'value="A Coruña"')
         self.assertContains(response, 'value="nueva@example.com"')
+
+    def test_sex_group_is_a_fieldset_linked_to_its_error(self):
+        response = self.client.post(self.url, registration_post_data(sex=None))
+        self.assertContains(response, '<fieldset class="field field-choices" aria-describedby="id_sex_error">')
+        self.assertContains(response, 'id="id_sex_error"', count=1)
 
     def test_passwords_are_never_refilled(self):
         data = registration_post_data(last_name="")

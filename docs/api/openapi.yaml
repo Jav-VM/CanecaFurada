@@ -1104,6 +1104,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/postal-codes/{postal_code}/localities/:
+    get:
+      operationId: postal_codes_localities_retrieve
+      description: 'Lista vacía si el CP no tiene datos: entonces la localidad es
+        texto libre opcional. Con una sola, la app puede marcarla directamente. Fuente:
+        GeoNames (CC BY 4.0).'
+      summary: Localidades de un código postal español
+      parameters:
+      - in: path
+        name: postal_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - Autenticación
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Localities'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/rewards/:
     get:
       operationId: rewards_list
@@ -1616,6 +1647,15 @@ components:
         * `REDEMPTION` - Canxe
         * `BIRTHDAY_GIFT` - Agasallo de aniversario
         * `EXPIRATION` - Puntos caducados
+    Localities:
+      type: object
+      properties:
+        localities:
+          type: array
+          items:
+            type: string
+      required:
+      - localities
     LoginRequest:
       type: object
       properties:
@@ -1988,13 +2028,14 @@ components:
           format: date
           description: AAAA-MM-DD. Solo se puede cambiar una vez al año (protege las
             promociones de cumpleaños).
+        sex:
+          $ref: '#/components/schemas/SexEnum'
         phone_number:
           type: string
           description: Vacío para borrarlo.
           maxLength: 32
         address_line_1:
           type: string
-          minLength: 1
           maxLength: 200
         address_line_2:
           type: string
@@ -2005,11 +2046,11 @@ components:
           maxLength: 12
         city:
           type: string
-          minLength: 1
+          description: Obligatoria si el CP tiene localidades conocidas.
           maxLength: 100
         province:
           type: string
-          minLength: 1
+          description: En España se deduce del CP.
           maxLength: 100
         country:
           type: string
@@ -2068,6 +2109,8 @@ components:
           format: date
           description: AAAA-MM-DD. Solo se puede cambiar una vez al año (protege las
             promociones de cumpleaños).
+        sex:
+          $ref: '#/components/schemas/SexEnum'
         phone_number:
           type: string
           description: Vacío para borrarlo.
@@ -2083,9 +2126,11 @@ components:
           maxLength: 12
         city:
           type: string
+          description: Obligatoria si el CP tiene localidades conocidas.
           maxLength: 100
         province:
           type: string
+          description: En España se deduce del CP.
           maxLength: 100
         country:
           type: string
@@ -2108,6 +2153,7 @@ components:
       - phone_number
       - postal_code
       - province
+      - sex
     PurchaseCreateRequest:
       type: object
       properties:
@@ -2351,29 +2397,34 @@ components:
           type: string
           format: date
           description: AAAA-MM-DD. Edad mínima configurable (18 por defecto).
+        sex:
+          $ref: '#/components/schemas/SexEnum'
         phone_number:
           type: string
           default: ''
           maxLength: 32
-        address_line_1:
-          type: string
-          minLength: 1
-          maxLength: 200
-        address_line_2:
-          type: string
-          default: ''
-          maxLength: 200
         postal_code:
           type: string
           minLength: 1
           maxLength: 12
         city:
           type: string
-          minLength: 1
+          default: ''
+          description: Obligatoria si el CP tiene localidades conocidas (`/postal-codes/{cp}/localities/`);
+            debe ser una de ellas.
           maxLength: 100
+        address_line_1:
+          type: string
+          default: ''
+          maxLength: 200
+        address_line_2:
+          type: string
+          default: ''
+          maxLength: 200
         province:
           type: string
-          minLength: 1
+          default: ''
+          description: En España se deduce del CP.
           maxLength: 100
         country:
           type: string
@@ -2388,15 +2439,13 @@ components:
           type: boolean
           default: false
       required:
-      - address_line_1
-      - city
       - date_of_birth
       - email
       - first_name
       - last_name
       - password
       - postal_code
-      - province
+      - sex
     Reservation:
       type: object
       description: 'Reserva propia: sin quién cambió el estado ni referencias internas.'
@@ -2541,6 +2590,16 @@ components:
         * `OWNER` - Propietario
         * `EMPLOYEE` - Empregado
         * `CUSTOMER` - Cliente
+    SexEnum:
+      enum:
+      - MALE
+      - FEMALE
+      - UNDISCLOSED
+      type: string
+      description: |-
+        * `MALE` - Hombre
+        * `FEMALE` - Mujer
+        * `UNDISCLOSED` - Prefiero no decirlo
     SourceEnum:
       enum:
       - MANUAL

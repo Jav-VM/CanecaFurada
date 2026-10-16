@@ -43,6 +43,7 @@ PROFILE_FIELDS = (
     "province",
     "country",
     "date_of_birth",
+    "sex",
     "phone_number",
 )
 
@@ -393,19 +394,24 @@ def register_customer(
     password,
     first_name,
     last_name,
-    address_line_1,
     postal_code,
-    city,
-    province,
     country,
     date_of_birth,
+    sex,
+    city="",
+    address_line_1="",
     address_line_2="",
+    province="",
     phone_number="",
     promo_email_opt_in=False,
     promo_sms_opt_in=False,
 ):
     """
     Registro público de un cliente con todos sus datos obligatorios.
+
+    De la dirección solo es obligatorio el código postal (Fase 16). En España la
+    provincia se deduce del CP y la localidad debe ser una de las de ese CP
+    cuando hay datos (`CustomerProfile.clean`).
 
     - Siempre crea el rol CUSTOMER (no acepta `role`) con el email pendiente de
       verificación.
@@ -432,6 +438,7 @@ def register_customer(
                 "province": province,
                 "country": country,
                 "date_of_birth": date_of_birth,
+                "sex": sex,
                 "phone_number": phone_number,
             },
         )

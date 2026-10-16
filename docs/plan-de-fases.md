@@ -194,5 +194,25 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
   - **953 tests OK** en PostgreSQL 17 y en SQLite.
 - Ver [fase-15-idioma-gallego.md](fase-15-idioma-gallego.md).
 
+## Fase 16 — Registro con código postal, localidad por CP y sexo
+- **Numeración:** fase añadida por el usuario el 2026-10-17.
+- **Incluye:**
+  - registro sin calle ni provincia: de la dirección solo es obligatorio el código postal;
+  - provincia deducida del CP (España) y localidad elegida entre las del CP (GeoNames, CC BY 4.0), obligatoria solo si el CP tiene datos;
+  - campo sexo (Hombre, Mujer, Prefiero no decirlo), obligatorio en el registro;
+  - aviso «Para rexistrarte tes que ser maior de idade.» al elegir la fecha y al enviar;
+  - endpoint de localidades en la web y en la API.
+- **Decisiones del usuario:** columnas de dirección conservadas (sin borrar datos); calle opcional en el perfil; dataset GeoNames de España; sexo con «Prefiero no decirlo»; aviso inmediato además del servidor.
+- **Criterios:**
+  - migración no destructiva;
+  - validación en el servidor (web y API);
+  - catálogo gallego completo;
+  - suite existente intacta.
+- **Resultado (2026-10-17):**
+  - 27 tests nuevos;
+  - **980 tests OK** en PostgreSQL 17 y en SQLite;
+  - migración `0008` aplicada en la BD de desarrollo (PostgreSQL).
+- Ver [fase-16-registro-cp-sexo.md](fase-16-registro-cp-sexo.md).
+
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

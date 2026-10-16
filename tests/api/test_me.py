@@ -5,7 +5,9 @@ from tests.loyalty.factories import make_employee, make_verified_customer
 
 from .base import ApiTestCase, api_url
 
-PERSONAL_FIELDS = {"address_line_1", "address_line_2", "postal_code", "date_of_birth", "phone_number", "promo_email_opt_in"}
+PERSONAL_FIELDS = {
+    "address_line_1", "address_line_2", "postal_code", "date_of_birth", "sex", "phone_number", "promo_email_opt_in",
+}
 
 
 class MeTests(ApiTestCase):
@@ -40,11 +42,26 @@ class ProfileTests(ApiTestCase):
         self.assertNotIn("promo_email_opt_in", body)
 
     def test_patch_changes_only_sent_fields(self):
-        response = self.client.patch(api_url("profile"), {"city": "Santiago de Compostela"}, format="json")
+        response = self.client.patch(api_url("profile"), {"sex": "FEMALE"}, format="json")
         self.assertEqual(response.status_code, 200, response.json())
-        self.assertEqual(response.json()["city"], "Santiago de Compostela")
+        self.assertEqual(response.json()["sex"], "FEMALE")
         self.assertEqual(response.json()["first_name"], "Lúa")
         self.assertEqual(CustomerProfile.objects.get(user=self.customer).postal_code, "15001")
+
+    def test_locality_must_belong_to_the_postal_code(self):
+        response = self.client.patch(api_url("profile"), {"city": "Santiago de Compostela"}, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("city", response.json()["fields"])
+        response = self.client.patch(
+            api_url("profile"), {"postal_code": "15701", "city": "santiago de compostela"}, format="json"
+        )
+        self.assertEqual(response.status_code, 200, response.json())
+        self.assertEqual((response.json()["city"], response.json()["province"]), ("Santiago de Compostela", "A Coruña"))
+
+    def test_invalid_sex(self):
+        response = self.client.patch(api_url("profile"), {"sex": "OTRO"}, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("sex", response.json()["fields"])
 
     def test_patch_ignores_fields_that_cannot_be_changed_here(self):
         payload = {

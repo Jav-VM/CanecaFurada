@@ -32,6 +32,7 @@ def registration_data(**overrides):
         "province": "A Coruña",
         "country": "ES",
         "date_of_birth": adult_birth_date(),
+        "sex": "UNDISCLOSED",
         "phone_number": "",
         "promo_email_opt_in": False,
         "promo_sms_opt_in": False,

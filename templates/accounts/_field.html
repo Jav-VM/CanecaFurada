@@ -3,6 +3,13 @@
 Campo de formulario accesible. Django 5.2 ya añade aria-invalid y enlaza la
 ayuda y los errores con aria-describedby; las contraseñas no se vuelven a
 rellenar tras un error (PasswordInput no renderiza su valor).
+
+- Radio (sexo): fieldset + legend, para que el grupo tenga nombre.
+- Localidad: si el CP enviado tiene localidades conocidas, se pinta ya como
+  desplegable (sirve sin JS tras un error); si no, texto libre. El JS
+  (`data-locality-for`) hace lo mismo al teclear el CP. Obligatoria solo cuando
+  hay lista, así que no lleva marca fija de obligatorio u opcional.
+- Fecha de nacimiento: zona `aria-live` para el aviso inmediato de edad (JS).
 {% endcomment %}
 {% if field.widget_type == "checkbox" %}
 <div class="field checkbox">
@@ -13,14 +20,39 @@ rellenar tras un error (PasswordInput no renderiza su valor).
     {{ field.errors }}
   </div>
 </div>
+{% elif field.widget_type == "radioselect" %}
+<fieldset class="field field-choices"{% if field.errors %} aria-describedby="{{ field.auto_id }}_error"{% endif %}>
+  <legend>
+    {{ field.label }}
+    {% if field.field.required %}<span class="required-mark" aria-hidden="true">*</span><span class="sr-only"> {% translate "(obligatorio)" %}</span>{% endif %}
+  </legend>
+  <div class="choices">
+    {% for radio in field %}<label for="{{ radio.id_for_label }}">{{ radio.tag }} {{ radio.choice_label }}</label>{% endfor %}
+  </div>
+  {{ field.errors }}
+</fieldset>
 {% else %}
 <div class="field">
   <label for="{{ field.id_for_label }}">
     {{ field.label }}
-    {% if field.field.required %}<span class="required-mark" aria-hidden="true">*</span><span class="sr-only"> {% translate "(obligatorio)" %}</span>{% else %}<span class="optional-mark">{% translate "(opcional)" %}</span>{% endif %}
+    {% if field.name == "city" %}{% elif field.field.required %}<span class="required-mark" aria-hidden="true">*</span><span class="sr-only"> {% translate "(obligatorio)" %}</span>{% else %}<span class="optional-mark">{% translate "(opcional)" %}</span>{% endif %}
   </label>
-  {{ field }}
+  {% if field.name == "city" %}
+    {% with options=form.locality_options %}
+      {% if options %}
+        <select name="{{ field.html_name }}" id="{{ field.auto_id }}" autocomplete="address-level2" data-locality-for="{{ form.postal_code.html_name }}" data-localities-url="{% url 'accounts:localities' %}" data-choose-text="{% translate 'Elige tu localidad' %}"{% if field.help_text %} aria-describedby="{{ field.auto_id }}_helptext"{% endif %}{% if field.errors %} aria-invalid="true"{% endif %}>
+          {% if options|length > 1 %}<option value="">{% translate "Elige tu localidad" %}</option>{% endif %}
+          {% for option in options %}<option value="{{ option }}"{% if option == field.value or options|length == 1 %} selected{% endif %}>{{ option }}</option>{% endfor %}
+        </select>
+      {% else %}
+        {{ field }}
+      {% endif %}
+    {% endwith %}
+  {% else %}
+    {{ field }}
+  {% endif %}
   {% if field.help_text %}<p class="help" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+  {% if field.name == "date_of_birth" %}<p class="errorlist empty:hidden" data-min-age-notice aria-live="polite"></p>{% endif %}
   {{ field.errors }}
 </div>
 {% endif %}

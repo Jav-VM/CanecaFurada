@@ -33,12 +33,17 @@ POST /api/v1/auth/register/
 {
   "email": "lua@example.com", "password": "Contrasena-Ficticia-2026",
   "first_name": "Lúa", "last_name": "Ficticia Exemplo", "date_of_birth": "1996-06-15",
-  "phone_number": "", "address_line_1": "Rúa Ficticia 1, 2º", "address_line_2": "",
-  "postal_code": "15001", "city": "A Coruña", "province": "A Coruña", "country": "ES",
+  "sex": "UNDISCLOSED", "phone_number": "",
+  "country": "ES", "postal_code": "15001", "city": "A Coruña",
   "promo_email_opt_in": false, "promo_sms_opt_in": false
 }
 → 202 {"detail": "Si los datos son correctos, te hemos enviado un email…"}
 ```
+
+- **Dirección (Fase 16):** de la dirección solo es obligatorio `postal_code`. `address_line_1`, `address_line_2` y `province` son opcionales; en España la provincia se deduce del CP y lo que envíes se ignora.
+- **Localidad:** pide las del CP con `GET /api/v1/postal-codes/{cp}/localities/` → `{"localities": ["Oleiros"]}`. Con una, márcala sin preguntar; con varias, muestra un desplegable; con lista vacía (o fuera de España), deja un campo de texto **opcional**. Si la lista no está vacía, `city` es obligatoria y debe ser una de ellas (si no, 400 en `city`). Datos: GeoNames (CC BY 4.0); cítalo en la pantalla o en «Acerca de».
+- **Sexo:** `sex` obligatorio, uno de `MALE`, `FEMALE` o `UNDISCLOSED` («Prefiero no decirlo»).
+- **Edad:** si el usuario es menor de 18, `date_of_birth` devuelve «Para rexistrarte tes que ser maior de idade.» (o el texto en castellano, según `Accept-Language`). Puedes avisar antes en la app, pero decide el servidor.
 
 - Responde **siempre 202 igual** aunque el email ya exista (no revela cuentas). Errores de datos → 400 con `fields`.
 - Los consentimientos promocionales van **desmarcados por defecto**; muéstralos como casillas opcionales y separadas.

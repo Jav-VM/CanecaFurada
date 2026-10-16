@@ -101,6 +101,22 @@ class UpdateProfileServiceTests(TestCase):
         with self.assertRaises(PermissionDenied):
             services.update_customer_profile(user=employee, **profile_kwargs())
 
+    def test_street_is_optional_and_province_follows_postal_code(self):
+        services.update_customer_profile(
+            user=self.user,
+            **profile_kwargs(address_line_1="", postal_code="27001", city="lugo", province="A Coruña", sex="MALE"),
+        )
+        profile = CustomerProfile.objects.get(user=self.user)
+        self.assertEqual(
+            (profile.address_line_1, profile.city, profile.province, profile.sex), ("", "Lugo", "Lugo", "MALE")
+        )
+        self.assertEqual(profile.missing_required_fields(), [])
+
+    def test_sex_cannot_be_emptied(self):
+        with self.assertRaises(ValidationError) as ctx:
+            services.update_customer_profile(user=self.user, **profile_kwargs(sex=""))
+        self.assertIn("sex", ctx.exception.message_dict)
+
     def test_legacy_customer_without_data_can_complete_profile(self):
         legacy = make_user(email="legacy@example.com")
         services.ensure_customer_profile(legacy)

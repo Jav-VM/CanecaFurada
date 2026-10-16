@@ -48,9 +48,29 @@ class RegisterTests(ApiTestCase):
         self.assertEqual(response.status_code, 400)
         body = response.json()
         self.assertEqual(body["code"], "invalid")
-        for field in ("first_name", "last_name", "date_of_birth", "address_line_1", "postal_code", "city", "province"):
+        for field in ("first_name", "last_name", "date_of_birth", "sex", "postal_code"):
             self.assertIn(field, body["fields"])
+        # Fase 16: calle, localidad y provincia no son obligatorias en la entrada.
+        for field in ("address_line_1", "city", "province"):
+            self.assertNotIn(field, body["fields"])
         self.assertFalse(User.objects.exists())
+
+    def test_register_with_postal_code_only(self):
+        payload = register_payload(postal_code="15142", city="Arteixo")
+        for name in ("address_line_1", "address_line_2", "province"):
+            payload.pop(name)
+        self.assertEqual(self.post("register", payload).status_code, 202)
+        profile = User.objects.get(email="nueva@example.com").customer_profile
+        self.assertEqual((profile.city, profile.province, profile.sex), ("Arteixo", "A Coruña", "UNDISCLOSED"))
+
+    def test_localities_endpoint(self):
+        response = self.client.get(api_url("localities", "15179"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"localities": ["Oleiros"]})
+        self.assertEqual(self.client.get(api_url("localities", "04070")).json(), {"localities": []})
+        invalid = self.client.get(api_url("localities", "99999"))
+        self.assertEqual(invalid.status_code, 400)
+        self.assertNotIn("99999", invalid.content.decode())
 
     def test_invalid_data_is_rejected_by_the_services(self):
         future = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()

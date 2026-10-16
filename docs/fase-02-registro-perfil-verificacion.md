@@ -4,6 +4,8 @@
 **Fecha:** 2026-10-14.
 **Depende de:** [Fase 0](fase-00-fundacion.md) y [Fase 1](fase-01-proyecto-base.md).
 
+> **Cambio posterior (Fase 16):** el registro ya no pide calle, provincia ni segunda línea de dirección. De la dirección solo es obligatorio el código postal; la provincia se deduce del CP (España) y la localidad se elige entre las del CP. Se añade el campo **sexo** y cambia el mensaje de edad mínima. Las tablas de campos de abajo describen el diseño original: ver [fase-16-registro-cp-sexo.md](fase-16-registro-cp-sexo.md).
+
 ## 1. Objetivo, contexto y decisiones previas
 
 Completar la autenticación: registro público de clientes con datos estructurados, verificación del email, perfil editable, preferencias de comunicación auditables, cambio seguro de email y permisos por rol.

@@ -27,7 +27,7 @@ from django.db.models import Max
 from django.utils import timezone
 
 from apps.accounts import services as accounts
-from apps.accounts.models import CommunicationPreferenceChange, User
+from apps.accounts.models import CommunicationPreferenceChange, CustomerProfile, User
 from apps.catalog import services as catalog
 from apps.catalog.models import BeerStyle, Category, Product, TapMenu
 from apps.events import services as events
@@ -46,6 +46,7 @@ from . import data, images
 from .clock import SimulatedClock
 
 _TOKEN_RE = re.compile(r"/verificar-email/([A-Za-z0-9_-]+)/")
+DEMO_SEXES = tuple(CustomerProfile.Sex.values)
 
 
 class DemoBuildError(Exception):
@@ -252,6 +253,8 @@ class DemoBuilder:
             province=customer.province,
             country=customer.country,
             date_of_birth=date_of_birth,
+            # Reparto fijo de las tres opciones (no se deduce del nombre).
+            sex=DEMO_SEXES[data.CUSTOMERS.index(customer) % len(DEMO_SEXES)],
             phone_number=customer.phone,
             promo_email_opt_in=customer.promo_email,
             promo_sms_opt_in=customer.promo_sms,

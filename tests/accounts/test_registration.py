@@ -20,15 +20,15 @@ from .factories import (
     registration_post_data,
 )
 
+# Fase 16: de la dirección solo el CP (y la localidad si el CP tiene datos, ver PostalLocalityTests).
 REQUIRED_SERVICE_FIELDS = (
     "first_name",
     "last_name",
-    "address_line_1",
     "postal_code",
     "city",
-    "province",
     "country",
     "date_of_birth",
+    "sex",
 )
 
 
@@ -83,12 +83,43 @@ class RegisterCustomerServiceTests(TestCase):
 
     def test_incomplete_address(self):
         with self.assertRaises(ValidationError) as ctx:
-            services.register_customer(
-                **registration_data(address_line_1="  ", city="", postal_code="")
-            )
-        for field in ("address_line_1", "city", "postal_code"):
-            self.assertIn(field, ctx.exception.message_dict)
+            services.register_customer(**registration_data(address_line_1="  ", city="", postal_code=""))
+        self.assertIn("postal_code", ctx.exception.message_dict)
+        self.assertNotIn("address_line_1", ctx.exception.message_dict)
         self.assertFalse(User.objects.exists())
+
+    def test_locality_required_and_checked_when_postal_code_has_data(self):
+        for city, message in (("", "Elige tu localidad."), ("Lugo", "Elige una localidad de la lista para este código postal.")):
+            with self.subTest(city=city):
+                with self.assertRaises(ValidationError) as ctx:
+                    services.register_customer(**registration_data(postal_code="15142", city=city))
+                self.assertEqual(ctx.exception.message_dict["city"], [message])
+        self.assertFalse(User.objects.exists())
+
+    def test_locality_is_free_and_optional_without_data(self):
+        # 04070 (apartados de Almería) no tiene municipio en GeoNames; Portugal no tiene datos.
+        user = self.register(postal_code="04070", city="")
+        self.assertEqual((user.customer_profile.city, user.customer_profile.province), ("", "Almería"))
+        other = self.register(email="pt@example.com", country="PT", postal_code="4000-123", city="Porto", province="")
+        self.assertEqual((other.customer_profile.city, other.customer_profile.province), ("Porto", ""))
+
+    def test_street_is_optional_and_province_comes_from_postal_code(self):
+        user = self.register(address_line_1="", province="Inventada", city="arteixo", postal_code="15142")
+        profile = user.customer_profile
+        self.assertEqual((profile.address_line_1, profile.city, profile.province), ("", "Arteixo", "A Coruña"))
+        self.assertEqual(profile.missing_required_fields(), [])
+
+    def test_invalid_sex_is_rejected(self):
+        with self.assertRaises(ValidationError) as ctx:
+            services.register_customer(**registration_data(sex="OTRO"))
+        self.assertIn("sex", ctx.exception.message_dict)
+        self.assertFalse(User.objects.exists())
+
+    def test_under_age_message(self):
+        today = timezone.localdate()
+        with self.assertRaises(ValidationError) as ctx:
+            services.register_customer(**registration_data(date_of_birth=datetime.date(today.year - 17, 1, 1)))
+        self.assertEqual(ctx.exception.message_dict["date_of_birth"], ["Para registrarte tienes que ser mayor de edad."])
 
     def test_whitespace_is_normalized(self):
         user = self.register(city="  A   Coruña ", postal_code=" 15001 ")
@@ -216,7 +247,7 @@ class RegisterViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         for title in (
             "Datos personales",
-            "Dirección postal",
+            "Dónde vives",
             "Acceso a la cuenta",
             "Preferencias de comunicación",
         ):
@@ -224,6 +255,31 @@ class RegisterViewTests(TestCase):
         self.assertContains(response, "(opcional)")
         self.assertContains(response, "(obligatorio)")
         self.assertNotContains(response, 'name="role"')
+        # Solo CP y localidad: ni calle ni provincia (se deduce del CP).
+        for absent in ('name="address_line_1"', 'name="address_line_2"', 'name="province"'):
+            self.assertNotContains(response, absent)
+        for choice in ("MALE", "FEMALE", "UNDISCLOSED"):
+            self.assertContains(response, f'type="radio" name="sex" value="{choice}"')
+        self.assertContains(response, 'data-min-age="18"')
+        self.assertContains(response, 'data-min-age-message="Para registrarte tienes que ser mayor de edad."')
+
+    def test_under_age_is_rejected_with_message(self):
+        today = timezone.localdate()
+        response = self.post(date_of_birth=datetime.date(today.year - 16, 1, 1).isoformat())
+        self.assertEqual(response.context["form"].errors["date_of_birth"], ["Para registrarte tienes que ser mayor de edad."])
+        self.assertFalse(User.objects.exists())
+
+    def test_locality_select_is_rendered_after_an_error(self):
+        # Sin JS: tras un error, la localidad se ofrece como desplegable con las del CP.
+        response = self.post(postal_code="15142", city="", password2="no-coincide")
+        self.assertContains(response, '<select name="city"')
+        self.assertContains(response, '<option value="Arteixo" selected>Arteixo</option>', html=False)
+
+    def test_registration_with_only_postal_code(self):
+        response = self.post(postal_code="15179", city="Oleiros", address_line_1=None, province=None)
+        self.assertRedirects(response, reverse("accounts:register_done"))
+        profile = User.objects.get(email="nueva@example.com").customer_profile
+        self.assertEqual((profile.city, profile.province, profile.address_line_1), ("Oleiros", "A Coruña", ""))
 
     def test_valid_registration(self):
         response = self.post()
@@ -240,8 +296,8 @@ class RegisterViewTests(TestCase):
         self.assertFalse(user.is_email_verified)
 
     def test_missing_required_fields(self):
-        for field in ("first_name", "last_name", "address_line_1", "postal_code", "city",
-                      "province", "country", "email", "password1", "password2", "date_of_birth"):
+        for field in ("first_name", "last_name", "postal_code", "city", "country", "email",
+                      "password1", "password2", "date_of_birth", "sex"):
             with self.subTest(field=field):
                 response = self.post(**{field: ""})
                 self.assertEqual(response.status_code, 200)

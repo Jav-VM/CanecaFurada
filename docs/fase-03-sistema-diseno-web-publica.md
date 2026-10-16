@@ -106,7 +106,7 @@ Las vistas públicas son `TemplateView` de solo lectura (`GET`/`HEAD`; `POST` de
 ## 6. Preparación para la app móvil
 
 - Las plantillas solo presentan. Las reglas (validación, verificación, permisos) siguen en servicios y formularios de la Fase 2, que usará también la API.
-- `app.js` no contiene validaciones ni reglas de negocio (hay un test que lo comprueba).
+- `app.js` no contiene validaciones ni reglas de negocio (hay un test que lo comprueba). Desde la Fase 16 tiene dos ayudas que no deciden nada: el aviso inmediato de edad mínima (no bloquea el envío; decide el servidor) y una única consulta de lectura a la lista pública de localidades por CP. El test lo acota a eso ([fase-16-registro-cp-sexo.md](fase-16-registro-cp-sexo.md)).
 - Las vistas pasan al contexto las colecciones con los nombres que usarán las Fases 4, 7 y 8. Los datos del local están en un solo módulo (`apps/web/content.py`) que la Fase 9 sustituirá por contenido editable.
 - Los tokens de color están documentados (§3) para reutilizarlos en Flutter.
 

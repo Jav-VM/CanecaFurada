@@ -27,6 +27,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | 13 — Datos de demostración | **Completa**: comando `seed_demo_data` (solo desarrollo y tests) con 27 cuentas ficticias y datos de todas las áreas creados por los servicios reales; `--reset` y `--clean`. 867 tests OK en PostgreSQL 17 y en SQLite |
 | 14 — Caducidad de puntos y regalo de cumpleaños | **Completa**: caducidad configurable (FIFO, sin retroactividad, aviso por email, comando `expire_points`) y regalo y aviso de cumpleaños editables en Dashboard → Configuración. 930 tests OK en PostgreSQL 17. Pendiente revisión visual |
 | 15 — Web en gallego con selector gallego/castellano | **Completa**: toda la interfaz en gallego por defecto; banderas de Galicia y España en la cabecera (castellano en la web pública y el área de cliente); panel, dashboard, emails y SMS siempre en gallego; «Recompensas» se llama «Agasallos» en gallego. 953 tests OK. Pendiente la revisión nativa de las traducciones y la visual |
+| 16 — Registro con código postal, localidad por CP y sexo | **Completa**: del domicilio solo el CP es obligatorio (provincia deducida, localidad por CP con datos de GeoNames), campo sexo y aviso de mayoría de edad al instante. 980 tests OK en PostgreSQL 17 y en SQLite. Pendiente la revisión visual |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -100,6 +101,10 @@ Solo funciona con `config.settings.dev` (`DEBUG=True`) y en los tests: en produc
 El propietario crea estilos, categorías y productos en el admin, publica, archiva o marca como agotado con las acciones de la lista y sube la imagen de la carta de grifos. Nada se borra: los productos se archivan. En producción, Nginx sirve las imágenes subidas desde el volumen `media` (Fase 12). Guía paso a paso: [docs/fase-04-carta.md](docs/fase-04-carta.md#4-gestión-de-la-carta-guía-para-el-propietario).
 
 En desarrollo los emails (verificación, recuperación de contraseña…) se imprimen en la consola de `runserver`. En Windows, si aparece `UnicodeEncodeError` al enviar un email, arranca con `$env:PYTHONUTF8=1`. Configuración del correo y de producción: [docs/fase-02-registro-perfil-verificacion.md](docs/fase-02-registro-perfil-verificacion.md#6-configuración-del-correo-y-variables-de-entorno).
+
+## Registro de clientes
+
+El registro pide nombre, apellidos, fecha de nacimiento (18 años o más), sexo (Hombre, Mujer o Prefiero no decirlo), país, código postal y localidad. De la dirección solo el código postal es obligatorio: en España la provincia se deduce del CP y la localidad se elige entre las del CP (se marca sola si solo hay una; datos de GeoNames, CC BY 4.0). La calle se puede añadir después en el perfil. Para actualizar los datos de localidades: `python scripts/postal_codes.py build`. Detalle, reglas y pruebas: [docs/fase-16-registro-cp-sexo.md](docs/fase-16-registro-cp-sexo.md).
 
 ## Probar el registro de compras
 
@@ -239,6 +244,7 @@ Dockerfile, compose.yaml, compose.dev.yaml   imagen y pilas de producción y loc
 - [Fase 13 — Datos de demostración](docs/fase-13-datos-demo.md): comando `seed_demo_data`, protecciones frente a producción, cuentas por rol, escenarios, limpieza, tests y limitaciones.
 - [Fase 14 — Caducidad de puntos y regalo de cumpleaños](docs/fase-14-caducidad-puntos-cumpleanos.md): política versionada sin retroactividad, cálculo FIFO, aviso previo, comando `expire_points`, textos editables del aviso de cumpleaños, seguridad, tests y pendientes.
 - [Fase 15 — Web en gallego](docs/fase-15-idioma-gallego.md): idioma por zonas, selector de banderas, emails en gallego, API, cómo añadir y traducir textos (`scripts/i18n.py`), seguridad, tests y pendientes.
+- [Fase 16 — Registro con código postal y sexo](docs/fase-16-registro-cp-sexo.md): solo CP obligatorio, provincia deducida, localidad por CP (GeoNames), campo sexo, aviso de mayoría de edad, endpoints de localidades, migración, tests y pendientes.
 - [Pruebas de desarrollo](pruebas_dev/pruebas.md): órdenes para probar con bases de datos aparte, tareas programadas, Mailpit, tests, Docker local, volver a la versión original y limpiar.
 - [Despliegue](docs/despliegue.md): guía operativa con variables, órdenes habituales, HTTPS, estáticos y multimedia, copias, correo, tareas programadas, logs y lista de comprobación.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.

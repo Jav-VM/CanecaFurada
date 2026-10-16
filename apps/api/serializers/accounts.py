@@ -38,12 +38,15 @@ class ProfileSerializer(serializers.Serializer):
     date_of_birth = serializers.DateField(
         help_text="AAAA-MM-DD. Solo se puede cambiar una vez al año (protege las promociones de cumpleaños)."
     )
+    sex = serializers.ChoiceField(choices=CustomerProfile.Sex.choices)
     phone_number = serializers.CharField(max_length=32, allow_blank=True, help_text="Vacío para borrarlo.")
-    address_line_1 = serializers.CharField(max_length=200)
+    address_line_1 = serializers.CharField(max_length=200, allow_blank=True)
     address_line_2 = serializers.CharField(max_length=200, allow_blank=True)
     postal_code = serializers.CharField(max_length=12)
-    city = serializers.CharField(max_length=100)
-    province = serializers.CharField(max_length=100)
+    city = serializers.CharField(
+        max_length=100, allow_blank=True, help_text="Obligatoria si el CP tiene localidades conocidas."
+    )
+    province = serializers.CharField(max_length=100, allow_blank=True, help_text="En España se deduce del CP.")
     country = serializers.CharField(max_length=2, help_text="ISO 3166-1 alfa-2.")
     missing_fields = serializers.ListField(child=serializers.CharField(), read_only=True)
 
@@ -51,7 +54,7 @@ class ProfileSerializer(serializers.Serializer):
     def data_for(user, profile):
         data = {"first_name": user.first_name, "last_name": user.last_name}
         for name in (
-            "date_of_birth", "phone_number", "address_line_1", "address_line_2",
+            "date_of_birth", "sex", "phone_number", "address_line_1", "address_line_2",
             "postal_code", "city", "province", "country",
         ):
             data[name] = getattr(profile, name)

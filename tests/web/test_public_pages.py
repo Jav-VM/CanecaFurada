@@ -165,9 +165,18 @@ class DesignSystemAssetsTests(TestCase):
 
 class NoJavaScriptBusinessRulesTests(TestCase):
     def test_app_js_contains_no_validation_rules(self):
-        """El JS es solo de presentación: ni validaciones ni reglas de negocio."""
+        """
+        El JS es solo de presentación: ni validaciones ni reglas de negocio.
+
+        Desde la Fase 16 hay dos ayudas que no deciden nada: el aviso de edad
+        (no bloquea el envío; decide el servidor) y una única consulta de
+        lectura a la lista pública de localidades por CP.
+        """
         with open(finders.find("js/app.js"), encoding="utf-8") as fh:
             js = fh.read()
-        for forbidden in ("setCustomValidity", "fetch(", "XMLHttpRequest", "password", "points", "puntos"):
+        for forbidden in ("setCustomValidity", "XMLHttpRequest", "password", "points", "puntos"):
             with self.subTest(forbidden):
                 self.assertNotIn(forbidden, js)
+        self.assertEqual(js.count("fetch("), 1)
+        self.assertIn("fetch(initial.dataset.localitiesUrl", js)
+        self.assertNotIn("method:", js)

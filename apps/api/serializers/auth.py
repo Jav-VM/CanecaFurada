@@ -2,6 +2,7 @@
 from rest_framework import serializers
 
 from apps.accounts.countries import DEFAULT_COUNTRY
+from apps.accounts.models import CustomerProfile
 
 
 def password_field(**kwargs):
@@ -18,12 +19,21 @@ class RegisterSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=150)
     last_name = serializers.CharField(max_length=150)
     date_of_birth = serializers.DateField(help_text="AAAA-MM-DD. Edad mínima configurable (18 por defecto).")
+    sex = serializers.ChoiceField(choices=CustomerProfile.Sex.choices)
     phone_number = serializers.CharField(max_length=32, required=False, allow_blank=True, default="")
-    address_line_1 = serializers.CharField(max_length=200)
-    address_line_2 = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
     postal_code = serializers.CharField(max_length=12)
-    city = serializers.CharField(max_length=100)
-    province = serializers.CharField(max_length=100)
+    city = serializers.CharField(
+        max_length=100,
+        required=False,
+        allow_blank=True,
+        default="",
+        help_text="Obligatoria si el CP tiene localidades conocidas (`/postal-codes/{cp}/localities/`); debe ser una de ellas.",
+    )
+    address_line_1 = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
+    address_line_2 = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
+    province = serializers.CharField(
+        max_length=100, required=False, allow_blank=True, default="", help_text="En España se deduce del CP."
+    )
     country = serializers.CharField(max_length=2, default=DEFAULT_COUNTRY, help_text="ISO 3166-1 alfa-2.")
     promo_email_opt_in = serializers.BooleanField(default=False)
     promo_sms_opt_in = serializers.BooleanField(default=False)

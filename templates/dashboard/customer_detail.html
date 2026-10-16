@@ -13,10 +13,11 @@
       <div class="sm:col-span-2"><dt class="text-mist">{% translate "Email" %}</dt><dd class="break-all font-semibold">{{ customer.email }}
         {% if customer.is_email_verified %}<span class="badge ml-2">{% translate "Verificado" %}</span>{% else %}<span class="badge badge-muted ml-2">{% translate "Pendiente de verificación" %}</span>{% endif %}</dd></div>
       <div class="sm:col-span-2"><dt class="text-mist">{% translate "Dirección postal" %}</dt><dd>
-        {% if profile and profile.address_line_1 %}
-          {{ profile.address_line_1 }}{% if profile.address_line_2 %}, {{ profile.address_line_2 }}{% endif %}<br>
-          {{ profile.postal_code }} {{ profile.city }} ({{ profile.province }}) · {{ country_name }}
+        {% if profile and profile.postal_code %}
+          {% if profile.address_line_1 %}{{ profile.address_line_1 }}{% if profile.address_line_2 %}, {{ profile.address_line_2 }}{% endif %}<br>{% endif %}
+          {{ profile.postal_code }} {{ profile.city }}{% if profile.province %} ({{ profile.province }}){% endif %} · {{ country_name }}
         {% else %}<span class="italic text-mist">{% translate "Sin dirección en el perfil" %}</span>{% endif %}</dd></div>
+      <div><dt class="text-mist">{% translate "Sexo" %}</dt><dd>{% if profile and profile.sex %}{{ profile.get_sex_display }}{% else %}<span class="italic text-mist">{% translate "No indicado" %}</span>{% endif %}</dd></div>
       <div><dt class="text-mist">{% translate "Teléfono" %}</dt><dd>{% if profile and profile.phone_number %}{{ profile.phone_number }}{% else %}<span class="italic text-mist">{% translate "No indicado" %}</span>{% endif %}</dd></div>
       <div><dt class="text-mist">{% translate "Fecha de nacimiento" %}</dt><dd>{% if profile and profile.date_of_birth %}{{ profile.date_of_birth|date:"d/m/Y" }}{% else %}<span class="italic text-mist">{% translate "No indicada" %}</span>{% endif %}</dd></div>
       <div><dt class="text-mist">{% translate "Fecha de registro" %}</dt><dd>{{ customer.date_joined|date:"d/m/Y H:i" }}</dd></div>

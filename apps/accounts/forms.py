@@ -8,15 +8,18 @@ campos explícitos: no existe ningún campo de rol, estado o verificación que
 pueda asignarse desde el navegador.
 """
 from django import forms
+from django.conf import settings
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from apps.core.http import client_ip
 
-from . import services, validators
+from . import postal, services, validators
 from .countries import COUNTRIES, DEFAULT_COUNTRY
+from .models import CustomerProfile
 
 _DATE_WIDGET = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -39,13 +42,14 @@ class PersonalDataFieldsMixin(forms.Form):
         input_formats=["%Y-%m-%d", "%d/%m/%Y"],
         help_text=_("Solo la usaremos para tu edad y tus promociones de cumpleaños."),
     )
+    sex = forms.ChoiceField(label=_("Sexo"), choices=CustomerProfile.Sex.choices, widget=forms.RadioSelect)
     phone_number = _text(_("Teléfono móvil"), 32, required=False, autocomplete="tel", type="tel")
-    address_line_1 = _text(_("Dirección"), 200, autocomplete="address-line1")
-    address_line_2 = _text(_("Dirección (línea 2)"), 200, required=False, autocomplete="address-line2")
-    postal_code = _text(_("Código postal"), 12, autocomplete="postal-code")
-    city = _text(_("Localidad"), 100, autocomplete="address-level2")
-    province = _text(_("Provincia"), 100, autocomplete="address-level1")
     country = forms.ChoiceField(label=_("País"), choices=COUNTRIES, initial=DEFAULT_COUNTRY)
+    postal_code = _text(_("Código postal"), 12, autocomplete="postal-code", inputmode="numeric")
+    # Obligatoria solo si el CP tiene localidades conocidas (lo decide `clean`).
+    city = _text(_("Localidad"), 100, required=False, autocomplete="address-level2")
+    address_line_1 = _text(_("Dirección"), 200, required=False, autocomplete="address-line1")
+    address_line_2 = _text(_("Dirección (línea 2)"), 200, required=False, autocomplete="address-line2")
 
     sections = ()
 
@@ -54,7 +58,23 @@ class PersonalDataFieldsMixin(forms.Form):
         self.fields["phone_number"].help_text = (
             _("Con prefijo internacional si no es español (p. ej. +351…).")
         )
-        self.fields["province"].help_text = _("Provincia, estado o región.")
+        self.fields["city"].help_text = _(
+            "Si tu código postal aparece en la lista, elige tu localidad (datos de %(source)s)."
+        ) % {"source": postal.SOURCE_NOTE}
+        # Aviso inmediato de edad (JS); el servidor lo vuelve a comprobar al enviar.
+        self.fields["date_of_birth"].widget.attrs.update(
+            {
+                "data-min-age": settings.ACCOUNTS_MIN_CUSTOMER_AGE,
+                "data-min-age-message": validators.UNDER_MIN_AGE_MESSAGE,
+            }
+        )
+        self.fields["city"].widget.attrs.update(
+            {
+                "data-locality-for": self.add_prefix("postal_code"),
+                "data-localities-url": reverse("accounts:localities"),
+                "data-choose-text": _("Elige tu localidad"),
+            }
+        )
 
     def grouped_fields(self):
         """Secciones visuales del formulario para la plantilla: [(título, [campos])]."""
@@ -74,11 +94,20 @@ class PersonalDataFieldsMixin(forms.Form):
         cleaned = super().clean()
         postal_code, country = cleaned.get("postal_code"), cleaned.get("country")
         if postal_code and country:
+            postal_code = validators.normalize_postal_code(postal_code)
             try:
-                validators.validate_postal_code(validators.normalize_postal_code(postal_code), country)
+                validators.validate_postal_code(postal_code, country)
+                cleaned["city"] = postal.canonical_locality(country, postal_code, cleaned.get("city"))
             except ValidationError as exc:
-                self.add_error("postal_code", exc)
+                self.add_error("city" if exc.code in ("locality_required", "invalid_locality") else "postal_code", exc)
         return cleaned
+
+    def locality_options(self):
+        """Localidades del CP enviado, para pintar el desplegable sin JS tras un error."""
+        source = self.data if self.is_bound else self.initial
+        country = source.get(self.add_prefix("country") if self.is_bound else "country") or DEFAULT_COUNTRY
+        postal_code = source.get(self.add_prefix("postal_code") if self.is_bound else "postal_code")
+        return postal.localities_for(country, validators.normalize_postal_code(postal_code))
 
 
 class RegistrationForm(PersonalDataFieldsMixin):
@@ -104,11 +133,8 @@ class RegistrationForm(PersonalDataFieldsMixin):
     )
 
     sections = (
-        (_("Datos personales"), ("first_name", "last_name", "date_of_birth", "phone_number")),
-        (
-            _("Dirección postal"),
-            ("address_line_1", "address_line_2", "postal_code", "city", "province", "country"),
-        ),
+        (_("Datos personales"), ("first_name", "last_name", "date_of_birth", "sex", "phone_number")),
+        (_("Dónde vives"), ("country", "postal_code", "city")),
         (_("Acceso a la cuenta"), ("email", "password1", "password2")),
         (_("Preferencias de comunicación"), ("promo_email_opt_in", "promo_sms_opt_in")),
     )
@@ -120,6 +146,11 @@ class RegistrationForm(PersonalDataFieldsMixin):
             self.add_error("password2", _("Las contraseñas no coinciden."))
         return cleaned
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # El registro solo pide CP y localidad; la calle se puede añadir después en el perfil.
+        del self.fields["address_line_1"], self.fields["address_line_2"]
+
     def service_kwargs(self):
         data = self.cleaned_data
         kwargs = {name: data[name] for name in self.fields if name not in ("password1", "password2")}
@@ -129,11 +160,8 @@ class RegistrationForm(PersonalDataFieldsMixin):
 
 class ProfileForm(PersonalDataFieldsMixin):
     sections = (
-        (_("Datos personales"), ("first_name", "last_name", "date_of_birth", "phone_number")),
-        (
-            _("Dirección postal"),
-            ("address_line_1", "address_line_2", "postal_code", "city", "province", "country"),
-        ),
+        (_("Datos personales"), ("first_name", "last_name", "date_of_birth", "sex", "phone_number")),
+        (_("Dónde vives"), ("country", "postal_code", "city", "address_line_1", "address_line_2")),
     )
 
 

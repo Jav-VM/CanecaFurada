@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 22:51+0200\n"
+"POT-Creation-Date: 2026-10-17 00:33+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -815,14 +815,14 @@ msgstr "Fecha de nacimiento"
 msgid "Solo la usaremos para tu edad y tus promociones de cumpleaños."
 msgstr "Solo la usaremos para tu edad y tus promociones de cumpleaños."
 
+msgid "Sexo"
+msgstr "Sexo"
+
 msgid "Teléfono móvil"
 msgstr "Teléfono móvil"
 
-msgid "Dirección"
-msgstr "Dirección"
-
-msgid "Dirección (línea 2)"
-msgstr "Dirección (línea 2)"
+msgid "País"
+msgstr "País"
 
 msgid "Código postal"
 msgstr "Código postal"
@@ -830,17 +830,21 @@ msgstr "Código postal"
 msgid "Localidad"
 msgstr "Localidad"
 
-msgid "Provincia"
-msgstr "Provincia"
+msgid "Dirección"
+msgstr "Dirección"
 
-msgid "País"
-msgstr "País"
+msgid "Dirección (línea 2)"
+msgstr "Dirección (línea 2)"
 
 msgid "Con prefijo internacional si no es español (p. ej. +351…)."
 msgstr "Con prefijo internacional si no es español (p. ej. +351…)."
 
-msgid "Provincia, estado o región."
-msgstr "Provincia, estado o región."
+#, python-format
+msgid "Si tu código postal aparece en la lista, elige tu localidad (datos de %(source)s)."
+msgstr "Si tu código postal aparece en la lista, elige tu localidad (datos de %(source)s)."
+
+msgid "Elige tu localidad"
+msgstr "Elige tu localidad"
 
 msgid "Email"
 msgstr "Email"
@@ -860,8 +864,8 @@ msgstr "Quiero recibir promociones y novedades por email."
 msgid "Quiero recibir promociones por SMS (requiere teléfono móvil)."
 msgstr "Quiero recibir promociones por SMS (requiere teléfono móvil)."
 
-msgid "Dirección postal"
-msgstr "Dirección postal"
+msgid "Dónde vives"
+msgstr "Dónde vives"
 
 msgid "Acceso a la cuenta"
 msgstr "Acceso a la cuenta"
@@ -932,6 +936,15 @@ msgstr "usuario"
 msgid "usuarios"
 msgstr "usuarios"
 
+msgid "Hombre"
+msgstr "Hombre"
+
+msgid "Mujer"
+msgstr "Mujer"
+
+msgid "Prefiero no decirlo"
+msgstr "Prefiero no decirlo"
+
 msgid "dirección"
 msgstr "dirección"
 
@@ -950,6 +963,9 @@ msgstr "localidad"
 msgid "provincia"
 msgstr "provincia"
 
+msgid "Provincia, estado o región."
+msgstr "Provincia, estado o región."
+
 msgid "país"
 msgstr "país"
 
@@ -958,6 +974,9 @@ msgstr "Código ISO 3166-1."
 
 msgid "fecha de nacimiento"
 msgstr "fecha de nacimiento"
+
+msgid "sexo"
+msgstr "sexo"
 
 msgid "última modificación de la fecha de nacimiento"
 msgstr "última modificación de la fecha de nacimiento"
@@ -1062,8 +1081,17 @@ msgstr "cambio de preferencia de comunicación"
 msgid "cambios de preferencias de comunicación"
 msgstr "cambios de preferencias de comunicación"
 
+msgid "Elige tu localidad."
+msgstr "Elige tu localidad."
+
+msgid "Elige una localidad de la lista para este código postal."
+msgstr "Elige una localidad de la lista para este código postal."
+
 msgid "Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. No se usa geolocalización por IP ni se deducen domicilios."
 msgstr "Datos procedentes de las direcciones postales declaradas por los propios clientes en su perfil. No se usa geolocalización por IP ni se deducen domicilios."
+
+msgid "Provincia"
+msgstr "Provincia"
 
 msgid "Solo el propietario puede consultar los datos de los clientes."
 msgstr "Solo el propietario puede consultar los datos de los clientes."
@@ -1147,6 +1175,9 @@ msgstr "Para recibir SMS promocionales indica antes un teléfono móvil."
 msgid "Canal no válido."
 msgstr "Canal no válido."
 
+msgid "Para registrarte tienes que ser mayor de edad."
+msgstr "Para registrarte tienes que ser mayor de edad."
+
 msgid "5 dígitos, por ejemplo 15001"
 msgstr "5 dígitos, por ejemplo 15001"
 
@@ -1178,9 +1209,8 @@ msgstr "La fecha de nacimiento no puede ser futura."
 msgid "Revisa la fecha de nacimiento."
 msgstr "Revisa la fecha de nacimiento."
 
-#, python-format
-msgid "Debes tener al menos %(min_age)s años para registrarte."
-msgstr "Debes tener al menos %(min_age)s años para registrarte."
+msgid "Demasiadas consultas. Inténtalo más tarde."
+msgstr "Demasiadas consultas. Inténtalo más tarde."
 
 msgid "Demasiados intentos desde tu conexión. Inténtalo más tarde."
 msgstr "Demasiados intentos desde tu conexión. Inténtalo más tarde."
@@ -3631,14 +3661,17 @@ msgstr "Volver a clientes"
 msgid "Esta consulta queda registrada en la auditoría."
 msgstr "Esta consulta queda registrada en la auditoría."
 
+msgid "Dirección postal"
+msgstr "Dirección postal"
+
 msgid "Sin dirección en el perfil"
 msgstr "Sin dirección en el perfil"
 
-msgid "Teléfono"
-msgstr "Teléfono"
-
 msgid "No indicado"
 msgstr "No indicado"
+
+msgid "Teléfono"
+msgstr "Teléfono"
 
 msgid "No indicada"
 msgstr "No indicada"

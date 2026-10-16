@@ -128,10 +128,10 @@
   .data-table tr:last-child td { @apply border-b-0; }
   .num { @apply text-right tabular-nums; }
   /* Tabla que cabe sin scroll horizontal: compacta desde xl y, por debajo, una tarjeta por
-     fila con la etiqueta de cada celda tomada de data-label. Uso: lista de eventos. */
+     fila con la etiqueta de cada celda tomada de data-label. Uso: eventos, carta y cervezas. */
   .data-table-fit th { @apply whitespace-normal px-3; }
   .data-table-fit td { @apply px-3; }
-  .data-table-fit .cell-actions { @apply flex flex-wrap gap-2 xl:flex-col xl:items-stretch; }
+  .data-table-fit .cell-actions { @apply flex flex-wrap items-center gap-2 xl:flex-col xl:items-stretch; }
   @media (width < 80rem) {
     .data-table-fit thead { @apply sr-only; }
     .data-table-fit, .data-table-fit tbody, .data-table-fit tr, .data-table-fit td { display: block; }
@@ -160,7 +160,7 @@
   .form-section { @apply rounded-2xl border border-line bg-coal space-y-5 p-5 sm:p-8; }
   .form-legend { @apply flex items-center gap-3 text-lg font-bold uppercase tracking-wide; }
   .field label { @apply mb-1.5 block text-sm font-semibold text-paper; }
-  .field input:not([type="checkbox"]), .field select {
+  .field input:not([type="checkbox"]):not([type="radio"]), .field select {
     @apply block min-h-11 w-full rounded-lg border border-line bg-ink px-3.5 py-2.5 text-base text-paper
       placeholder:text-mist/70 transition hover:border-mist focus:border-gold;
   }
@@ -168,6 +168,11 @@
   .field.checkbox { @apply flex items-start gap-3; }
   .field.checkbox input { @apply mt-1 size-5 shrink-0 accent-gold; }
   .field.checkbox label { @apply mb-0 font-normal text-paper; }
+  /* Grupo de opciones (radio): fieldset con legend en lugar de label */
+  .field-choices legend { @apply mb-1.5 text-sm font-semibold text-paper; }
+  .field-choices .choices { @apply flex flex-wrap gap-x-6 gap-y-2; }
+  .field-choices .choices label { @apply mb-0 flex min-h-11 items-center gap-2.5 font-normal; }
+  .field-choices .choices input { @apply size-5 shrink-0 accent-gold; }
   .field .help { @apply mt-1.5 text-sm text-mist; }
   .errorlist { @apply mt-1.5 space-y-1 text-sm font-semibold text-danger; }
   .required-mark { @apply text-gold; }

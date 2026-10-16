@@ -9,6 +9,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("registro/", views.register, name="register"),
     path("registro/enviado/", views.register_done, name="register_done"),
+    path("localidades/", views.localities, name="localities"),
     path("verificar-email/reenviar/", views.resend_verification, name="resend_verification"),
     path("verificar-email/reenviar-mio/", views.resend_verification_self, name="resend_verification_self"),
     path("verificar-email/<str:token>/", views.verify_email, name="verify_email"),
