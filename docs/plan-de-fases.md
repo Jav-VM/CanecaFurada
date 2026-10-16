@@ -17,6 +17,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 10 | Eventos, reservas, contenido y notificaciones | **Completa** ([detalle](fase-10-eventos-reservas-notificaciones.md)) |
 | 11 | API, auditoría, seguridad y preparación final para la app móvil | **Completa** ([detalle](fase-11-api-auditoria.md)) |
 | 12 | Despliegue y endurecimiento | **Completa en local** ([detalle](fase-12-despliegue.md)); CI en verde; pendiente el VPS |
+| 13 | Datos de demostración | **Completa** ([detalle](fase-13-datos-demo.md)) |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -133,6 +134,27 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
   - Corregido, con aprobación del usuario, el interbloqueo previo R-1: orden de bloqueo único y nueva comprobación del actor con los bloqueos tomados.
   - **849 tests OK** en PostgreSQL (local y en contenedor) y en SQLite.
 - **Pendiente:** actualizar las cifras de la documentación de la defensa. Ver [refactorizacion-final.md](refactorizacion-final.md).
+
+## Fase 13 — Datos de demostración
+- **Numeración:** fase añadida por el usuario el 2026-10-16.
+- **Incluye:**
+  - comando `seed_demo_data` en la app solo de desarrollo `apps.demo`, que crea datos ficticios coherentes de todas las áreas por los servicios reales, con un reloj simulado;
+  - `--reset` y `--clean`, esta última solo sobre datos identificables como demo;
+  - tests de guardas, coherencia, idempotencia, limpieza y escenarios negativos.
+- **Decisiones del usuario:**
+  - reloj simulado;
+  - base de datos sin datos ajenos;
+  - solo `config.settings.dev` (con `DEBUG=True`) y `config.settings.test`;
+  - `BusinessInfo` sin rellenar.
+- **Criterios:**
+  - no se ejecuta en producción;
+  - saldos iguales al ledger;
+  - sin datos personales ni secretos en la salida;
+  - tests en SQLite y PostgreSQL.
+- **Resultado (2026-10-16):**
+  - 18 tests nuevos;
+  - **867 tests OK** en PostgreSQL 17 y en SQLite.
+- Ver [fase-13-datos-demo.md](fase-13-datos-demo.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

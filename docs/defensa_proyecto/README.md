@@ -15,6 +15,22 @@ Documentación técnica y funcional del proyecto final, elaborada a partir del *
 | `check --deploy` (`config.settings.prod`, variables ficticias) | Solo `security.W021` (HSTS preload desactivado a propósito) |
 | CI de GitHub Actions (suite en PostgreSQL, `check --deploy`, OpenAPI, build, pila Compose, prueba de humo y copia/restauración) | **En verde** con la versión congelada ([ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860), commit `decff8f`) |
 
+**Ampliación posterior a la versión congelada: Fase 13, datos de demostración (16-10-2026).** Comando `seed_demo_data`, solo en desarrollo y tests. Carga datos ficticios de todas las áreas a través de los servicios reales, con un reloj simulado. Se documenta en:
+- la memoria: §5.1, §11.2, §11.6, §12.6, §14.3, D19 y §16;
+- el guion: §5;
+- las preguntas 81-85;
+- el mapa de código: §2 y §6;
+- las limitaciones: §3.
+
+Guía de órdenes: [`pruebas_dev/pruebas.md`](../../pruebas_dev/pruebas.md).
+
+| Comprobación (Fase 13, 16-10-2026) | Resultado |
+|---|---|
+| Suite completa con PostgreSQL 17 (`--parallel 1`) | **867 tests OK, 0 omitidos** (849 + 18 de la Fase 13) |
+| Suite completa con SQLite en memoria | 867 OK, 18 omitidos (los mismos de concurrencia; los 18 nuevos sí se ejecutan) |
+| `check`, `makemigrations --check`, OpenAPI | Sin cambios |
+| `seed_demo_data` con `config.settings.prod` | `Unknown command` (la app no está instalada en producción) |
+
 Detalle: [`refactorizacion-final.md` §6](../refactorizacion-final.md) y [`fase-12-despliegue.md` §10](../fase-12-despliegue.md). Los resultados de la primera versión (802 tests sobre la Fase 11) quedan como registro histórico en [`_trabajo/resultados_pruebas.md`](_trabajo/resultados_pruebas.md).
 
 ## Archivos
@@ -23,7 +39,7 @@ Detalle: [`refactorizacion-final.md` §6](../refactorizacion-final.md) y [`fase-
 |---|---|
 | [01_memoria_tecnica_funcional.md](01_memoria_tecnica_funcional.md) | **Documento principal**: capítulos 1-16, 19 y 20 (presentación, requisitos, arquitectura, tecnologías, repositorio, modelo de datos, funcionalidades, código comentado, flujos, seguridad, pruebas, instalación, despliegue, fases, decisiones, limitaciones, glosario y conclusiones) |
 | [02_guion_defensa_oral.md](02_guion_defensa_oral.md) | Capítulo 17: resúmenes de 30 s y 2 min, guiones de 10 y 15 min, orden de demostración y mensajes clave |
-| [03_preguntas_y_respuestas_tribunal.md](03_preguntas_y_respuestas_tribunal.md) | Capítulo 18: 80 preguntas con respuesta razonada, por tema y dificultad (las 76-80, sobre PostgreSQL, despliegue y refactorización) |
+| [03_preguntas_y_respuestas_tribunal.md](03_preguntas_y_respuestas_tribunal.md) | Capítulo 18: 85 preguntas con respuesta razonada, por tema y dificultad (las 76-80, sobre PostgreSQL, despliegue y refactorización; las 81-85, sobre los datos de demostración) |
 | [04_mapa_codigo_y_funcionalidades.md](04_mapa_codigo_y_funcionalidades.md) | Índice funcionalidad → URL → vista → servicio → modelo → plantilla → test, comandos y funciones clave |
 | [05_limitaciones_y_pendientes.md](05_limitaciones_y_pendientes.md) | Lo no verificado, las discrepancias, lo pendiente antes de producción y las mejoras con prioridad, coste y beneficio |
 | [diagramas/](diagramas/) | 14 diagramas Mermaid (`.mmd`): arquitectura, módulos, petición, entidad-relación, autenticación, flujos, estados, roles y despliegue (Fase 12) |
@@ -38,7 +54,8 @@ Detalle: [`refactorizacion-final.md` §6](../refactorizacion-final.md) y [`fase-
 5. **Banco de preguntas** (`03`): primero las 🔴, que son las que más cuesta improvisar.
 6. **Limitaciones** (`05`) y **memoria, caps. 13-16** (despliegue, fases, decisiones y limitaciones): para responder con honestidad a lo que falta.
 7. **Refactorización final** ([`../refactorizacion-final.md`](../refactorizacion-final.md)): qué se mejoró, cómo se midió y el interbloqueo R-1.
-8. **Mapa de código** (`04`) para localizar rápidamente cualquier archivo durante las preguntas.
+8. **Datos de demostración** ([`../fase-13-datos-demo.md`](../fase-13-datos-demo.md) y [`../../pruebas_dev/pruebas.md`](../../pruebas_dev/pruebas.md)): sirven para preparar la demostración práctica en una base aparte.
+9. **Mapa de código** (`04`) para localizar rápidamente cualquier archivo durante las preguntas.
 
 ## Etiquetas de estado
 

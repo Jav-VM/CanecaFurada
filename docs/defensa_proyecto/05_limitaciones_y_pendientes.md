@@ -1,6 +1,6 @@
 # Caneca Furada — Limitaciones, discrepancias, riesgos y mejoras
 
-Estado de la versión congelada para la defensa (commit `d0bac7c`, 15-10-2026): incluye la [migración a PostgreSQL](../migracion-postgresql.md), la [auditoría previa a la Fase 12](../auditoria-pre-fase-12.md), la [Fase 12](../fase-12-despliegue.md) y la [refactorización final](../refactorizacion-final.md). Las decisiones de alcance deliberadas **no** se presentan como defectos.
+Estado de la versión congelada para la defensa (commit `d0bac7c`, 15-10-2026): incluye la [migración a PostgreSQL](../migracion-postgresql.md), la [auditoría previa a la Fase 12](../auditoria-pre-fase-12.md), la [Fase 12](../fase-12-despliegue.md) y la [refactorización final](../refactorizacion-final.md), más la [Fase 13](../fase-13-datos-demo.md) posterior (datos de demostración). Las decisiones de alcance deliberadas **no** se presentan como defectos.
 
 Escala: **prioridad** Alta / Media / Baja · **coste aproximado** S (< 1 día) / M (1-3 días) / L (> 3 días) · **beneficio** Alto / Medio / Bajo.
 
@@ -40,6 +40,13 @@ Escala: **prioridad** Alta / Media / Baja · **coste aproximado** S (< 1 día) /
 - Un precio por producto; la carta de grifos es una imagen.
 - El dashboard no exporta informes.
 - Un solo servidor, sin alta disponibilidad (Fase 12, D17).
+- **Datos de demostración (Fase 13):**
+  - los eventos y reservas "futuros" lo son respecto a la carga y envejecen (se refrescan con `--reset`);
+  - no se generan compras anuladas, TPV, sesiones de la API ni notificaciones fallidas;
+  - las imágenes de la demo comparten `media/` con la base original (`--clean` las retira);
+  - con caché Redis y SQLite, varios `--reset` en menos de una hora pueden alcanzar el límite de reservas por hora (la carga se deshace sola).
+
+  Ver [`../fase-13-datos-demo.md`](../fase-13-datos-demo.md) §10.
 
 ## 4. Funcionalidades incompletas
 

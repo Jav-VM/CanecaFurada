@@ -1,6 +1,6 @@
 # Caneca Furada — Banco de preguntas del tribunal (cap. 18)
 
-Respuestas basadas en el código de la versión congelada (commit `d0bac7c`, 15-10-2026), que incluye la migración a PostgreSQL, la auditoría previa a la Fase 12, la Fase 12 y la refactorización final. Dificultad: 🟢 básica · 🟡 media · 🔴 difícil. Cuando un control **no existe**, se dice y se propone una solución.
+Respuestas basadas en el código de la versión congelada (commit `d0bac7c`, 15-10-2026), que incluye la migración a PostgreSQL, la auditoría previa a la Fase 12, la Fase 12 y la refactorización final, más la Fase 13 de datos de demostración (sección R). Dificultad: 🟢 básica · 🟡 media · 🔴 difícil. Cuando un control **no existe**, se dice y se propone una solución.
 
 ---
 
@@ -277,3 +277,25 @@ Primero ejecuté la suite (833 OK) y escribí tests de caracterización para las
 
 **80. 🔴 ¿Encontraste algún error durante la refactorización?**
 Sí, uno que ya existía: si dos propietarios se desactivaban mutuamente a la vez, PostgreSQL detectaba un interbloqueo y una operación terminaba en error 500 (la regla de no quedarse sin propietario sí se cumplía). Lo reproduje con un test de hilos, lo documenté como R-1 y, con aprobación, lo corregí: ahora siempre se bloquea a los propietarios antes que al usuario afectado y, con los bloqueos tomados, se vuelve a comprobar que quien actúa sigue siendo propietario. Ese segundo detalle cerraba otro caso: un propietario recién desactivado podía completar una operación que había quedado esperando.
+
+## R. Datos de demostración (Fase 13, añadidas el 16-10-2026)
+
+**81. 🟡 ¿Cómo has preparado los datos para la demostración?**
+Con un comando propio, `seed_demo_data`, que crea 27 cuentas ficticias y datos de todas las áreas: un año de compras y puntos, canjes en sus cuatro estados, eventos y reservas en sus cinco estados, y campañas. No son fixtures JSON. Todo pasa por los mismos servicios que usa la web: el registro, la verificación con el enlace real, el QR, el registro de compras, el ledger, los canjes y las reservas. Así los datos cumplen las mismas reglas que en producción y cada saldo cuadra con sus movimientos.
+
+**82. 🔴 Si los servicios usan la hora actual, ¿cómo creas compras de hace un año o reservas ya completadas?**
+Con un reloj simulado. Durante la carga se parchea `django.utils.timezone.now` y cada operación se ejecuta en su fecha: la reserva se pide cuando el evento aún es futuro, se confirma antes y se completa después; el canje caduca a los 30 días al pasar el proceso de caducidad. No se edita ninguna fila del ledger después. Las únicas fechas que se corrigen con un `update()` son `date_joined` y el historial de consentimientos, porque su valor por defecto se resolvió al importar el modelo.
+
+**83. 🔴 ¿Qué impide que alguien cargue datos de prueba en producción?**
+Tres barreras:
+1. La app `apps.demo` solo está instalada en la configuración de desarrollo y de tests: en producción el comando no existe (`Unknown command`).
+2. Una guarda comprueba el módulo de configuración realmente cargado y exige `DEBUG=True` en desarrollo.
+3. La carga se niega si la base tiene datos que no son de demo.
+
+Además, ningún script de despliegue lo llama, y un test lo comprueba. Las contraseñas de demo son públicas precisamente porque esas cuentas nunca pueden existir en producción.
+
+**84. 🟡 ¿Cómo borras los datos de prueba sin borrar los reales?**
+Cada dato de demo está marcado: los emails son de `@demo.example.com`, los productos, eventos y recompensas tienen un `public_id` determinista y las categorías un slug `demo-`. `--clean` borra solo eso, en una transacción y en el orden que exigen las claves `PROTECT`. Si algún dato real depende de uno de demo, por ejemplo una compra registrada a un cliente real por un empleado de demo, no borra nada y lo explica. Hay un test para cada caso.
+
+**85. 🟢 ¿Dónde están los casos de error, si los datos de demo son todos válidos?**
+En tests. Los datos de demo nunca incumplen una restricción. Los casos inválidos se prueban intentando la operación sobre los datos cargados y comprobando que se rechaza: validar dos veces un código, canjear sin saldo, superar el aforo, cancelar el canje de otro cliente o un empleado que intenta ajustar puntos. La concurrencia sigue en sus tests de hilos sobre PostgreSQL.

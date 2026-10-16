@@ -24,6 +24,7 @@ Monolito modular **Django 5.2 + PostgreSQL**, con Django Templates en la web y u
 | Auditoría previa a la Fase 12 (endurecimiento y despliegue) | **Completa**: 817 tests OK en PostgreSQL 17 y en SQLite; los pendientes de despliegue van a la Fase 12 |
 | 12 — Despliegue y endurecimiento | **Completa en local**: Docker Compose (Nginx, Gunicorn, PostgreSQL 17, Redis, scheduler), copias con restic, CI. 833 tests OK. CI en verde en GitHub. **Pendiente**: VPS, DNS, certificado y SMTP real |
 | Refactorización final controlada | **Completa**: helper de periodo común, estadísticas con menos consultas (resumen del dashboard 17 → 12; API de estadísticas 12 → 7) y regla del último propietario sin duplicar. Corregido además el interbloqueo previo R-1 de la regla del último propietario. **849 tests OK** en PostgreSQL 17 (local y en contenedor) y en SQLite. CI en verde en GitHub ([ejecución](https://github.com/Jav-VM/CanecaFurada/actions/runs/38776430860)) |
+| 13 — Datos de demostración | **Completa**: comando `seed_demo_data` (solo desarrollo y tests) con 27 cuentas ficticias y datos de todas las áreas creados por los servicios reales; `--reset` y `--clean`. 867 tests OK en PostgreSQL 17 y en SQLite |
 
 Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 
@@ -68,6 +69,27 @@ Rutas disponibles:
 - Cuentas en `/cuenta/`: registro (`/cuenta/registro/`), entrar, salir, perfil, preferencias, cambio de email y de contraseña, recuperación de contraseña y verificación de email.
 - Admin técnico en `/<DJANGO_ADMIN_URL>` (por defecto `/admin/`), solo para propietarios. Desde ahí se gestiona la carta (sección **Carta**).
 - API REST v1 para la app móvil en `/api/v1/` (JSON y JWT); documentación interactiva en `/api/v1/docs/` (en desarrollo sin sesión; en producción solo el propietario).
+
+## Datos de demostración
+
+Para probar la aplicación con datos ficticios de todas las áreas (clientes, carta, compras, puntos, canjes, eventos, reservas, campañas), en una base de datos **solo para la demo**:
+
+```powershell
+$env:DATABASE_URL = "sqlite:///pruebas_dev/demo.sqlite3"   # o una BD PostgreSQL aparte
+python manage.py migrate
+python manage.py seed_demo_data                # --reset recarga, --clean borra solo lo de demo
+python manage.py runserver 8001
+```
+
+**Para volver a la versión original:**
+1. Detén el servidor (`Ctrl+C`).
+2. Opcional: ejecuta `python manage.py seed_demo_data --clean --noinput`, que borra la demo y sus imágenes de `media/`.
+3. Quita la variable con `Remove-Item Env:DATABASE_URL` (o cierra la terminal).
+4. Arranca con `python manage.py runserver`. Vuelve a usarse la base del `.env`.
+
+Todas las órdenes para probar sin afectar al proyecto (bases de pruebas, tareas programadas, Mailpit, tests, Docker y limpieza) están en [pruebas_dev/pruebas.md](pruebas_dev/pruebas.md).
+
+Solo funciona con `config.settings.dev` (`DEBUG=True`) y en los tests: en producción el comando no existe. Se niega a cargar si la base de datos tiene datos propios. Cuentas por rol (contraseña **solo de desarrollo**), escenarios y limitaciones: [docs/fase-13-datos-demo.md](docs/fase-13-datos-demo.md).
 
 ## Gestionar la carta
 
@@ -175,11 +197,13 @@ apps/events/       eventos y reservas: modelos, transiciones de estado, aforo, v
 apps/notifications/ registro y envío de notificaciones (email, SMS opcional), campañas, baja y process_notifications
 apps/api/          API REST v1: autenticación JWT, permisos, serializadores, vistas y OpenAPI (solo presentación)
 apps/web/          páginas públicas, contenido del local (editable desde el dashboard) y context processor
+apps/demo/         datos de demostración (solo desarrollo y tests): comando seed_demo_data, sin modelos
 templates/         plantilla base, componentes, páginas públicas, de cuenta, del panel del personal, de error y emails
 assets/css/        fuente de Tailwind (tokens y componentes)
 static/            CSS compilado, JS de mejora progresiva (menú, lector QR), jsQR incluido (vendor/) y recursos gráficos oficiales (img/brand/)
 scripts/           tailwind.py (descarga verificada y compilación del CSS)
 tests/             pruebas por app
+pruebas_dev/       guía de pruebas de desarrollo (pruebas.md); sus *.sqlite3 no se versionan
 docs/              plan de fases, documentación de cada fase, guías (app Flutter, despliegue) y esquema OpenAPI (api/)
 requirements/      dependencias por entorno
 deploy/            Gunicorn, Nginx, crontab, rol de PostgreSQL, variables ficticias de la pila local y scripts (deploy, backup, restore)
@@ -208,6 +232,8 @@ Dockerfile, compose.yaml, compose.dev.yaml   imagen y pilas de producción y loc
 - [Auditoría previa a la Fase 12](docs/auditoria-pre-fase-12.md): hallazgos priorizados (P0-P3), correcciones, riesgo aceptado del envío de correo, pruebas y lista de comprobación antes del despliegue.
 - [Fase 12 — Despliegue y endurecimiento](docs/fase-12-despliegue.md): arquitectura Docker Compose, decisiones, procedimientos (primer despliegue, actualización, rollback, restauración, rotación de secretos), copias, CI, endurecimiento del VPS, pruebas y pendientes.
 - [Refactorización final](docs/refactorizacion-final.md): línea base, diagnóstico, cambios por grupos, mediciones de consultas, pruebas antes y después, corrección del interbloqueo R-1 y lo que se decidió no refactorizar.
+- [Fase 13 — Datos de demostración](docs/fase-13-datos-demo.md): comando `seed_demo_data`, protecciones frente a producción, cuentas por rol, escenarios, limpieza, tests y limitaciones.
+- [Pruebas de desarrollo](pruebas_dev/pruebas.md): órdenes para probar con bases de datos aparte, tareas programadas, Mailpit, tests, Docker local, volver a la versión original y limpiar.
 - [Despliegue](docs/despliegue.md): guía operativa con variables, órdenes habituales, HTTPS, estáticos y multimedia, copias, correo, tareas programadas, logs y lista de comprobación.
 - [Esquema OpenAPI](docs/api/openapi.yaml) de la API v1.
 - [Documentación para la defensa del proyecto](docs/defensa_proyecto/README.md): memoria técnica y funcional, guion de la defensa oral, banco de preguntas del tribunal, mapa del código, limitaciones y diagramas Mermaid.

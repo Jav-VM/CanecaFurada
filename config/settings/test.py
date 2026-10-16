@@ -14,3 +14,6 @@ SMS_BACKEND = ""
 
 # Los tests provocan 403/404 a propósito; no se registran para mantener la salida limpia.
 LOGGING["loggers"] = {"django.request": {"level": "ERROR"}}  # noqa: F405
+
+# Datos de demostración (Fase 13): sus tests ejecutan `seed_demo_data`.
+INSTALLED_APPS = [*INSTALLED_APPS, "apps.demo"]  # noqa: F405

@@ -15,3 +15,7 @@ EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.
 
 # La documentación de la API se puede consultar sin sesión en desarrollo.
 API_DOCS_PUBLIC = env.bool("API_DOCS_PUBLIC", default=True)
+
+# Datos de demostración (Fase 13): comando `seed_demo_data`. Solo existe en
+# desarrollo y tests; config.settings.prod no instala esta app.
+INSTALLED_APPS = [*INSTALLED_APPS, "apps.demo"]  # noqa: F405

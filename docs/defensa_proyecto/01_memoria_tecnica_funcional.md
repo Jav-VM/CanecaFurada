@@ -412,12 +412,14 @@ webcaneca/
 │   ├── staff/                   # panel del personal (solo presentación)
 │   ├── dashboard/               # dashboard del propietario (solo presentación)
 │   ├── api/                     # API REST v1 (solo presentación + JWT)
-│   └── web/                     # páginas públicas, BusinessInfo, context processor
+│   ├── web/                     # páginas públicas, BusinessInfo, context processor
+│   └── demo/                    # datos de demostración (Fase 13): solo en dev y test, sin modelos
 ├── templates/                   # base.html, components/, una carpeta por app, emails/, páginas de error
 ├── assets/css/input.css         # fuente de Tailwind (tokens de la paleta)
 ├── static/                      # css/app.css (compilado), js/, vendor/jsqr/, img/brand/
 ├── scripts/tailwind.py          # descarga verificada y compilación del CSS
-├── tests/                       # una carpeta por app y base de concurrencia (849 tests)
+├── tests/                       # una carpeta por app y base de concurrencia (849 tests; 867 con la Fase 13)
+├── pruebas_dev/pruebas.md       # órdenes de prueba en desarrollo sin afectar al proyecto (Fase 13)
 ├── deploy/                      # Gunicorn, Nginx, crontab, rol de PostgreSQL y scripts de despliegue, copia y restauración
 ├── Dockerfile, compose*.yaml    # imagen multietapa y pilas de producción y local (Fase 12)
 ├── .github/workflows/ci.yml     # integración continua (GitHub Actions)
@@ -2078,6 +2080,9 @@ OK
 | rewards | 84 | Servicios (54), vistas (26) y concurrencia (4) |
 | staff | 31 | Panel del personal |
 | web | 40 | Páginas públicas, carta y formularios |
+| demo (Fase 13, 16-10-2026) | 18 | Guardas de entorno, carga, coherencia del ledger, idempotencia, limpieza y escenarios negativos sobre los datos cargados |
+
+**Tras la Fase 13 (16-10-2026):** 867 tests OK en PostgreSQL 17, sin omitidos. En SQLite, 867 OK con los mismos 18 omitidos.
 
 ### 11.3 Tipos de prueba y ejemplos
 
@@ -2112,6 +2117,34 @@ OK
 3. Test de que `process_notifications` lanzado dos veces en paralelo no duplica envíos (supercronic ya evita solaparlo).
 4. Pruebas de carga del registro de compras en hora punta.
 5. `pip-audit` en el CI.
+
+### 11.6 Datos de demostración (Fase 13)
+
+**Objetivo:** probar a mano cada rol, preparar la demostración y desarrollar con datos realistas, sin tocar la base de datos habitual ni producción. Detalle: [`../fase-13-datos-demo.md`](../fase-13-datos-demo.md).
+
+**Qué carga** `python manage.py seed_demo_data`:
+- 27 cuentas ficticias (`@demo.example.com`): 1 propietaria, 4 empleados y 22 clientes, de ellos 3 sin verificar y 2 cuentas inactivas;
+- una carta de 18 productos;
+- 61 compras y 107 movimientos de puntos, de las seis clases;
+- 9 canjes en sus cuatro estados;
+- 9 eventos y 25 reservas en sus cinco estados;
+- campañas y notificaciones.
+
+**Cómo se garantiza que es coherente:**
+- **Servicios reales:** todo se crea con los mismos servicios que la web (registro, verificación por enlace, QR, compras, ledger, canjes, reservas). No se escriben saldos ni estados a mano.
+- **Reloj simulado:** se parchea `timezone.now` solo durante la carga y cada operación se ejecuta en su fecha. Así se respetan las reglas que dependen de la hora: antelación de las reservas, caducidad de los canjes y regla de conversión vigente.
+- **Ledger:** se escribe en orden cronológico y cada saldo es la suma de sus movimientos.
+
+**Cómo se protege la producción:**
+1. La app `apps.demo` solo está instalada en `dev.py` y `test.py`.
+2. Una guarda comprueba el módulo de configuración realmente cargado (`dev` con `DEBUG=True`, o `test`).
+3. La carga se niega si la base tiene datos que no son de demo.
+4. No sale ningún email.
+5. La salida no muestra contraseñas, tokens ni códigos.
+
+`--clean` borra solo lo identificable como demo y aborta sin borrar nada si un dato ajeno depende de uno de demo.
+
+**Datos frente a tests negativos:** los datos de demo son siempre válidos. Los casos inválidos se prueban como tests que intentan la operación sobre los datos cargados (8 casos) y comprueban que se rechaza.
 
 ---
 
@@ -2163,6 +2196,25 @@ Por defecto los emails se imprimen en la consola de `runserver` (`config/setting
 - `UnicodeEncodeError` al imprimir emails en Windows → arrancar con `$env:PYTHONUTF8=1`.
 - La cámara del lector de QR no funciona → solo funciona en `localhost` o con HTTPS (requisito del navegador); alternativa: teclear el código.
 - Imágenes subidas que no se ven sin Nginx → `static()` solo sirve `media/` con `DEBUG = True` (`config/urls.py:28-31`); en producción las sirve Nginx desde el volumen `media`.
+
+### 12.6 Versión de pruebas y vuelta a la original (Fase 13)
+
+**Abrir una versión de pruebas** con datos ficticios, en una base aparte:
+
+```powershell
+$env:DATABASE_URL = "sqlite:///pruebas_dev/demo.sqlite3"   # ignorado por Git
+python manage.py migrate
+python manage.py seed_demo_data
+python manage.py runserver 8001
+```
+
+**Volver a la original:**
+1. Detén el servidor (`Ctrl+C`).
+2. Opcional: `python manage.py seed_demo_data --clean --noinput`, que borra la demo y sus imágenes de `media/`, compartida con la original.
+3. Quita la variable con `Remove-Item Env:DATABASE_URL` (o cierra la terminal).
+4. Arranca con `python manage.py runserver`. Hay que volver a iniciar sesión, porque la sesión del navegador pertenece a la otra base.
+
+Todas las órdenes de prueba (PostgreSQL aparte, tareas programadas, Mailpit, tests, Docker y limpieza) están en [`pruebas_dev/pruebas.md`](../../pruebas_dev/pruebas.md).
 
 **Docker:** la pila de producción se puede levantar en local con `compose.yaml` y `compose.dev.yaml` (certificado autofirmado, Mailpit y un servicio de tests). Órdenes en el README y en [`docs/despliegue.md`](../despliegue.md).
 
@@ -2269,6 +2321,8 @@ Reordenaciones documentadas (`docs/plan-de-fases.md`): registro ↔ sistema de d
 | **F12** `955c1be` (37 archivos) | Desplegar y mantener con garantías | `Dockerfile`, `compose.yaml`, `deploy/`, `.github/workflows/ci.yml`, `apps/core/middleware.py` (healthcheck) | Contenedores, Nginx, Redis, scheduler, copias con restic y CI | Auditoría | `tests/core/test_health.py`, concurrencia | Completa en local | VPS, DNS, certificado, SMTP real |
 | **Refactorización** `d0bac7c` (16 archivos) | Mantenibilidad sin cambiar el comportamiento | `apps/core/querysets.py`, selectores, `apps/accounts/services.py` y `admin.py` | Filtro de periodo común; estadísticas con menos consultas; orden de bloqueo único en la regla del último propietario (R-1) | F12 | `tests/dashboard/test_stats_selectors.py`, `tests/accounts/test_concurrency.py` | Completa | — |
 
+| **F13** (16-10-2026, posterior a la versión congelada) | Datos de demostración para probar, desarrollar y preparar la defensa | `apps/demo/` (`builder.py`, `data.py`, `clock.py`, `guard.py`, `selectors.py`, `cleanup.py`, comando `seed_demo_data`), `config/settings/dev.py` y `test.py`, `pruebas_dev/pruebas.md` | App solo de desarrollo, sin modelos ni migraciones; reloj simulado sobre los servicios reales | F0-F12 | `tests/demo` (18) | Completa | — |
+
 > Nota: la atribución de archivos a cada fase sale de `git show`, no de su nombre. Algunos archivos se modificaron en varias fases (p. ej. `apps/core/models.py` en todas, para añadir acciones de auditoría).
 
 ---
@@ -2291,6 +2345,7 @@ Para cada decisión se distingue la **justificación técnica** (razonable por e
 | D10 | Tareas con comandos + programador (supercronic en el servicio `scheduler`, sin Celery) | Simplicidad | Celery + Redis | + Sin infraestructura extra / − Granularidad de minutos | Ajuste de la F10 (decisión del usuario); F12 | «Para el volumen de un local basta; los comandos son idempotentes y supercronic no solapa ejecuciones» |
 | D17 | Docker Compose en un único VPS | Desplegar y recuperar con garantías a bajo coste | Instalación directa; PaaS; Kubernetes | + Reproducible, rollback por etiquetas, copias probadas / − Sin alta disponibilidad | Decisión del usuario (2026-10-14), `docs/fase-12-despliegue.md` | «Para un local, un servidor con copias cifradas y restauración probada es suficiente y barato» |
 | D18 | Refactorizar solo con tests de caracterización previos y mediciones | No romper nada al mejorar el código | Refactorizar sin red | + Comportamiento fijado antes de tocar / − Más tests que mantener | `docs/refactorizacion-final.md` | «Primero fijé el comportamiento con tests; después cambié el código y medí las consultas» |
+| D19 | Datos de demostración creados por los servicios reales, con un reloj simulado, en una app solo de desarrollo | Datos coherentes para probar y demostrar, sin riesgo para producción | Fixtures JSON; escribir los modelos directamente; `freezegun` | + Cumplen todas las reglas y el ledger cuadra; el comando no existe en producción; sin dependencias nuevas / − Las fechas "futuras" envejecen (`--reset`) | `docs/fase-13-datos-demo.md` §2 | «Una fixture JSON tendría que inventar saldos y estados; así los datos pasan por las mismas validaciones que en producción» |
 | D11 | Admin de Django para las fichas completas + dashboard para las acciones rápidas | Productividad | CRUD propio completo | + Menos código / − Interfaz menos guiada | Decisión de la F9 | «El admin es seguro y está probado; el dashboard cubre el día a día» |
 | D12 | JWT con refresh rotatorio + lista negra + `pwv` | App móvil sin cookies | Tokens de DRF; sesión | + Revocable, sin CSRF / − Más piezas | `docs/fase-11-api-auditoria.md` §5 | «Un access corto y la revocación inmediata al cambiar la contraseña» |
 | D13 | Sin CORS en la API | Solo una app nativa | `django-cors-headers` con lista blanca | + Ninguna web ajena lee las respuestas | `docs/fase-11-api-auditoria.md:155` | «Si mañana hay una web cliente en otro dominio, se añade con lista blanca» |
@@ -2308,6 +2363,10 @@ Resumen; la lista completa con prioridad, coste y beneficio está en [05_limitac
 - **Funcionalidades incompletas:** anulación de compras (`VOIDED` reservado), integración con TPV (`POS` reservado), exportación y supresión de datos personales (decisión tomada, P2-9), campo `birthday_window_days` sin uso, `CancelReservationForm` sin uso.
 - **Pendiente antes de producción:** las acciones manuales en el VPS (DNS, certificado, SMTP real, destino de copias), monitorización y alertas, y los controles pospuestos de la auditoría (CSP, EXIF).
 - **Mejoras a medio plazo:** saldo materializado, 2FA para el propietario, `pip-audit` en el CI, cobertura, tests E2E del QR, Swagger UI local y auditoría con inmutabilidad en la BD.
+- **Datos de demostración (Fase 13):**
+  - las fechas futuras envejecen;
+  - no se generan compras anuladas, TPV ni sesiones de la API;
+  - las imágenes de la demo comparten `media/` con la base original (`--clean` las retira).
 - **Ampliaciones futuras:** app Flutter (la API ya existe), integración con TPV, anulación de compras con compensación en el ledger y proveedor de SMS.
 
 ---

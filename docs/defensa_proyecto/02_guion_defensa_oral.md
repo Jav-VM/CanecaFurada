@@ -45,6 +45,29 @@ Igual que el de 10 minutos, más:
 4. En el admin: crear una categoría, un estilo y una cerveza y publicarla; crear una recompensa ACTIVA de 10 puntos.
 5. Usar **dos navegadores o una ventana privada** (cliente y empleado a la vez).
 
+**Preparación rápida alternativa (Fase 13):** en lugar de los pasos 1-4, carga los datos de demostración en una base aparte. Así la demostración tiene historial real: compras de un año, canjes en sus cuatro estados, reservas y estadísticas.
+
+```powershell
+$env:DATABASE_URL = "sqlite:///pruebas_dev/demo.sqlite3"
+python manage.py migrate
+python manage.py seed_demo_data --noinput
+python manage.py runserver
+```
+
+Cuentas (contraseña de desarrollo `Demo-Caneca-2026`):
+
+| Rol | Email |
+|---|---|
+| Propietaria | `propietaria@demo.example.com` |
+| Empleado | `brais.empregado@demo.example.com` |
+| Cliente | `lua.proba@demo.example.com` |
+
+Para el paso 6, el cliente `martin.exemplo@…` tiene puntos de sobra. Para mostrar un rechazo:
+- `tiago.exemplo@…` no tiene puntos suficientes;
+- en `/dashboard/reservas/`, confirmar la reserva pendiente de la «Cata guiada» superaría el aforo.
+
+Al terminar, `Remove-Item Env:DATABASE_URL` devuelve a la base original. Órdenes: [`pruebas_dev/pruebas.md`](../../pruebas_dev/pruebas.md).
+
 **Secuencia (≈ 3 minutos):**
 
 | Paso | Rol | Acción | Qué remarcar |
@@ -58,7 +81,7 @@ Igual que el de 10 minutos, más:
 | 7 | Empleado | `/panel/canjes/` → validar el código → **validarlo otra vez** | «Este código ya se utilizó el…» |
 | 8 | Empleado | Teclear `/dashboard/` | 403: autorización en el servidor |
 | 9 | Propietario | `/dashboard/` → Resumen → Clientes → ficha | Cifras reales; la ficha queda auditada |
-| 10 | (Opcional) | Terminal: `python manage.py test --settings=config.settings.test --parallel 1` con PostgreSQL | 849 tests, 0 omitidos (unos 42 s) |
+| 10 | (Opcional) | Terminal: `python manage.py test --settings=config.settings.test --parallel 1` con PostgreSQL | 867 tests, 0 omitidos desde la Fase 13 (unos 70 s; 849 en la versión congelada) |
 
 **Plan B** si falla la cámara o el entorno: teclear el código (el flujo es idéntico) o mostrar los tests y los diagramas de secuencia.
 

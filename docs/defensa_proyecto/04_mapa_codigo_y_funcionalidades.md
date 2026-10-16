@@ -85,6 +85,7 @@
 | `process_notifications [--limit N]` | `ntf/management/commands/process_notifications.py` | `campaigns.dispatch_queued` + `services.process_due` | Cada 5 min |
 | `flushexpiredtokens` | simplejwt | — | Diaria |
 | `clearsessions` | Django | — | Diaria (añadida en la Fase 12) |
+| `seed_demo_data [--reset o --clean] [--reference-date AAAA-MM-DD] [--noinput]` | `apps/demo/management/commands/seed_demo_data.py` | `apps.demo.builder.DemoBuilder`, `apps.demo.cleanup.clean` | **Nunca** programado; solo en desarrollo y tests (Fase 13) |
 
 ## 3. Clases y funciones clave por módulo
 
@@ -135,3 +136,17 @@
 | Scripts | `deploy/scripts/deploy.sh`, `backup.sh`, `restore.sh` | Despliegue con copia previa y rollback; copias con restic; restauración de prueba o completa |
 | CI | `.github/workflows/ci.yml` | Suite en PostgreSQL sin omitidos, `check --deploy`, OpenAPI, build, pila, prueba de humo y copia/restauración |
 | Healthcheck | `apps/core/middleware.py` | `/healthz` interno con `SELECT 1` |
+
+## 6. Datos de demostración (Fase 13)
+
+| Pieza | Archivo | Qué hace |
+|---|---|---|
+| Datos ficticios | `apps/demo/data.py` | Personas, carta, promociones, recompensas, canjes, eventos, reservas y campañas, de forma declarativa |
+| Constructor | `apps/demo/builder.py` | Traduce cada escenario en pasos fechados que llaman a los servicios y los ejecuta en orden |
+| Reloj simulado | `apps/demo/clock.py` | Patch de `timezone.now` solo durante la carga; nunca retrocede |
+| Guarda | `apps/demo/guard.py` | Solo `config.settings.test`, o `dev` con `DEBUG=True` |
+| Selectores | `apps/demo/selectors.py` | Qué es dato de demo, datos ajenos y recuentos |
+| Limpieza | `apps/demo/cleanup.py` | Borrado atómico de lo identificable como demo; aborta si hay dependencias ajenas |
+| Imágenes | `apps/demo/images.py` | Placeholders generados con Pillow |
+| Tests | `tests/demo/test_seed_demo_data.py` | 18 tests |
+| Guía | `pruebas_dev/pruebas.md` | Órdenes de prueba sin afectar al proyecto y vuelta a la versión original |
