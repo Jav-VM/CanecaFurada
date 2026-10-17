@@ -13,5 +13,31 @@
     <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar contenido" %}</button>
   </form>
   <p class="note mt-4">{% translate "El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas." %}</p>
+
+  {# Fase 20: orden y visibilidad de las secciones. Sin JS: cada flecha envía el formulario. #}
+  <section aria-labelledby="orden-secciones" class="mt-12" data-page-layouts>
+    <h2 id="orden-secciones" class="heading-md mb-2">{% translate "Orden de las secciones" %}</h2>
+    <p class="note mb-4">{% translate "Sube, baja u oculta las secciones de cada página. El aviso destacado y la portada del inicio, y la cabecera de La cervecería, van siempre arriba. Al pulsar una flecha también se guardan las casillas «Mostrar»." %}</p>
+    {% for page, title, rows in layouts %}
+      <form method="post" action="{% url 'dashboard:content_layout' %}" id="orden-{{ page }}" class="card mb-6" data-layout="{{ page }}">
+        {% csrf_token %}
+        <input type="hidden" name="pagina" value="{{ page }}">
+        <h3 class="mb-3 font-semibold uppercase tracking-wider">{{ title }}</h3>
+        <ol class="divide-y divide-line">
+          {% for key, label, visible in rows %}
+            <li class="flex flex-wrap items-center justify-between gap-3 py-2" data-section="{{ key }}">
+              <span class="font-semibold{% if not visible %} text-mist line-through{% endif %}">{{ forloop.counter }}. {{ label }}</span>
+              <span class="flex items-center gap-2">
+                <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="mostrar" value="{{ key }}"{% if visible %} checked{% endif %}> {% translate "Mostrar" %}</label>
+                <button type="submit" name="mover" value="{{ key }}:arriba" class="btn btn-ghost btn-sm"{% if forloop.first %} disabled{% endif %}><span aria-hidden="true">↑</span><span class="sr-only">{% blocktranslate trimmed %}Subir {{ label }}{% endblocktranslate %}</span></button>
+                <button type="submit" name="mover" value="{{ key }}:abajo" class="btn btn-ghost btn-sm"{% if forloop.last %} disabled{% endif %}><span aria-hidden="true">↓</span><span class="sr-only">{% blocktranslate trimmed %}Bajar {{ label }}{% endblocktranslate %}</span></button>
+              </span>
+            </li>
+          {% endfor %}
+        </ol>
+        <button type="submit" class="btn btn-primary btn-sm mt-4">{% translate "Guardar visibilidad" %}</button>
+      </form>
+    {% endfor %}
+  </section>
 </div>
 {% endblock %}

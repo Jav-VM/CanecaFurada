@@ -1,0 +1,11 @@
+{% load i18n %}{% load static %}
+<section aria-labelledby="como-titulo" class="border-t border-line bg-coal/40 py-20">
+  <div class="container-page">
+    {% include "components/section_heading.html" with id="como-titulo" eyebrow=_("La casa") title=_("Cómo trabajamos") %}
+    {% include "components/pending.html" with what=_("elaboración, estilos de la casa y cervezas invitadas") %}
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="{% url 'web:menu' %}" class="btn btn-primary">{% translate "Ver la carta" %}</a>
+      <a href="{% url 'web:contact' %}" class="btn btn-secondary">{% translate "Cómo llegar" %}</a>
+    </div>
+  </div>
+</section>

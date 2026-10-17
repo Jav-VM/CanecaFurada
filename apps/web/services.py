@@ -10,9 +10,11 @@ Contenido del local (Fase 9): lectura para la web y edición por el propietario.
 - `online_reservations_enabled()` / `set_online_reservations(...)` (Fase 17):
   interruptor de las reservas online. No forma parte de `EDITABLE_FIELDS`: solo
   se cambia desde Configuración.
+- `page_layout(page)` / `update_page_layout(...)` (Fase 20): orden y visibilidad
+  de las secciones de Inicio y La cervecería (reglas en `layout.py`).
 """
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils.translation import gettext as _
 
@@ -20,7 +22,7 @@ from apps.accounts.permissions import is_owner
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
-from . import content
+from . import content, layout
 from .models import BusinessInfo, parse_pairs
 
 CACHE_KEY = "web:business_info"
@@ -54,6 +56,8 @@ def _stored_values():
         "hero_text": info.hero_text or None,
         "announcement": info.announcement or None,
         "online_reservations_enabled": info.online_reservations_enabled,
+        "home_layout": layout.normalize(info.home_layout, layout.HOME_SECTIONS),
+        "about_layout": layout.normalize(info.about_layout, layout.ABOUT_SECTIONS),
     }
 
 
@@ -67,7 +71,20 @@ def business_info():
     data.update({key: value for key, value in stored.items() if value})
     # Booleano: `False` también cuenta (el filtro anterior lo descartaría).
     data["online_reservations_enabled"] = stored.get("online_reservations_enabled", True)
+    # Fase 20: claves visibles en orden, siempre de la lista blanca.
+    home = stored.get("home_layout") or layout.normalize([], layout.HOME_SECTIONS)
+    about = stored.get("about_layout") or layout.normalize([], layout.ABOUT_SECTIONS)
+    data["home_sections"] = layout.visible_keys(home)
+    data["about_sections"] = layout.visible_keys(about)
+    data.pop("home_layout", None)
+    data.pop("about_layout", None)
     return data
+
+
+def page_layout(page):
+    """Orden guardado de `page` (`layout.HOME` o `layout.ABOUT`), ya normalizado."""
+    field, sections, _label = layout.PAGES[page]
+    return layout.normalize(getattr(_stored(), field), sections)
 
 
 def online_reservations_enabled():
@@ -114,5 +131,37 @@ def set_online_reservations(*, actor, enabled):
         actor=actor,
         metadata={"fields": ["online_reservations_enabled"], "enabled": enabled},
     )
+    transaction.on_commit(lambda: cache.delete(CACHE_KEY))
+    return True
+
+
+@transaction.atomic
+def update_page_layout(*, actor, page, visible, move=None):
+    """
+    Guarda el orden y la visibilidad de las secciones de `page`. `visible`:
+    claves que se muestran; `move`: `(clave, layout.UP | layout.DOWN)` o `None`.
+    Solo se aceptan páginas y claves de la lista blanca. Devuelve si cambió algo.
+    """
+    if not is_owner(actor):
+        raise PermissionDenied(_("Solo el propietario puede ordenar las secciones."))
+    if page not in layout.PAGES:
+        raise ValidationError(_("Página desconocida."), code="unknown_page")
+    field, sections, _label = layout.PAGES[page]
+    known = {key for key, _unused in sections}
+    visible = list(visible)
+    if any(key not in known for key in visible):
+        raise ValidationError(_("Sección desconocida."), code="unknown_section")
+    if move is not None and (move[0] not in known or move[1] not in (layout.UP, layout.DOWN)):
+        raise ValidationError(_("Sección desconocida."), code="unknown_section")
+    info = BusinessInfo.objects.select_for_update().filter(pk=1).first() or BusinessInfo()
+    current = layout.normalize(getattr(info, field), sections)
+    updated = layout.with_visibility(current, visible)
+    if move is not None:
+        updated = layout.move(updated, *move)
+    if updated == current:
+        return False
+    setattr(info, field, updated)
+    info.save()
+    record_audit_event(action=AuditEvent.Action.SITE_CONTENT_UPDATED, actor=actor, metadata={"fields": [field]})
     transaction.on_commit(lambda: cache.delete(CACHE_KEY))
     return True

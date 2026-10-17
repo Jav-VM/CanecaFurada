@@ -1,0 +1,13 @@
+{% load i18n %}{% load static %}
+{# --- Eventos destacados: publicados y no terminados ------------------------------ #}
+<section aria-labelledby="eventos-titulo" class="container-page py-20">
+  {% include "components/section_heading.html" with id="eventos-titulo" eyebrow=_("Agenda") title=_("Eventos destacados") %}
+  {% if featured_events %}
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for event in featured_events %}<li>{% include "components/event_card.html" %}</li>{% endfor %}
+    </ul>
+  {% else %}
+    {% url 'web:events' as events_url %}
+    {% include "components/empty_state.html" with title=_("No hay eventos publicados todavía") text=_("Los próximos eventos de la casa aparecerán aquí.") cta_url=events_url cta_label=_("Ver eventos") %}
+  {% endif %}
+</section>

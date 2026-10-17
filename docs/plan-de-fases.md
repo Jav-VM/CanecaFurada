@@ -23,6 +23,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 17 | Interruptor de reservas online | **Completa** ([detalle](fase-17-reservas-online.md)); pendiente revisión visual |
 | 18 | Ordenar los listados del dashboard por columnas | **Completa** ([detalle](fase-18-ordenacion-listados.md)); pendiente revisión visual |
 | 19 | Filtro «sin gasto», selección de clientes y campañas con imagen y puntos | **Completa** ([detalle](fase-19-campanas-seleccion.md)); pendientes revisión visual y prueba con SMTP real |
+| 20 | Ordenar y ocultar las secciones de Inicio y La cervecería | **Completa** ([detalle](fase-20-orden-secciones.md)); pendiente revisión visual |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -237,6 +238,14 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** consentimiento comprobado en servidor; puntos idempotentes; selección recalculada en servidor; migraciones aditivas; catálogo gallego completo; suite existente intacta.
 - **Resultado (2026-10-17):** 22 tests nuevos; **1031 tests OK**; migraciones aplicadas en PostgreSQL y en la demo.
 - Ver [fase-19-campanas-seleccion.md](fase-19-campanas-seleccion.md).
+
+## Fase 20 — Ordenar y ocultar las secciones de Inicio y La cervecería
+- **Numeración:** fase añadida por el usuario el 2026-10-17.
+- **Incluye:** en Dashboard → Contenido, flechas ↑/↓ y casilla «Mostrar» para las secciones de Inicio y La cervecería.
+- **Decisiones del usuario:** en el dashboard (no en el admin técnico); ordenar y ocultar; aviso y portada fijos arriba.
+- **Criterios:** lista blanca de secciones; solo propietario; migración aditiva; orden por defecto igual al anterior; suite existente intacta.
+- **Resultado (2026-10-17):** 12 tests nuevos; **1043 tests OK**; migración aplicada en PostgreSQL y en la demo.
+- Ver [fase-20-orden-secciones.md](fase-20-orden-secciones.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

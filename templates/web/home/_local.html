@@ -1,0 +1,13 @@
+{% load i18n %}{% load static %}
+{# --- Información del local ------------------------------------------------- #}
+<section aria-labelledby="local-titulo" class="container-page py-10">
+  <div class="card grid gap-10 p-8 sm:p-12 md:grid-cols-2">
+    <div>
+      <p class="eyebrow mb-3">{% translate "El local" %}</p>
+      <h2 id="local-titulo" class="heading-lg">{% translate "Ven a vernos" %}</h2>
+      <p class="lead mt-4">{% translate "Te esperamos en A Coruña." %}</p>
+      <a href="{% url 'web:contact' %}" class="btn btn-secondary mt-8">{% translate "Contacto" %}</a>
+    </div>
+    {% include "components/business_info.html" %}
+  </div>
+</section>

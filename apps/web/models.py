@@ -63,6 +63,9 @@ class BusinessInfo(models.Model):
     announcement = models.CharField(_("aviso destacado"), max_length=200, blank=True)
     # Fase 17: si está desactivado, los enlaces de reserva llevan a Contacto (reserva por teléfono).
     online_reservations_enabled = models.BooleanField(_("reservas online activadas"), default=True)
+    # Fase 20: orden y visibilidad de las secciones (ver `layout.py`). Vacío = orden por defecto.
+    home_layout = models.JSONField(_("orden de las secciones del inicio"), default=list, blank=True)
+    about_layout = models.JSONField(_("orden de las secciones de La cervecería"), default=list, blank=True)
     updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:

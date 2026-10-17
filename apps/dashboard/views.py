@@ -49,6 +49,7 @@ from apps.purchases import selectors as purchase_selectors
 from apps.rewards import selectors as reward_selectors
 from apps.rewards import services as rewards
 from apps.rewards.models import Reward
+from apps.web import layout as web_layout
 from apps.web import services as web
 
 from . import forms
@@ -1195,10 +1196,43 @@ def content(request):
                 return redirect("dashboard:content")
         status = 400
     else:
-        info = web.editable_business_info()
-        form = forms.BusinessInfoForm(initial={name: getattr(info, name) for name in web.EDITABLE_FIELDS})
+        form = _content_form()
         status = 200
-    return _render(request, "content.html", "contenido", {"form": form}, status=status)
+    return _render(request, "content.html", "contenido", {"form": form, "layouts": _layouts()}, status=status)
+
+
+def _content_form():
+    info = web.editable_business_info()
+    return forms.BusinessInfoForm(initial={name: getattr(info, name) for name in web.EDITABLE_FIELDS})
+
+
+def _layouts():
+    """Bloques de «Orden de las secciones» (Fase 20): (página, título, filas)."""
+    return [
+        (page, title, web_layout.rows(web.page_layout(page), sections))
+        for page, (_field, sections, title) in web_layout.PAGES.items()
+    ]
+
+
+@never_cache
+@require_POST
+@owner_required
+def content_layout(request):
+    """Guarda el orden y la visibilidad de las secciones de una página (Fase 20)."""
+    page = request.POST.get("pagina", "")
+    move = None
+    if request.POST.get("mover"):
+        key, _sep, direction = request.POST["mover"].partition(":")
+        move = (key, direction)
+    try:
+        changed = web.update_page_layout(
+            actor=request.user, page=page, visible=request.POST.getlist("mostrar"), move=move
+        )
+    except ValidationError as exc:
+        _error(request, exc)
+        return _render(request, "content.html", "contenido", {"form": _content_form(), "layouts": _layouts()}, status=400)
+    messages.success(request, _("Orden de las secciones guardado.") if changed else _("No había cambios que guardar."))
+    return redirect(f"{reverse('dashboard:content')}#orden-{page}")
 
 
 EXPIRY_PREFIX = "caducidad"

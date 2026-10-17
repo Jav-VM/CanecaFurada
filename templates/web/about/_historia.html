@@ -1,0 +1,20 @@
+{% load i18n %}{% load static %}
+<section aria-labelledby="historia-titulo" class="container-page py-20">
+  <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+    <div class="prose-site">
+      {# Con «%» en el texto, `_()` dentro de include no encuentra la traducción: se traduce antes. #}
+      {% translate "Cerveza 100% artesana" as heading %}
+      {% include "components/section_heading.html" with id="historia-titulo" eyebrow=_("Nuestra historia") title=heading %}
+      {% if business.about_text %}
+        <p>{{ business.about_text }}</p>
+      {% else %}
+        <p>{% translate "Caneca Furada es una cervecería artesana de A Coruña." %}</p>
+        {% include "components/pending.html" with what=_("historia de la cervecería y del local") %}
+      {% endif %}
+    </div>
+    <figure class="mx-auto w-full max-w-md">
+      <img src="{% static 'img/brand/logoknkany.jpeg' %}" alt="{% translate 'Cartel del X aniversario de Caneca Furada: un corazón hecho de lúpulo con el logotipo de la casa' %}" width="2048" height="2048" loading="lazy" class="logo-blend h-auto w-full">
+      <figcaption class="mt-3 text-center text-sm text-mist">{% translate "Imagen del X aniversario." %}</figcaption>
+    </figure>
+  </div>
+</section>

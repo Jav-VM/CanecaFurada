@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 08:15+0200\n"
+"POT-Creation-Date: 2026-10-17 08:39+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -2040,6 +2040,9 @@ msgstr "Contenido guardado."
 msgid "No había cambios que guardar."
 msgstr "No había cambios que guardar."
 
+msgid "Orden de las secciones guardado."
+msgstr "Orden de las secciones guardado."
+
 msgid "Importe máximo por compra"
 msgstr "Importe máximo por compra"
 
@@ -3140,6 +3143,30 @@ msgstr "La cervecería"
 msgid "Contacto"
 msgstr "Contacto"
 
+msgid "Somos Caneca Furada"
+msgstr "Somos Caneca Furada"
+
+msgid "La carta de la casa"
+msgstr "La carta de la casa"
+
+msgid "Nuestras cervezas"
+msgstr "Nuestras cervezas"
+
+msgid "Programa de puntos"
+msgstr "Programa de puntos"
+
+msgid "Eventos destacados"
+msgstr "Eventos destacados"
+
+msgid "El local"
+msgstr "El local"
+
+msgid "Nuestra historia"
+msgstr "Nuestra historia"
+
+msgid "Cómo trabajamos"
+msgstr "Cómo trabajamos"
+
 msgid "dirección pública del local"
 msgstr "dirección pública del local"
 
@@ -3170,6 +3197,12 @@ msgstr "aviso destacado"
 msgid "reservas online activadas"
 msgstr "reservas online activadas"
 
+msgid "orden de las secciones del inicio"
+msgstr "orden de las secciones del inicio"
+
+msgid "orden de las secciones de La cervecería"
+msgstr "orden de las secciones de La cervecería"
+
 msgid "contenido del local"
 msgstr "contenido del local"
 
@@ -3192,6 +3225,15 @@ msgstr "Solo el propietario puede editar el contenido del local."
 
 msgid "Solo el propietario puede cambiar las reservas online."
 msgstr "Solo el propietario puede cambiar las reservas online."
+
+msgid "Solo el propietario puede ordenar las secciones."
+msgstr "Solo el propietario puede ordenar las secciones."
+
+msgid "Página desconocida."
+msgstr "Página desconocida."
+
+msgid "Sección desconocida."
+msgstr "Sección desconocida."
 
 msgid "Caneca Furada — Administración"
 msgstr "Caneca Furada — Administración"
@@ -3523,9 +3565,6 @@ msgstr "Explora"
 msgid "Pie: cuenta"
 msgstr "Pie: cuenta"
 
-msgid "Programa de puntos"
-msgstr "Programa de puntos"
-
 msgid "Visítanos"
 msgstr "Visítanos"
 
@@ -3801,6 +3840,26 @@ msgstr "Guardar contenido"
 
 msgid "El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas."
 msgstr "El nombre y la ciudad son los de la marca y no se editan aquí. Los cambios pueden tardar unos minutos en verse en todas las páginas."
+
+msgid "Orden de las secciones"
+msgstr "Orden de las secciones"
+
+msgid "Sube, baja u oculta las secciones de cada página. El aviso destacado y la portada del inicio, y la cabecera de La cervecería, van siempre arriba. Al pulsar una flecha también se guardan las casillas «Mostrar»."
+msgstr "Sube, baja u oculta las secciones de cada página. El aviso destacado y la portada del inicio, y la cabecera de La cervecería, van siempre arriba. Al pulsar una flecha también se guardan las casillas «Mostrar»."
+
+msgid "Mostrar"
+msgstr "Mostrar"
+
+#, python-format
+msgid "Subir %(label)s"
+msgstr "Subir %(label)s"
+
+#, python-format
+msgid "Bajar %(label)s"
+msgstr "Bajar %(label)s"
+
+msgid "Guardar visibilidad"
+msgstr "Guardar visibilidad"
 
 msgid "Ficha de cliente"
 msgstr "Ficha de cliente"
@@ -5280,12 +5339,21 @@ msgstr "No has validado ningún canje en este periodo."
 msgid "No has registrado ninguna compra en este periodo."
 msgstr "No has registrado ninguna compra en este periodo."
 
+msgid "La casa"
+msgstr "La casa"
+
+msgid "elaboración, estilos de la casa y cervezas invitadas"
+msgstr "elaboración, estilos de la casa y cervezas invitadas"
+
+msgid "Ver la carta"
+msgstr "Ver la carta"
+
+msgid "Cómo llegar"
+msgstr "Cómo llegar"
+
 #, python-format
 msgid "Cerveza 100%% artesana"
 msgstr "Cerveza 100%% artesana"
-
-msgid "Nuestra historia"
-msgstr "Nuestra historia"
 
 msgid "Caneca Furada es una cervecería artesana de A Coruña."
 msgstr "Caneca Furada es una cervecería artesana de A Coruña."
@@ -5298,21 +5366,6 @@ msgstr "Cartel del X aniversario de Caneca Furada: un corazón hecho de lúpulo 
 
 msgid "Imagen del X aniversario."
 msgstr "Imagen del X aniversario."
-
-msgid "La casa"
-msgstr "La casa"
-
-msgid "Cómo trabajamos"
-msgstr "Cómo trabajamos"
-
-msgid "elaboración, estilos de la casa y cervezas invitadas"
-msgstr "elaboración, estilos de la casa y cervezas invitadas"
-
-msgid "Ver la carta"
-msgstr "Ver la carta"
-
-msgid "Cómo llegar"
-msgstr "Cómo llegar"
 
 msgid "Ven a vernos"
 msgstr "Ven a vernos"
@@ -5329,9 +5382,6 @@ msgstr "Llamar al %(phone)s"
 
 msgid "Ahora mismo las reservas se hacen por teléfono. Pásate por el local o escríbenos y te indicamos cómo reservar."
 msgstr "Ahora mismo las reservas se hacen por teléfono. Pásate por el local o escríbenos y te indicamos cómo reservar."
-
-msgid "El local"
-msgstr "El local"
 
 msgid "¿Tienes cuenta?"
 msgstr "¿Tienes cuenta?"
@@ -5369,8 +5419,26 @@ msgstr "Cerveza artesana en A Coruña. Ven a probarla, descubre la carta y únet
 msgid "Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada"
 msgstr "Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada"
 
-msgid "Somos Caneca Furada"
-msgstr "Somos Caneca Furada"
+msgid "Consulta las cervezas y todo lo que servimos."
+msgstr "Consulta las cervezas y todo lo que servimos."
+
+msgid "Selección"
+msgstr "Selección"
+
+msgid "Estamos preparando la selección de cervezas"
+msgstr "Estamos preparando la selección de cervezas"
+
+msgid "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
+msgstr "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
+
+msgid "Ir a la carta"
+msgstr "Ir a la carta"
+
+msgid "Los próximos eventos de la casa aparecerán aquí."
+msgstr "Los próximos eventos de la casa aparecerán aquí."
+
+msgid "Te esperamos en A Coruña."
+msgstr "Te esperamos en A Coruña."
 
 #, python-format
 msgid "Una cervecería 100%% artesana en A Coruña."
@@ -5382,41 +5450,11 @@ msgstr "presentación de la marca (historia, filosofía y cerveza)"
 msgid "Conoce la cervecería →"
 msgstr "Conoce la cervecería →"
 
-msgid "La carta de la casa"
-msgstr "La carta de la casa"
-
-msgid "Consulta las cervezas y todo lo que servimos."
-msgstr "Consulta las cervezas y todo lo que servimos."
-
-msgid "Selección"
-msgstr "Selección"
-
-msgid "Nuestras cervezas"
-msgstr "Nuestras cervezas"
-
-msgid "Estamos preparando la selección de cervezas"
-msgstr "Estamos preparando la selección de cervezas"
-
-msgid "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
-msgstr "Muy pronto podrás ver aquí las cervezas destacadas de la casa."
-
-msgid "Ir a la carta"
-msgstr "Ir a la carta"
-
 msgid "Cada visita suma"
 msgstr "Cada visita suma"
 
 msgid "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
 msgstr "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
-
-msgid "Eventos destacados"
-msgstr "Eventos destacados"
-
-msgid "Los próximos eventos de la casa aparecerán aquí."
-msgstr "Los próximos eventos de la casa aparecerán aquí."
-
-msgid "Te esperamos en A Coruña."
-msgstr "Te esperamos en A Coruña."
 
 msgid "Lo que servimos"
 msgstr "Lo que servimos"
