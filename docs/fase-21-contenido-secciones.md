@@ -95,3 +95,16 @@ Tras actualizar: `python manage.py migrate` y `python scripts/i18n.py compile`.
 - **Test:** `tests/web/test_public_pages.py::test_footer_shows_opening_hours_in_its_own_column`.
 - **Suite completa:** **1059 tests OK**.
 - **Pendiente:** revisión visual en escritorio y móvil.
+
+### 8.1 Horario en líneas y pie que no crece hacia abajo (2026-10-17)
+
+- **Petición:** cada franja del horario en una sola línea (días a la izquierda, horas a la derecha), y que el pie no se alargue: lo que no quepa, a la derecha dentro de la misma columna.
+- **Horario:**
+  - una línea por franja;
+  - en escritorio, como mucho 6 líneas por subcolumna (la altura de «Explora»); la 7.ª empieza otra subcolumna a la derecha.
+- **Visítanos:** en el pie, como mucho 2 grupos por subcolumna (Dirección y Contacto); «Redes» pasa a la derecha.
+- Es una rejilla CSS que se rellena por columnas (`grid-flow-col`). Contacto e Inicio no cambian.
+- **Tests:** franja en una línea y horario largo (8 franjas) dentro de su columna. **1060 tests OK**.
+- **Limitación:** en móvil y tablet las columnas se apilan, así que el pie es más alto, como antes. La regla de no crecer hacia abajo se aplica en escritorio.
+- **Pendiente:** revisión visual con 3 y con 8 franjas.
+

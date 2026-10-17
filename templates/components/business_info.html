@@ -2,9 +2,10 @@
 {% comment %}
 Datos del local (apps/web/content.py). Lo que falta se marca como pendiente;
 nunca se muestran valores inventados. `hide_hours`: sin el horario (el pie lo
-muestra en su propia columna).
+muestra en su propia columna). `compact`: versión del pie.
 {% endcomment %}
-<dl class="space-y-4 text-sm">
+{# En el pie (`compact`), como mucho 2 grupos por subcolumna: el resto pasa a la derecha y el pie no crece hacia abajo. #}
+<dl class="space-y-4 text-sm{% if compact %} lg:grid lg:grid-flow-col lg:grid-rows-[repeat(2,auto)] lg:gap-x-10 lg:gap-y-4 lg:space-y-0{% endif %}">
   <div>
     <dt class="font-semibold text-paper">{% translate "Dirección" %}</dt>
     <dd class="text-mist">{% if business.address %}{{ business.address }}{% else %}{{ business.city }} · <span class="italic">{% translate "dirección pendiente de publicar" %}</span>{% endif %}</dd>
