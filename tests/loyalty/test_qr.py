@@ -165,7 +165,7 @@ class MyQRViewTests(TestCase):
     def test_customer_sees_qr_built_only_from_opaque_token(self):
         user = make_verified_customer()
         self.client.force_login(user)
-        with mock.patch("apps.loyalty.views.segno.make", wraps=__import__("segno").make) as make:
+        with mock.patch("apps.loyalty.views.qr_data_uri", wraps=__import__("apps.core.qr", fromlist=["qr_data_uri"]).qr_data_uri) as make:
             response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         token = CustomerQRCode.objects.get(user=user).token

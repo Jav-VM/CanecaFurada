@@ -47,7 +47,7 @@
       <p class="note mb-4">{% translate "Se crea una copia en esta página, con sus textos e imágenes. Después cada artículo se edita y se elimina por separado." %}</p>
       {% if copy_sources %}
         <ul class="divide-y divide-line">
-          {% for source in copy_sources %}
+          {% for source, copy_key in copy_sources %}
             <li class="flex flex-wrap items-center gap-4 py-3" data-copy-source>
               {% with first=source.images.all|first %}
                 {% if first %}<img src="{{ first.image.url }}" alt="" class="size-14 shrink-0 rounded-lg object-cover">{% endif %}
@@ -59,6 +59,7 @@
               <form method="post" action="{% url 'dashboard:article_copy' page %}" data-loading>
                 {% csrf_token %}
                 <input type="hidden" name="origen" value="{{ source.public_id }}">
+                <input type="hidden" name="idempotency_key" value="{{ copy_key }}">
                 <button type="submit" class="btn btn-secondary btn-sm" data-loading-text="{% translate 'Copiando…' %}">{% translate "Copiar aquí" %}<span class="sr-only">: {{ source.title }}</span></button>
               </form>
             </li>

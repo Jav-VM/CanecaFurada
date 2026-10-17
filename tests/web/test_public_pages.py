@@ -3,12 +3,17 @@ import re
 from unittest import mock
 
 from django.contrib.staticfiles import finders
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.accounts import services
 from apps.accounts.models import User
+from apps.web import services as web
+from apps.web.models import BusinessInfo, is_google_maps_url
 from tests.accounts.factories import PASSWORD, make_user
+from tests.loyalty.factories import make_owner
 
 PUBLIC_PAGES = (
     ("web:home", "web/home.html"),
@@ -142,6 +147,48 @@ class PublicPagesTests(TestCase):
         local = local[:local.index("</section>")]
         self.assertIn("Rúa Ficticia 0", local)
         self.assertNotIn("data-contact-map", local)
+
+    def test_owner_can_change_the_maps_url(self):
+        owner = make_owner()
+        url = "https://www.google.com/maps/place/Rua+Ficticia"
+        web.update_business_info(actor=owner, data={"address": "Rúa Ficticia 0", "maps_url": url})
+        cache.clear()
+        for name in ("web:contact", "web:home"):
+            html = self.client.get(reverse(name)).content.decode()
+            self.assertIn(f'href="{url}" rel="noopener noreferrer" data-contact-map>', html)
+        # Vacío: vuelve el enlace de siempre.
+        web.update_business_info(actor=owner, data={"maps_url": ""})
+        cache.clear()
+        self.assertIn('href="https://maps.app.goo.gl/1azgzDRChyNmEtHy8"', self.client.get(reverse("web:contact")).content.decode())
+        self.assertEqual(BusinessInfo.objects.get().maps_url, "")
+
+    def test_maps_url_only_accepts_google_maps(self):
+        good = (
+            "https://maps.app.goo.gl/1azgzDRChyNmEtHy8",
+            "https://goo.gl/maps/abc",
+            "https://www.google.com/maps/place/X",
+            "https://google.com/maps?q=X",
+            "https://maps.google.com/?q=X",
+        )
+        bad = (
+            "http://maps.app.goo.gl/x",
+            "https://example.com/maps",
+            "https://maps.app.goo.gl.example.com/x",
+            "https://www.google.com/search?q=x",
+            "https://goo.gl/abc",
+            "https://user:pass@maps.app.goo.gl/x",
+            "https://maps.app.goo.gl:8443/x",
+            "javascript:alert(1)",
+            "https://maps.app.goo.gl/a b",
+        )
+        for url in good:
+            self.assertTrue(is_google_maps_url(url), url)
+        owner = make_owner()
+        for url in bad:
+            with self.subTest(url=url):
+                self.assertFalse(is_google_maps_url(url))
+                with self.assertRaises(ValidationError):
+                    web.update_business_info(actor=owner, data={"maps_url": url})
 
     def test_contact_local_without_address_has_no_map_link(self):
         contact = self.client.get(reverse("web:contact")).content.decode()

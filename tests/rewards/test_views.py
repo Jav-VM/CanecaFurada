@@ -14,6 +14,7 @@ from apps.loyalty import ledger
 from apps.rewards import codes, services
 from apps.rewards.models import Redemption, Reward
 from tests.accounts.factories import registration_data
+from tests.core.test_qr import modules_in
 
 from .factories import give_points, make_customer_with_qr, make_employee, make_owner, make_reward, redeem
 
@@ -98,6 +99,9 @@ class CustomerRedeemViewTests(RewardsViewTestCase):
         self.assertRedirects(response, reverse("rewards:redemption_detail", args=[redemption.public_id]))
         self.assertContains(response, codes.format_code(redemption.code))
         self.assertContains(response, "data-redemption-qr")
+        # QR normal (21 módulos), no Micro QR: si no, la cámara del panel no lo lee.
+        uri = re.search(r'src="(data:image/svg\+xml[^"]+)"[^>]*data-redemption-qr', response.content.decode()).group(1)
+        self.assertEqual(modules_in(uri), 21)
         self.assertContains(response, "Pendiente de recoger")
         self.assertEqual(ledger.balance(self.customer), 70)
         # El código no aparece en ninguna URL.

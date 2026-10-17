@@ -19,7 +19,9 @@ BUSINESS = {
     "name": "Caneca Furada",
     "city": "A Coruña",  # figura en el logotipo oficial
     "address": None,
-    "maps_url": "https://maps.app.goo.gl/1azgzDRChyNmEtHy8",  # ficha del local en Google Maps
+    # Ficha del local en Google Maps. Desde la Fase 23 se cambia en Dashboard → Contenido;
+    # este es el valor si allí se deja vacío.
+    "maps_url": "https://maps.app.goo.gl/1azgzDRChyNmEtHy8",
     "opening_hours": None,  # lista de (días, horario) cuando se conozca
     "email": None,
     "phone": None,

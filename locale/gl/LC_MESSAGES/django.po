@@ -1827,6 +1827,12 @@ msgstr "JPEG, PNG ou WebP. Unha imaxe amósase xunto ao texto; dúas ou máis, n
 msgid "Dirección pública del local"
 msgstr "Enderezo público do local"
 
+msgid "Enlace a Google Maps"
+msgstr "Ligazón a Google Maps"
+
+msgid "La dirección de Contacto y del pie lleva a este enlace. En Google Maps: «Compartir» → «Copiar enlace». Vacío: el enlace de siempre."
+msgstr "O enderezo de Contacto e do pé leva a esta ligazón. En Google Maps: «Compartir» → «Copiar ligazón». Baleiro: a ligazón de sempre."
+
 msgid "Horario"
 msgstr "Horario"
 
@@ -3309,6 +3315,9 @@ msgstr "texto de benvida do inicio"
 msgid "aviso destacado"
 msgstr "aviso destacado"
 
+msgid "enlace a Google Maps"
+msgstr "ligazón a Google Maps"
+
 msgid "reservas online activadas"
 msgstr "reservas en liña activadas"
 
@@ -3346,6 +3355,9 @@ msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Días | horario»."
 #, python-format
 msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Nome | https://…»."
+
+msgid "Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…)."
+msgstr "Pega a ligazón «Compartir» de Google Maps (https://maps.app.goo.gl/… ou https://www.google.com/maps/…)."
 
 msgid "página"
 msgstr "páxina"

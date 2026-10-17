@@ -9,7 +9,6 @@ consultas en `selectors`.
 
 Ninguna respuesta se guarda en caché: llevan códigos o saldos.
 """
-import segno
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
@@ -21,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
 from apps.accounts.permissions import role_required, verified_email_required
+from apps.core.qr import qr_data_uri
 from apps.loyalty import ledger
 from apps.loyalty import services as loyalty
 
@@ -125,10 +125,8 @@ def redemption_detail(request, public_id):
     redemption = _get_own_redemption(request, public_id)
     context = {"redemption": redemption, "is_expired": redemption.is_expired()}
     if redemption.status == Redemption.Status.PENDING and not context["is_expired"]:
-        # Data URI de un SVG generado aquí: sin peticiones a terceros.
-        context["qr_image"] = segno.make(codes.qr_payload(redemption.code), error="m").svg_data_uri(
-            scale=8, border=4, dark="#080808", light="#ffffff"
-        )
+        # QR normal (no Micro QR) para que lo lea la cámara del panel: ver apps/core/qr.py.
+        context["qr_image"] = qr_data_uri(codes.qr_payload(redemption.code))
         context["code_text"] = codes.format_code(redemption.code)
     return render(request, "rewards/redemption_detail.html", context)
 

@@ -357,6 +357,14 @@ class PageBlockForm(forms.Form):
 
 class BusinessInfoForm(forms.Form):
     address = forms.CharField(label=_("Dirección pública del local"), max_length=200, required=False)
+    # Fase 23: lo valida el modelo (solo enlaces de Google Maps).
+    maps_url = forms.CharField(
+        label=_("Enlace a Google Maps"),
+        max_length=300,
+        required=False,
+        widget=forms.TextInput(attrs={"inputmode": "url", "autocomplete": "off", "spellcheck": "false"}),
+        help_text=_("La dirección de Contacto y del pie lleva a este enlace. En Google Maps: «Compartir» → «Copiar enlace». Vacío: el enlace de siempre."),
+    )
     opening_hours = forms.CharField(
         label=_("Horario"),
         required=False,

@@ -90,10 +90,13 @@ class IdentifyViewTests(PanelTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "purchases/confirm.html")
         self.assertContains(response, "Lúa F.")
+        key = hidden_value(response, "idempotency_key")
+        uuid.UUID(key)
+        # La clave es un UUID al azar: podría contener «1996» u otro valor ficticio por casualidad.
+        html = response.content.decode().replace(key, "")
         for value in PRIVATE_VALUES:
             with self.subTest(value=value):
-                self.assertNotContains(response, value)
-        uuid.UUID(hidden_value(response, "idempotency_key"))
+                self.assertNotIn(value, html)
         self.assertIn("no-store", response["Cache-Control"])
 
     def test_each_confirmation_gets_a_new_idempotency_key(self):

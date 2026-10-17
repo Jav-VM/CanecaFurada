@@ -4,6 +4,7 @@ valor por defecto, imágenes (figura y carrusel), artículos de Inicio, La
 cervecería y Eventos, y accesos.
 """
 import os
+import re
 import uuid
 
 from django.core.cache import cache
@@ -326,8 +327,9 @@ class CopyArticleTests(BlocksTestCase):
 
     create = ArticleTests.create
 
-    def copy(self, page, source_public_id):
-        return self.post(reverse("dashboard:article_copy", args=[page]), {"origen": str(source_public_id)})
+    def copy(self, page, source_public_id, key=None):
+        data = {"origen": str(source_public_id), "idempotency_key": str(key or uuid.uuid4())}
+        return self.post(reverse("dashboard:article_copy", args=[page]), data)
 
     def test_new_article_lists_only_articles_of_other_pages(self):
         self.create(page="cerveceria", title="Da cervexaría")
@@ -340,6 +342,9 @@ class CopyArticleTests(BlocksTestCase):
         self.assertContains(response, "Do inicio")
         self.assertNotContains(response, "Dos eventos")
         self.assertContains(response, reverse("dashboard:article_copy", args=["eventos"]))
+        # Cada fila lleva su propia clave de idempotencia.
+        keys = re.findall(r'name="idempotency_key" value="([0-9a-f-]{36})"', response.content.decode())
+        self.assertEqual(len(set(keys)), 2)
         # Editar un artículo no muestra la lista.
         key = PageBlock.objects.get(page="eventos").key
         self.assertNotContains(self.client.get(edit_url("eventos", key)), "data-copy-articles")
@@ -392,7 +397,7 @@ class CopyArticleTests(BlocksTestCase):
                 self.assertContains(response, "No se ha podido copiar el artículo", status_code=400)
         self.assertEqual(PageBlock.objects.filter(is_article=True).count(), 1)
         with self.assertRaises(ValidationError):
-            blocks.copy_article(actor=self.owner, page="eventos", source_public_id=same_page.public_id)
+            blocks.copy_article(actor=self.owner, page="eventos", source_public_id=same_page.public_id, idempotency_key=uuid.uuid4())
 
     def test_copy_to_a_page_without_articles_is_404(self):
         self.create(page="eventos")
@@ -411,3 +416,26 @@ class CopyArticleTests(BlocksTestCase):
         self.client.logout()
         self.assertIn(reverse("accounts:login"), self.copy("eventos", source.public_id)["Location"])
         self.assertEqual(PageBlock.objects.filter(is_article=True).count(), 1)
+
+    def test_double_submit_with_the_same_key_makes_one_copy(self):
+        self.create(page="inicio", title="Unha soa vez")
+        source = PageBlock.objects.get(page="inicio")
+        key = uuid.uuid4()
+        first = self.copy("eventos", source.public_id, key)
+        second = self.copy("eventos", source.public_id, key)
+        copies = PageBlock.objects.filter(page="eventos", is_article=True)
+        self.assertEqual(copies.count(), 1)
+        self.assertEqual(first["Location"], second["Location"])
+        self.assertEqual(PageBlockImage.objects.filter(block=copies.get()).count(), 2)
+        self.assertEqual(AuditEvent.objects.filter(metadata__event="article_copied").count(), 1)
+        # Otra clave (otro clic en otra visita) sí crea otra copia.
+        self.copy("eventos", source.public_id, uuid.uuid4())
+        self.assertEqual(copies.count(), 2)
+
+    def test_copy_without_a_valid_key_is_rejected(self):
+        self.create(page="inicio")
+        source = PageBlock.objects.get(page="inicio")
+        for key in ("", "non-e-un-uuid"):
+            response = self.post(reverse("dashboard:article_copy", args=["eventos"]), {"origen": str(source.public_id), "idempotency_key": key})
+            self.assertEqual(response.status_code, 400)
+        self.assertFalse(PageBlock.objects.filter(page="eventos").exists())

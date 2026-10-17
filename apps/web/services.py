@@ -29,6 +29,7 @@ CACHE_KEY = "web:business_info"
 CACHE_TIMEOUT = 300
 EDITABLE_FIELDS = (
     "address",
+    "maps_url",
     "opening_hours",
     "email",
     "phone",
@@ -48,6 +49,8 @@ def _stored_values():
     info = _stored()
     return {
         "address": info.address or None,
+        # Vacío: sigue la de `content.BUSINESS` (ver `business_info`).
+        "maps_url": info.maps_url or None,
         "opening_hours": tuple(parse_pairs(info.opening_hours)) or None,
         "email": info.email or None,
         "phone": info.phone or None,

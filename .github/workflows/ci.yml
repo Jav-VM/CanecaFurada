@@ -55,6 +55,16 @@ jobs:
           python scripts/i18n.py check
           python scripts/i18n.py compile
 
+      # Fase 23: el JavaScript propio (no static/vendor) no tiene tests de navegador;
+      # al menos se comprueba que su sintaxis es válida.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Sintaxis del JavaScript propio
+        run: |
+          for file in static/js/*.js; do node --check "$file"; done
+
       - name: manage.py check
         run: python manage.py check
 

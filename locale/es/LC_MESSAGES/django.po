@@ -1827,6 +1827,12 @@ msgstr "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más, en u
 msgid "Dirección pública del local"
 msgstr "Dirección pública del local"
 
+msgid "Enlace a Google Maps"
+msgstr "Enlace a Google Maps"
+
+msgid "La dirección de Contacto y del pie lleva a este enlace. En Google Maps: «Compartir» → «Copiar enlace». Vacío: el enlace de siempre."
+msgstr "La dirección de Contacto y del pie lleva a este enlace. En Google Maps: «Compartir» → «Copiar enlace». Vacío: el enlace de siempre."
+
 msgid "Horario"
 msgstr "Horario"
 
@@ -3309,6 +3315,9 @@ msgstr "texto de bienvenida del inicio"
 msgid "aviso destacado"
 msgstr "aviso destacado"
 
+msgid "enlace a Google Maps"
+msgstr "enlace a Google Maps"
+
 msgid "reservas online activadas"
 msgstr "reservas online activadas"
 
@@ -3346,6 +3355,9 @@ msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario»."
 #, python-format
 msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
+
+msgid "Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…)."
+msgstr "Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…)."
 
 msgid "página"
 msgstr "página"

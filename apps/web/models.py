@@ -44,6 +44,29 @@ def _is_safe_url(url):
     return parts.scheme == "https" and bool(parts.netloc) and " " not in url
 
 
+# Fase 23: enlaces a la ficha del local en Google Maps (host → prefijo de ruta exigido).
+_MAPS_HOSTS = {
+    "maps.app.goo.gl": "/",
+    "maps.google.com": "/",
+    "goo.gl": "/maps",
+    "google.com": "/maps",
+    "www.google.com": "/maps",
+}
+
+
+def is_google_maps_url(url):
+    """https de Google Maps, sin usuario, contraseña ni puerto: nada de enlaces a otras webs."""
+    if not url or not _is_safe_url(url):
+        return False
+    parts = urlsplit(url)
+    prefix = _MAPS_HOSTS.get(parts.hostname or "")
+    return (
+        prefix is not None
+        and parts.netloc == parts.hostname
+        and parts.path.startswith(prefix)
+    )
+
+
 class BusinessInfo(models.Model):
     address = models.CharField(_("dirección pública del local"), max_length=200, blank=True)
     opening_hours = models.TextField(
@@ -64,6 +87,8 @@ class BusinessInfo(models.Model):
     # Fase 10: textos principales del inicio.
     hero_text = models.CharField(_("texto de bienvenida del inicio"), max_length=300, blank=True)
     announcement = models.CharField(_("aviso destacado"), max_length=200, blank=True)
+    # Fase 23: ficha del local en Google Maps (Contacto y pie). Vacío = la de `content.BUSINESS`.
+    maps_url = models.URLField(_("enlace a Google Maps"), max_length=300, blank=True)
     # Fase 17: si está desactivado, los enlaces de reserva llevan a Contacto (reserva por teléfono).
     online_reservations_enabled = models.BooleanField(_("reservas online activadas"), default=True)
     # Fase 20: orden y visibilidad de las secciones (ver `layout.py`). Vacío = orden por defecto.
@@ -96,6 +121,7 @@ class BusinessInfo(models.Model):
         self.about_text = (self.about_text or "").strip()
         self.hero_text = normalize_text(self.hero_text)
         self.announcement = normalize_text(self.announcement)
+        self.maps_url = (self.maps_url or "").strip()
         errors = {}
         if self.phone and not _PHONE_RE.match(self.phone):
             errors["phone"] = _("Teléfono no válido: solo números, espacios y un + inicial.")
@@ -105,6 +131,8 @@ class BusinessInfo(models.Model):
         links = parse_pairs(self.social_links)
         if len(links) > MAX_LINES or any(not name or not _is_safe_url(url) for name, url in links):
             errors["social_links"] = _("Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…».") % {"MAX_LINES": MAX_LINES}
+        if self.maps_url and not is_google_maps_url(self.maps_url):
+            errors["maps_url"] = _("Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…).")
         if errors:
             raise ValidationError(errors)
         self.opening_hours = "\n".join(f"{a} {LINE_SEPARATOR} {b}" for a, b in hours)
@@ -143,6 +171,8 @@ class PageBlock(models.Model):
     page = models.CharField(_("página"), max_length=12, choices=Page.choices)
     key = models.CharField(_("sección"), max_length=40)
     is_article = models.BooleanField(_("artículo"), default=False)
+    # Fase 23: clave de idempotencia de «Copiar aquí» (un doble envío no crea dos copias).
+    copy_key = models.UUIDField(null=True, blank=True, unique=True, editable=False)
     eyebrow = models.CharField(_("antetítulo"), max_length=80, blank=True)
     title = models.CharField(_("título"), max_length=120, blank=True)
     body = models.TextField(_("texto"), max_length=5000, blank=True)

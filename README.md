@@ -36,6 +36,7 @@ Plan completo: [docs/plan-de-fases.md](docs/plan-de-fases.md).
 - Python 3.12+ (desarrollado con 3.14).
 - PostgreSQL 14+ (probado con 17). Obligatorio en producción; sin `DATABASE_URL`, desarrollo y tests usan SQLite. Guía: [docs/migracion-postgresql.md](docs/migracion-postgresql.md).
 - GNU gettext, para compilar las traducciones al gallego (Fase 15). En Windows: `winget install --id mlocati.GetText --exact`; en Debian/Ubuntu: `apt-get install gettext`.
+- Node.js (opcional), solo para comprobar la sintaxis del JavaScript propio como hace el CI (Fase 23). En Windows: `winget install --id OpenJS.NodeJS.LTS --exact`; después `Get-ChildItem static/js/*.js | ForEach-Object { node --check $_.FullName }`.
 
 ## Instalación
 

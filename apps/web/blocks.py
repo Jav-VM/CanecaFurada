@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files import File
 from django.core.files.storage import default_storage
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import is_owner
@@ -166,14 +166,20 @@ def copyable_articles(page):
 
 
 @transaction.atomic
-def copy_article(*, actor, page, source_public_id):
+def copy_article(*, actor, page, source_public_id, idempotency_key):
     """
     Copia en `page` un artículo de otra página: textos e imágenes, con ficheros nuevos,
     así que cada copia se edita y se elimina por separado. Aparece al final, visible.
+
+    `idempotency_key` (UUID que pone el formulario) hace que un doble envío devuelva la
+    copia ya hecha en vez de crear otra; la restricción única resuelve los envíos simultáneos.
     """
     _require_owner(actor)
     if page not in layout.ARTICLE_PAGES:
         raise ValidationError(_("Sección desconocida."), code="unknown_section")
+    existing = PageBlock.objects.filter(copy_key=idempotency_key, page=page, is_article=True).first()
+    if existing is not None:
+        return existing
     source = (
         PageBlock.objects.select_for_update()
         .filter(public_id=source_public_id, is_article=True, page__in=layout.ARTICLE_PAGES)
@@ -189,10 +195,19 @@ def copy_article(*, actor, page, source_public_id):
         eyebrow=source.eyebrow,
         title=source.title,
         body=source.body,
+        copy_key=idempotency_key,
         created_by=actor,
     )
-    block.full_clean(exclude=["created_by"])
-    block.save()
+    block.full_clean(exclude=["created_by", "copy_key"])
+    try:
+        with transaction.atomic():
+            block.save()
+    except IntegrityError:
+        # Otro envío con la misma clave se ha adelantado: se devuelve su copia.
+        existing = PageBlock.objects.filter(copy_key=idempotency_key, page=page, is_article=True).first()
+        if existing is None:
+            raise
+        return existing
     written = []
     try:
         for original in source.images.all():

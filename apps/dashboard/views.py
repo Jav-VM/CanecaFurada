@@ -1272,7 +1272,10 @@ def _block_form_view(request, *, page, key, block, article, bound=True, status=2
         "uses_about_text": (page, key) in web_blocks.ABOUT_TEXT_SECTIONS,
         "max_images": web_blocks.PageBlock.MAX_IMAGES,
         # «Nuevo artículo»: artículos de las otras páginas que se pueden copiar aquí (Fase 23).
-        "copy_sources": web_blocks.copyable_articles(page) if article and block is None else None,
+        # Cada fila lleva su clave de idempotencia (un doble clic no crea dos copias).
+        "copy_sources": (
+            [(source, uuid.uuid4()) for source in web_blocks.copyable_articles(page)] if article and block is None else None
+        ),
     }
     return _render(request, "section_form.html", "contenido", context, status=status)
 
@@ -1305,7 +1308,8 @@ def article_copy(request, page):
         raise Http404
     try:
         source = uuid.UUID(request.POST.get("origen", ""))
-        block = web_blocks.copy_article(actor=request.user, page=page, source_public_id=source)
+        key = uuid.UUID(request.POST.get("idempotency_key", ""))
+        block = web_blocks.copy_article(actor=request.user, page=page, source_public_id=source, idempotency_key=key)
     except (ValueError, ValidationError):
         messages.error(request, _("No se ha podido copiar el artículo: elige uno de la lista."))
         return _block_form_view(request, page=page, key="", block=None, article=True, bound=False, status=400)

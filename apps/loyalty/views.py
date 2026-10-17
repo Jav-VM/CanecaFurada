@@ -2,7 +2,6 @@
 Vistas del cliente: QR personal y puntos. Solo presentación: las reglas están
 en `services`, `ledger` y `selectors`.
 """
-import segno
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -14,6 +13,7 @@ from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
 from apps.accounts.permissions import verified_email_required
+from apps.core.qr import qr_data_uri
 from apps.purchases import selectors as purchase_selectors
 
 from . import expiry, selectors, services
@@ -29,10 +29,8 @@ def _require_customer(user):
 def my_qr(request):
     _require_customer(request.user)
     qr = services.get_customer_qr(request.user)
-    # Data URI de un SVG generado aquí: no hay peticiones a terceros ni HTML sin escapar.
-    image = segno.make(services.qr_payload(qr.token), error="m").svg_data_uri(
-        scale=8, border=4, dark="#080808", light="#ffffff"
-    )
+    # Data URI de un SVG generado aquí (siempre QR normal): ver apps/core/qr.py.
+    image = qr_data_uri(services.qr_payload(qr.token))
     return render(
         request,
         "loyalty/my_qr.html",
