@@ -90,19 +90,10 @@ class PublicPagesTests(TestCase):
         self.assertNotIn("Martes a domingo", visit)
         self.assertIn("Martes a domingo", hours)
         self.assertIn("18:00–00:00", hours)
-        # Una línea por franja: días y horas en el mismo elemento, sin salto de línea.
+        # Una línea por franja: la hora a la derecha del día, sin salto de línea.
         self.assertRegex(hours, r"<li[^>]*><span[^>]*>Martes a domingo</span><span[^>]*>18:00–00:00</span></li>")
         # En Contacto el horario sigue dentro de los datos del local.
         self.assertContains(contact, "Martes a domingo", count=2)
-
-    def test_long_opening_hours_stay_in_the_footer_column(self):
-        days = tuple((f"Franxa {n}", f"1{n}:00–2{n % 4}:00") for n in range(8))
-        with mock.patch.dict("apps.web.content.BUSINESS", {"opening_hours": days}):
-            html = self.client.get(reverse("web:home")).content.decode()
-        hours = html[html.index("data-footer-hours-list"):]
-        self.assertIn("lg:grid-rows-[repeat(6,auto)]", html)
-        for label, _hours in days:
-            self.assertIn(label, hours)
 
     def test_business_info_is_rendered_when_provided(self):
         business = {

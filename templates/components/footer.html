@@ -40,13 +40,12 @@
       {% include "components/business_info.html" with compact=True hide_hours=True %}
     </div>
 
-    {# El horario, en su propia columna a la derecha de «Visítanos». Una línea por franja
-       (días a la izquierda, horas a la derecha). En escritorio el pie no crece hacia abajo:
-       como mucho 6 líneas por subcolumna; las siguientes pasan a la derecha. #}
-    <div data-footer-hours>
+    {# El horario, en su propia columna a la derecha de «Visítanos». #}
+    <div class="lg:max-w-60" data-footer-hours>
       <h2 class="eyebrow mb-4">{% translate "Horario" %}</h2>
       {% if business.opening_hours %}
-        <ul class="space-y-2 text-sm text-mist lg:grid lg:grid-flow-col lg:grid-rows-[repeat(6,auto)] lg:gap-x-10 lg:gap-y-2 lg:space-y-0" data-footer-hours-list>{% for days, hours in business.opening_hours %}<li class="flex justify-between gap-6 whitespace-nowrap"><span class="font-semibold text-paper">{{ days }}</span><span class="tabular-nums">{{ hours }}</span></li>{% endfor %}</ul>
+        {# Una línea por franja: la hora a la derecha del día. #}
+        <ul class="space-y-1 text-sm text-mist">{% for days, hours in business.opening_hours %}<li class="flex justify-between gap-4"><span class="font-semibold text-paper">{{ days }}</span><span class="whitespace-nowrap tabular-nums">{{ hours }}</span></li>{% endfor %}</ul>
       {% else %}
         <p class="text-sm italic text-mist">{% translate "Pendiente de publicar" %}</p>
       {% endif %}
