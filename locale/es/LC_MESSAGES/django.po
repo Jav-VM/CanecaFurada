@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 19:49+0200\n"
+"POT-Creation-Date: 2026-10-17 20:36+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -4151,9 +4151,6 @@ msgstr "cancélala o espera a que se reparta"
 
 msgid "Todavía no hay campañas."
 msgstr "Todavía no hay campañas."
-
-msgid "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
-msgstr "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
 
 msgid "«Eliminar» se activa en las campañas canceladas o ya repartidas: las quita de esta lista, pero se conservan en la administración avanzada."
 msgstr "«Eliminar» se activa en las campañas canceladas o ya repartidas: las quita de esta lista, pero se conservan en la administración avanzada."

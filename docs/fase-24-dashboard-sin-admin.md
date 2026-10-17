@@ -174,3 +174,10 @@ Antes de usarlo en una base que ya existe: `python manage.py migrate` (aplica `c
   - **Ficheros huérfanos en `media/`** (imágenes sustituidas): no son datos personales, pero ocupan espacio.
   - **Ya se purgan:** tokens de verificación, sesiones y tokens de la API (`docs/despliegue.md`).
 - Si se implementa, sería una fase propia: comando de retención con plazos configurables, tarea programada, tests y documentación de la política.
+
+## 12. Ajuste posterior: enlaces de «Visítanos» en el pie (2026-10-17)
+
+- **Petición:** que los enlaces de «Visítanos» (dirección, email, teléfono y redes) se vean como los de «Explora» y «A túa conta»: grises, sin subrayado y dorados al pasar el ratón.
+- **Cambio:** `templates/components/business_info.html` elige la clase de los enlaces según el modo. En el pie (`compact`) usa `text-mist no-underline hover:text-gold`; en Contacto e Inicio, `link`, como hasta ahora. Sin CSS nuevo.
+- **Test:** `test_footer_visit_links_look_like_the_footer_menu` (`tests/web/test_public_pages.py`). Suite completa: 1151 tests OK.
+- **Nota de Comunicaciones:** bajo las campañas solo queda «"Eliminar" se activa en las campañas canceladas o ya repartidas…». Se quita la frase sobre `process_notifications` (en producción el reparto es automático cada 5 minutos, `deploy/cron/crontab`; en local se lanza a mano). Su cadena sale de los catálogos (`i18n.py make`).

@@ -190,6 +190,25 @@ class PublicPagesTests(TestCase):
                 with self.assertRaises(ValidationError):
                     web.update_business_info(actor=owner, data={"maps_url": url})
 
+    def test_footer_visit_links_look_like_the_footer_menu(self):
+        business = {
+            "address": "Rúa Ficticia 0",
+            "email": "info@example.com",
+            "phone": "600 000 000",
+            "social_links": (("Instagram", "https://example.com/ig"),),
+        }
+        with mock.patch.dict("apps.web.content.BUSINESS", business):
+            home = self.client.get(reverse("web:home")).content.decode()
+            contact = self.client.get(reverse("web:contact")).content.decode()
+        footer = home[home.index("data-footer-visit"):home.index("data-footer-hours")]
+        # Grises, sin subrayado y dorados al pasar el ratón, como «Explora» y «A túa conta».
+        gray = 'class="text-mist no-underline hover:text-gold"'
+        for href in ('href="https://maps.app.goo.gl/', 'href="mailto:info@example.com"', 'href="tel:600 000 000"', 'href="https://example.com/ig"'):
+            self.assertIn(f"{gray} {href}", footer)
+        self.assertNotIn('class="link"', footer)
+        # En Contacto siguen como enlaces dorados.
+        self.assertIn('<a class="link" href="https://maps.app.goo.gl/', contact)
+
     def test_contact_local_without_address_has_no_map_link(self):
         contact = self.client.get(reverse("web:contact")).content.decode()
         self.assertNotIn("data-contact-map", contact)
