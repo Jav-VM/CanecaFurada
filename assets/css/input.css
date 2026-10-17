@@ -136,7 +136,7 @@
   /* Fase 19: barra fija con los clientes marcados en la columna «Envío». */
   .selection-bar { @apply sticky bottom-4 z-30 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold/50 bg-coal p-4 shadow-lg; }
   /* Tabla que cabe sin scroll horizontal: compacta desde xl y, por debajo, una tarjeta por
-     fila con la etiqueta de cada celda tomada de data-label. Uso: eventos, carta y cervezas. */
+     fila con la etiqueta de cada celda tomada de data-label. Uso: eventos, carta, cervezas, empleados y promociones. */
   .data-table-fit th { @apply whitespace-normal px-3; }
   .data-table-fit td { @apply px-3; }
   .data-table-fit .cell-actions { @apply flex flex-wrap items-center gap-2 xl:flex-col xl:items-stretch; }

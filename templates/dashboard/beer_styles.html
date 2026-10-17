@@ -1,0 +1,24 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% block title %}{% translate "Estilos" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Estilos de cerveza" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Lista para elegir el estilo de cada cerveza (IPA, Stout, Lager…)." %}</p>{% endblock %}
+{% block body %}
+<div class="mb-4 flex flex-wrap gap-2">
+  <a class="btn btn-primary btn-sm" href="{% url 'dashboard:beer_style_create' %}">{% translate "Nuevo estilo" %}</a>
+  <a class="btn btn-secondary btn-sm" href="{% url 'dashboard:beers' %}">{% translate "← Volver a cervezas" %}</a>
+</div>
+{% if items %}
+  <ul class="card divide-y divide-line p-0" data-style-list>
+    {% for style in items %}
+      <li class="flex items-center justify-between gap-4 px-5 py-3">
+        <span class="font-semibold">{{ style.name }}</span>
+        <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:beer_style_edit' style.pk %}">{% translate "Editar" %}<span class="sr-only"> {{ style.name }}</span></a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="pending">{% translate "Todavía no hay estilos." %}</p>
+{% endif %}
+<p class="note mt-3">{% translate "Los estilos que no usa ninguna cerveza se pueden borrar desde la administración avanzada (Configuración)." %}</p>
+{% endblock %}

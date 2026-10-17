@@ -24,9 +24,14 @@ Fase 19:
   `never_expires`.
 - **Imagen** opcional, solo en email.
 - `create_and_queue`: guarda y programa a la vez («Crear y enviar»).
+- `send_copy_to_selection` (Fase 24): copia una campaña ya creada para los
+  clientes seleccionados y la programa, con clave de idempotencia.
 """
+import os
+
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import transaction
+from django.core.files import File
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
@@ -156,6 +161,55 @@ def create_and_queue(*, actor, campaign, data, recipients=None, image=None, clea
         actor=actor, campaign=campaign, data=data, recipients=recipients, image=image, clear_image=clear_image
     )
     return queue_campaign(actor=actor, campaign=campaign)
+
+
+SELECTION_COPY_SUFFIX = " (seleccionados)"
+
+
+@transaction.atomic
+def send_copy_to_selection(*, actor, source_public_id, recipients, idempotency_key):
+    """
+    «Enviar una campaña ya creada» a los clientes seleccionados (Fase 24).
+
+    Crea una campaña nueva con las condiciones actuales de la elegida (canal, asunto,
+    texto, imagen y puntos de regalo), solo para `recipients`, y la programa con
+    `create_and_queue` (mismas validaciones; todo o nada). La original no cambia.
+    `idempotency_key` evita que un doble envío cree dos copias o regale dos veces.
+    """
+    _require_owner(actor)
+    existing = Campaign.objects.filter(copy_key=idempotency_key).first()
+    if existing is not None:
+        return existing
+    source = Campaign.objects.filter(public_id=source_public_id).first()
+    if source is None:
+        raise ValidationError(_("Campaña desconocida."))
+    data = {name: getattr(source, name) for name in EDITABLE_FIELDS}
+    data["name"] = f"{source.name[: 100 - len(SELECTION_COPY_SUFFIX)]}{SELECTION_COPY_SUFFIX}"
+    data["audience"] = Audience.SELECTED
+    try:
+        with transaction.atomic():
+            campaign = Campaign(copy_key=idempotency_key)
+            if source.image:
+                with source.image.open("rb") as content:
+                    image = File(content, name=os.path.basename(source.image.name))
+                    campaign = create_and_queue(actor=actor, campaign=campaign, data=data, recipients=recipients, image=image)
+            else:
+                campaign = create_and_queue(actor=actor, campaign=campaign, data=data, recipients=recipients)
+    except IntegrityError:
+        # Otro envío con la misma clave se ha adelantado: se devuelve su copia.
+        existing = Campaign.objects.filter(copy_key=idempotency_key).first()
+        if existing is None:
+            raise
+        return existing
+    _audit(
+        actor,
+        campaign,
+        event="copied_to_selection",
+        source=str(source.public_id),
+        selected=campaign.selected_recipients.count(),
+        gift_points=campaign.gift_points,
+    )
+    return campaign
 
 
 @transaction.atomic

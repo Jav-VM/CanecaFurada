@@ -11,19 +11,20 @@
 {% include "dashboard/_period_notice.html" %}
 
 <div class="table-wrap">
-  <table class="data-table" data-staff-list>
+  {# Sin scroll lateral: compacta desde xl y una tarjeta por empleado por debajo (.data-table-fit). #}
+  <table class="data-table data-table-fit" data-staff-list>
     <thead><tr>{% sort_th sort "nombre" _("Nombre") %}{% sort_th sort "email" _("Email de acceso") %}{% sort_th sort "rol" _("Rol") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "compras" _("Compras") "num" %}{% sort_th sort "importe" _("Importe") "num" %}{% sort_th sort "canjes" _("Canjes") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
     <tbody>
       {% for member, purchases, validations in rows %}
         <tr>
-          <td class="font-semibold">{{ member.get_full_name }}{% if member.pk == user.pk %} <span class="note">{% translate "(tú)" %}</span>{% endif %}</td>
-          <td class="break-all">{{ member.email }}</td>
-          <td>{{ member.get_role_display }}</td>
-          <td>{% if member.is_active %}{% translate "Activa" %}{% else %}<span class="text-danger">{% translate "Desactivada" %}</span>{% endif %}</td>
-          <td class="num">{{ purchases.0 }}</td>
-          <td class="num">{% if purchases.1 is not None %}{{ purchases.1|floatformat:2 }} €{% else %}0,00 €{% endif %}</td>
-          <td class="num">{{ validations }}</td>
-          <td>
+          <td class="cell-title font-semibold" data-label="{% translate 'Nombre' %}">{{ member.get_full_name }}{% if member.pk == user.pk %} <span class="note">{% translate "(tú)" %}</span>{% endif %}</td>
+          <td class="break-all" data-label="{% translate 'Email de acceso' %}">{{ member.email }}</td>
+          <td data-label="{% translate 'Rol' %}">{{ member.get_role_display }}</td>
+          <td data-label="{% translate 'Estado' %}">{% if member.is_active %}{% translate "Activa" %}{% else %}<span class="text-danger">{% translate "Desactivada" %}</span>{% endif %}</td>
+          <td class="num" data-label="{% translate 'Compras' %}">{{ purchases.0 }}</td>
+          <td class="num whitespace-nowrap" data-label="{% translate 'Importe' %}">{% if purchases.1 is not None %}{{ purchases.1|floatformat:2 }} €{% else %}0,00 €{% endif %}</td>
+          <td class="num" data-label="{% translate 'Canjes' %}">{{ validations }}</td>
+          <td class="cell-buttons" data-label="{% translate 'Acciones' %}">
             {% if member.pk != user.pk %}
               <div class="flex flex-col gap-2">
                 <form method="post" action="{% url 'dashboard:employee_status' member.public_id %}">
@@ -48,7 +49,7 @@
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="8" class="text-mist">{% translate "No hay personal dado de alta." %}</td></tr>
+        <tr><td colspan="8" class="cell-title text-mist">{% translate "No hay personal dado de alta." %}</td></tr>
       {% endfor %}
     </tbody>
   </table>

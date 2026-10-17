@@ -5,10 +5,10 @@
 {% block intro %}<p class="lead mt-2">{% if beers %}{% translate "Cervezas propias, invitadas y rotativas." %}{% else %}{% translate "Productos fijos de la carta. Las cervezas están en su propia sección." %}{% endif %}</p>{% endblock %}
 {% block body %}
 <div class="mb-4 flex flex-wrap gap-2">
-  <a class="btn btn-primary btn-sm" href="{% url 'admin:catalog_product_add' %}">{% translate "Nuevo producto" %}</a>
-  <a class="btn btn-secondary btn-sm" href="{% url 'admin:catalog_category_changelist' %}">{% translate "Categorías" %}</a>
-  {% if beers %}<a class="btn btn-secondary btn-sm" href="{% url 'admin:catalog_beerstyle_changelist' %}">{% translate "Estilos" %}</a>{% endif %}
-  <a class="btn btn-secondary btn-sm" href="{% url 'admin:catalog_tapmenu_changelist' %}">{% translate "Carta de grifos" %}</a>
+  <a class="btn btn-primary btn-sm" href="{% url 'dashboard:product_create' %}{% if beers %}?tipo=HOUSE_BEER{% endif %}">{% if beers %}{% translate "Nueva cerveza" %}{% else %}{% translate "Nuevo producto" %}{% endif %}</a>
+  <a class="btn btn-secondary btn-sm" href="{% url 'dashboard:categories' %}">{% translate "Categorías" %}</a>
+  {% if beers %}<a class="btn btn-secondary btn-sm" href="{% url 'dashboard:beer_styles' %}">{% translate "Estilos" %}</a>
+  <a class="btn btn-secondary btn-sm" href="{% url 'dashboard:tap_menus' %}">{% translate "Carta de grifos" %}</a>{% endif %}
 </div>
 {% if beers %}<p class="note mb-4">{% translate "Carta de grifos:" %} {% if tap_menu %}{% blocktranslate trimmed with title=tap_menu.title %}publicada («{{ title }}»){% endblocktranslate %}{% else %}{% translate "sin publicar" %}{% endif %}.</p>{% endif %}
 
@@ -49,7 +49,7 @@
               <form method="post" action="{% url 'dashboard:product_status' product.public_id %}" class="cell-actions">
                 {% csrf_token %}
                 {% for value, label in product_statuses %}{% if value != product.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "PUBLISHED" %}{% translate "Publicar" %}{% elif value == "DRAFT" %}{% translate "A borrador" %}{% else %}{% translate "Archivar" %}{% endif %}</button>{% endif %}{% endfor %}
-                <a class="btn btn-ghost btn-sm" href="{% url 'admin:catalog_product_change' product.pk %}">{% translate "Editar" %}</a>
+                <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:product_edit' product.public_id %}">{% translate "Editar" %}<span class="sr-only"> {{ product.name }}</span></a>
               </form>
             </td>
           </tr>
@@ -61,5 +61,5 @@
 {% else %}
   <p class="pending">{% translate "No hay productos con estos filtros." %}</p>
 {% endif %}
-<p class="note mt-3">{% translate "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin." %}</p>
+<p class="note mt-3">{% translate "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). Los productos nuevos se guardan como borrador." %}</p>
 {% endblock %}

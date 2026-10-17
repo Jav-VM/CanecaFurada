@@ -1,0 +1,31 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% block title %}{% translate "Categorías" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Categorías" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Apartados de la carta, de menor a mayor orden. Una categoría sin publicar oculta sus productos en la web." %}</p>{% endblock %}
+{% block body %}
+<div class="mb-4 flex flex-wrap gap-2">
+  <a class="btn btn-primary btn-sm" href="{% url 'dashboard:category_create' %}">{% translate "Nueva categoría" %}</a>
+  <a class="btn btn-secondary btn-sm" href="{% url 'dashboard:menu' %}">{% translate "← Volver a la carta" %}</a>
+</div>
+{% if items %}
+  <div class="table-wrap">
+    <table class="data-table" data-category-list>
+      <thead><tr><th scope="col">{% translate "Categoría" %}</th><th scope="col" class="num">{% translate "Orden" %}</th><th scope="col">{% translate "Publicación" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+      <tbody>
+        {% for category in items %}
+          <tr>
+            <td class="font-semibold">{{ category.name }}</td>
+            <td class="num">{{ category.position }}</td>
+            <td>{% if category.is_published %}{% translate "Publicada" %}{% else %}{% translate "Oculta" %}{% endif %}</td>
+            <td><a class="btn btn-ghost btn-sm" href="{% url 'dashboard:category_edit' category.slug %}">{% translate "Editar" %}<span class="sr-only"> {{ category.name }}</span></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="pending">{% translate "Todavía no hay categorías." %}</p>
+{% endif %}
+<p class="note mt-3">{% translate "Para dejar de mostrar una categoría, desmarca «Publicada». Las que no tienen productos se pueden borrar desde la administración avanzada (Configuración)." %}</p>
+{% endblock %}

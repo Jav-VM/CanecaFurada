@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 09:55+0200\n"
+"POT-Creation-Date: 2026-10-17 18:22+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -1623,6 +1623,9 @@ msgstr "Caducidad de puntos procesada"
 msgid "Regalo de cumpleaños modificado"
 msgstr "Regalo de cumpleaños modificado"
 
+msgid "Carta modificada"
+msgstr "Carta modificada"
+
 msgid "actor"
 msgstr "actor"
 
@@ -1921,6 +1924,9 @@ msgstr "Caducan según la configuración de caducidad"
 msgid "No caducan nunca"
 msgstr "No caducan nunca"
 
+msgid "Vacío: se genera a partir del nombre. Se usa como ancla en la carta (/carta/#identificador)."
+msgstr "Vacío: se genera a partir del nombre. Se usa como ancla en la carta (/carta/#identificador)."
+
 msgid "Resumen"
 msgstr "Resumen"
 
@@ -2018,6 +2024,49 @@ msgid "«%(name)s» marcado como agotado."
 msgstr "«%(name)s» marcado como agotado."
 
 #, python-format
+msgid "«%(name)s» guardado."
+msgstr "«%(name)s» guardado."
+
+msgid "Nuevo producto"
+msgstr "Nuevo producto"
+
+msgid "Se guarda como borrador: publícalo desde el listado cuando esté completo."
+msgstr "Se guarda como borrador: publícalo desde el listado cuando esté completo."
+
+#, python-format
+msgid "Editar «%(name)s»"
+msgstr "Editar «%(name)s»"
+
+#, python-format
+msgid "Estado: %(status)s. La publicación y la disponibilidad se cambian desde el listado."
+msgstr "Estado: %(status)s. La publicación y la disponibilidad se cambian desde el listado."
+
+msgid "Nueva categoría"
+msgstr "Nueva categoría"
+
+msgid "Nuevo estilo"
+msgstr "Nuevo estilo"
+
+msgid "Nueva carta de grifos"
+msgstr "Nueva carta de grifos"
+
+msgid "En la web se ve la carta publicada más reciente."
+msgstr "En la web se ve la carta publicada más reciente."
+
+msgid "Nueva recompensa"
+msgstr "Nueva recompensa"
+
+msgid "Se guarda como borrador: actívala desde el listado."
+msgstr "Se guarda como borrador: actívala desde el listado."
+
+#, python-format
+msgid "Estado: %(status)s. Se cambia desde el listado."
+msgstr "Estado: %(status)s. Se cambia desde el listado."
+
+msgid "Nueva promoción"
+msgstr "Nueva promoción"
+
+#, python-format
 msgid "Evento «%(title)s» guardado."
 msgstr "Evento «%(title)s» guardado."
 
@@ -2045,6 +2094,15 @@ msgstr "Campaña creada y programada. Se repartirá en la próxima ejecución de
 
 msgid "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
 msgstr "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
+
+msgid "No hay clientes seleccionados. Elígelos en Clientes."
+msgstr "No hay clientes seleccionados. Elígelos en Clientes."
+
+msgid "Elige una campaña de la lista."
+msgstr "Elige una campaña de la lista."
+
+msgid "Campaña copiada para los clientes seleccionados y programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
+msgstr "Campaña copiada para los clientes seleccionados y programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
 
 msgid "Solo se pueden modificar las campañas en borrador."
 msgstr "Solo se pueden modificar las campañas en borrador."
@@ -2721,8 +2779,8 @@ msgstr "Los puntos de regalo van de 1 a %(MAX)s."
 msgid "Elige los destinatarios."
 msgstr "Elige los destinatarios."
 
-msgid "No hay clientes seleccionados. Elígelos en Clientes."
-msgstr "No hay clientes seleccionados. Elígelos en Clientes."
+msgid "Campaña desconocida."
+msgstr "Campaña desconocida."
 
 msgid "Esta campaña ya no se puede programar."
 msgstr "Esta campaña ya no se puede programar."
@@ -3356,8 +3414,9 @@ msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario»."
 msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 
-msgid "Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…)."
-msgstr "Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…)."
+#, python-format
+msgid "Pega el enlace «Compartir» de Google Maps (%(examples)s)."
+msgstr "Pega el enlace «Compartir» de Google Maps (%(examples)s)."
 
 msgid "página"
 msgstr "página"
@@ -3849,6 +3908,27 @@ msgstr "Vas a eliminar «%(title)s» y sus imágenes (%(images)s). No se puede d
 msgid "Sí, eliminar"
 msgstr "Sí, eliminar"
 
+msgid "Estilos"
+msgstr "Estilos"
+
+msgid "Estilos de cerveza"
+msgstr "Estilos de cerveza"
+
+msgid "Lista para elegir el estilo de cada cerveza (IPA, Stout, Lager…)."
+msgstr "Lista para elegir el estilo de cada cerveza (IPA, Stout, Lager…)."
+
+msgid "← Volver a cervezas"
+msgstr "← Volver a cervezas"
+
+msgid "Editar"
+msgstr "Editar"
+
+msgid "Todavía no hay estilos."
+msgstr "Todavía no hay estilos."
+
+msgid "Los estilos que no usa ninguna cerveza se pueden borrar desde la administración avanzada (Configuración)."
+msgstr "Los estilos que no usa ninguna cerveza se pueden borrar desde la administración avanzada (Configuración)."
+
 msgid "Editar campaña"
 msgstr "Editar campaña"
 
@@ -3860,6 +3940,38 @@ msgstr "Solo se envía a quien ha aceptado comunicaciones promocionales. «Crear
 
 msgid "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
 msgstr "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
+
+msgid "Enviar una campaña ya creada"
+msgstr "Enviar una campaña ya creada"
+
+#, python-format
+msgid "Se crea en Comunicaciones una copia con sus condiciones actuales (canal, asunto, texto, imagen y puntos de regalo) solo para el cliente seleccionado, y se programa. La original no cambia. Si regala puntos, se regalan también a quien ya los recibió."
+msgid_plural "Se crea en Comunicaciones una copia con sus condiciones actuales (canal, asunto, texto, imagen y puntos de regalo) solo para los %(count)s clientes seleccionados, y se programa. La original no cambia. Si regala puntos, se regalan a todos los seleccionados, también a quien ya los recibió."
+msgstr[0] "Se crea en Comunicaciones una copia con sus condiciones actuales (canal, asunto, texto, imagen y puntos de regalo) solo para el cliente seleccionado, y se programa. La original no cambia. Si regala puntos, se regalan también a quien ya los recibió."
+msgstr[1] "Se crea en Comunicaciones una copia con sus condiciones actuales (canal, asunto, texto, imagen y puntos de regalo) solo para los %(count)s clientes seleccionados, y se programa. La original no cambia. Si regala puntos, se regalan a todos los seleccionados, también a quien ya los recibió."
+
+#, python-format
+msgid "Regala %(points)s puntos (caducan)"
+msgstr "Regala %(points)s puntos (caducan)"
+
+#, python-format
+msgid "Regala %(points)s puntos (no caducan)"
+msgstr "Regala %(points)s puntos (no caducan)"
+
+msgid "Programando…"
+msgstr "Programando…"
+
+#, python-format
+msgid "Enviar al seleccionado"
+msgid_plural "Enviar a los %(count)s seleccionados"
+msgstr[0] "Enviar al seleccionado"
+msgstr[1] "Enviar a los %(count)s seleccionados"
+
+msgid "Todavía no hay campañas creadas."
+msgstr "Todavía no hay campañas creadas."
+
+msgid "O crea una campaña nueva para ellos"
+msgstr "O crea una campaña nueva para ellos"
 
 #, python-format
 msgid "Cliente seleccionado (%(count)s)"
@@ -3893,6 +4005,36 @@ msgstr "Crear y enviar"
 
 msgid "← Volver a comunicaciones"
 msgstr "← Volver a comunicaciones"
+
+msgid "Categorías"
+msgstr "Categorías"
+
+msgid "Apartados de la carta, de menor a mayor orden. Una categoría sin publicar oculta sus productos en la web."
+msgstr "Apartados de la carta, de menor a mayor orden. Una categoría sin publicar oculta sus productos en la web."
+
+msgid "← Volver a la carta"
+msgstr "← Volver a la carta"
+
+msgid "Categoría"
+msgstr "Categoría"
+
+msgid "Orden"
+msgstr "Orden"
+
+msgid "Acciones"
+msgstr "Acciones"
+
+msgid "Publicada"
+msgstr "Publicada"
+
+msgid "Oculta"
+msgstr "Oculta"
+
+msgid "Todavía no hay categorías."
+msgstr "Todavía no hay categorías."
+
+msgid "Para dejar de mostrar una categoría, desmarca «Publicada». Las que no tienen productos se pueden borrar desde la administración avanzada (Configuración)."
+msgstr "Para dejar de mostrar una categoría, desmarca «Publicada». Las que no tienen productos se pueden borrar desde la administración avanzada (Configuración)."
 
 msgid "Campañas promocionales y registro de todo lo que envía la plataforma."
 msgstr "Campañas promocionales y registro de todo lo que envía la plataforma."
@@ -3950,9 +4092,6 @@ msgstr "No enviadas"
 msgid "Fallidas"
 msgstr "Fallidas"
 
-msgid "Acciones"
-msgstr "Acciones"
-
 #, python-format
 msgid "%(count)s seleccionado"
 msgid_plural "%(count)s seleccionados"
@@ -3965,9 +4104,6 @@ msgstr "sin caducidad"
 #, python-format
 msgid "a %(count)s clientes"
 msgstr "a %(count)s clientes"
-
-msgid "Editar"
-msgstr "Editar"
 
 msgid "Programar envío"
 msgstr "Programar envío"
@@ -4462,6 +4598,12 @@ msgstr "Todavía no hay clientes con localidad en su perfil."
 msgid "Total de la base: %(total)s clientes activos."
 msgstr "Total de la base: %(total)s clientes activos."
 
+msgid "Guardar"
+msgstr "Guardar"
+
+msgid "← Volver"
+msgstr "← Volver"
+
 #, python-format
 msgid "Conversión vigente: <strong class=\"text-paper\">%(rate)s puntos por euro</strong>"
 msgstr "Conversión vigente: <strong class=\"text-paper\">%(rate)s puntos por euro</strong>"
@@ -4511,14 +4653,8 @@ msgstr "Cervezas propias, invitadas y rotativas."
 msgid "Productos fijos de la carta. Las cervezas están en su propia sección."
 msgstr "Productos fijos de la carta. Las cervezas están en su propia sección."
 
-msgid "Nuevo producto"
-msgstr "Nuevo producto"
-
-msgid "Categorías"
-msgstr "Categorías"
-
-msgid "Estilos"
-msgstr "Estilos"
+msgid "Nueva cerveza"
+msgstr "Nueva cerveza"
 
 msgid "Carta de grifos:"
 msgstr "Carta de grifos:"
@@ -4532,9 +4668,6 @@ msgstr "sin publicar"
 
 msgid "Filtrar productos"
 msgstr "Filtrar productos"
-
-msgid "Categoría"
-msgstr "Categoría"
 
 msgid "Producto"
 msgstr "Producto"
@@ -4560,14 +4693,11 @@ msgstr "A borrador"
 msgid "No hay productos con estos filtros."
 msgstr "No hay productos con estos filtros."
 
-msgid "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin."
-msgstr "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). La ficha completa, con imagen, se edita en el admin."
+msgid "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). Los productos nuevos se guardan como borrador."
+msgstr "Nada se borra: los productos se archivan. Solo se publica un producto completo (si falta algún dato, se indica el error). Los productos nuevos se guardan como borrador."
 
 msgid "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)."
 msgstr "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)."
-
-msgid "Nueva promoción"
-msgstr "Nueva promoción"
 
 msgid "Vigencia"
 msgstr "Vigencia"
@@ -4697,9 +4827,6 @@ msgstr "No hay reservas con estos filtros."
 msgid "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
 msgstr "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
 
-msgid "Nueva recompensa"
-msgstr "Nueva recompensa"
-
 msgid "Coste"
 msgstr "Coste"
 
@@ -4716,8 +4843,8 @@ msgstr "%(points)s pts"
 msgid "Todavía no hay recompensas."
 msgstr "Todavía no hay recompensas."
 
-msgid "La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan."
-msgstr "La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan."
+msgid "Las recompensas nuevas se guardan como borrador: actívalas aquí. No se borran: se pausan o se archivan."
+msgstr "Las recompensas nuevas se guardan como borrador: actívalas aquí. No se borran: se pausan o se archivan."
 
 msgid "Filtrar canjes"
 msgstr "Filtrar canjes"
@@ -4778,9 +4905,6 @@ msgstr "Son datos públicos: no escribas datos personales de clientes ni de empl
 
 msgid "Crear artículo"
 msgstr "Crear artículo"
-
-msgid "Guardar"
-msgstr "Guardar"
 
 msgid "Usar un artículo de otra página"
 msgstr "Usar un artículo de otra página"
@@ -4892,9 +5016,26 @@ msgstr "Valores fijados en la configuración del servidor"
 msgid "Se cambian en los ajustes del proyecto, no desde aquí."
 msgstr "Se cambian en los ajustes del proyecto, no desde aquí."
 
-#, python-format
-msgid "Administración técnica (auditoría, gestión avanzada): <a class=\"link\" href=\"%(url)s\">admin</a>."
-msgstr "Administración técnica (auditoría, gestión avanzada): <a class=\"link\" href=\"%(url)s\">admin</a>."
+msgid "Administración avanzada"
+msgstr "Administración avanzada"
+
+msgid "Para tareas técnicas que no están en el dashboard: consultar la auditoría, borrar categorías o estilos sin productos y otros ajustes del sistema. Úsala con cuidado."
+msgstr "Para tareas técnicas que no están en el dashboard: consultar la auditoría, borrar categorías o estilos sin productos y otros ajustes del sistema. Úsala con cuidado."
+
+msgid "Abrir la administración avanzada"
+msgstr "Abrir la administración avanzada"
+
+msgid "La imagen con las cervezas de los grifos. En la web se ve la publicada más reciente; las anteriores quedan como historial."
+msgstr "La imagen con las cervezas de los grifos. En la web se ve la publicada más reciente; las anteriores quedan como historial."
+
+msgid "En la web"
+msgstr "En la web"
+
+msgid "Sin publicar"
+msgstr "Sin publicar"
+
+msgid "Todavía no hay ninguna carta de grifos."
+msgstr "Todavía no hay ninguna carta de grifos."
 
 #, python-format
 msgid "Hola, %(first_name)s:"

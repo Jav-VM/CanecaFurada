@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.countries import COUNTRIES
 from apps.accounts.selectors import GEO_LEVEL_LABELS
-from apps.catalog.models import Product
+from apps.catalog.models import BeerStyle, Category, Product, TapMenu
 from apps.catalog.validators import validate_image_extension, validate_image_file
 from apps.events.models import Event, Reservation
 from apps.core.i18n import lazy_format
@@ -24,7 +24,7 @@ from apps.loyalty.birthday_settings import PLACEHOLDER
 from apps.loyalty.models import BirthdayMessage, PointsExpiryPolicy, PointsTransaction, Promotion
 from apps.notifications.models import Campaign, Channel, Notification
 from apps.purchases.models import Purchase
-from apps.rewards.models import Redemption
+from apps.rewards.models import Redemption, Reward
 
 # --- Periodo --------------------------------------------------------------------
 
@@ -523,3 +523,87 @@ def reservation_period(key, now=None):
     if key == "todas":
         return None, None, True
     return today, None, False
+
+
+# --- Fichas de la carta, recompensas y promociones (Fase 24) ----------------------
+# Sustituyen a los formularios del admin. Solo convierten la entrada: valida y guarda
+# el servicio de cada dominio. El estado (publicar, activar, archivar…) no está aquí:
+# se cambia con los botones de cada listado.
+
+
+class _ImageServiceDataMixin:
+    """`service_data()` como en `EventForm`: «Eliminar» deja la imagen vacía y sin fichero nuevo no se toca."""
+
+    def service_data(self):
+        data = {name: self.cleaned_data.get(name) for name in self.Meta.fields}
+        if "image" in data:
+            if data["image"] is False:
+                data["image"] = ""
+            elif "image" not in self.changed_data:
+                data.pop("image")
+        return data
+
+
+class ProductForm(_ImageServiceDataMixin, forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = (
+            "category", "kind", "name", "description", "style", "abv", "brewery",
+            "price", "serving", "image", "position", "is_featured",
+        )
+        widgets = {"description": forms.Textarea(attrs={"rows": 4})}
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ("name", "slug", "description", "position", "is_published")
+        widgets = {"description": forms.Textarea(attrs={"rows": 3})}
+        help_texts = {"slug": _("Vacío: se genera a partir del nombre. Se usa como ancla en la carta (/carta/#identificador).")}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["slug"].required = False
+
+    def service_data(self):
+        return {name: self.cleaned_data.get(name) for name in self.Meta.fields}
+
+
+class BeerStyleForm(forms.ModelForm):
+    class Meta:
+        model = BeerStyle
+        fields = ("name",)
+
+    def service_data(self):
+        return {"name": self.cleaned_data.get("name")}
+
+
+class TapMenuForm(_ImageServiceDataMixin, forms.ModelForm):
+    class Meta:
+        model = TapMenu
+        fields = ("title", "image", "text_alternative", "is_published")
+        widgets = {"text_alternative": forms.Textarea(attrs={"rows": 6})}
+
+
+class RewardForm(forms.ModelForm):
+    class Meta:
+        model = Reward
+        fields = ("name", "description", "image", "points_cost", "stock", "valid_from", "valid_until", "position")
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 4}),
+            "valid_from": forms.DateTimeInput(attrs=_DATETIME_WIDGET, format="%Y-%m-%dT%H:%M"),
+            "valid_until": forms.DateTimeInput(attrs=_DATETIME_WIDGET, format="%Y-%m-%dT%H:%M"),
+        }
+
+
+class PromotionForm(forms.ModelForm):
+    class Meta:
+        model = Promotion
+        fields = (
+            "name", "description", "kind", "bonus_type", "fixed_points", "multiplier", "min_purchase_amount",
+            "starts_at", "ends_at", "max_uses_per_customer", "max_total_uses",
+        )
+        widgets = {
+            "starts_at": forms.DateTimeInput(attrs=_DATETIME_WIDGET, format="%Y-%m-%dT%H:%M"),
+            "ends_at": forms.DateTimeInput(attrs=_DATETIME_WIDGET, format="%Y-%m-%dT%H:%M"),
+        }

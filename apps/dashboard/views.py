@@ -34,7 +34,7 @@ from apps.accounts.models import CustomerProfile, User
 from apps.accounts.permissions import role_required
 from apps.catalog import selectors as catalog_selectors
 from apps.catalog import services as catalog
-from apps.catalog.models import Category, Product
+from apps.catalog.models import BeerStyle, Category, Product, TapMenu
 from apps.events import selectors as event_selectors
 from apps.events import services as events_services
 from apps.events.models import Event, Reservation
@@ -843,6 +843,314 @@ def product_availability(request, public_id):
     return _back_to_products(request, product)
 
 
+# --- Fichas de la carta, recompensas y promociones (Fase 24) -----------------------
+# Sustituyen a los formularios del admin. Mismo patrón que los eventos: el formulario
+# solo convierte la entrada y el servicio de cada dominio valida, guarda y audita.
+
+
+def _object_form(*, form, title, back_url, intro=""):
+    """Contexto de `object_form.html`, la plantilla común de estas fichas."""
+    return {"form": form, "form_title": title, "form_intro": intro, "back_url": back_url}
+
+
+def _catalog_form_view(request, *, form_class, instance, save, section, title, back_url, saved_url, intro="", initial=None):
+    """Formulario de una ficha del catálogo: `save(data)` llama al servicio con un objeto nuevo o el existente."""
+    form = form_class(request.POST or None, request.FILES or None, instance=instance, initial=initial)
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            try:
+                saved = save(form.service_data())
+            except ValidationError as exc:
+                _apply_errors(form, exc)
+            else:
+                messages.success(request, _("«%(name)s» guardado.") % {"name": saved})
+                return redirect(saved_url(saved))
+        status = 400
+    context = _object_form(form=form, title=title, back_url=back_url, intro=intro)
+    return _render(request, "object_form.html", section, context, status=status)
+
+
+def _products_url(product):
+    return reverse("dashboard:beers" if product.is_beer else "dashboard:menu")
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def product_create(request):
+    # Desde Cervezas, el tipo empieza en «Cerveza propia» (lista blanca de tipos).
+    kind = request.GET.get("tipo")
+    initial = {"kind": kind} if kind in Product.Kind.values else None
+    beers = kind in Product.BEER_KINDS
+    return _catalog_form_view(
+        request,
+        form_class=forms.ProductForm,
+        instance=Product(),
+        initial=initial,
+        save=lambda data: catalog.save_product(actor=request.user, product=Product(), data=data),
+        section="cervezas" if beers else "carta",
+        title=_("Nuevo producto"),
+        intro=_("Se guarda como borrador: publícalo desde el listado cuando esté completo."),
+        back_url=reverse("dashboard:beers" if beers else "dashboard:menu"),
+        saved_url=_products_url,
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def product_edit(request, public_id):
+    product = _product_or_404(public_id)
+    return _catalog_form_view(
+        request,
+        form_class=forms.ProductForm,
+        instance=product,
+        save=lambda data: catalog.save_product(actor=request.user, product=product, data=data),
+        section="cervezas" if product.is_beer else "carta",
+        title=_("Editar «%(name)s»") % {"name": product.name},
+        intro=_("Estado: %(status)s. La publicación y la disponibilidad se cambian desde el listado.") % {"status": product.get_status_display()},
+        back_url=_products_url(product),
+        saved_url=_products_url,
+    )
+
+
+def _catalog_list(request, *, template, section, items, **extra):
+    return _render(request, template, section, {"items": items, **extra})
+
+
+@never_cache
+@require_GET
+@owner_required
+def categories(request):
+    return _catalog_list(request, template="categories.html", section="carta", items=Category.objects.order_by("position", "name"))
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def category_create(request):
+    return _catalog_form_view(
+        request,
+        form_class=forms.CategoryForm,
+        instance=Category(),
+        save=lambda data: catalog.save_category(actor=request.user, category=Category(), data=data),
+        section="carta",
+        title=_("Nueva categoría"),
+        back_url=reverse("dashboard:categories"),
+        saved_url=lambda _saved: reverse("dashboard:categories"),
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def category_edit(request, slug):
+    category = Category.objects.filter(slug=slug).first()
+    if category is None:
+        raise Http404
+    return _catalog_form_view(
+        request,
+        form_class=forms.CategoryForm,
+        instance=category,
+        save=lambda data: catalog.save_category(actor=request.user, category=category, data=data),
+        section="carta",
+        title=_("Editar «%(name)s»") % {"name": category.name},
+        back_url=reverse("dashboard:categories"),
+        saved_url=lambda _saved: reverse("dashboard:categories"),
+    )
+
+
+@never_cache
+@require_GET
+@owner_required
+def beer_styles(request):
+    return _catalog_list(request, template="beer_styles.html", section="cervezas", items=BeerStyle.objects.order_by("name"))
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def beer_style_create(request):
+    return _catalog_form_view(
+        request,
+        form_class=forms.BeerStyleForm,
+        instance=BeerStyle(),
+        save=lambda data: catalog.save_beer_style(actor=request.user, style=BeerStyle(), data=data),
+        section="cervezas",
+        title=_("Nuevo estilo"),
+        back_url=reverse("dashboard:beer_styles"),
+        saved_url=lambda _saved: reverse("dashboard:beer_styles"),
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def beer_style_edit(request, pk):
+    style = BeerStyle.objects.filter(pk=pk).first()
+    if style is None:
+        raise Http404
+    return _catalog_form_view(
+        request,
+        form_class=forms.BeerStyleForm,
+        instance=style,
+        save=lambda data: catalog.save_beer_style(actor=request.user, style=style, data=data),
+        section="cervezas",
+        title=_("Editar «%(name)s»") % {"name": style.name},
+        back_url=reverse("dashboard:beer_styles"),
+        saved_url=lambda _saved: reverse("dashboard:beer_styles"),
+    )
+
+
+@never_cache
+@require_GET
+@owner_required
+def tap_menus(request):
+    return _catalog_list(
+        request,
+        template="tap_menus.html",
+        section="cervezas",
+        items=TapMenu.objects.order_by("-updated_at", "-id"),
+        current=catalog_selectors.current_tap_menu(),
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def tap_menu_create(request):
+    return _catalog_form_view(
+        request,
+        form_class=forms.TapMenuForm,
+        instance=TapMenu(),
+        save=lambda data: catalog.save_tap_menu(actor=request.user, tap_menu=TapMenu(), data=data),
+        section="cervezas",
+        title=_("Nueva carta de grifos"),
+        intro=_("En la web se ve la carta publicada más reciente."),
+        back_url=reverse("dashboard:tap_menus"),
+        saved_url=lambda _saved: reverse("dashboard:tap_menus"),
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def tap_menu_edit(request, pk):
+    tap_menu = TapMenu.objects.filter(pk=pk).first()
+    if tap_menu is None:
+        raise Http404
+    return _catalog_form_view(
+        request,
+        form_class=forms.TapMenuForm,
+        instance=tap_menu,
+        save=lambda data: catalog.save_tap_menu(actor=request.user, tap_menu=tap_menu, data=data),
+        section="cervezas",
+        title=_("Editar «%(name)s»") % {"name": tap_menu.title},
+        intro=_("En la web se ve la carta publicada más reciente."),
+        back_url=reverse("dashboard:tap_menus"),
+        saved_url=lambda _saved: reverse("dashboard:tap_menus"),
+    )
+
+
+def _model_form_view(request, *, form_class, instance, save, section, title, back_url, intro=""):
+    """Recompensas y promociones: sus servicios reciben el objeto ya rellenado y los campos cambiados (como en el admin)."""
+    form = form_class(request.POST or None, request.FILES or None, instance=instance)
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            try:
+                saved = save(form.save(commit=False), form.changed_data)
+            except ValidationError as exc:
+                _apply_errors(form, exc)
+            else:
+                messages.success(request, _("«%(name)s» guardado.") % {"name": saved.name})
+                return redirect(back_url)
+        status = 400
+    context = _object_form(form=form, title=title, back_url=back_url, intro=intro)
+    return _render(request, "object_form.html", section, context, status=status)
+
+
+def _reward_or_404(public_id):
+    reward = Reward.objects.filter(public_id=public_id).first()
+    if reward is None:
+        raise Http404
+    return reward
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def reward_create(request):
+    return _model_form_view(
+        request,
+        form_class=forms.RewardForm,
+        instance=Reward(),
+        save=lambda reward, changed: rewards.save_reward(actor=request.user, reward=reward, changed_fields=changed),
+        section="recompensas",
+        title=_("Nueva recompensa"),
+        intro=_("Se guarda como borrador: actívala desde el listado."),
+        back_url=reverse("dashboard:rewards"),
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def reward_edit(request, public_id):
+    reward = _reward_or_404(public_id)
+    return _model_form_view(
+        request,
+        form_class=forms.RewardForm,
+        instance=reward,
+        save=lambda reward, changed: rewards.save_reward(actor=request.user, reward=reward, changed_fields=changed),
+        section="recompensas",
+        title=_("Editar «%(name)s»") % {"name": reward.name},
+        intro=_("Estado: %(status)s. Se cambia desde el listado.") % {"status": reward.get_status_display()},
+        back_url=reverse("dashboard:rewards"),
+    )
+
+
+def _promotion_or_404(public_id):
+    promotion = Promotion.objects.filter(public_id=public_id).first()
+    if promotion is None:
+        raise Http404
+    return promotion
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def promotion_create(request):
+    return _model_form_view(
+        request,
+        form_class=forms.PromotionForm,
+        instance=Promotion(),
+        save=lambda promotion, changed: promotions.save_promotion(actor=request.user, promotion=promotion, changed_fields=changed),
+        section="promociones",
+        title=_("Nueva promoción"),
+        intro=_("Se guarda como borrador: actívala desde el listado."),
+        back_url=reverse("dashboard:promotions"),
+    )
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def promotion_edit(request, public_id):
+    promotion = _promotion_or_404(public_id)
+    return _model_form_view(
+        request,
+        form_class=forms.PromotionForm,
+        instance=promotion,
+        save=lambda promotion, changed: promotions.save_promotion(actor=request.user, promotion=promotion, changed_fields=changed),
+        section="promociones",
+        title=_("Editar «%(name)s»") % {"name": promotion.name},
+        intro=_("Estado: %(status)s. Se cambia desde el listado.") % {"status": promotion.get_status_display()},
+        back_url=reverse("dashboard:promotions"),
+    )
+
+
 # --- Eventos (Fase 10) -------------------------------------------------------------
 
 
@@ -1075,7 +1383,12 @@ def _campaign_form_view(request, campaign):
         initial = {name: getattr(campaign, name) for name in campaigns.EDITABLE_FIELDS}
     else:
         initial = {"audience": Campaign.Audience.SELECTED if wants_selection else Campaign.Audience.ALL}
-    form = forms.CampaignForm(request.POST or None, request.FILES or None, initial=initial)
+    post = request.POST
+    if post and wants_selection and not campaign.pk:
+        # Viniendo de Clientes, la campaña es exclusiva de los seleccionados (Fase 24).
+        post = post.copy()
+        post["audience"] = Campaign.Audience.SELECTED
+    form = forms.CampaignForm(post or None, request.FILES or None, initial=initial)
     status = 200
     if request.method == "POST":
         if form.is_valid():
@@ -1125,6 +1438,13 @@ def _campaign_form_view(request, campaign):
             "email": notification_selectors.potential_recipients(actor=request.user, channel=Channel.EMAIL),
             "sms": notification_selectors.potential_recipients(actor=request.user, channel=Channel.SMS),
         },
+        # Fase 24: desde Clientes, destinatarios fijos y la opción de enviar una campaña ya creada.
+        "selection_mode": wants_selection and not campaign.pk,
+        "existing_campaigns": (
+            [(item, uuid.uuid4()) for item in notification_selectors.campaigns_for_owner(actor=request.user)[:EXISTING_CAMPAIGNS_SHOWN]]
+            if wants_selection and not campaign.pk
+            else None
+        ),
     }
     return _render(request, "campaign_form.html", "comunicaciones", context, status=status)
 
@@ -1134,6 +1454,40 @@ def _campaign_form_view(request, campaign):
 @owner_required
 def campaign_create(request):
     return _campaign_form_view(request, Campaign())
+
+
+EXISTING_CAMPAIGNS_SHOWN = 20
+
+
+@never_cache
+@require_POST
+@owner_required
+def campaign_send_copy(request):
+    """
+    «Enviar una campaña ya creada» a los clientes seleccionados (Fase 24): crea una
+    copia con sus condiciones actuales, solo para ellos, y la programa.
+    """
+    selection = request.session.get(SELECTION_SESSION_KEY, [])
+    if not selection:
+        messages.error(request, _("No hay clientes seleccionados. Elígelos en Clientes."))
+        return redirect("dashboard:customers")
+    back = f"{reverse('dashboard:campaign_create')}?destinatarios={SELECTED_AUDIENCE_PARAM}"
+    try:
+        source = uuid.UUID(request.POST.get("origen", ""))
+        key = uuid.UUID(request.POST.get("idempotency_key", ""))
+        campaigns.send_copy_to_selection(actor=request.user, source_public_id=source, recipients=selection, idempotency_key=key)
+    except ValueError:
+        messages.error(request, _("Elige una campaña de la lista."))
+        return redirect(back)
+    except ValidationError as exc:
+        _error(request, exc)
+        return redirect(back)
+    request.session.pop(SELECTION_SESSION_KEY, None)
+    messages.success(
+        request,
+        _("Campaña copiada para los clientes seleccionados y programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."),
+    )
+    return redirect("dashboard:communications")
 
 
 @never_cache

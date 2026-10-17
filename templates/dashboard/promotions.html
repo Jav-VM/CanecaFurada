@@ -4,25 +4,26 @@
 {% block heading %}{% translate "Promociones" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% translate "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)." %}</p>{% endblock %}
 {% block body %}
-<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'admin:loyalty_promotion_add' %}">{% translate "Nueva promoción" %}</a></div>
+<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'dashboard:promotion_create' %}">{% translate "Nueva promoción" %}</a></div>
 {% if promotions %}
   <div class="table-wrap">
-    <table class="data-table" data-promotion-list>
+    {# Sin scroll lateral: compacta desde xl y una tarjeta por promoción por debajo (.data-table-fit). #}
+    <table class="data-table data-table-fit" data-promotion-list>
       <thead><tr>{% sort_th sort "promocion" _("Promoción") %}{% sort_th sort "tipo" _("Tipo") %}<th scope="col">{% translate "Bonificación" %}</th>{% sort_th sort "vigencia" _("Vigencia") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "usos" _("Usos") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for promo in promotions %}
           <tr>
-            <td class="font-semibold">{{ promo.name }}</td>
-            <td>{{ promo.get_kind_display }}</td>
-            <td>{% if promo.bonus_type == "FIXED_POINTS" %}{% blocktranslate trimmed with points=promo.fixed_points %}+{{ points }} pts{% endblocktranslate %}{% else %}×{{ promo.multiplier }}{% endif %}{% if promo.min_purchase_amount %} · {% blocktranslate trimmed with amount=promo.min_purchase_amount|floatformat:2 %}desde {{ amount }} €{% endblocktranslate %}{% endif %}</td>
-            <td class="whitespace-nowrap">{{ promo.starts_at|date:"d/m/Y" }} – {% if promo.ends_at %}{{ promo.ends_at|date:"d/m/Y" }}{% else %}{% translate "sin fin" %}{% endif %}</td>
-            <td>{{ promo.get_status_display }}</td>
-            <td class="num">{{ promo.uses }}{% if promo.max_total_uses %} / {{ promo.max_total_uses }}{% endif %}</td>
-            <td>
-              <form method="post" action="{% url 'dashboard:promotion_status' promo.public_id %}" class="flex flex-wrap gap-2">
+            <td class="cell-title font-semibold" data-label="{% translate 'Promoción' %}">{{ promo.name }}</td>
+            <td data-label="{% translate 'Tipo' %}">{{ promo.get_kind_display }}</td>
+            <td data-label="{% translate 'Bonificación' %}">{% if promo.bonus_type == "FIXED_POINTS" %}{% blocktranslate trimmed with points=promo.fixed_points %}+{{ points }} pts{% endblocktranslate %}{% else %}×{{ promo.multiplier }}{% endif %}{% if promo.min_purchase_amount %} · {% blocktranslate trimmed with amount=promo.min_purchase_amount|floatformat:2 %}desde {{ amount }} €{% endblocktranslate %}{% endif %}</td>
+            <td class="whitespace-nowrap" data-label="{% translate 'Vigencia' %}">{{ promo.starts_at|date:"d/m/Y" }} – {% if promo.ends_at %}{{ promo.ends_at|date:"d/m/Y" }}{% else %}{% translate "sin fin" %}{% endif %}</td>
+            <td data-label="{% translate 'Estado' %}">{{ promo.get_status_display }}</td>
+            <td class="num" data-label="{% translate 'Usos' %}">{{ promo.uses }}{% if promo.max_total_uses %} / {{ promo.max_total_uses }}{% endif %}</td>
+            <td class="cell-buttons" data-label="{% translate 'Acciones' %}">
+              <form method="post" action="{% url 'dashboard:promotion_status' promo.public_id %}" class="cell-actions">
                 {% csrf_token %}
                 {% for value in manageable %}{% if value != promo.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "ACTIVE" %}{% translate "Activar" %}{% elif value == "PAUSED" %}{% translate "Pausar" %}{% else %}{% translate "Finalizar" %}{% endif %}</button>{% endif %}{% endfor %}
-                <a class="btn btn-ghost btn-sm" href="{% url 'admin:loyalty_promotion_change' promo.pk %}">{% translate "Editar" %}</a>
+                <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:promotion_edit' promo.public_id %}">{% translate "Editar" %}<span class="sr-only"> {{ promo.name }}</span></a>
               </form>
             </td>
           </tr>

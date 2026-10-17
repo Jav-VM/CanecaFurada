@@ -1,0 +1,25 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% block title %}{% translate "Carta de grifos" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Carta de grifos" %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "La imagen con las cervezas de los grifos. En la web se ve la publicada más reciente; las anteriores quedan como historial." %}</p>{% endblock %}
+{% block body %}
+<div class="mb-4 flex flex-wrap gap-2">
+  <a class="btn btn-primary btn-sm" href="{% url 'dashboard:tap_menu_create' %}">{% translate "Nueva carta de grifos" %}</a>
+  <a class="btn btn-secondary btn-sm" href="{% url 'dashboard:beers' %}">{% translate "← Volver a cervezas" %}</a>
+</div>
+{% if items %}
+  <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-tap-menu-list>
+    {% for tap_menu in items %}
+      <li class="card space-y-3 p-4">
+        <img src="{{ tap_menu.image.url }}" alt="" class="aspect-video w-full rounded-lg object-cover">
+        <p class="font-semibold">{{ tap_menu.title }}</p>
+        <p class="text-sm text-mist">{{ tap_menu.updated_at|date:"d/m/Y H:i" }} · {% if tap_menu == current %}<span class="badge">{% translate "En la web" %}</span>{% elif tap_menu.is_published %}{% translate "Publicada" %}{% else %}{% translate "Sin publicar" %}{% endif %}</p>
+        <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:tap_menu_edit' tap_menu.pk %}">{% translate "Editar" %}<span class="sr-only"> {{ tap_menu.title }}</span></a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="pending">{% translate "Todavía no hay ninguna carta de grifos." %}</p>
+{% endif %}
+{% endblock %}

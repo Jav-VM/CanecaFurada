@@ -56,6 +56,8 @@ class AuditEvent(models.Model):
         POINTS_EXPIRY_POLICY_CREATED = "POINTS_EXPIRY_POLICY_CREATED", _("Caducidad de puntos modificada")
         POINTS_EXPIRY_RUN = "POINTS_EXPIRY_RUN", _("Caducidad de puntos procesada")
         BIRTHDAY_SETTINGS_UPDATED = "BIRTHDAY_SETTINGS_UPDATED", _("Regalo de cumpleaños modificado")
+        # Fase 24: productos, categorías, estilos y cartas de grifos creados o editados desde el dashboard.
+        CATALOG_SAVED = "CATALOG_SAVED", _("Carta modificada")
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -6,6 +6,35 @@
 {% block body %}
 <div class="max-w-2xl">
   {% if not sms_available %}<p class="alert alert-info mb-4">{% translate "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar." %}</p>{% endif %}
+  {% if existing_campaigns is not None %}
+    {# Fase 24: enviar a los seleccionados una campaña ya creada (se copia con sus condiciones actuales). #}
+    <section aria-labelledby="campanas-creadas" class="card mb-8" data-existing-campaigns>
+      <h2 id="campanas-creadas" class="heading-md mb-2">{% translate "Enviar una campaña ya creada" %}</h2>
+      <p class="note mb-4">{% blocktranslate trimmed count count=selected_count %}Se crea en Comunicaciones una copia con sus condiciones actuales (canal, asunto, texto, imagen y puntos de regalo) solo para el cliente seleccionado, y se programa. La original no cambia. Si regala puntos, se regalan también a quien ya los recibió.{% plural %}Se crea en Comunicaciones una copia con sus condiciones actuales (canal, asunto, texto, imagen y puntos de regalo) solo para los {{ count }} clientes seleccionados, y se programa. La original no cambia. Si regala puntos, se regalan a todos los seleccionados, también a quien ya los recibió.{% endblocktranslate %}</p>
+      {% if existing_campaigns %}
+        <ul class="divide-y divide-line">
+          {% for item, copy_key in existing_campaigns %}
+            <li class="flex flex-wrap items-center gap-4 py-3" data-existing-campaign>
+              <div class="min-w-0 flex-1">
+                <p class="font-semibold text-paper">{{ item.name }}</p>
+                <p class="text-sm text-mist">{{ item.get_channel_display }} · {{ item.get_status_display }}{% if item.gift_points %} · {% if item.gift_points_expire %}{% blocktranslate trimmed with points=item.gift_points %}Regala {{ points }} puntos (caducan){% endblocktranslate %}{% else %}{% blocktranslate trimmed with points=item.gift_points %}Regala {{ points }} puntos (no caducan){% endblocktranslate %}{% endif %}{% endif %}</p>
+              </div>
+              <form method="post" action="{% url 'dashboard:campaign_send_copy' %}" data-loading>
+                {% csrf_token %}
+                <input type="hidden" name="origen" value="{{ item.public_id }}">
+                <input type="hidden" name="idempotency_key" value="{{ copy_key }}">
+                <button type="submit" class="btn btn-secondary btn-sm" data-loading-text="{% translate 'Programando…' %}">{% blocktranslate trimmed count count=selected_count %}Enviar al seleccionado{% plural %}Enviar a los {{ count }} seleccionados{% endblocktranslate %}<span class="sr-only">: {{ item.name }}</span></button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-sm text-mist" data-existing-empty>{% translate "Todavía no hay campañas creadas." %}</p>
+      {% endif %}
+    </section>
+    <h2 class="heading-md mb-4">{% translate "O crea una campaña nueva para ellos" %}</h2>
+  {% endif %}
+
   {% include "components/form_errors.html" %}
   <form method="post" enctype="multipart/form-data" class="form-section" novalidate data-loading data-campaign-form>
     {% csrf_token %}
@@ -14,6 +43,11 @@
 
     <fieldset class="field field-choices" data-audience{% if form.audience.errors %} aria-describedby="{{ form.audience.auto_id }}_error"{% endif %}>
       <legend>{% translate "Destinatarios" %}</legend>
+      {% if selection_mode %}
+        {# Desde Clientes la campaña es solo para los seleccionados: el servidor también lo fija. #}
+        <input type="hidden" name="audience" value="SELECTED">
+        <p class="font-semibold" data-audience-fixed>{% blocktranslate trimmed count count=selected_count %}Cliente seleccionado ({{ count }}){% plural %}Clientes seleccionados ({{ count }}){% endblocktranslate %}</p>
+      {% else %}
       <div class="choices flex-col items-start">
         {% for radio in form.audience %}
           {% if radio.data.value == "SELECTED" %}
@@ -24,6 +58,7 @@
           {% endif %}
         {% endfor %}
       </div>
+      {% endif %}
       {% if selected_reach %}
         <p class="note mt-2" data-selected-reach>{% blocktranslate trimmed with total=selected_reach.selected email=selected_reach.email sms=selected_reach.sms gift=selected_reach.gift %}De los {{ total }} seleccionados, recibirán el mensaje {{ email }} por email o {{ sms }} por SMS (los que lo autorizaron). Los puntos de regalo, si los hay, se dan a {{ gift }} (cuentas activas con email verificado).{% endblocktranslate %}</p>
       {% elif not selected_count %}

@@ -1,0 +1,21 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% comment %}
+Formulario común de las fichas del dashboard (Fase 24): productos, categorías,
+estilos, cartas de grifos, recompensas y promociones. Sustituye a los del admin.
+{% endcomment %}
+{% block title %}{{ form_title }} · Dashboard{% endblock %}
+{% block heading %}{{ form_title }}{% endblock %}
+{% block intro %}{% if form_intro %}<p class="lead mt-2">{{ form_intro }}</p>{% endif %}{% endblock %}
+{% block body %}
+<div class="max-w-2xl" data-object-form>
+  {% include "components/form_errors.html" %}
+  <form method="post" enctype="multipart/form-data" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    <p class="note">{% translate "Es contenido público: no escribas datos personales de clientes ni de empleados." %}</p>
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar" %}</button>
+  </form>
+  <p class="mt-4 text-sm"><a class="link" href="{{ back_url }}">{% translate "← Volver" %}</a></p>
+</div>
+{% endblock %}

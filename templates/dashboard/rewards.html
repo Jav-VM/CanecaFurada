@@ -6,7 +6,7 @@
 <section aria-labelledby="catalogo">
   <div class="mb-4 flex flex-wrap items-baseline justify-between gap-3">
     <h2 id="catalogo" class="heading-md">{% translate "Catálogo" %}</h2>
-    <a class="btn btn-primary btn-sm" href="{% url 'admin:rewards_reward_add' %}">{% translate "Nueva recompensa" %}</a>
+    <a class="btn btn-primary btn-sm" href="{% url 'dashboard:reward_create' %}">{% translate "Nueva recompensa" %}</a>
   </div>
   {% if rewards %}
     <div class="table-wrap">
@@ -25,7 +25,7 @@
                 <form method="post" action="{% url 'dashboard:reward_status' reward.public_id %}" class="flex flex-wrap gap-2">
                   {% csrf_token %}
                   {% for value in manageable %}{% if value != reward.status %}<button type="submit" name="estado" value="{{ value }}" class="btn btn-secondary btn-sm">{% if value == "ACTIVE" %}{% translate "Activar" %}{% elif value == "PAUSED" %}{% translate "Pausar" %}{% else %}{% translate "Archivar" %}{% endif %}</button>{% endif %}{% endfor %}
-                  <a class="btn btn-ghost btn-sm" href="{% url 'admin:rewards_reward_change' reward.pk %}">{% translate "Editar" %}</a>
+                  <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:reward_edit' reward.public_id %}">{% translate "Editar" %}<span class="sr-only"> {{ reward.name }}</span></a>
                 </form>
               </td>
             </tr>
@@ -36,7 +36,7 @@
   {% else %}
     <p class="pending">{% translate "Todavía no hay recompensas." %}</p>
   {% endif %}
-  <p class="note mt-3">{% translate "La ficha completa (nombre, descripción, imagen, coste, fechas y unidades) se edita en el admin. Las recompensas no se borran: se pausan o se archivan." %}</p>
+  <p class="note mt-3">{% translate "Las recompensas nuevas se guardan como borrador: actívalas aquí. No se borran: se pausan o se archivan." %}</p>
 </section>
 
 <section aria-labelledby="canjes" class="mt-10">

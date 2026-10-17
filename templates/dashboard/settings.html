@@ -70,6 +70,12 @@
   <dl class="card grid gap-3 text-sm sm:grid-cols-2">
     {% for label, value in read_only_settings %}<div><dt class="text-mist">{{ label }}</dt><dd class="font-semibold">{{ value }}</dd></div>{% endfor %}
   </dl>
-  <p class="note mt-4">{% blocktranslate trimmed with url=admin_url %}Administración técnica (auditoría, gestión avanzada): <a class="link" href="{{ url }}">admin</a>.{% endblocktranslate %}</p>
+</section>
+
+{# Fase 24: todo se crea y edita desde el dashboard; el admin queda para la gestión avanzada. #}
+<section aria-labelledby="admin-avanzado" class="card mt-10 max-w-2xl" data-admin-link>
+  <h2 id="admin-avanzado" class="heading-md mb-2">{% translate "Administración avanzada" %}</h2>
+  <p class="note mb-4">{% translate "Para tareas técnicas que no están en el dashboard: consultar la auditoría, borrar categorías o estilos sin productos y otros ajustes del sistema. Úsala con cuidado." %}</p>
+  <a class="btn btn-secondary" href="{{ admin_url }}">{% translate "Abrir la administración avanzada" %}</a>
 </section>
 {% endblock %}

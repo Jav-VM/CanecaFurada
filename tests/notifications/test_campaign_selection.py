@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
+from apps.core.models import AuditEvent
 from apps.dashboard import views as dashboard_views
 from apps.loyalty import expiry, ledger
 from apps.loyalty.models import PointsTransaction
@@ -272,3 +273,134 @@ class DashboardFlowTests(TempMediaMixin, CampaignTestCase):
         response = self.client.get(CREATE_URL)
         self.assertContains(response, 'data-requires="name subject body"')
         self.assertContains(response, 'enctype="multipart/form-data"')
+
+
+SEND_COPY_URL = reverse("dashboard:campaign_send_copy")
+
+
+class SendExistingCampaignTests(TempMediaMixin, CampaignTestCase):
+    """Fase 24: desde Clientes, enviar a los seleccionados una campaña ya creada (copia con sus condiciones)."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.owner)
+        self.source = campaigns.save_campaign(
+            actor=self.owner,
+            campaign=Campaign(),
+            data={
+                "name": "Verán", "subject": "Ola", "body": "Texto do verán", "channel": Channel.EMAIL,
+                "audience": Audience.ALL, "gift_points": 20, "gift_points_expire": False,
+            },
+            image=uploaded_image(),
+        )
+
+    def select(self, *users):
+        self.client.post(SELECTION_URL, {"cliente": [u.public_id for u in users]})
+
+    def send(self, source=None, key=None):
+        return self.client.post(
+            SEND_COPY_URL, {"origen": str(source or self.source.public_id), "idempotency_key": str(key or uuid.uuid4())}
+        )
+
+    def test_form_lists_campaigns_and_fixes_the_audience_with_a_selection(self):
+        self.select(self.silent, self.consenting)
+        page = self.client.get(CREATE_SELECTED_URL)
+        self.assertContains(page, "data-existing-campaigns")
+        self.assertContains(page, "Verán")
+        self.assertContains(page, "data-audience-fixed")
+        self.assertContains(page, '<input type="hidden" name="audience" value="SELECTED">')
+        self.assertNotContains(page, 'value="ALL"')
+        # Sin selección, el formulario sigue como antes.
+        self.client.post(reverse("dashboard:customer_selection_clear"))
+        page = self.client.get(CREATE_URL)
+        self.assertNotContains(page, "data-existing-campaigns")
+        self.assertContains(page, 'value="ALL"')
+
+    def test_new_campaign_from_a_selection_is_always_for_the_selected(self):
+        self.select(self.silent)
+        data = {"name": "Só eles", "subject": "Ola", "audience": "ALL", "channel": "EMAIL", "body": "Texto", "gift_points_expire": "si"}
+        self.client.post(CREATE_SELECTED_URL, data)
+        campaign = Campaign.objects.get(name="Só eles")
+        self.assertEqual(campaign.audience, Audience.SELECTED)
+        self.assertEqual(list(campaign.selected_recipients.values_list("customer", flat=True)), [self.silent.pk])
+
+    def test_send_existing_creates_a_queued_copy_for_the_selected(self):
+        self.select(self.silent, self.consenting)
+        response = self.send()
+        self.assertRedirects(response, reverse("dashboard:communications"))
+        copy = Campaign.objects.exclude(pk=self.source.pk).get()
+        self.assertEqual(copy.name, "Verán (seleccionados)")
+        self.assertEqual(
+            (copy.status, copy.audience, copy.channel, copy.subject, copy.body, copy.gift_points, copy.gift_points_expire),
+            (Campaign.Status.QUEUED, Audience.SELECTED, Channel.EMAIL, "Ola", "Texto do verán", 20, False),
+        )
+        self.assertEqual(set(copy.selected_recipients.values_list("customer", flat=True)), {self.silent.pk, self.consenting.pk})
+        self.assertTrue(copy.image)
+        self.assertNotEqual(copy.image.name, self.source.image.name)
+        self.assertTrue(copy.image.storage.exists(copy.image.name))
+        self.source.refresh_from_db()
+        self.assertEqual((self.source.status, self.source.audience, self.source.name), (Campaign.Status.DRAFT, Audience.ALL, "Verán"))
+        self.assertNotIn(dashboard_views.SELECTION_SESSION_KEY, self.client.session)
+        self.assertTrue(
+            AuditEvent.objects.filter(
+                action=AuditEvent.Action.CAMPAIGN_UPDATED,
+                metadata__event="copied_to_selection",
+                metadata__source=str(self.source.public_id),
+            ).exists()
+        )
+        # Reparto: mensaje solo a quien lo autorizó; puntos a todos los seleccionados (la original sigue en borrador).
+        campaigns.dispatch_queued()
+        self.assertEqual(set(Notification.objects.filter(campaign=copy).values_list("recipient", flat=True)), {self.consenting.pk})
+        gifted = set(PointsTransaction.objects.filter(kind=Kind.CAMPAIGN_GIFT).values_list("customer", flat=True))
+        self.assertEqual(gifted, {self.silent.pk, self.consenting.pk})
+        self.assertTrue(all(gift.never_expires for gift in PointsTransaction.objects.filter(kind=Kind.CAMPAIGN_GIFT)))
+
+    def test_same_key_twice_makes_one_copy(self):
+        key = uuid.uuid4()
+        self.select(self.silent)
+        self.send(key=key)
+        # Doble clic: el segundo envío trae la misma clave y devuelve la copia ya hecha.
+        self.select(self.silent)
+        self.send(key=key)
+        self.assertEqual(Campaign.objects.exclude(pk=self.source.pk).count(), 1)
+        again = campaigns.send_copy_to_selection(
+            actor=self.owner, source_public_id=self.source.public_id, recipients=[self.silent.public_id], idempotency_key=key
+        )
+        self.assertEqual(again, Campaign.objects.get(copy_key=key))
+        self.assertEqual(Campaign.objects.exclude(pk=self.source.pk).count(), 1)
+        # Otra clave (otra visita) sí crea otra copia.
+        self.select(self.silent)
+        self.send()
+        self.assertEqual(Campaign.objects.exclude(pk=self.source.pk).count(), 2)
+
+    def test_rejections_create_nothing(self):
+        # Sin selección.
+        self.assertRedirects(self.send(), reverse("dashboard:customers"), fetch_redirect_response=False)
+        self.select(self.silent)
+        bad = (
+            {"origen": "non-e-un-uuid", "idempotency_key": str(uuid.uuid4())},
+            {"origen": str(self.source.public_id), "idempotency_key": ""},
+        )
+        for data in bad:
+            self.assertRedirects(self.client.post(SEND_COPY_URL, data), CREATE_SELECTED_URL, fetch_redirect_response=False)
+        self.assertRedirects(self.send(source=uuid.uuid4()), CREATE_SELECTED_URL, fetch_redirect_response=False)
+        # SMS sin proveedor: no se puede programar y no queda nada (todo o nada).
+        sms = campaigns.save_campaign(
+            actor=self.owner, campaign=Campaign(),
+            data={"name": "SMS", "subject": "x", "body": "y", "channel": Channel.SMS, "audience": Audience.ALL},
+        )
+        self.assertRedirects(self.send(source=sms.public_id), CREATE_SELECTED_URL, fetch_redirect_response=False)
+        self.assertEqual(Campaign.objects.count(), 2)
+        self.assertIn(dashboard_views.SELECTION_SESSION_KEY, self.client.session)
+        with self.assertRaises(ValidationError):
+            campaigns.send_copy_to_selection(
+                actor=self.owner, source_public_id=uuid.uuid4(), recipients=[self.silent.public_id], idempotency_key=uuid.uuid4()
+            )
+
+    def test_only_owner_and_only_post(self):
+        self.select(self.silent)
+        self.assertEqual(self.client.get(SEND_COPY_URL).status_code, 405)
+        for user in (self.employee, self.silent):
+            self.client.force_login(user)
+            self.assertEqual(self.send().status_code, 403)
+        self.assertEqual(Campaign.objects.count(), 1)

@@ -132,7 +132,9 @@ class BusinessInfo(models.Model):
         if len(links) > MAX_LINES or any(not name or not _is_safe_url(url) for name, url in links):
             errors["social_links"] = _("Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…».") % {"MAX_LINES": MAX_LINES}
         if self.maps_url and not is_google_maps_url(self.maps_url):
-            errors["maps_url"] = _("Pega el enlace «Compartir» de Google Maps (https://maps.app.goo.gl/… o https://www.google.com/maps/…).")
+            errors["maps_url"] = _("Pega el enlace «Compartir» de Google Maps (%(examples)s).") % {
+                "examples": "https://maps.app.goo.gl/…, https://www.google.com/maps/…"
+            }
         if errors:
             raise ValidationError(errors)
         self.opening_hours = "\n".join(f"{a} {LINE_SEPARATOR} {b}" for a, b in hours)

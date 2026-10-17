@@ -35,6 +35,8 @@
 
 Una selección sin usar se puede descartar desde Clientes.
 
+Desde la Fase 24, en ese formulario también se puede **enviar una campaña ya creada** a los seleccionados (se copia con sus condiciones actuales), y una campaña nueva creada desde Clientes es siempre solo para los seleccionados: ver [Fase 24, §10](fase-24-dashboard-sin-admin.md).
+
 ## 4. Archivos
 
 | Archivo | Cambio |

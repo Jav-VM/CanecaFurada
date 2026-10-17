@@ -40,6 +40,16 @@ GET_URLS = (
     "dashboard:promotions",
     "dashboard:content",
     "dashboard:settings",
+    # Fase 24: fichas sin pasar por el admin.
+    "dashboard:product_create",
+    "dashboard:categories",
+    "dashboard:category_create",
+    "dashboard:beer_styles",
+    "dashboard:beer_style_create",
+    "dashboard:tap_menus",
+    "dashboard:tap_menu_create",
+    "dashboard:reward_create",
+    "dashboard:promotion_create",
 )
 
 

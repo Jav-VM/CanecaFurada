@@ -87,6 +87,9 @@ class Campaign(TimeStampedModel):
     gift_points = models.PositiveIntegerField(_("puntos de regalo"), null=True, blank=True)
     gift_points_expire = models.BooleanField(_("los puntos de regalo caducan"), default=True)
     gifted_count = models.PositiveIntegerField(_("clientes con puntos de regalo"), null=True, blank=True)
+    # Fase 24: clave de idempotencia de «Enviar una campaña ya creada» a los clientes seleccionados
+    # (un doble envío no crea dos copias ni regala los puntos dos veces).
+    copy_key = models.UUIDField(null=True, blank=True, unique=True, editable=False)
 
     class Meta:
         verbose_name = _("campaña promocional")
