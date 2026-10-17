@@ -1,7 +1,7 @@
 {% load static i18n %}
 <footer class="mt-24 border-t border-line bg-coal">
-  {# En escritorio, los cuatro bloques miden lo que su contenido y van centrados con la misma separación entre sí. #}
-  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:flex lg:justify-center lg:gap-x-20">
+  {# En escritorio, los cinco bloques miden lo que su contenido y van centrados con la misma separación entre sí. #}
+  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:flex lg:justify-center lg:gap-x-16">
     <div class="sm:col-span-2 lg:col-span-1">
       {# Logo (enlace al inicio) y lema centrados entre sí: el bloque mide lo que el más ancho de los dos. #}
       <div class="flex w-fit flex-col items-center gap-4 text-center">
@@ -35,9 +35,19 @@
       </ul>
     </nav>
 
-    <div class="lg:max-w-60">
+    <div class="lg:max-w-60" data-footer-visit>
       <h2 class="eyebrow mb-4">{% translate "Visítanos" %}</h2>
-      {% include "components/business_info.html" with compact=True %}
+      {% include "components/business_info.html" with compact=True hide_hours=True %}
+    </div>
+
+    {# El horario, en su propia columna a la derecha de «Visítanos». #}
+    <div class="lg:max-w-60" data-footer-hours>
+      <h2 class="eyebrow mb-4">{% translate "Horario" %}</h2>
+      {% if business.opening_hours %}
+        <ul class="space-y-1 text-sm text-mist">{% for days, hours in business.opening_hours %}<li><span class="font-semibold text-paper">{{ days }}</span><br>{{ hours }}</li>{% endfor %}</ul>
+      {% else %}
+        <p class="text-sm italic text-mist">{% translate "Pendiente de publicar" %}</p>
+      {% endif %}
     </div>
   </div>
   <div class="border-t border-line">

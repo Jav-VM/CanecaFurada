@@ -80,6 +80,19 @@ class PublicPagesTests(TestCase):
         self.assertContains(self.client.get(reverse("web:menu")), "Estamos preparando la carta online")
         self.assertContains(self.client.get(reverse("web:events")), "No hay eventos publicados")
 
+    def test_footer_shows_opening_hours_in_its_own_column(self):
+        business = {"opening_hours": (("Martes a domingo", "18:00–00:00"),)}
+        with mock.patch.dict("apps.web.content.BUSINESS", business):
+            html = self.client.get(reverse("web:home")).content.decode()
+            contact = self.client.get(reverse("web:contact"))
+        visit = html[html.index("data-footer-visit"):html.index("data-footer-hours")]
+        hours = html[html.index("data-footer-hours"):]
+        self.assertNotIn("Martes a domingo", visit)
+        self.assertIn("Martes a domingo", hours)
+        self.assertIn("18:00–00:00", hours)
+        # En Contacto el horario sigue dentro de los datos del local.
+        self.assertContains(contact, "Martes a domingo", count=2)
+
     def test_business_info_is_rendered_when_provided(self):
         business = {
             "name": "Caneca Furada",

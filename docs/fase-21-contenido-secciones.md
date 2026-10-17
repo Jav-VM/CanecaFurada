@@ -82,3 +82,16 @@ Tras actualizar: `python manage.py migrate` y `python scripts/i18n.py compile`.
 - Lo escrito por el propietario no se traduce (Fase 15).
 - Los textos de las secciones se leen de la base de datos en cada visita a Inicio y A cervexaría (dos consultas); no se cachean.
 - La galería abre cada imagen en su URL; no hay visor a pantalla completa.
+
+## 8. Ajuste posterior: horario en su propia columna del pie (2026-10-17)
+
+- **Petición:** separar el horario de «Visítanos» en el pie y mostrarlo a la derecha, como otra columna.
+- **Cambios:**
+  - `templates/components/business_info.html` admite `hide_hours`;
+  - `templates/components/footer.html` usa `hide_hours` en «Visítanos» y añade la columna «Horario» (`data-footer-hours`), con «Pendiente de publicar» si no hay horario;
+  - la separación entre columnas en escritorio pasa de `gap-x-20` a `gap-x-16` para que quepan las cinco;
+  - `static/css/app.css` recompilado.
+- Contacto e Inicio («El local») siguen mostrando el horario dentro de los datos del local.
+- **Test:** `tests/web/test_public_pages.py::test_footer_shows_opening_hours_in_its_own_column`.
+- **Suite completa:** **1059 tests OK**.
+- **Pendiente:** revisión visual en escritorio y móvil.
