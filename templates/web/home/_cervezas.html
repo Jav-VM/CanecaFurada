@@ -1,7 +1,7 @@
-{% load i18n %}{% load static %}
+{% load i18n %}
 {# --- Selección de cervezas: destacadas, publicadas y disponibles --------------- #}
 <section aria-labelledby="cervezas-titulo" class="container-page py-20">
-  {% include "components/section_heading.html" with id="cervezas-titulo" eyebrow=_("Selección") title=_("Nuestras cervezas") %}
+  {% include "components/section_heading.html" with id="cervezas-titulo" eyebrow=section.eyebrow title=section.title intro=section.body %}
   {% if featured_beers %}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {% for product in featured_beers %}<li>{% include "components/product_card.html" %}</li>{% endfor %}

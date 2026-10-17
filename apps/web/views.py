@@ -11,6 +11,9 @@ from apps.catalog import selectors as catalog
 from apps.events import selectors as events
 from apps.rewards import selectors as rewards
 
+from . import blocks, layout
+from . import services as web
+
 
 class HomeView(TemplateView):
     template_name = "web/home.html"
@@ -19,11 +22,17 @@ class HomeView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["featured_beers"] = catalog.featured_beers()
         context["featured_events"] = events.featured_events()
+        context["sections"] = blocks.page_sections(layout.HOME, web.business_info())
         return context
 
 
 class AboutView(TemplateView):
     template_name = "web/about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sections"] = blocks.page_sections(layout.ABOUT, web.business_info())
+        return context
 
 
 class MenuView(TemplateView):

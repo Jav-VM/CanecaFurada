@@ -23,7 +23,7 @@ from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 
 from . import content, layout
-from .models import BusinessInfo, parse_pairs
+from .models import BusinessInfo, PageBlock, parse_pairs
 
 CACHE_KEY = "web:business_info"
 CACHE_TIMEOUT = 300
@@ -56,9 +56,13 @@ def _stored_values():
         "hero_text": info.hero_text or None,
         "announcement": info.announcement or None,
         "online_reservations_enabled": info.online_reservations_enabled,
-        "home_layout": layout.normalize(info.home_layout, layout.HOME_SECTIONS),
-        "about_layout": layout.normalize(info.about_layout, layout.ABOUT_SECTIONS),
+        "home_layout": layout.normalize(info.home_layout, sections_for(layout.HOME)),
+        "about_layout": layout.normalize(info.about_layout, sections_for(layout.ABOUT)),
     }
+
+
+def invalidate_cache():
+    cache.delete(CACHE_KEY)
 
 
 def business_info():
@@ -72,8 +76,8 @@ def business_info():
     # Booleano: `False` también cuenta (el filtro anterior lo descartaría).
     data["online_reservations_enabled"] = stored.get("online_reservations_enabled", True)
     # Fase 20: claves visibles en orden, siempre de la lista blanca.
-    home = stored.get("home_layout") or layout.normalize([], layout.HOME_SECTIONS)
-    about = stored.get("about_layout") or layout.normalize([], layout.ABOUT_SECTIONS)
+    home = stored.get("home_layout") or layout.normalize([], sections_for(layout.HOME))
+    about = stored.get("about_layout") or layout.normalize([], sections_for(layout.ABOUT))
     data["home_sections"] = layout.visible_keys(home)
     data["about_sections"] = layout.visible_keys(about)
     data.pop("home_layout", None)
@@ -81,10 +85,23 @@ def business_info():
     return data
 
 
+def sections_for(page):
+    """
+    Lista blanca de secciones de `page`: las fijas y, en La cervecería, los
+    artículos que existan (Fase 21), como `(clave, etiqueta)`.
+    """
+    _field, sections, _label = layout.PAGES[page]
+    sections = list(sections)
+    if page == layout.ABOUT:
+        articles = PageBlock.objects.filter(page=page, is_article=True).order_by("created_at", "id")
+        sections.extend((article.key, article.title) for article in articles.only("key", "title"))
+    return sections
+
+
 def page_layout(page):
     """Orden guardado de `page` (`layout.HOME` o `layout.ABOUT`), ya normalizado."""
-    field, sections, _label = layout.PAGES[page]
-    return layout.normalize(getattr(_stored(), field), sections)
+    field, _sections, _label = layout.PAGES[page]
+    return layout.normalize(getattr(_stored(), field), sections_for(page))
 
 
 def online_reservations_enabled():
@@ -146,7 +163,8 @@ def update_page_layout(*, actor, page, visible, move=None):
         raise PermissionDenied(_("Solo el propietario puede ordenar las secciones."))
     if page not in layout.PAGES:
         raise ValidationError(_("Página desconocida."), code="unknown_page")
-    field, sections, _label = layout.PAGES[page]
+    field, _sections, _label = layout.PAGES[page]
+    sections = sections_for(page)
     known = {key for key, _unused in sections}
     visible = list(visible)
     if any(key not in known for key in visible):

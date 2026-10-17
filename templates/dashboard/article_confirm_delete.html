@@ -1,0 +1,14 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% block title %}{% translate "Eliminar artículo" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Eliminar artículo" %}{% endblock %}
+{% block body %}
+<div class="max-w-2xl" data-article-delete>
+  <p class="alert alert-info mb-6">{% blocktranslate trimmed with title=page_block.title images=page_block.images.count %}Vas a eliminar «{{ title }}» y sus imágenes ({{ images }}). No se puede deshacer. Si solo quieres quitarlo de la web, desmarca «Mostrar» en Contenido.{% endblocktranslate %}</p>
+  <form method="post" class="flex flex-wrap gap-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">{% translate "Sí, eliminar" %}</button>
+    <a class="btn btn-secondary" href="{% url 'dashboard:section_edit' 'cerveceria' page_block.key %}">{% translate "Cancelar" %}</a>
+  </form>
+</div>
+{% endblock %}

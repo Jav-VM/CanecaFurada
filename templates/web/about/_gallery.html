@@ -1,0 +1,7 @@
+{% load i18n %}{% if section.gallery %}
+<ul class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3" aria-label="{% translate 'Galería de imágenes' %}" data-gallery>
+  {% for image in section.gallery %}
+    <li><a href="{{ image.image.url }}" class="block overflow-hidden rounded-xl"><img src="{{ image.image.url }}" alt="{{ image.alt }}"{% if image.width %} width="{{ image.width }}" height="{{ image.height }}"{% endif %} loading="lazy" class="aspect-square h-full w-full object-cover transition hover:scale-105"></a></li>
+  {% endfor %}
+</ul>
+{% endif %}

@@ -9,14 +9,17 @@ ciudad son de la marca y no se editan aquí (`content.BUSINESS`).
 Las reglas (permisos, auditoría, caché) están en `services.py`.
 """
 import re
+import uuid
 from urllib.parse import urlsplit
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.validators import normalize_text
+from apps.catalog.validators import validate_image_extension, validate_image_file
 
 SINGLETON_ID = 1
 LINE_SEPARATOR = "|"
@@ -101,3 +104,77 @@ class BusinessInfo(models.Model):
             raise ValidationError(errors)
         self.opening_hours = "\n".join(f"{a} {LINE_SEPARATOR} {b}" for a, b in hours)
         self.social_links = "\n".join(f"{a} {LINE_SEPARATOR} {b}" for a, b in links)
+
+
+# --- Fase 21: contenido de las secciones y artículos ----------------------------------
+
+
+def page_image_path(instance, filename):
+    # Nombre aleatorio: no se publica el nombre original del fichero.
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    ext = "jpg" if ext == "jpeg" else ext
+    return f"pages/{uuid.uuid4().hex}.{ext}"
+
+
+class PageBlock(models.Model):
+    """
+    Textos propios de una sección de Inicio o La cervecería, o un artículo de La
+    cervecería. Un campo vacío deja el texto por defecto (traducido) de la
+    sección. Lo que escribe el propietario no se traduce (Fase 15).
+    """
+
+    class Page(models.TextChoices):
+        HOME = "inicio", _("Inicio")
+        ABOUT = "cerveceria", _("La cervecería")
+
+    MAX_IMAGES = 12
+
+    public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
+    page = models.CharField(_("página"), max_length=12, choices=Page.choices)
+    key = models.CharField(_("sección"), max_length=40)
+    is_article = models.BooleanField(_("artículo"), default=False)
+    eyebrow = models.CharField(_("antetítulo"), max_length=80, blank=True)
+    title = models.CharField(_("título"), max_length=120, blank=True)
+    body = models.TextField(_("texto"), max_length=5000, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_("creado por"), null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    created_at = models.DateTimeField(_("creado"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
+
+    class Meta:
+        verbose_name = _("sección de página")
+        verbose_name_plural = _("secciones de página")
+        constraints = [
+            models.UniqueConstraint(fields=["page", "key"], name="web_pageblock_page_key_unique"),
+            models.CheckConstraint(condition=Q(page__in=["inicio", "cerveceria"]), name="web_pageblock_page_valid"),
+            models.CheckConstraint(
+                condition=Q(is_article=False) | (Q(page="cerveceria") & ~Q(title="")),
+                name="web_pageblock_article_shape",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.page}:{self.key}"
+
+
+class PageBlockImage(models.Model):
+    """Imagen de una sección o artículo de La cervecería. Con más de una, galería."""
+
+    block = models.ForeignKey(PageBlock, verbose_name=_("sección"), on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(
+        _("imagen"),
+        upload_to=page_image_path,
+        width_field="width",
+        height_field="height",
+        validators=[validate_image_extension, validate_image_file],
+    )
+    width = models.PositiveIntegerField(null=True, blank=True, editable=False)
+    height = models.PositiveIntegerField(null=True, blank=True, editable=False)
+    alt = models.CharField(_("descripción"), max_length=200, blank=True)
+    position = models.PositiveSmallIntegerField(_("posición"), default=0)
+
+    class Meta:
+        verbose_name = _("imagen de sección")
+        verbose_name_plural = _("imágenes de sección")
+        ordering = ["position", "id"]

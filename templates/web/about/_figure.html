@@ -1,0 +1,4 @@
+<figure class="mx-auto w-full max-w-md">
+  <img src="{{ image.image.url }}" alt="{{ image.alt }}"{% if image.width %} width="{{ image.width }}" height="{{ image.height }}"{% endif %} loading="lazy" class="h-auto w-full rounded-xl object-cover">
+  {% if image.alt %}<figcaption class="mt-3 text-center text-sm text-mist">{{ image.alt }}</figcaption>{% endif %}
+</figure>

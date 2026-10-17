@@ -6,6 +6,6 @@
 {% include "components/page_header.html" with eyebrow=_("La cervecería") title="Caneca Furada" intro=tagline %}
 
 {# Secciones que ordena el propietario (Fase 20): Dashboard → Contenido. #}
-{% for key in business.about_sections %}{% include "web/about/_"|add:key|add:".html" %}
+{% for section in sections %}{% include section.template %}
 {% endfor %}
 {% endblock %}

@@ -1,15 +1,11 @@
-{% load i18n %}{% load static %}
-{# --- Presentación de la marca ----------------------------------------------- #}
+{% load i18n %}
+{# --- Presentación de la marca (textos editables, Fase 21) -------------------- #}
 <section aria-labelledby="marca-titulo" class="container-page py-20">
   <div class="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-start">
-    {% include "components/section_heading.html" with id="marca-titulo" eyebrow=_("La casa") title=_("Somos Caneca Furada") %}
+    {% include "components/section_heading.html" with id="marca-titulo" eyebrow=section.eyebrow title=section.title %}
     <div class="prose-site">
-      {% if business.about_text %}
-        <p>{{ business.about_text }}</p>
-      {% else %}
-        <p>{% translate "Una cervecería 100% artesana en A Coruña." %}</p>
-        {% include "components/pending.html" with what=_("presentación de la marca (historia, filosofía y cerveza)") %}
-      {% endif %}
+      {{ section.body|linebreaks }}
+      {% if not section.custom_body %}{% include "components/pending.html" with what=_("presentación de la marca (historia, filosofía y cerveza)") %}{% endif %}
       <a href="{% url 'web:about' %}" class="link mt-2 inline-block font-semibold">{% translate "Conoce la cervecería →" %}</a>
     </div>
   </div>

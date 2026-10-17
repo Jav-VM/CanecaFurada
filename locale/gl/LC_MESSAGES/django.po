@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 08:39+0200\n"
+"POT-Creation-Date: 2026-10-17 09:06+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Galego\n"
@@ -1806,6 +1806,24 @@ msgstr "Reservas en liña activadas"
 msgid "Desactivadas, los botones de reserva llevan a Contacto con el aviso de reservar por teléfono."
 msgstr "Desactivadas, os botóns de reserva levan a Contacto co aviso de reservar por teléfono."
 
+msgid "Antetítulo"
+msgstr "Antetítulo"
+
+msgid "Título"
+msgstr "Título"
+
+msgid "Texto"
+msgstr "Texto"
+
+msgid "Texto plano: deja una línea en blanco entre párrafos. Se muestra tal cual en gallego y en castellano."
+msgstr "Texto plano: deixa unha liña en branco entre parágrafos. Amósase tal cal en galego e en castelán."
+
+msgid "Añadir imágenes"
+msgstr "Engadir imaxes"
+
+msgid "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más forman una galería bajo el texto."
+msgstr "JPEG, PNG ou WebP. Unha imaxe amósase xunto ao texto; dúas ou máis forman unha galería baixo o texto."
+
 msgid "Dirección pública del local"
 msgstr "Enderezo público do local"
 
@@ -1874,9 +1892,6 @@ msgstr "Destinatarios"
 
 msgid "Canal"
 msgstr "Canle"
-
-msgid "Texto"
-msgstr "Texto"
 
 #, python-format
 msgid "Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."
@@ -2039,6 +2054,12 @@ msgstr "Contido gardado."
 
 msgid "No había cambios que guardar."
 msgstr "Non había cambios que gardar."
+
+msgid "Contenido de la sección guardado."
+msgstr "Contido da sección gardado."
+
+msgid "Artículo eliminado."
+msgstr "Artigo eliminado."
 
 msgid "Orden de las secciones guardado."
 msgstr "Orde das seccións gardada."
@@ -3134,6 +3155,28 @@ msgstr "Canxes"
 msgid "Web pública"
 msgstr "Web pública"
 
+msgid "Solo el propietario puede editar el contenido de las páginas."
+msgstr "Só o propietario pode editar o contido das páxinas."
+
+msgid "El artículo necesita un título."
+msgstr "O artigo necesita un título."
+
+msgid "Las secciones del inicio no llevan imágenes."
+msgstr "As seccións do inicio non levan imaxes."
+
+msgid "Imagen desconocida."
+msgstr "Imaxe descoñecida."
+
+#, python-format
+msgid "Como máximo %(max)s imágenes por sección."
+msgstr "Como máximo %(max)s imaxes por sección."
+
+msgid "Sección desconocida."
+msgstr "Sección descoñecida."
+
+msgid "Artículo desconocido."
+msgstr "Artigo descoñecido."
+
 msgid "Inicio"
 msgstr "Inicio"
 
@@ -3166,6 +3209,39 @@ msgstr "A nosa historia"
 
 msgid "Cómo trabajamos"
 msgstr "Como traballamos"
+
+msgid "La casa"
+msgstr "A casa"
+
+msgid "Una cervecería 100% artesana en A Coruña."
+msgstr "Unha cervexaría 100% artesá na Coruña."
+
+msgid "Consulta las cervezas y todo lo que servimos."
+msgstr "Consulta as cervexas e todo o que servimos."
+
+msgid "Selección"
+msgstr "Selección"
+
+msgid "Cada visita suma"
+msgstr "Cada visita suma"
+
+msgid "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
+msgstr "Así funciona o club de Caneca Furada. Crea a túa conta, verifica o teu email e amosa o teu QR na barra para sumar puntos."
+
+msgid "Agenda"
+msgstr "Axenda"
+
+msgid "Ven a vernos"
+msgstr "Ven vernos"
+
+msgid "Te esperamos en A Coruña."
+msgstr "Agardámoste na Coruña."
+
+msgid "Cerveza 100% artesana"
+msgstr "Cervexa 100% artesá"
+
+msgid "Caneca Furada es una cervecería artesana de A Coruña."
+msgstr "Caneca Furada é unha cervexaría artesá da Coruña."
 
 msgid "dirección pública del local"
 msgstr "enderezo público do local"
@@ -3220,6 +3296,39 @@ msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Días | horario»."
 msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Nome | https://…»."
 
+msgid "página"
+msgstr "páxina"
+
+msgid "sección"
+msgstr "sección"
+
+msgid "artículo"
+msgstr "artigo"
+
+msgid "antetítulo"
+msgstr "antetítulo"
+
+msgid "texto"
+msgstr "texto"
+
+msgid "creado por"
+msgstr "creado por"
+
+msgid "sección de página"
+msgstr "sección de páxina"
+
+msgid "secciones de página"
+msgstr "seccións de páxina"
+
+msgid "posición"
+msgstr "posición"
+
+msgid "imagen de sección"
+msgstr "imaxe de sección"
+
+msgid "imágenes de sección"
+msgstr "imaxes de sección"
+
 msgid "Solo el propietario puede editar el contenido del local."
 msgstr "Só o propietario pode editar o contido do local."
 
@@ -3231,9 +3340,6 @@ msgstr "Só o propietario pode ordenar as seccións."
 
 msgid "Página desconocida."
 msgstr "Páxina descoñecida."
-
-msgid "Sección desconocida."
-msgstr "Sección descoñecida."
 
 msgid "Caneca Furada — Administración"
 msgstr "Caneca Furada — Administración"
@@ -3673,6 +3779,16 @@ msgstr "Ordenar por %(label)s ascendente"
 msgid "Ordenar por %(label)s descendente"
 msgstr "Ordenar por %(label)s descendente"
 
+msgid "Eliminar artículo"
+msgstr "Eliminar artigo"
+
+#, python-format
+msgid "Vas a eliminar «%(title)s» y sus imágenes (%(images)s). No se puede deshacer. Si solo quieres quitarlo de la web, desmarca «Mostrar» en Contenido."
+msgstr "Vas eliminar «%(title)s» e as súas imaxes (%(images)s). Non se pode desfacer. Se só queres quitalo da web, desmarca «Amosar» en Contido."
+
+msgid "Sí, eliminar"
+msgstr "Si, eliminar"
+
 msgid "Editar campaña"
 msgstr "Editar campaña"
 
@@ -3844,8 +3960,11 @@ msgstr "O nome e a cidade son os da marca e non se editan aquí. Os cambios pode
 msgid "Orden de las secciones"
 msgstr "Orde das seccións"
 
-msgid "Sube, baja u oculta las secciones de cada página. El aviso destacado y la portada del inicio, y la cabecera de La cervecería, van siempre arriba. Al pulsar una flecha también se guardan las casillas «Mostrar»."
-msgstr "Sube, baixa ou oculta as seccións de cada páxina. O aviso destacado e a portada do inicio, e a cabeceira da Cervexaría, van sempre arriba. Ao premer unha frecha tamén se gardan as caixas «Amosar»."
+msgid "Sube, baja u oculta las secciones de cada página y pulsa «Editar» para cambiar su contenido. El aviso destacado y la portada del inicio, y la cabecera de La cervecería, van siempre arriba. Al pulsar una flecha también se guardan las casillas «Mostrar»."
+msgstr "Sube, baixa ou oculta as seccións de cada páxina e preme «Editar» para cambiar o seu contido. O aviso destacado e a portada do inicio, e a cabeceira da Cervexaría, van sempre arriba. Ao premer unha frecha tamén se gardan as caixas «Amosar»."
+
+msgid "Nuevo artículo"
+msgstr "Novo artigo"
 
 msgid "Mostrar"
 msgstr "Amosar"
@@ -4575,6 +4694,45 @@ msgstr "Non hai canxes con estes filtros."
 
 msgid "Los códigos de canje no se muestran nunca en el dashboard."
 msgstr "Os códigos de canxe nunca se mostran no dashboard."
+
+msgid "Editar sección"
+msgstr "Editar sección"
+
+#, python-format
+msgid "Artículo: %(title)s"
+msgstr "Artigo: %(title)s"
+
+#, python-format
+msgid "Página: %(page)s. Lo que dejes vacío muestra el texto de siempre (en gris, como ejemplo). Lo que escribas se ve tal cual en gallego y en castellano."
+msgstr "Páxina: %(page)s. O que deixes baleiro amosa o texto de sempre (en gris, como exemplo). O que escribas vese tal cal en galego e en castelán."
+
+msgid "Si dejas el texto vacío, se usa la «Presentación de la cervecería» del formulario de Contenido."
+msgstr "Se deixas o texto baleiro, úsase a «Presentación da cervexaría» do formulario de Contido."
+
+msgid "Imágenes actuales"
+msgstr "Imaxes actuais"
+
+msgid "Descripción (para lectores de pantalla)"
+msgstr "Descrición (para lectores de pantalla)"
+
+msgid "Quitar esta imagen"
+msgstr "Quitar esta imaxe"
+
+#, python-format
+msgid "Hasta %(max)s imágenes por sección. Después de subirlas puedes añadir su descripción."
+msgstr "Ata %(max)s imaxes por sección. Despois de subilas podes engadir a súa descrición."
+
+msgid "Son datos públicos: no escribas datos personales de clientes ni de empleados."
+msgstr "Son datos públicos: non escribas datos persoais de clientes nin de empregados."
+
+msgid "Crear artículo"
+msgstr "Crear artigo"
+
+msgid "Guardar"
+msgstr "Gardar"
+
+msgid "← Volver a Contenido"
+msgstr "← Volver a Contido"
 
 msgid "Conversión de puntos"
 msgstr "Conversión de puntos"
@@ -5339,9 +5497,6 @@ msgstr "Non validaches ningún canxe neste período."
 msgid "No has registrado ninguna compra en este periodo."
 msgstr "Non rexistraches ningunha compra neste período."
 
-msgid "La casa"
-msgstr "A casa"
-
 msgid "elaboración, estilos de la casa y cervezas invitadas"
 msgstr "elaboración, estilos da casa e cervexas convidadas"
 
@@ -5351,12 +5506,8 @@ msgstr "Ver a carta"
 msgid "Cómo llegar"
 msgstr "Como chegar"
 
-#, python-format
-msgid "Cerveza 100%% artesana"
-msgstr "Cervexa 100%% artesá"
-
-msgid "Caneca Furada es una cervecería artesana de A Coruña."
-msgstr "Caneca Furada é unha cervexaría artesá da Coruña."
+msgid "Galería de imágenes"
+msgstr "Galería de imaxes"
 
 msgid "historia de la cervecería y del local"
 msgstr "historia da cervexaría e do local"
@@ -5366,9 +5517,6 @@ msgstr "Cartel do X aniversario de Caneca Furada: un corazón feito de lúpulo c
 
 msgid "Imagen del X aniversario."
 msgstr "Imaxe do X aniversario."
-
-msgid "Ven a vernos"
-msgstr "Ven vernos"
 
 msgid "Reservas por teléfono"
 msgstr "Reservas por teléfono"
@@ -5388,9 +5536,6 @@ msgstr "Tes conta?"
 
 msgid "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
 msgstr "Xestiona os teus datos, o teu email e as túas preferencias de comunicación desde o teu perfil."
-
-msgid "Agenda"
-msgstr "Axenda"
 
 msgid "Lo que pasa en Caneca Furada."
 msgstr "O que pasa en Caneca Furada."
@@ -5419,12 +5564,6 @@ msgstr "Cervexa artesá na Coruña. Ven probala, descobre a carta e únete ao no
 msgid "Logotipo de Caneca Furada: una jarra de cerveza sonriente con espuma dorada"
 msgstr "Logotipo de Caneca Furada: unha xerra de cervexa sorrinte con escuma dourada"
 
-msgid "Consulta las cervezas y todo lo que servimos."
-msgstr "Consulta as cervexas e todo o que servimos."
-
-msgid "Selección"
-msgstr "Selección"
-
 msgid "Estamos preparando la selección de cervezas"
 msgstr "Estamos a preparar a selección de cervexas"
 
@@ -5437,24 +5576,11 @@ msgstr "Ir á carta"
 msgid "Los próximos eventos de la casa aparecerán aquí."
 msgstr "Os próximos eventos da casa aparecerán aquí."
 
-msgid "Te esperamos en A Coruña."
-msgstr "Agardámoste na Coruña."
-
-#, python-format
-msgid "Una cervecería 100%% artesana en A Coruña."
-msgstr "Unha cervexaría 100%% artesá na Coruña."
-
 msgid "presentación de la marca (historia, filosofía y cerveza)"
 msgstr "presentación da marca (historia, filosofía e cervexa)"
 
 msgid "Conoce la cervecería →"
 msgstr "Coñece a cervexaría →"
-
-msgid "Cada visita suma"
-msgstr "Cada visita suma"
-
-msgid "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."
-msgstr "Así funciona o club de Caneca Furada. Crea a túa conta, verifica o teu email e amosa o teu QR na barra para sumar puntos."
 
 msgid "Lo que servimos"
 msgstr "O que servimos"

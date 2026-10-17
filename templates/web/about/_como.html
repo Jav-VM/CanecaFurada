@@ -1,11 +1,18 @@
-{% load i18n %}{% load static %}
+{% load i18n %}
+{# --- Cómo trabajamos (textos e imágenes editables, Fase 21) ------------------------- #}
 <section aria-labelledby="como-titulo" class="border-t border-line bg-coal/40 py-20">
   <div class="container-page">
-    {% include "components/section_heading.html" with id="como-titulo" eyebrow=_("La casa") title=_("Cómo trabajamos") %}
-    {% include "components/pending.html" with what=_("elaboración, estilos de la casa y cervezas invitadas") %}
-    <div class="mt-10 flex flex-wrap gap-3">
-      <a href="{% url 'web:menu' %}" class="btn btn-primary">{% translate "Ver la carta" %}</a>
-      <a href="{% url 'web:contact' %}" class="btn btn-secondary">{% translate "Cómo llegar" %}</a>
+    <div class="grid gap-12 {% if section.single_image %}lg:grid-cols-2 lg:items-center{% endif %}">
+      <div>
+        {% include "components/section_heading.html" with id="como-titulo" eyebrow=section.eyebrow title=section.title %}
+        {% if section.body %}<div class="prose-site">{{ section.body|linebreaks }}</div>{% else %}{% include "components/pending.html" with what=_("elaboración, estilos de la casa y cervezas invitadas") %}{% endif %}
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a href="{% url 'web:menu' %}" class="btn btn-primary">{% translate "Ver la carta" %}</a>
+          <a href="{% url 'web:contact' %}" class="btn btn-secondary">{% translate "Cómo llegar" %}</a>
+        </div>
+      </div>
+      {% if section.single_image %}{% include "web/about/_figure.html" with image=section.single_image %}{% endif %}
     </div>
+    {% include "web/about/_gallery.html" %}
   </div>
 </section>

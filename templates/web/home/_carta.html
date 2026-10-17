@@ -1,11 +1,11 @@
-{% load i18n %}{% load static %}
-{# --- Acceso a la carta --------------------------------------------------- #}
+{% load i18n %}
+{# --- Acceso a la carta ----------------------------------------------------- #}
 <section aria-labelledby="carta-titulo" class="container-page py-10">
   <div class="card flex flex-col gap-6 p-8 sm:p-12 md:flex-row md:items-center md:justify-between">
     <div>
-      <p class="eyebrow mb-3">{% translate "Carta" %}</p>
-      <h2 id="carta-titulo" class="heading-lg">{% translate "La carta de la casa" %}</h2>
-      <p class="lead mt-3">{% translate "Consulta las cervezas y todo lo que servimos." %}</p>
+      {% if section.eyebrow %}<p class="eyebrow mb-3">{{ section.eyebrow }}</p>{% endif %}
+      <h2 id="carta-titulo" class="heading-lg">{{ section.title }}</h2>
+      {% if section.body %}<div class="lead mt-3">{{ section.body|linebreaksbr }}</div>{% endif %}
     </div>
     <a href="{% url 'web:menu' %}" class="btn btn-primary shrink-0">{% translate "Ver la carta" %}</a>
   </div>

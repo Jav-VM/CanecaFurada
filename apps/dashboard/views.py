@@ -49,6 +49,7 @@ from apps.purchases import selectors as purchase_selectors
 from apps.rewards import selectors as reward_selectors
 from apps.rewards import services as rewards
 from apps.rewards.models import Reward
+from apps.web import blocks as web_blocks
 from apps.web import layout as web_layout
 from apps.web import services as web
 
@@ -1209,9 +1210,100 @@ def _content_form():
 def _layouts():
     """Bloques de «Orden de las secciones» (Fase 20): (página, título, filas)."""
     return [
-        (page, title, web_layout.rows(web.page_layout(page), sections))
-        for page, (_field, sections, title) in web_layout.PAGES.items()
+        (page, title, web_layout.rows(web.page_layout(page), web.sections_for(page)))
+        for page, (_field, _sections, title) in web_layout.PAGES.items()
     ]
+
+
+# --- Contenido de las secciones y artículos (Fase 21) ------------------------------------
+
+
+def _image_changes(request, block):
+    """Imágenes a quitar y descripciones nuevas, solo de este bloque (el servicio lo vuelve a comprobar)."""
+    remove = request.POST.getlist("quitar")
+    alts = {}
+    if block is not None:
+        for image in block.images.all():
+            name = f"alt-{image.pk}"
+            if name in request.POST:
+                alts[str(image.pk)] = request.POST[name]
+    return remove, alts
+
+
+def _block_form_view(request, *, page, key, block, article):
+    allows_images = web_blocks.allows_images(page)
+    defaults = web_blocks.defaults(page, key) if key else ("", "", None)
+    initial = {"eyebrow": block.eyebrow, "title": block.title, "body": block.body} if block else {}
+    form = forms.PageBlockForm(
+        request.POST or None,
+        request.FILES or None,
+        initial=initial,
+        defaults=defaults,
+        images=allows_images,
+        article=article,
+    )
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            data = form.cleaned_data
+            remove, alts = _image_changes(request, block)
+            new_images = data.get("images") or []
+            try:
+                if block is None and article:
+                    web_blocks.create_article(actor=request.user, data=data, new_images=new_images, alts=alts)
+                else:
+                    web_blocks.save_block(
+                        actor=request.user, page=page, key=key, data=data, new_images=new_images, remove=remove, alts=alts
+                    )
+            except ValidationError as exc:
+                _apply_errors(form, exc)
+            else:
+                messages.success(request, _("Contenido de la sección guardado."))
+                return redirect(f"{reverse('dashboard:content')}#orden-{page}")
+        status = 400
+    context = {
+        "form": form,
+        "page": page,
+        "page_label": web_layout.PAGES[page][2],
+        "key": key,
+        "page_block": block,  # `block` está reservado dentro de {% block %}
+        "article": article,
+        "section_label": dict(web.sections_for(page)).get(key, "") if key else "",
+        "uses_about_text": (page, key) in web_blocks.ABOUT_TEXT_SECTIONS,
+        "max_images": web_blocks.PageBlock.MAX_IMAGES,
+    }
+    return _render(request, "section_form.html", "contenido", context, status=status)
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def section_edit(request, page, key):
+    if not web_blocks.is_editable(page, key):
+        raise Http404
+    block = web_blocks.get_block(page, key)
+    return _block_form_view(request, page=page, key=key, block=block, article=bool(block and block.is_article))
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def article_create(request):
+    return _block_form_view(request, page=web_layout.ABOUT, key="", block=None, article=True)
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def article_delete(request, key):
+    block = web_blocks.get_block(web_layout.ABOUT, key)
+    if block is None or not block.is_article:
+        raise Http404
+    if request.method == "POST":
+        web_blocks.delete_article(actor=request.user, key=key)
+        messages.success(request, _("Artículo eliminado."))
+        return redirect(f"{reverse('dashboard:content')}#orden-{web_layout.ABOUT}")
+    return _render(request, "article_confirm_delete.html", "contenido", {"page_block": block})
 
 
 @never_cache

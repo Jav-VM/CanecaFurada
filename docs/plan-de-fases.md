@@ -24,6 +24,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 18 | Ordenar los listados del dashboard por columnas | **Completa** ([detalle](fase-18-ordenacion-listados.md)); pendiente revisión visual |
 | 19 | Filtro «sin gasto», selección de clientes y campañas con imagen y puntos | **Completa** ([detalle](fase-19-campanas-seleccion.md)); pendientes revisión visual y prueba con SMTP real |
 | 20 | Ordenar y ocultar las secciones de Inicio y La cervecería | **Completa** ([detalle](fase-20-orden-secciones.md)); pendiente revisión visual |
+| 21 | Contenido editable de las secciones y artículos en La cervecería | **Completa** ([detalle](fase-21-contenido-secciones.md)); pendiente revisión visual |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -246,6 +247,14 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** lista blanca de secciones; solo propietario; migración aditiva; orden por defecto igual al anterior; suite existente intacta.
 - **Resultado (2026-10-17):** 12 tests nuevos; **1043 tests OK**; migración aplicada en PostgreSQL y en la demo.
 - Ver [fase-20-orden-secciones.md](fase-20-orden-secciones.md).
+
+## Fase 21 — Contenido editable de las secciones y artículos en La cervecería
+- **Numeración:** fase añadida por el usuario el 2026-10-17.
+- **Incluye:** separación visual de «Orden de las secciones»; botón «Editar» por sección; textos editables en Inicio; textos e imágenes (figura o galería) en La cervecería; artículos del propietario como secciones más (crear, editar, ocultar, eliminar).
+- **Decisiones del usuario:** Inicio solo textos; La cervecería textos e imágenes y artículos; varias imágenes forman una galería bajo el texto; editar en página propia; eliminar con confirmación.
+- **Criterios:** campo vacío = texto traducido de siempre; solo propietario; imágenes validadas; texto escapado; migración aditiva; suite existente intacta.
+- **Resultado (2026-10-17):** 15 tests nuevos; **1058 tests OK**; migración aplicada en PostgreSQL y en la demo.
+- Ver [fase-21-contenido-secciones.md](fase-21-contenido-secciones.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

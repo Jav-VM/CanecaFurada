@@ -308,6 +308,53 @@ class OnlineReservationsForm(forms.Form):
     )
 
 
+class MultipleImageInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    """Varias imágenes en un solo campo (Fase 21). Cada una pasa la validación de `ImageField`."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleImageInput(attrs={"accept": "image/jpeg,image/png,image/webp"}))
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        files = data if isinstance(data, (list, tuple)) else [data]
+        return [super(MultipleImageField, self).clean(item, initial) for item in files if item]
+
+
+class PageBlockForm(forms.Form):
+    """Textos de una sección o artículo (Fase 21). Vacío: el texto por defecto de la sección."""
+
+    eyebrow = forms.CharField(label=_("Antetítulo"), max_length=80, required=False)
+    title = forms.CharField(label=_("Título"), max_length=120, required=False)
+    body = forms.CharField(
+        label=_("Texto"),
+        max_length=5000,
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 8}),
+        help_text=_("Texto plano: deja una línea en blanco entre párrafos. Se muestra tal cual en gallego y en castellano."),
+    )
+    images = MultipleImageField(
+        label=_("Añadir imágenes"),
+        required=False,
+        validators=[validate_image_extension, validate_image_file],
+        help_text=_("JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más forman una galería bajo el texto."),
+    )
+
+    def __init__(self, *args, defaults=("", "", None), images=True, article=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        eyebrow, title, body = defaults
+        for name, value in (("eyebrow", eyebrow), ("title", title), ("body", body)):
+            if value:
+                self.fields[name].widget.attrs["placeholder"] = str(value)
+        if article:
+            self.fields["title"].required = True
+        if not images:
+            del self.fields["images"]
+
+
 class BusinessInfoForm(forms.Form):
     address = forms.CharField(label=_("Dirección pública del local"), max_length=200, required=False)
     opening_hours = forms.CharField(

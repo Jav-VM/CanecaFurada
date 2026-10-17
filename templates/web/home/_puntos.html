@@ -1,12 +1,12 @@
-{% load i18n %}{% load static %}
+{% load i18n %}
 {# --- Programa de puntos (Fases 5–7) ------------------------------------------ #}
 <section aria-labelledby="puntos-titulo" class="border-y border-line bg-coal/40 py-20">
   <div class="container-page">
     <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div class="max-w-2xl">
-        <p class="eyebrow mb-3">{% translate "Programa de puntos" %}</p>
-        <h2 id="puntos-titulo" class="heading-lg">{% translate "Cada visita suma" %}</h2>
-        <p class="lead mt-4">{% translate "Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos." %}</p>
+        {% if section.eyebrow %}<p class="eyebrow mb-3">{{ section.eyebrow }}</p>{% endif %}
+        <h2 id="puntos-titulo" class="heading-lg">{{ section.title }}</h2>
+        {% if section.body %}<div class="lead mt-4">{{ section.body|linebreaksbr }}</div>{% endif %}
       </div>
       <a href="{% url 'web:rewards' %}" class="btn btn-secondary shrink-0">{% translate "Ver recompensas" %}</a>
     </div>

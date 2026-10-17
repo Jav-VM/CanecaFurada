@@ -74,3 +74,29 @@ def rows(layout, sections):
     """Filas para el dashboard: (clave, etiqueta, visible)."""
     labels = dict(sections)
     return [(item["key"], labels[item["key"]], item["visible"]) for item in layout]
+
+
+# --- Fase 21: textos por defecto de cada sección ----------------------------------------
+# (antetítulo, título, texto). Se usan cuando el propietario deja un campo vacío y como
+# ayuda en el formulario. `None` en el texto: la sección no tiene frase por defecto.
+# «Somos Caneca Furada» y «Nuestra historia» usan antes la presentación de Contenido.
+DEFAULT_TEXTS = {
+    HOME: {
+        "marca": (_("La casa"), _("Somos Caneca Furada"), _("Una cervecería 100% artesana en A Coruña.")),
+        "carta": (_("Carta"), _("La carta de la casa"), _("Consulta las cervezas y todo lo que servimos.")),
+        "cervezas": (_("Selección"), _("Nuestras cervezas"), None),
+        "puntos": (
+            _("Programa de puntos"),
+            _("Cada visita suma"),
+            _("Así funciona el club de Caneca Furada. Crea tu cuenta, verifica tu email y enseña tu QR en la barra para sumar puntos."),
+        ),
+        "eventos": (_("Agenda"), _("Eventos destacados"), None),
+        "local": (_("El local"), _("Ven a vernos"), _("Te esperamos en A Coruña.")),
+    },
+    ABOUT: {
+        "historia": (_("Nuestra historia"), _("Cerveza 100% artesana"), _("Caneca Furada es una cervecería artesana de A Coruña.")),
+        "como": (_("La casa"), _("Cómo trabajamos"), None),
+    },
+}
+# Secciones con imágenes propias (solo La cervecería; los artículos también).
+IMAGE_PAGES = (ABOUT,)

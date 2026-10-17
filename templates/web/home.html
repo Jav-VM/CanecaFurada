@@ -34,6 +34,7 @@
 </section>
 
 {# --- Secciones que ordena el propietario (Fase 20): Dashboard → Contenido ---------- #}
-{% for key in business.home_sections %}{% include "web/home/_"|add:key|add:".html" %}
+{# `sections` lo arma el servidor (apps/web/blocks.py): solo plantillas de la lista blanca. #}
+{% for section in sections %}{% include section.template %}
 {% endfor %}
 {% endblock %}

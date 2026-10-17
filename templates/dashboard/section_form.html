@@ -1,0 +1,44 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% block title %}{% if article and not page_block %}{% translate "Nuevo artículo" %}{% else %}{% translate "Editar sección" %}{% endif %} · Dashboard{% endblock %}
+{% block heading %}{% if article and not page_block %}{% translate "Nuevo artículo" %}{% elif article %}{% blocktranslate trimmed with title=page_block.title %}Artículo: {{ title }}{% endblocktranslate %}{% else %}{{ section_label }}{% endif %}{% endblock %}
+{% block intro %}<p class="lead mt-2">{% blocktranslate trimmed with page=page_label %}Página: {{ page }}. Lo que dejes vacío muestra el texto de siempre (en gris, como ejemplo). Lo que escribas se ve tal cual en gallego y en castellano.{% endblocktranslate %}</p>{% endblock %}
+{% block body %}
+<div class="max-w-2xl" data-section-form>
+  {% if uses_about_text %}<p class="alert alert-info mb-4">{% translate "Si dejas el texto vacío, se usa la «Presentación de la cervecería» del formulario de Contenido." %}</p>{% endif %}
+  {% include "components/form_errors.html" %}
+  <form method="post" enctype="multipart/form-data" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% include "accounts/_field.html" with field=form.eyebrow %}
+    {% include "accounts/_field.html" with field=form.title %}
+    {% include "accounts/_field.html" with field=form.body %}
+
+    {% if form.images %}
+      {% if page_block and page_block.images.all %}
+        <fieldset class="field" data-current-images>
+          <legend>{% translate "Imágenes actuales" %}</legend>
+          <ul class="grid gap-4 sm:grid-cols-2">
+            {% for image in page_block.images.all %}
+              <li class="card space-y-2 p-3">
+                <img src="{{ image.image.url }}" alt="" class="aspect-video w-full rounded-lg object-cover">
+                <label for="alt-{{ image.pk }}" class="text-xs uppercase tracking-wider text-mist">{% translate "Descripción (para lectores de pantalla)" %}</label>
+                <input type="text" name="alt-{{ image.pk }}" id="alt-{{ image.pk }}" maxlength="200" value="{{ image.alt }}">
+                <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="quitar" value="{{ image.pk }}"> {% translate "Quitar esta imagen" %}</label>
+              </li>
+            {% endfor %}
+          </ul>
+        </fieldset>
+      {% endif %}
+      {% include "accounts/_field.html" with field=form.images %}
+      <p class="note">{% blocktranslate trimmed with max=max_images %}Hasta {{ max }} imágenes por sección. Después de subirlas puedes añadir su descripción.{% endblocktranslate %}</p>
+    {% endif %}
+
+    <p class="note">{% translate "Son datos públicos: no escribas datos personales de clientes ni de empleados." %}</p>
+    <div class="flex flex-wrap gap-3">
+      <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% if article and not page_block %}{% translate "Crear artículo" %}{% else %}{% translate "Guardar" %}{% endif %}</button>
+      {% if article and page_block %}<a class="btn btn-secondary" href="{% url 'dashboard:article_delete' page_block.key %}">{% translate "Eliminar artículo" %}</a>{% endif %}
+    </div>
+  </form>
+  <p class="mt-4 text-sm"><a class="link" href="{% url 'dashboard:content' %}#orden-{{ page }}">{% translate "← Volver a Contenido" %}</a></p>
+</div>
+{% endblock %}
