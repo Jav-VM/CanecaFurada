@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 00:33+0200\n"
+"POT-Creation-Date: 2026-10-17 07:01+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Galego\n"
@@ -1794,6 +1794,12 @@ msgstr "Feliz aniversario! Agasallámoste con {puntos} puntos."
 msgid "Una línea. Va precedido de «Caneca Furada:» y seguido del enlace de baja. Admite %(PLACEHOLDER)s."
 msgstr "Unha liña. Vai precedida de «Caneca Furada:» e seguida da ligazón de baixa. Admite %(PLACEHOLDER)s."
 
+msgid "Reservas online activadas"
+msgstr "Reservas en liña activadas"
+
+msgid "Desactivadas, los botones de reserva llevan a Contacto con el aviso de reservar por teléfono."
+msgstr "Desactivadas, os botóns de reserva levan a Contacto co aviso de reservar por teléfono."
+
 msgid "Dirección pública del local"
 msgstr "Enderezo público do local"
 
@@ -2021,6 +2027,12 @@ msgstr "Os puntos xa non caducan."
 msgid "Regalo de cumpleaños guardado."
 msgstr "Agasallo de aniversario gardado."
 
+msgid "Reservas online activadas."
+msgstr "Reservas en liña activadas."
+
+msgid "Reservas online desactivadas: los clientes verán que deben reservar por teléfono."
+msgstr "Reservas en liña desactivadas: os clientes verán que deben reservar por teléfono."
+
 msgid "Eventos y reservas"
 msgstr "Eventos e reservas"
 
@@ -2202,6 +2214,9 @@ msgstr "Xa tes %(active)s reservas activas. Cancela algunha antes de pedir outra
 
 msgid "Nueva solicitud de reserva"
 msgstr "Nova solicitude de reserva"
+
+msgid "Ahora mismo las reservas se hacen por teléfono."
+msgstr "Agora mesmo as reservas fanse por teléfono."
 
 msgid "Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde."
 msgstr "Fixeches demasiadas solicitudes de reserva. Téntao máis tarde."
@@ -3068,6 +3083,9 @@ msgstr "texto de benvida do inicio"
 msgid "aviso destacado"
 msgstr "aviso destacado"
 
+msgid "reservas online activadas"
+msgstr "reservas en liña activadas"
+
 msgid "contenido del local"
 msgstr "contido do local"
 
@@ -3087,6 +3105,9 @@ msgstr "Escribe ata %(MAX_LINES)s liñas co formato «Nome | https://…»."
 
 msgid "Solo el propietario puede editar el contenido del local."
 msgstr "Só o propietario pode editar o contido do local."
+
+msgid "Solo el propietario puede cambiar las reservas online."
+msgstr "Só o propietario pode cambiar as reservas en liña."
 
 msgid "Caneca Furada — Administración"
 msgstr "Caneca Furada — Administración"
@@ -4393,6 +4414,25 @@ msgstr "O día do seu aniversario, cada cliente con email verificado recibe os p
 msgid "Guardar regalo de cumpleaños"
 msgstr "Gardar agasallo de aniversario"
 
+msgid "Reservas online"
+msgstr "Reservas en liña"
+
+msgid "Vigente: <strong>los clientes piden reserva desde la web y la app</strong>."
+msgstr "Vixente: <strong>os clientes piden reserva desde a web e a app</strong>."
+
+msgid "Vigente: <strong>reservas online desactivadas</strong>; los botones de reserva llevan a Contacto para reservar por teléfono."
+msgstr "Vixente: <strong>reservas en liña desactivadas</strong>; os botóns de reserva levan a Contacto para reservar por teléfono."
+
+msgid "Las reservas ya solicitadas no cambian: se siguen gestionando desde Reservas y el cliente puede consultarlas o cancelarlas."
+msgstr "As reservas xa solicitadas non cambian: seguen xestionándose desde Reservas e o cliente pode consultalas ou cancelalas."
+
+#, python-format
+msgid "No hay teléfono de contacto publicado. Añádelo en <a class=\"link\" href=\"%(url)s\">Contenido</a> para que los clientes sepan a qué número llamar."
+msgstr "Non hai teléfono de contacto publicado. Engádeo en <a class=\"link\" href=\"%(url)s\">Contido</a> para que os clientes saiban a que número chamar."
+
+msgid "Guardar reservas online"
+msgstr "Gardar reservas en liña"
+
 msgid "Valores fijados en la configuración del servidor"
 msgstr "Valores fixados na configuración do servidor"
 
@@ -4487,6 +4527,12 @@ msgstr "Ver a miña reserva"
 
 msgid "No quedan plazas libres."
 msgstr "Non quedan prazas libres."
+
+msgid "Reservar por teléfono"
+msgstr "Reservar por teléfono"
+
+msgid "Las reservas se hacen por teléfono. Llámanos y te guardamos sitio."
+msgstr "As reservas fanse por teléfono. Chámanos e gardámosche sitio."
 
 msgid "Solicitar reserva"
 msgstr "Solicitar reserva"
@@ -5093,6 +5139,19 @@ msgstr "Como chegar"
 msgid "Ven a vernos"
 msgstr "Ven vernos"
 
+msgid "Reservas por teléfono"
+msgstr "Reservas por teléfono"
+
+msgid "Ahora mismo las reservas se hacen por teléfono. Llámanos y te guardamos sitio:"
+msgstr "Agora mesmo as reservas fanse por teléfono. Chámanos e gardámosche sitio:"
+
+#, python-format
+msgid "Llamar al %(phone)s"
+msgstr "Chamar ao %(phone)s"
+
+msgid "Ahora mismo las reservas se hacen por teléfono. Pásate por el local o escríbenos y te indicamos cómo reservar."
+msgstr "Agora mesmo as reservas fanse por teléfono. Pasa polo local ou escríbenos e indicámosche como reservar."
+
 msgid "El local"
 msgstr "O local"
 
@@ -5119,6 +5178,9 @@ msgstr "Queres reservar mesa?"
 
 msgid "Envía una solicitud desde tu cuenta y te confirmaremos por email."
 msgstr "Envía unha solicitude desde a túa conta e confirmarémoscho por email."
+
+msgid "Las reservas se hacen por teléfono: llámanos y te guardamos sitio."
+msgstr "As reservas fanse por teléfono: chámanos e gardámosche sitio."
 
 msgid "Aviso"
 msgstr "Aviso"

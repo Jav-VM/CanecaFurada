@@ -48,6 +48,22 @@
   </form>
 </section>
 
+<section aria-labelledby="reservas-online" class="mt-10 max-w-2xl" data-reservations-settings>
+  <h2 id="reservas-online" class="heading-md mb-2">{% translate "Reservas online" %}</h2>
+  <p class="mb-2" data-reservations-status="{% if reservations_enabled %}on{% else %}off{% endif %}">
+    {% if reservations_enabled %}{% blocktranslate trimmed %}Vigente: <strong>los clientes piden reserva desde la web y la app</strong>.{% endblocktranslate %}
+    {% else %}{% blocktranslate trimmed %}Vigente: <strong>reservas online desactivadas</strong>; los botones de reserva llevan a Contacto para reservar por teléfono.{% endblocktranslate %}{% endif %}
+  </p>
+  <p class="note mb-4">{% translate "Las reservas ya solicitadas no cambian: se siguen gestionando desde Reservas y el cliente puede consultarlas o cancelarlas." %}</p>
+  {% if not business.phone %}<p class="alert alert-info mb-4" data-reservations-no-phone>{% blocktranslate trimmed with url=content_url %}No hay teléfono de contacto publicado. Añádelo en <a class="link" href="{{ url }}">Contenido</a> para que los clientes sepan a qué número llamar.{% endblocktranslate %}</p>{% endif %}
+  {% with form=reservations_form %}{% include "components/form_errors.html" %}{% endwith %}
+  <form method="post" action="{% url 'dashboard:settings_reservations' %}" class="form-section" novalidate data-loading>
+    {% csrf_token %}
+    {% for field in reservations_form %}{% include "accounts/_field.html" %}{% endfor %}
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar reservas online" %}</button>
+  </form>
+</section>
+
 <section aria-labelledby="fijos" class="mt-10 max-w-2xl">
   <h2 id="fijos" class="heading-md mb-2">{% translate "Valores fijados en la configuración del servidor" %}</h2>
   <p class="note mb-4">{% translate "Se cambian en los ajustes del proyecto, no desde aquí." %}</p>

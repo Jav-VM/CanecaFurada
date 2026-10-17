@@ -13,6 +13,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 from django.utils.translation import gettext as _
@@ -20,6 +21,7 @@ from django.utils.translation import gettext as _
 from apps.accounts.forms import apply_service_errors
 from apps.accounts.models import User
 from apps.accounts.permissions import verified_email_required
+from apps.web import services as web
 
 from . import selectors, services
 from .forms import EventReservationForm, TableReservationForm
@@ -30,6 +32,12 @@ PAGE_SIZE = 20
 def _require_customer(user):
     if user.role != User.Role.CUSTOMER:
         raise PermissionDenied
+
+
+def _phone_reservations_redirect(request):
+    """Reservas online desactivadas (Fase 17): se reserva por teléfono desde Contacto."""
+    messages.info(request, _("Ahora mismo las reservas se hacen por teléfono."))
+    return redirect(reverse("web:contact") + "#reservas")
 
 
 # --- Público ---------------------------------------------------------------------
@@ -85,6 +93,8 @@ def _submit(request, form, *, event=None):
 @verified_email_required
 def reservation_new(request):
     _require_customer(request.user)
+    if not web.online_reservations_enabled():
+        return _phone_reservations_redirect(request)
     initial = {"idempotency_key": services.new_idempotency_key()}
     form = TableReservationForm(request.POST or None, initial=initial)
     status = 200
@@ -109,6 +119,8 @@ def event_reservation_new(request, public_id):
     if own is not None:
         messages.info(request, _("Ya tienes una reserva activa para este evento."))
         return redirect("events:reservation_detail", public_id=own.public_id)
+    if not web.online_reservations_enabled():
+        return _phone_reservations_redirect(request)
     if not selectors.is_bookable(event):
         messages.error(request, _("Este evento no admite reservas."))
         return redirect("events:event_detail", public_id=event.public_id)

@@ -20,6 +20,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 13 | Datos de demostración | **Completa** ([detalle](fase-13-datos-demo.md)) |
 | 14 | Caducidad de puntos y regalo de cumpleaños configurables | **Completa** ([detalle](fase-14-caducidad-puntos-cumpleanos.md)); pendiente revisión visual |
 | 15 | Web en gallego con selector gallego/castellano | **Completa** ([detalle](fase-15-idioma-gallego.md)); pendientes la revisión nativa de las traducciones y la visual |
+| 17 | Interruptor de reservas online | **Completa** ([detalle](fase-17-reservas-online.md)); pendiente revisión visual |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -213,6 +214,13 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
   - **980 tests OK** en PostgreSQL 17 y en SQLite;
   - migración `0008` aplicada en la BD de desarrollo (PostgreSQL).
 - Ver [fase-16-registro-cp-sexo.md](fase-16-registro-cp-sexo.md).
+
+## Fase 17 — Interruptor de reservas online
+- **Numeración:** fase añadida por el usuario el 2026-10-17.
+- **Incluye:** opción en Dashboard → Configuración para activar o desactivar las reservas online; desactivadas, los enlaces de reserva llevan a Contacto, que pide reservar por teléfono; bloqueo en vistas, servicio y API (`reservations_disabled`, 409; `bookable = false`).
+- **Criterios:** solo el propietario lo cambia (servidor); por defecto activadas; reservas existentes intactas; migración no destructiva; catálogo gallego completo; suite existente intacta.
+- **Resultado (2026-10-17):** 16 tests nuevos; **996 tests OK**.
+- Ver [fase-17-reservas-online.md](fase-17-reservas-online.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

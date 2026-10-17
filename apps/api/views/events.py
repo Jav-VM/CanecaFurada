@@ -62,7 +62,7 @@ class MyReservationListView(ListApiView):
         description=(
             "De un evento (`event`) o de mesa (`requested_for`). Queda pendiente hasta que el local la confirme "
             "(se avisa por email). Errores: `event_not_bookable`, `too_many_active` (400); `already_reserved`, "
-            "`event_full` (409); `rate_limited` (429)."
+            "`event_full`, `reservations_disabled` (409, el local solo acepta reservas por teléfono); `rate_limited` (429)."
         ),
     )
     def post(self, request):

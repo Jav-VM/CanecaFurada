@@ -46,6 +46,7 @@ from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
 from apps.notifications import services as notifications
 from apps.notifications.models import Notification
+from apps.web import services as web
 
 from .models import Event, Reservation
 
@@ -316,6 +317,9 @@ def request_reservation(*, customer, party_size, idempotency_key, requested_for=
     existing = Reservation.objects.filter(idempotency_key=key).first()
     if existing is not None:
         return _replay(existing, customer)
+    # Fase 17: con las reservas online desactivadas se reserva por teléfono.
+    if not web.online_reservations_enabled():
+        raise _error(_("Ahora mismo las reservas se hacen por teléfono."), "reservations_disabled")
     scope, limit = "reservation-request", settings.EVENTS_RESERVATION_MAX_REQUESTS_PER_HOUR
     if throttling.is_limited(scope, customer.pk, limit):
         raise _error(_("Has hecho demasiadas solicitudes de reserva. Inténtalo más tarde."), "rate_limited")

@@ -61,6 +61,8 @@ class BusinessInfo(models.Model):
     # Fase 10: textos principales del inicio.
     hero_text = models.CharField(_("texto de bienvenida del inicio"), max_length=300, blank=True)
     announcement = models.CharField(_("aviso destacado"), max_length=200, blank=True)
+    # Fase 17: si está desactivado, los enlaces de reserva llevan a Contacto (reserva por teléfono).
+    online_reservations_enabled = models.BooleanField(_("reservas online activadas"), default=True)
     updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:

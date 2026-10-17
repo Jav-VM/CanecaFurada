@@ -5,6 +5,7 @@ from rest_framework import serializers
 from apps.events import selectors
 from apps.events.models import Reservation
 from apps.loyalty.services import customer_display_name
+from apps.web import services as web
 
 from .rewards import absolute_media_url
 
@@ -20,13 +21,15 @@ class EventSerializer(serializers.Serializer):
     ends_at = serializers.DateTimeField(allow_null=True)
     image_url = serializers.SerializerMethodField()
     accepts_reservations = serializers.BooleanField()
-    bookable = serializers.SerializerMethodField(help_text="Se puede pedir reserva ahora mismo.")
+    bookable = serializers.SerializerMethodField(
+        help_text="Se puede pedir reserva ahora mismo (falso también si las reservas online están desactivadas)."
+    )
 
     def get_image_url(self, event) -> str | None:
         return absolute_media_url(self.context.get("request"), event.image)
 
     def get_bookable(self, event) -> bool:
-        return selectors.is_bookable(event)
+        return web.online_reservations_enabled() and selectors.is_bookable(event)
 
 
 class EventDetailSerializer(EventSerializer):

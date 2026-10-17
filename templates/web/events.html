@@ -16,9 +16,17 @@
   <div class="card mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
       <p class="text-lg font-bold">{% translate "¿Quieres reservar mesa?" %}</p>
-      <p class="mt-1 text-mist">{% translate "Envía una solicitud desde tu cuenta y te confirmaremos por email." %}</p>
+      {% if business.online_reservations_enabled %}
+        <p class="mt-1 text-mist">{% translate "Envía una solicitud desde tu cuenta y te confirmaremos por email." %}</p>
+      {% else %}
+        <p class="mt-1 text-mist">{% translate "Las reservas se hacen por teléfono: llámanos y te guardamos sitio." %}</p>
+      {% endif %}
     </div>
-    <a href="{% url 'events:reservation_new' %}" class="btn btn-secondary shrink-0">{% translate "Solicitar reserva" %}</a>
+    {% if business.online_reservations_enabled %}
+      <a href="{% url 'events:reservation_new' %}" class="btn btn-secondary shrink-0">{% translate "Solicitar reserva" %}</a>
+    {% else %}
+      <a href="{% url 'web:contact' %}#reservas" class="btn btn-secondary shrink-0" data-reserve-by-phone>{% translate "Reservar por teléfono" %}</a>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

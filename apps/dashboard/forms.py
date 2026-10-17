@@ -289,6 +289,16 @@ class BirthdayGiftForm(forms.Form):
     )
 
 
+class OnlineReservationsForm(forms.Form):
+    """Interruptor de las reservas online (Fase 17)."""
+
+    enabled = forms.BooleanField(
+        label=_("Reservas online activadas"),
+        required=False,
+        help_text=_("Desactivadas, los botones de reserva llevan a Contacto con el aviso de reservar por teléfono."),
+    )
+
+
 class BusinessInfoForm(forms.Form):
     address = forms.CharField(label=_("Dirección pública del local"), max_length=200, required=False)
     opening_hours = forms.CharField(

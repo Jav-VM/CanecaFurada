@@ -5,7 +5,7 @@
 {% block heading %}{% translate "Mis reservas" %}{% endblock %}
 {% block intro %}<p class="lead mt-4">{% translate "Tus solicitudes de reserva y su estado." %}</p>{% endblock %}
 {% block body %}
-<div class="mb-4 flex justify-end"><a class="btn btn-primary btn-sm" href="{% url 'events:reservation_new' %}">{% translate "Nueva reserva de mesa" %}</a></div>
+<div class="mb-4 flex justify-end">{% if business.online_reservations_enabled %}<a class="btn btn-primary btn-sm" href="{% url 'events:reservation_new' %}">{% translate "Nueva reserva de mesa" %}</a>{% else %}<a class="btn btn-primary btn-sm" href="{% url 'web:contact' %}#reservas" data-reserve-by-phone>{% translate "Reservar por teléfono" %}</a>{% endif %}</div>
 {% if reservations.object_list %}
   <ul class="card divide-y divide-line p-0" data-reservation-list>
     {% for reservation in reservations %}

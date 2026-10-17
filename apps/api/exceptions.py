@@ -39,6 +39,7 @@ CONFLICT_CODES = frozenset(
         "event_full",
         "invalid_transition",
         "operation_not_completed",
+        "reservations_disabled",
     }
 )
 TOO_MANY_CODES = frozenset({"rate_limited"})

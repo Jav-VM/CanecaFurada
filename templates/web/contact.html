@@ -5,6 +5,17 @@
 {% include "components/page_header.html" with eyebrow=_("Contacto") title=_("Ven a vernos") intro=business.city %}
 
 <section aria-labelledby="datos-local" class="container-page py-16">
+  {% if not business.online_reservations_enabled %}
+    <div id="reservas" class="card mb-6 p-8" data-phone-reservations>
+      <h2 class="heading-md mb-2">{% translate "Reservas por teléfono" %}</h2>
+      {% if business.phone %}
+        <p class="text-mist">{% translate "Ahora mismo las reservas se hacen por teléfono. Llámanos y te guardamos sitio:" %}</p>
+        <p class="mt-4"><a class="btn btn-primary" href="tel:{{ business.phone }}">{% blocktranslate trimmed with phone=business.phone %}Llamar al {{ phone }}{% endblocktranslate %}</a></p>
+      {% else %}
+        <p class="text-mist">{% translate "Ahora mismo las reservas se hacen por teléfono. Pásate por el local o escríbenos y te indicamos cómo reservar." %}</p>
+      {% endif %}
+    </div>
+  {% endif %}
   <div class="grid gap-6 md:grid-cols-[1.2fr_1fr]">
     <div class="card p-8">
       <h2 id="datos-local" class="heading-md mb-6">{% translate "El local" %}</h2>

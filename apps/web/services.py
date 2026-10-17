@@ -7,6 +7,9 @@ Contenido del local (Fase 9): lectura para la web y edición por el propietario.
   no consultar la BD en cada página; la edición la invalida.
 - `update_business_info(...)`: solo propietario, validado y auditado (solo los
   nombres de los campos cambiados, no sus valores).
+- `online_reservations_enabled()` / `set_online_reservations(...)` (Fase 17):
+  interruptor de las reservas online. No forma parte de `EDITABLE_FIELDS`: solo
+  se cambia desde Configuración.
 """
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
@@ -50,6 +53,7 @@ def _stored_values():
         "about_text": info.about_text or None,
         "hero_text": info.hero_text or None,
         "announcement": info.announcement or None,
+        "online_reservations_enabled": info.online_reservations_enabled,
     }
 
 
@@ -61,7 +65,13 @@ def business_info():
     data = dict(content.BUSINESS)
     # Lo que el propietario no ha rellenado sigue como en `content.BUSINESS`.
     data.update({key: value for key, value in stored.items() if value})
+    # Booleano: `False` también cuenta (el filtro anterior lo descartaría).
+    data["online_reservations_enabled"] = stored.get("online_reservations_enabled", True)
     return data
+
+
+def online_reservations_enabled():
+    return business_info()["online_reservations_enabled"]
 
 
 def editable_business_info():
@@ -86,3 +96,23 @@ def update_business_info(*, actor, data):
     record_audit_event(action=AuditEvent.Action.SITE_CONTENT_UPDATED, actor=actor, metadata={"fields": changed})
     transaction.on_commit(lambda: cache.delete(CACHE_KEY))
     return info, changed
+
+
+@transaction.atomic
+def set_online_reservations(*, actor, enabled):
+    """Activa o desactiva las reservas online. Devuelve si ha cambiado algo."""
+    if not is_owner(actor):
+        raise PermissionDenied(_("Solo el propietario puede cambiar las reservas online."))
+    enabled = bool(enabled)
+    info = BusinessInfo.objects.select_for_update().filter(pk=1).first() or BusinessInfo()
+    if info.online_reservations_enabled == enabled:
+        return False
+    info.online_reservations_enabled = enabled
+    info.save()
+    record_audit_event(
+        action=AuditEvent.Action.SITE_CONTENT_UPDATED,
+        actor=actor,
+        metadata={"fields": ["online_reservations_enabled"], "enabled": enabled},
+    )
+    transaction.on_commit(lambda: cache.delete(CACHE_KEY))
+    return True

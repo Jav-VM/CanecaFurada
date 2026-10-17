@@ -952,6 +952,7 @@ def content(request):
 
 EXPIRY_PREFIX = "caducidad"
 BIRTHDAY_PREFIX = "cumple"
+RESERVATIONS_PREFIX = "reservas"
 
 
 def _expiry_initial():
@@ -972,8 +973,9 @@ def _birthday_initial():
     }
 
 
-def _settings_page(request, *, form=None, expiry_form=None, birthday_form=None, status=200):
-    """Configuración: conversión, caducidad de puntos y regalo de cumpleaños (cada uno con su formulario)."""
+def _settings_page(request, *, form=None, expiry_form=None, birthday_form=None, reservations_form=None, status=200):
+    """Configuración: conversión, caducidad, cumpleaños y reservas online (cada uno con su formulario)."""
+    reservations_enabled = web.online_reservations_enabled()
     return _render(
         request,
         "settings.html",
@@ -988,6 +990,10 @@ def _settings_page(request, *, form=None, expiry_form=None, birthday_form=None, 
             "birthday_form": birthday_form
             or forms.BirthdayGiftForm(prefix=BIRTHDAY_PREFIX, initial=_birthday_initial()),
             "birthday_placeholder": birthday_settings.PLACEHOLDER,
+            "reservations_form": reservations_form
+            or forms.OnlineReservationsForm(prefix=RESERVATIONS_PREFIX, initial={"enabled": reservations_enabled}),
+            "reservations_enabled": reservations_enabled,
+            "content_url": reverse("dashboard:content"),
             "read_only_settings": (
                 (_("Importe máximo por compra"), f"{settings.PURCHASES_MAX_AMOUNT} €"),
                 (_("Días para recoger una recompensa canjeada"), settings.REWARDS_CODE_VALIDITY_DAYS),
@@ -1063,3 +1069,20 @@ def settings_birthday(request):
             messages.success(request, _("Regalo de cumpleaños guardado.") if changed else _("No había cambios que guardar."))
             return redirect("dashboard:settings")
     return _settings_page(request, birthday_form=form, status=400)
+
+
+@never_cache
+@require_POST
+@owner_required
+def settings_reservations(request):
+    form = forms.OnlineReservationsForm(request.POST, prefix=RESERVATIONS_PREFIX)
+    if form.is_valid():
+        enabled = form.cleaned_data["enabled"]
+        if not web.set_online_reservations(actor=request.user, enabled=enabled):
+            messages.info(request, _("No había cambios que guardar."))
+        elif enabled:
+            messages.success(request, _("Reservas online activadas."))
+        else:
+            messages.success(request, _("Reservas online desactivadas: los clientes verán que deben reservar por teléfono."))
+        return redirect("dashboard:settings")
+    return _settings_page(request, reservations_form=form, status=400)
