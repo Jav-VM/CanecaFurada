@@ -1,46 +1,7 @@
-{% load i18n %}
-{# --- El local (Fase 22: textos editables; los datos salen de Contenido) ---
-   Dirección y redes a la izquierda, horario a la derecha (una línea por franja, como el
-   pie) y, abajo a todo el ancho, teléfono y email en una sola línea. Nunca se inventan datos. #}
+{# --- El local (Fase 22: textos editables; los datos salen de Contenido) --- #}
 <section aria-labelledby="datos-local" class="card p-8">
   {% if section.eyebrow %}<p class="eyebrow mb-2">{{ section.eyebrow }}</p>{% endif %}
   <h2 id="datos-local" class="heading-md mb-6">{{ section.title }}</h2>
   {% if section.body %}<div class="mb-6 text-mist">{{ section.body|linebreaksbr }}</div>{% endif %}
-
-  <div class="grid gap-8 text-sm md:grid-cols-2">
-    <dl class="space-y-4" data-contact-address>
-      <div>
-        <dt class="font-semibold text-paper">{% translate "Dirección" %}</dt>
-        <dd class="text-mist">{% if business.address %}{{ business.address }}{% else %}{{ business.city }} · <span class="italic">{% translate "dirección pendiente de publicar" %}</span>{% endif %}</dd>
-      </div>
-      {% if business.social_links %}
-      <div>
-        <dt class="font-semibold text-paper">{% translate "Redes" %}</dt>
-        <dd><ul class="flex flex-wrap gap-3">{% for name, url in business.social_links %}<li><a class="link" href="{{ url }}" rel="noopener noreferrer">{{ name }}</a></li>{% endfor %}</ul></dd>
-      </div>
-      {% endif %}
-    </dl>
-
-    <div data-contact-hours>
-      <h3 class="font-semibold text-paper">{% translate "Horario" %}</h3>
-      {% if business.opening_hours %}
-        <ul class="mt-1 space-y-1 text-mist">{% for days, hours in business.opening_hours %}<li class="flex justify-between gap-4"><span class="text-paper">{{ days }}</span><span class="whitespace-nowrap tabular-nums">{{ hours }}</span></li>{% endfor %}</ul>
-      {% else %}
-        <p class="mt-1 italic text-mist">{% translate "Pendiente de publicar" %}</p>
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="mt-6 border-t border-line pt-6 text-sm" data-contact-line>
-    <h3 class="sr-only">{% translate "Contacto" %}</h3>
-    {% if business.phone or business.email %}
-      <p class="flex flex-wrap items-center gap-x-8 gap-y-2">
-        <span class="font-semibold text-paper">{% translate "Contacto" %}</span>
-        {% if business.phone %}<a class="link" href="tel:{{ business.phone }}">{{ business.phone }}</a>{% endif %}
-        {% if business.email %}<a class="link" href="mailto:{{ business.email }}">{{ business.email }}</a>{% endif %}
-      </p>
-    {% else %}
-      <p><span class="font-semibold text-paper">{% translate "Contacto" %}</span> · <span class="italic text-mist">{% translate "Pendiente de publicar" %}</span></p>
-    {% endif %}
-  </div>
+  {% include "components/business_info.html" %}
 </section>

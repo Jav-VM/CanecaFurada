@@ -95,35 +95,6 @@ class PublicPagesTests(TestCase):
         # En Contacto el horario sigue dentro de los datos del local.
         self.assertContains(contact, "Martes a domingo", count=2)
 
-    def test_contact_local_section_layout(self):
-        business = {
-            "address": "Rúa Ficticia 0",
-            "opening_hours": (("Martes a domingo", "18:00–00:00"),),
-            "phone": "+34 600 000 000",
-            "email": "info@example.com",
-        }
-        with mock.patch.dict("apps.web.content.BUSINESS", business):
-            html = self.client.get(reverse("web:contact")).content.decode()
-        section = html[html.index('aria-labelledby="datos-local"'):html.index('aria-labelledby="contacto-cuenta"')]
-        address = section.index("data-contact-address")
-        hours = section.index("data-contact-hours")
-        line = section.index("data-contact-line")
-        self.assertLess(address, hours)
-        self.assertLess(hours, line)
-        # Horario: una línea por franja, la hora a la derecha del día.
-        self.assertRegex(section[hours:line], r"<li[^>]*><span[^>]*>Martes a domingo</span><span[^>]*>18:00–00:00</span></li>")
-        # Teléfono y email juntos, en la fila de abajo.
-        contact = section[line:]
-        self.assertIn('href="tel:+34 600 000 000"', contact)
-        self.assertIn('href="mailto:info@example.com"', contact)
-        self.assertNotIn("info@example.com", section[:line])
-
-    def test_contact_local_section_pending_data(self):
-        html = self.client.get(reverse("web:contact")).content.decode()
-        section = html[html.index('aria-labelledby="datos-local"'):html.index('aria-labelledby="contacto-cuenta"')]
-        self.assertIn("Pendiente de publicar", section[section.index("data-contact-hours"):section.index("data-contact-line")])
-        self.assertIn("Pendiente de publicar", section[section.index("data-contact-line"):])
-
     def test_business_info_is_rendered_when_provided(self):
         business = {
             "name": "Caneca Furada",
