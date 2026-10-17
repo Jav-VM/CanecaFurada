@@ -1532,6 +1532,45 @@ def campaign_cancel(request, public_id):
     return redirect("dashboard:communications")
 
 
+@never_cache
+@require_POST
+@owner_required
+def campaign_reactivate(request, public_id):
+    """Vuelve a borrador una campaña cancelada (Fase 24): luego se edita y se programa como cualquier borrador."""
+    campaign = _campaign_or_404(request, public_id)
+    if campaign.hidden_at is not None:
+        raise Http404
+    try:
+        campaigns.reactivate_campaign(actor=request.user, campaign=campaign)
+    except ValidationError as exc:
+        _error(request, exc)
+    else:
+        messages.success(request, _("Campaña reactivada: vuelve a estar en borrador. Edítala y prográmala cuando quieras."))
+    return redirect("dashboard:communications")
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def campaign_hide(request, public_id):
+    """«Eliminar» del dashboard una campaña cancelada o repartida (Fase 24). Se conserva en la BD y en el admin."""
+    campaign = _campaign_or_404(request, public_id)
+    if campaign.hidden_at is not None:
+        raise Http404
+    if request.method == "POST":
+        try:
+            campaigns.hide_campaign(actor=request.user, campaign=campaign)
+        except ValidationError as exc:
+            _error(request, exc)
+        else:
+            messages.success(request, _("Campaña «%(name)s» eliminada del dashboard. Sigue guardada en la administración avanzada.") % {"name": campaign.name})
+        return redirect("dashboard:communications")
+    if not campaign.can_be_hidden:
+        messages.error(request, _("Solo se pueden eliminar las campañas canceladas o ya repartidas."))
+        return redirect("dashboard:communications")
+    return _render(request, "campaign_confirm_hide.html", "comunicaciones", {"campaign": campaign})
+
+
 # --- Contenido y configuración ----------------------------------------------------
 
 

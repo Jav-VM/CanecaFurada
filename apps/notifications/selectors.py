@@ -50,7 +50,7 @@ def campaigns_for_owner(*, actor):
         skipped=Count("notifications", filter=Q(notifications__status=Notification.Status.SKIPPED), distinct=True),
         failed=Count("notifications", filter=Q(notifications__status=Notification.Status.FAILED), distinct=True),
         selected_total=Count("selected_recipients", distinct=True),
-    ).order_by("-created_at", "-id")
+    ).filter(hidden_at__isnull=True).order_by("-created_at", "-id")  # Fase 24: sin las quitadas del dashboard
 
 
 def campaign_for_owner(*, actor, public_id):

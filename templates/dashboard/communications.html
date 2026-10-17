@@ -20,28 +20,38 @@
   <p class="note mb-4">{% if channels.sms_configured %}{% blocktranslate trimmed with email=audience.email sms=audience.sms %}Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: {{ email }} por email, {{ sms }} por SMS). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja.{% endblocktranslate %}{% else %}{% blocktranslate trimmed with email=audience.email %}Solo la reciben los clientes con email verificado que han aceptado comunicaciones promocionales del canal (hoy: {{ email }} por email). El consentimiento se vuelve a comprobar justo antes de cada envío y cada mensaje lleva su enlace de baja.{% endblocktranslate %}{% endif %}</p>
   {% if campaigns %}
     <div class="table-wrap">
-      <table class="data-table" data-campaign-list>
+      {# Sin scroll lateral a ningún ancho: una tarjeta por campaña siempre (.data-table-cards). #}
+      <table class="data-table data-table-fit data-table-cards" data-campaign-list>
         <thead><tr>{% sort_th campaign_sort "campana" _("Campaña") %}{% sort_th campaign_sort "canal" _("Canal") %}{% sort_th campaign_sort "para" _("Para") %}{% sort_th campaign_sort "estado" _("Estado") %}{% sort_th campaign_sort "destinatarios" _("Destinatarios") "num" %}{% sort_th campaign_sort "enviadas" _("Enviadas") "num" %}{% sort_th campaign_sort "no_enviadas" _("No enviadas") "num" %}{% sort_th campaign_sort "fallidas" _("Fallidas") "num" %}{% sort_th campaign_sort "puntos" _("Puntos de regalo") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
         <tbody>
           {% for c in campaigns %}
             <tr>
-              <td class="font-semibold">{{ c.name }}<span class="block text-xs text-mist">{{ c.created_at|date:"d/m/Y H:i" }}</span></td>
-              <td>{{ c.get_channel_display }}</td>
-              <td>{% if c.audience == "SELECTED" %}{% blocktranslate trimmed count count=c.selected_total %}{{ count }} seleccionado{% plural %}{{ count }} seleccionados{% endblocktranslate %}{% else %}{% translate "Todos" %}{% endif %}</td>
-              <td>{{ c.get_status_display }}</td>
-              <td class="num">{{ c.recipients_count|default_if_none:"—" }}</td>
-              <td class="num">{{ c.sent }}</td>
-              <td class="num">{{ c.skipped }}</td>
-              <td class="num">{{ c.failed }}</td>
-              <td class="num">{% if c.gift_points %}{{ c.gift_points }}{% if not c.gift_points_expire %} <span class="badge badge-muted">{% translate "sin caducidad" %}</span>{% endif %}{% if c.gifted_count is not None %}<span class="block text-xs text-mist">{% blocktranslate trimmed with count=c.gifted_count %}a {{ count }} clientes{% endblocktranslate %}</span>{% endif %}{% else %}—{% endif %}</td>
-              <td>
-                <div class="flex flex-wrap gap-2">
+              <td class="cell-title font-semibold" data-label="{% translate 'Campaña' %}"><span class="min-w-0 flex-1 break-words">{{ c.name }}</span><span class="ml-auto shrink-0 whitespace-nowrap text-xs font-normal text-mist" data-campaign-date>{{ c.created_at|date:"d/m/Y H:i" }}</span></td>
+              <td data-label="{% translate 'Canal' %}">{{ c.get_channel_display }}</td>
+              <td data-label="{% translate 'Para' %}">{% if c.audience == "SELECTED" %}{% blocktranslate trimmed count count=c.selected_total %}{{ count }} seleccionado{% plural %}{{ count }} seleccionados{% endblocktranslate %}{% else %}{% translate "Todos" %}{% endif %}</td>
+              <td data-label="{% translate 'Estado' %}">{{ c.get_status_display }}</td>
+              <td class="num" data-label="{% translate 'Destinatarios' %}">{{ c.recipients_count|default_if_none:"—" }}</td>
+              <td class="num" data-label="{% translate 'Enviadas' %}">{{ c.sent }}</td>
+              <td class="num" data-label="{% translate 'No enviadas' %}">{{ c.skipped }}</td>
+              <td class="num" data-label="{% translate 'Fallidas' %}">{{ c.failed }}</td>
+              <td class="num" data-label="{% translate 'Puntos de regalo' %}">{% if c.gift_points %}{{ c.gift_points }}{% if not c.gift_points_expire %} <span class="badge badge-muted">{% translate "sin caducidad" %}</span>{% endif %}{% if c.gifted_count is not None %}<span class="block text-xs text-mist">{% blocktranslate trimmed with count=c.gifted_count %}a {{ count }} clientes{% endblocktranslate %}</span>{% endif %}{% else %}—{% endif %}</td>
+              <td class="cell-buttons" data-label="{% translate 'Acciones' %}">
+                <div class="cell-actions">
                   {% if c.status == "DRAFT" %}
                     <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:campaign_edit' c.public_id %}">{% translate "Editar" %}</a>
                     <form method="post" action="{% url 'dashboard:campaign_queue' c.public_id %}">{% csrf_token %}<button type="submit" class="btn btn-primary btn-sm">{% translate "Programar envío" %}</button></form>
                   {% endif %}
                   {% if c.status == "DRAFT" or c.status == "QUEUED" %}
                     <form method="post" action="{% url 'dashboard:campaign_cancel' c.public_id %}">{% csrf_token %}<button type="submit" class="btn btn-secondary btn-sm">{% translate "Cancelar" %}</button></form>
+                  {% endif %}
+                  {# Fase 24: «Eliminar» solo se activa en las canceladas o ya repartidas; las quita del dashboard, no de la BD. #}
+                  {% if c.status == "CANCELLED" %}
+                    <form method="post" action="{% url 'dashboard:campaign_reactivate' c.public_id %}" data-loading>{% csrf_token %}<button type="submit" class="btn btn-secondary btn-sm" data-reactivate-campaign>{% translate "Reactivar" %}<span class="sr-only"> {{ c.name }}</span></button></form>
+                  {% endif %}
+                  {% if c.can_be_hidden %}
+                    <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:campaign_hide' c.public_id %}" data-hide-campaign>{% translate "Eliminar" %}<span class="sr-only"> {{ c.name }}</span></a>
+                  {% else %}
+                    <button type="button" class="btn btn-ghost btn-sm" disabled data-hide-campaign-disabled>{% translate "Eliminar" %}<span class="sr-only"> ({% translate "cancélala o espera a que se reparta" %})</span></button>
                   {% endif %}
                 </div>
               </td>
@@ -53,7 +63,7 @@
   {% else %}
     <p class="pending">{% translate "Todavía no hay campañas." %}</p>
   {% endif %}
-  <p class="note mt-3">{% blocktranslate trimmed %}«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes.{% endblocktranslate %}</p>
+  <p class="note mt-3 break-words">{% blocktranslate trimmed %}«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes.{% endblocktranslate %} {% translate "«Eliminar» se activa en las campañas canceladas o ya repartidas: las quita de esta lista, pero se conservan en la administración avanzada." %}</p>
 </section>
 
 <section aria-labelledby="registro" class="mt-10">
@@ -74,17 +84,17 @@
   </form>
   {% if page.object_list %}
     <div class="table-wrap">
-      <table class="data-table" data-notification-log>
+      <table class="data-table data-table-fit" data-notification-log>
         <thead><tr>{% sort_th sort "fecha" _("Fecha") %}{% sort_th sort "tipo" _("Tipo") %}{% sort_th sort "canal" _("Canal") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "intentos" _("Intentos") "num" %}<th scope="col">{% translate "Motivo / error" %}</th></tr></thead>
         <tbody>
           {% for n in page %}
             <tr>
-              <td class="whitespace-nowrap">{{ n.created_at|date:"d/m/Y H:i" }}</td>
-              <td>{{ n.get_kind_display }}<span class="block text-xs text-mist">{{ n.get_category_display }}</span></td>
-              <td>{{ n.get_channel_display }}</td>
-              <td>{{ n.get_status_display }}{% if n.sent_at %}<span class="block text-xs text-mist">{{ n.sent_at|date:"d/m H:i" }}</span>{% endif %}</td>
-              <td class="num">{{ n.attempts }}</td>
-              <td>{{ n.last_error|default:"—" }}</td>
+              <td class="whitespace-nowrap" data-label="{% translate 'Fecha' %}">{{ n.created_at|date:"d/m/Y H:i" }}</td>
+              <td data-label="{% translate 'Tipo' %}">{{ n.get_kind_display }}<span class="block text-xs text-mist">{{ n.get_category_display }}</span></td>
+              <td data-label="{% translate 'Canal' %}">{{ n.get_channel_display }}</td>
+              <td data-label="{% translate 'Estado' %}">{{ n.get_status_display }}{% if n.sent_at %}<span class="block text-xs text-mist">{{ n.sent_at|date:"d/m H:i" }}</span>{% endif %}</td>
+              <td class="num" data-label="{% translate 'Intentos' %}">{{ n.attempts }}</td>
+              <td class="break-words" data-label="{% translate 'Motivo / error' %}">{{ n.last_error|default:"—" }}</td>
             </tr>
           {% endfor %}
         </tbody>

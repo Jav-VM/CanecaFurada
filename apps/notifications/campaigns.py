@@ -245,6 +245,42 @@ def cancel_campaign(*, actor, campaign):
     return campaign
 
 
+@transaction.atomic
+def reactivate_campaign(*, actor, campaign):
+    """
+    Vuelve a borrador una campaña cancelada (Fase 24) para editarla y programarla otra vez.
+    Una cancelada nunca se repartió (solo se cancelan borradores y programadas): no tiene
+    mensajes ni puntos regalados.
+    """
+    _require_owner(actor)
+    campaign = Campaign.objects.select_for_update().get(pk=campaign.pk)
+    if campaign.status != Status.CANCELLED or campaign.hidden_at is not None:
+        raise ValidationError(_("Solo se pueden reactivar las campañas canceladas."))
+    campaign.status = Status.DRAFT
+    campaign.queued_at = None
+    campaign.save(update_fields=["status", "queued_at", "updated_at"])
+    _audit(actor, campaign, event="reactivated")
+    return campaign
+
+
+@transaction.atomic
+def hide_campaign(*, actor, campaign):
+    """
+    «Eliminar» una campaña del dashboard (Fase 24): solo si está cancelada o ya repartida.
+    No se borra: se conserva con sus mensajes, destinatarios y auditoría (ver el admin).
+    """
+    _require_owner(actor)
+    campaign = Campaign.objects.select_for_update().get(pk=campaign.pk)
+    if campaign.hidden_at is not None:
+        return campaign
+    if campaign.status not in Campaign.HIDEABLE_STATUSES:
+        raise ValidationError(_("Solo se pueden eliminar las campañas canceladas o ya repartidas."))
+    campaign.hidden_at = timezone.now()
+    campaign.save(update_fields=["hidden_at", "updated_at"])
+    _audit(actor, campaign, event="hidden", status=campaign.status)
+    return campaign
+
+
 def eligible_recipients(channel, customer_ids=None):
     """
     Clientes activos con email verificado y consentimiento vigente del canal.

@@ -90,6 +90,15 @@ class Campaign(TimeStampedModel):
     # Fase 24: clave de idempotencia de «Enviar una campaña ya creada» a los clientes seleccionados
     # (un doble envío no crea dos copias ni regala los puntos dos veces).
     copy_key = models.UUIDField(null=True, blank=True, unique=True, editable=False)
+    # Fase 24: «Eliminar» del dashboard (solo canceladas o repartidas). La campaña se conserva
+    # con sus mensajes, destinatarios y auditoría, y se ve en el admin (solo lectura).
+    hidden_at = models.DateTimeField(_("quitada del dashboard el"), null=True, blank=True, editable=False)
+
+    HIDEABLE_STATUSES = (Status.CANCELLED, Status.DISPATCHED)
+
+    @property
+    def can_be_hidden(self):
+        return self.status in self.HIDEABLE_STATUSES and self.hidden_at is None
 
     class Meta:
         verbose_name = _("campaña promocional")

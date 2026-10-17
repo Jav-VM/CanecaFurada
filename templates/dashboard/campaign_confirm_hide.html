@@ -1,0 +1,14 @@
+{% extends "dashboard/_layout.html" %}
+{% load i18n %}
+{% block title %}{% translate "Eliminar campaña" %} · Dashboard{% endblock %}
+{% block heading %}{% translate "Eliminar campaña" %}{% endblock %}
+{% block body %}
+<div class="max-w-2xl" data-campaign-hide>
+  <p class="alert alert-info mb-6">{% blocktranslate trimmed with name=campaign.name status=campaign.get_status_display %}Vas a quitar «{{ name }}» ({{ status }}) del dashboard. No se borra: sigue guardada con sus mensajes, sus destinatarios y su auditoría, y se puede consultar en la administración avanzada (Configuración). No se puede volver a mostrar desde el dashboard.{% endblocktranslate %}</p>
+  <form method="post" class="flex flex-wrap gap-3" data-loading>
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Eliminando…' %}">{% translate "Sí, eliminar del dashboard" %}</button>
+    <a class="btn btn-secondary" href="{% url 'dashboard:communications' %}">{% translate "Cancelar" %}</a>
+  </form>
+</div>
+{% endblock %}

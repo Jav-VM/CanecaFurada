@@ -127,3 +127,50 @@ Antes de usarlo en una base que ya existe: `python manage.py migrate` (aplica `c
 - **Traducciones:** 11 entradas nuevas (con plurales), generadas con `scripts/i18n.py make`; `check` al día y completas.
 - **Tests:** `SendExistingCampaignTests` en `tests/notifications/test_campaign_selection.py` (6): lista y destinatarios fijos; formulario siempre `SELECTED`; copia programada con los mismos datos, imagen propia y la original intacta; reparto (mensaje con consentimiento, puntos a todos los seleccionados); misma clave = una copia; rechazos sin cambios (sin selección, UUID no válido, campaña inexistente, SMS sin proveedor); solo propietario y solo POST. Suite completa: **1137 tests OK**.
 - **Pendiente:** probarlo en el navegador y repartir con `python manage.py process_notifications`.
+
+## 11. Ajuste posterior: «Eliminar» campañas y Comunicaciones sin scroll lateral (2026-10-17)
+
+- **Petición:**
+  - un botón «Eliminar» en Comunicaciones que solo se active cuando la campaña está cancelada o ya repartida;
+  - que la sección y el contenido de las campañas se ajusten al recuadro, sin scroll lateral;
+  - saber qué datos convendría borrar con el tiempo.
+- **Decisiones del usuario:** «Eliminar» **quita la campaña del dashboard pero la conserva** en la base de datos; «caducada» = repartida (`DISPATCHED`).
+- **Por qué no se borra de verdad:** cada mensaje enviado está ligado a su campaña (`Notification.campaign`, `PROTECT`), los destinatarios forman parte del historial, los puntos regalados están en el ledger (que no se modifica nunca) y la auditoría la referencia.
+- **Cambios:**
+  - `Campaign.hidden_at` (migración `notifications.0005_campaign_hidden_at`, un `AddField` nulo) y la propiedad `can_be_hidden`;
+  - servicio `campaigns.hide_campaign`: solo propietario, con bloqueo, solo canceladas o repartidas, idempotente y auditado (`event="hidden"`);
+  - `notification_selectors.campaigns_for_owner` excluye las quitadas, así que salen del historial y de «Enviar una campaña ya creada»;
+  - vista `campaign_hide` (`comunicaciones/<public_id>/eliminar/`): confirmación con GET y acción con POST; las ya quitadas dan 404;
+  - en la tabla, «Eliminar» está activo solo en canceladas y repartidas; en el resto aparece desactivado, con la explicación para lectores de pantalla.
+- **Sin scroll lateral:**
+  - **Campañas:** siempre en **tarjetas**, a cualquier ancho (nueva variante `.data-table-cards` en `assets/css/input.css`). Con 10 columnas no caben ni en pantallas anchas junto al menú lateral del dashboard, y `.data-table-fit` solo pasa a tarjetas por debajo de `xl`, que era el motivo del scroll que quedaba. En tarjetas no se ven las flechas de ordenar; el orden por defecto es el de siempre (las más recientes primero).
+  - **Registro de notificaciones:** `.data-table-fit` (6 columnas: compacta desde `xl`, tarjetas por debajo).
+  - Etiqueta en cada celda y `break-words` en los textos largos.
+- **Admin:** nuevo `CampaignAdmin` en **solo lectura** y solo para propietarios (`apps/notifications/admin.py`, base común `ReadOnlyOwnerAdmin`, también para `NotificationAdmin`). Lista, filtros (estado, canal, «quitada del dashboard») y ficha sin editar ni borrar. Ahí se consultan también las campañas quitadas del dashboard.
+- **Traducciones:** 11 entradas nuevas; `check` al día y completas.
+- **Tests:** `tests/notifications/test_campaign_hide.py` (8 tests):
+  - botón activo o desactivado según el estado;
+  - quitar sin perder mensajes ni destinatarios, con auditoría e idempotente;
+  - deja de verse en el historial y en la lista de copia;
+  - borrador y programada rechazadas; 404;
+  - solo el propietario;
+  - campañas en tarjetas y registro con `data-table-fit`, todas las celdas con etiqueta;
+  - admin solo lectura para el propietario e invisible para empleados.
+- **Suite completa:** 1145 tests OK.
+- (Esta implementación se revirtió una vez a petición del usuario y se volvió a aplicar el mismo día, añadiendo las tarjetas de las campañas.)
+- **Reactivar campañas canceladas:** servicio `campaigns.reactivate_campaign` (solo propietario, con bloqueo, solo canceladas y no quitadas del dashboard, auditado `event="reactivated"`) y vista `campaign_reactivate` (`comunicaciones/<public_id>/reactivar/`, solo POST). La campaña vuelve a **borrador**: se edita con «Editar» y se programa con «Programar envío». Es seguro porque una cancelada nunca se repartió (solo se cancelan borradores y programadas), así que no tiene mensajes ni puntos regalados.
+- **Fecha a la derecha:** en cada tarjeta, el nombre a la izquierda y la fecha de creación a la derecha del todo.
+- **Comentario visible:** el comentario de plantilla de la tabla ocupaba dos líneas y se pintaba en la página (Django solo trata `{# … #}` como comentario en una línea). Ahora va en una; además, un test (`TemplateCommentsTests`) comprueba que ninguna plantilla de `templates/` tiene comentarios `{#` de varias líneas.
+- **Tests:** `test_campaign_hide.py` pasa a 13 (reactivar: a borrador, editable y programable; solo canceladas no quitadas; solo propietario y POST; fecha a la derecha; plantillas sin comentarios multilínea). Suite completa: **1150 tests OK**.
+
+### Conservación de datos: qué guardar y qué convendría borrar (recomendación, sin implementar)
+
+- **Conservar:** compras, ledger de puntos, canjes, auditoría de acciones administrativas, campañas y su resultado, catálogo, eventos, recompensas y promociones (se archivan, no se borran). Explican los saldos y permiten atender reclamaciones.
+- **Convendría purgar o anonimizar con un plazo** (lo fija el asesoramiento legal):
+  - **Registro de notificaciones:** guarda el destinatario de cada envío; pasado un plazo (por ejemplo, 12–24 meses) se podría desligar del cliente, dejando los totales en la campaña.
+  - **Auditoría de consultas de datos personales** (`CUSTOMER_DATA_VIEWED`, `RESERVATION_DATA_VIEWED`): con un plazo de conservación definido.
+  - **Notas libres de reservas pasadas** (`notes`): pueden contener datos personales.
+  - **Cuentas que pidan la supresión** (decisión P2-9 de `docs/auditoria-pre-fase-12.md`): falta implementar la anonimización del perfil.
+  - **Ficheros huérfanos en `media/`** (imágenes sustituidas): no son datos personales, pero ocupan espacio.
+  - **Ya se purgan:** tokens de verificación, sesiones y tokens de la API (`docs/despliegue.md`).
+- Si se implementa, sería una fase propia: comando de retención con plazos configurables, tarea programada, tests y documentación de la política.

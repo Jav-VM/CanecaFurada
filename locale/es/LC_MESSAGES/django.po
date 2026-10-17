@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 18:22+0200\n"
+"POT-Creation-Date: 2026-10-17 19:49+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -2113,6 +2113,16 @@ msgstr "Campaña programada. Se repartirá en la próxima ejecución de la tarea
 msgid "Campaña cancelada."
 msgstr "Campaña cancelada."
 
+msgid "Campaña reactivada: vuelve a estar en borrador. Edítala y prográmala cuando quieras."
+msgstr "Campaña reactivada: vuelve a estar en borrador. Edítala y prográmala cuando quieras."
+
+#, python-format
+msgid "Campaña «%(name)s» eliminada del dashboard. Sigue guardada en la administración avanzada."
+msgstr "Campaña «%(name)s» eliminada del dashboard. Sigue guardada en la administración avanzada."
+
+msgid "Solo se pueden eliminar las campañas canceladas o ya repartidas."
+msgstr "Solo se pueden eliminar las campañas canceladas o ya repartidas."
+
 msgid "Contenido guardado."
 msgstr "Contenido guardado."
 
@@ -2745,6 +2755,9 @@ msgstr "Has renovado tu código demasiadas veces hoy. Inténtalo mañana."
 msgid "Tu código QR se ha renovado. El anterior ya no sirve."
 msgstr "Tu código QR se ha renovado. El anterior ya no sirve."
 
+msgid "quitada del dashboard"
+msgstr "quitada del dashboard"
+
 msgid "Notificaciones"
 msgstr "Notificaciones"
 
@@ -2790,6 +2803,9 @@ msgstr "No hay ningún proveedor de SMS configurado: la campaña no puede enviar
 
 msgid "Una campaña ya repartida no se puede cancelar."
 msgstr "Una campaña ya repartida no se puede cancelar."
+
+msgid "Solo se pueden reactivar las campañas canceladas."
+msgstr "Solo se pueden reactivar las campañas canceladas."
 
 msgid "Programada para envío"
 msgstr "Programada para envío"
@@ -2838,6 +2854,9 @@ msgstr "los puntos de regalo caducan"
 
 msgid "clientes con puntos de regalo"
 msgstr "clientes con puntos de regalo"
+
+msgid "quitada del dashboard el"
+msgstr "quitada del dashboard el"
 
 msgid "campaña promocional"
 msgstr "campaña promocional"
@@ -3929,6 +3948,19 @@ msgstr "Todavía no hay estilos."
 msgid "Los estilos que no usa ninguna cerveza se pueden borrar desde la administración avanzada (Configuración)."
 msgstr "Los estilos que no usa ninguna cerveza se pueden borrar desde la administración avanzada (Configuración)."
 
+msgid "Eliminar campaña"
+msgstr "Eliminar campaña"
+
+#, python-format
+msgid "Vas a quitar «%(name)s» (%(status)s) del dashboard. No se borra: sigue guardada con sus mensajes, sus destinatarios y su auditoría, y se puede consultar en la administración avanzada (Configuración). No se puede volver a mostrar desde el dashboard."
+msgstr "Vas a quitar «%(name)s» (%(status)s) del dashboard. No se borra: sigue guardada con sus mensajes, sus destinatarios y su auditoría, y se puede consultar en la administración avanzada (Configuración). No se puede volver a mostrar desde el dashboard."
+
+msgid "Eliminando…"
+msgstr "Eliminando…"
+
+msgid "Sí, eliminar del dashboard"
+msgstr "Sí, eliminar del dashboard"
+
 msgid "Editar campaña"
 msgstr "Editar campaña"
 
@@ -4108,11 +4140,23 @@ msgstr "a %(count)s clientes"
 msgid "Programar envío"
 msgstr "Programar envío"
 
+msgid "Reactivar"
+msgstr "Reactivar"
+
+msgid "Eliminar"
+msgstr "Eliminar"
+
+msgid "cancélala o espera a que se reparta"
+msgstr "cancélala o espera a que se reparta"
+
 msgid "Todavía no hay campañas."
 msgstr "Todavía no hay campañas."
 
 msgid "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
 msgstr "«Programar envío» no envía nada desde aquí: la tarea programada <code>process_notifications</code> reparte la campaña y la envía por lotes."
+
+msgid "«Eliminar» se activa en las campañas canceladas o ya repartidas: las quita de esta lista, pero se conservan en la administración avanzada."
+msgstr "«Eliminar» se activa en las campañas canceladas o ya repartidas: las quita de esta lista, pero se conservan en la administración avanzada."
 
 msgid "Registro de notificaciones"
 msgstr "Registro de notificaciones"
@@ -4426,9 +4470,6 @@ msgstr "(tú)"
 
 msgid "Dar de baja"
 msgstr "Dar de baja"
-
-msgid "Reactivar"
-msgstr "Reactivar"
 
 msgid "Cambiar rol"
 msgstr "Cambiar rol"

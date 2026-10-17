@@ -151,6 +151,18 @@
     .data-table-fit td.cell-title::before, .data-table-fit td.cell-buttons::before { content: none; }
     .data-table-fit td.cell-buttons { @apply pt-3; }
   }
+  /* Siempre en tarjetas, a cualquier ancho: tablas con demasiadas columnas para el área del
+     dashboard (Fase 24: campañas). Mismas reglas que .data-table-fit por debajo de xl. */
+  .data-table-cards thead { @apply sr-only; }
+  .data-table-cards, .data-table-cards tbody, .data-table-cards tr, .data-table-cards td { display: block; }
+  .data-table-cards tr { @apply border-b border-line px-4 py-3; }
+  .data-table-cards tr:last-child { @apply border-b-0; }
+  .data-table-cards td { @apply flex gap-3 border-b-0 px-0 py-1 text-left; }
+  .data-table-cards td::before { content: attr(data-label); @apply w-36 shrink-0 text-xs uppercase tracking-wider text-mist; }
+  .data-table-cards td.cell-title { @apply pb-2 text-base; }
+  .data-table-cards td.cell-title::before, .data-table-cards td.cell-buttons::before { content: none; }
+  .data-table-cards td.cell-buttons { @apply pt-3; }
+  .data-table-cards .cell-actions { @apply xl:flex-row xl:items-center; }
   .note { @apply text-sm text-mist; }
   .stat-sub { @apply mt-1 text-xs text-mist; }
   /* Barra de magnitud de una sola serie: dorado sobre la pista; el valor va siempre en texto al lado */
