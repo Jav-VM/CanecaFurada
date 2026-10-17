@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ document.title }}{% endblock %}
+{% block content %}
+{% include "components/page_header.html" with eyebrow=_("Información legal") title=document.title %}
+
+<div class="container-page grid gap-12 py-16 lg:grid-cols-[1fr_16rem]">
+  <article class="prose-site max-w-3xl break-words" data-legal-document="{{ document.kind }}">
+    {% if document.is_draft %}
+      <p class="alert alert-info mb-6" data-legal-draft>{% translate "Borrador pendiente de revisión legal: el titular aún no ha publicado este texto." %}</p>
+    {% else %}
+      <p class="note mb-6" data-legal-version>{% blocktranslate trimmed with date=document.updated_at|date:"d/m/Y" version=document.version %}Última actualización: {{ date }} (versión {{ version }}).{% endblocktranslate %}</p>
+    {% endif %}
+    {{ document.body|linebreaks }}
+  </article>
+  <nav aria-label="{% translate 'Información legal' %}" class="text-sm">
+    <h2 class="eyebrow mb-4">{% translate "Información legal" %}</h2>
+    <ul class="space-y-2">
+      {% for kind, label in legal_documents %}
+        <li><a href="{% url 'web:legal' kind %}" class="{% if kind == document.kind %}text-gold{% else %}text-mist hover:text-gold{% endif %} no-underline"{% if kind == document.kind %} aria-current="page"{% endif %}>{{ label }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}

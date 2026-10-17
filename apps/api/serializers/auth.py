@@ -19,7 +19,7 @@ class RegisterSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=150)
     last_name = serializers.CharField(max_length=150)
     date_of_birth = serializers.DateField(help_text="AAAA-MM-DD. Edad mínima configurable (18 por defecto).")
-    sex = serializers.ChoiceField(choices=CustomerProfile.Sex.choices)
+    sex = serializers.ChoiceField(choices=CustomerProfile.Sex.choices, required=False, allow_blank=True, default="", help_text="Opcional.")
     phone_number = serializers.CharField(max_length=32, required=False, allow_blank=True, default="")
     postal_code = serializers.CharField(max_length=12)
     city = serializers.CharField(
@@ -37,6 +37,9 @@ class RegisterSerializer(serializers.Serializer):
     country = serializers.CharField(max_length=2, default=DEFAULT_COUNTRY, help_text="ISO 3166-1 alfa-2.")
     promo_email_opt_in = serializers.BooleanField(default=False)
     promo_sms_opt_in = serializers.BooleanField(default=False)
+    accept_terms = serializers.BooleanField(
+        help_text="Obligatorio `true`: acepta la política de privacidad y las condiciones del programa (`/legal/privacidad/`, `/legal/condiciones-programa/`)."
+    )
 
 
 class LoginSerializer(serializers.Serializer):

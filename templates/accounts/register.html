@@ -19,7 +19,8 @@
         <span><span class="sr-only">{% blocktranslate with step=forloop.counter %}Paso {{ step }}: {% endblocktranslate %}</span>{{ title }}</span>
       </legend>
       {% if forloop.last %}
-        <p class="clear-both pt-2 text-sm text-mist">{% translate "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil." %}</p>
+        {% url 'web:legal' 'privacidad' as privacy_url %}
+        <p class="clear-both pt-2 text-sm text-mist">{% translate "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil." %} {% blocktranslate trimmed %}Más información en la <a class="link" href="{{ privacy_url }}" target="_blank" rel="noopener">política de privacidad</a>.{% endblocktranslate %}</p>
       {% endif %}
       <div class="clear-both grid gap-5 pt-2 {% if not forloop.last %}sm:grid-cols-2{% endif %}">
         {% for field in fields %}
@@ -30,6 +31,13 @@
       </div>
     </fieldset>
   {% endfor %}
+  {# Fase 25: aceptación obligatoria de la privacidad y de las condiciones del programa. #}
+  <fieldset class="form-section" data-accept-terms>
+    <legend class="form-legend">{% translate "Privacidad y condiciones" %}</legend>
+    {% url 'web:legal' 'privacidad' as privacy_url %}{% url 'web:legal' 'condiciones-programa' as terms_url %}
+    <p class="text-sm text-mist">{% blocktranslate trimmed %}Antes de crear la cuenta, lee la <a class="link" href="{{ privacy_url }}" target="_blank" rel="noopener">política de privacidad</a> (qué datos tratamos y tus derechos) y las <a class="link" href="{{ terms_url }}" target="_blank" rel="noopener">condiciones del programa de puntos</a>.{% endblocktranslate %}</p>
+    {% include "accounts/_field.html" with field=form.accept_terms %}
+  </fieldset>
   <div class="flex flex-col items-center gap-4 pt-2">
     <button type="submit" class="btn btn-primary w-full sm:w-auto sm:min-w-64" data-loading-text="{% translate 'Creando cuenta…' %}">{% translate "Crear cuenta" %}</button>
     <p class="text-center text-sm text-mist">{% translate "Después te enviaremos un email para verificar tu dirección." %}</p>

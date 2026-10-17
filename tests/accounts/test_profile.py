@@ -112,10 +112,10 @@ class UpdateProfileServiceTests(TestCase):
         )
         self.assertEqual(profile.missing_required_fields(), [])
 
-    def test_sex_cannot_be_emptied(self):
-        with self.assertRaises(ValidationError) as ctx:
-            services.update_customer_profile(user=self.user, **profile_kwargs(sex=""))
-        self.assertIn("sex", ctx.exception.message_dict)
+    def test_sex_can_be_emptied(self):
+        # Fase 25: el sexo es opcional; dejarlo vacío es válido.
+        services.update_customer_profile(user=self.user, **profile_kwargs(sex=""))
+        self.assertEqual(CustomerProfile.objects.get(user=self.user).sex, "")
 
     def test_legacy_customer_without_data_can_complete_profile(self):
         legacy = make_user(email="legacy@example.com")

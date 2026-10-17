@@ -177,11 +177,12 @@ class CustomerProfile(TimeStampedModel):
         FEMALE = "FEMALE", _("Mujer")
         UNDISCLOSED = "UNDISCLOSED", _("Prefiero no decirlo")
 
+    # Fase 25: el sexo es opcional (minimización de datos); la fecha de nacimiento sigue
+    # siendo obligatoria (mayoría de edad y regalo de cumpleaños).
     REQUIRED_FIELDS = (
         "postal_code",
         "country",
         "date_of_birth",
-        "sex",
     )
 
     user = models.OneToOneField(
@@ -221,6 +222,11 @@ class CustomerProfile(TimeStampedModel):
         help_text=_("Opcional. Formato internacional E.164. No está verificado."),
     )
     promo_email_opt_in = models.BooleanField(_("acepta emails promocionales"), default=False)
+    # Fase 25: aceptación de la política de privacidad y de las condiciones del programa al
+    # registrarse, con la versión de cada texto (para poder demostrarla). Vacío en cuentas anteriores.
+    terms_accepted_at = models.DateTimeField(_("textos legales aceptados el"), null=True, blank=True, editable=False)
+    privacy_version = models.PositiveIntegerField(_("versión de la privacidad aceptada"), null=True, blank=True, editable=False)
+    terms_version = models.PositiveIntegerField(_("versión de las condiciones aceptada"), null=True, blank=True, editable=False)
     promo_sms_opt_in = models.BooleanField(_("acepta SMS promocionales"), default=False)
 
     class Meta:

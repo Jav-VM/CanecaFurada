@@ -42,7 +42,14 @@ class PersonalDataFieldsMixin(forms.Form):
         input_formats=["%Y-%m-%d", "%d/%m/%Y"],
         help_text=_("Solo la usaremos para tu edad y tus promociones de cumpleaños."),
     )
-    sex = forms.ChoiceField(label=_("Sexo"), choices=CustomerProfile.Sex.choices, widget=forms.RadioSelect)
+    # Fase 25: opcional (minimización de datos); solo para estadísticas agregadas.
+    sex = forms.ChoiceField(
+        label=_("Sexo"),
+        choices=CustomerProfile.Sex.choices,
+        widget=forms.RadioSelect,
+        required=False,
+        help_text=_("Opcional. Solo para estadísticas agregadas del local."),
+    )
     phone_number = _text(_("Teléfono móvil"), 32, required=False, autocomplete="tel", type="tel")
     country = forms.ChoiceField(label=_("País"), choices=COUNTRIES, initial=DEFAULT_COUNTRY)
     postal_code = _text(_("Código postal"), 12, autocomplete="postal-code", inputmode="numeric")
@@ -130,6 +137,12 @@ class RegistrationForm(PersonalDataFieldsMixin):
     )
     promo_sms_opt_in = forms.BooleanField(
         label=_("Quiero recibir promociones por SMS (requiere teléfono móvil)."), required=False
+    )
+    # Fase 25: aceptación obligatoria (se pinta aparte, con los enlaces a los textos). El servicio
+    # la vuelve a exigir y guarda las versiones aceptadas.
+    accept_terms = forms.BooleanField(
+        label=_("He leído la política de privacidad y acepto las condiciones del programa de puntos."),
+        error_messages={"required": _("Para crear la cuenta tienes que aceptar la política de privacidad y las condiciones del programa.")},
     )
 
     sections = (

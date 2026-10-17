@@ -36,6 +36,8 @@ def registration_data(**overrides):
         "phone_number": "",
         "promo_email_opt_in": False,
         "promo_sms_opt_in": False,
+        # Fase 25: aceptación de la privacidad y de las condiciones del programa.
+        "accept_terms": True,
     }
     data.update(overrides)
     return data

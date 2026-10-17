@@ -258,6 +258,7 @@ class DemoBuilder:
             phone_number=customer.phone,
             promo_email_opt_in=customer.promo_email,
             promo_sms_opt_in=customer.promo_sms,
+            accept_terms=True,  # Fase 25: los clientes de demostración aceptan los textos (ficticio).
         )
         self._stamp_joined(user)
         self._stamp_preferences(user, after)

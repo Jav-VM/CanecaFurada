@@ -1455,6 +1455,9 @@ paths:
           description: ''
 components:
   schemas:
+    BlankEnum:
+      enum:
+      - ''
     CustomerPurchase:
       type: object
       properties:
@@ -2402,7 +2405,16 @@ components:
           format: date
           description: AAAA-MM-DD. Edad mínima configurable (18 por defecto).
         sex:
-          $ref: '#/components/schemas/SexEnum'
+          default: ''
+          description: |-
+            Opcional.
+
+            * `MALE` - Home
+            * `FEMALE` - Muller
+            * `UNDISCLOSED` - Prefiro non dicilo
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         phone_number:
           type: string
           default: ''
@@ -2442,14 +2454,18 @@ components:
         promo_sms_opt_in:
           type: boolean
           default: false
+        accept_terms:
+          type: boolean
+          description: 'Obligatorio `true`: acepta la política de privacidad y las
+            condiciones del programa (`/legal/privacidad/`, `/legal/condiciones-programa/`).'
       required:
+      - accept_terms
       - date_of_birth
       - email
       - first_name
       - last_name
       - password
       - postal_code
-      - sex
     Reservation:
       type: object
       description: 'Reserva propia: sin quién cambió el estado ni referencias internas.'

@@ -82,7 +82,8 @@ class SexFieldTests(TestCase):
         with self.assertRaises(IntegrityError), transaction.atomic():
             CustomerProfile.objects.filter(user=user).update(sex="OTRO")
 
-    def test_legacy_profile_without_sex_is_incomplete(self):
+    def test_profile_without_sex_is_complete(self):
+        # Fase 25: el sexo es opcional (minimización de datos).
         user = services.register_customer(**registration_data())
         CustomerProfile.objects.filter(user=user).update(sex="")
-        self.assertEqual(CustomerProfile.objects.get(user=user).missing_required_fields(), ["sex"])
+        self.assertEqual(CustomerProfile.objects.get(user=user).missing_required_fields(), [])

@@ -44,5 +44,23 @@
       </form>
     {% endfor %}
   </section>
+
+  {# Fase 25: textos legales (aviso legal, privacidad, cookies y condiciones del programa). #}
+  <section aria-labelledby="textos-legales" id="textos-legales" class="mt-16 border-t border-line pt-10" data-legal-documents>
+    <h2 class="heading-md mb-2">{% translate "Textos legales" %}</h2>
+    <p class="note mb-6">{% translate "Se enlazan en el pie de todas las páginas y en el registro. Mientras no publiques uno, la web muestra un borrador base marcado como pendiente de revisión legal. Los datos del titular (formulario de arriba) se usan en el aviso legal y en la privacidad." %}</p>
+    <ul class="card divide-y divide-line p-0">
+      {% for document in legal_documents %}
+        <li class="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+          <span class="font-semibold">{{ document.title }}</span>
+          <span class="flex items-center gap-3 text-sm">
+            {% if document.is_draft %}<span class="badge badge-muted">{% translate "Borrador base" %}</span>{% else %}<span class="text-mist">{% blocktranslate trimmed with version=document.version date=document.updated_at|date:"d/m/Y" %}Versión {{ version }} · {{ date }}{% endblocktranslate %}</span>{% endif %}
+            <a class="btn btn-secondary btn-sm" href="{% url 'dashboard:legal_edit' document.kind %}">{% translate "Editar" %}<span class="sr-only"> {{ document.title }}</span></a>
+            <a class="link" href="{% url 'web:legal' document.kind %}" target="_blank" rel="noopener">{% translate "Ver" %}<span class="sr-only"> {{ document.title }}</span></a>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 </div>
 {% endblock %}

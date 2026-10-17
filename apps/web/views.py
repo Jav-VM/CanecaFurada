@@ -5,13 +5,14 @@ La carta se obtiene de `apps.catalog.selectors`, que decide qué es público y
 qué está disponible; las recompensas, de `apps.rewards.selectors`; los
 eventos, de `apps.events.selectors` (solo publicados y no terminados).
 """
+from django.http import Http404
 from django.views.generic import TemplateView
 
 from apps.catalog import selectors as catalog
 from apps.events import selectors as events
 from apps.rewards import selectors as rewards
 
-from . import blocks, layout
+from . import blocks, layout, legal
 from . import services as web
 
 
@@ -73,3 +74,19 @@ class ContactView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["sections"] = blocks.page_sections(layout.CONTACT, web.business_info())
         return context
+
+
+class LegalView(TemplateView):
+    """Textos legales (Fase 25): el publicado por el propietario o, si no hay, el borrador base."""
+
+    template_name = "web/legal.html"
+
+    def get_context_data(self, **kwargs):
+        kind = kwargs["kind"]
+        if kind not in legal.KINDS:
+            raise Http404
+        context = super().get_context_data(**kwargs)
+        context["document"] = legal.get_document(kind, web.business_info())
+        context["legal_documents"] = [(value, label) for value, label in legal.Kind.choices]
+        return context
+

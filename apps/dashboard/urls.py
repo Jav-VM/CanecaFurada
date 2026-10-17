@@ -61,6 +61,7 @@ urlpatterns = [
     path("promociones/<uuid:public_id>/estado/", views.promotion_status, name="promotion_status"),
     path("contenido/", views.content, name="content"),
     path("contenido/orden/", views.content_layout, name="content_layout"),
+    path("contenido/legal/<slug:kind>/", views.legal_edit, name="legal_edit"),
     path("contenido/<slug:page>/articulos/nuevo/", views.article_create, name="article_create"),
     path("contenido/<slug:page>/articulos/copiar/", views.article_copy, name="article_copy"),
     path("contenido/<slug:page>/<slug:key>/eliminar/", views.article_delete, name="article_delete"),

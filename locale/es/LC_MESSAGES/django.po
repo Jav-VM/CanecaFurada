@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 20:36+0200\n"
+"POT-Creation-Date: 2026-10-17 21:24+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -818,6 +818,9 @@ msgstr "Solo la usaremos para tu edad y tus promociones de cumpleaños."
 msgid "Sexo"
 msgstr "Sexo"
 
+msgid "Opcional. Solo para estadísticas agregadas del local."
+msgstr "Opcional. Solo para estadísticas agregadas del local."
+
 msgid "Teléfono móvil"
 msgstr "Teléfono móvil"
 
@@ -863,6 +866,12 @@ msgstr "Quiero recibir promociones y novedades por email."
 
 msgid "Quiero recibir promociones por SMS (requiere teléfono móvil)."
 msgstr "Quiero recibir promociones por SMS (requiere teléfono móvil)."
+
+msgid "He leído la política de privacidad y acepto las condiciones del programa de puntos."
+msgstr "He leído la política de privacidad y acepto las condiciones del programa de puntos."
+
+msgid "Para crear la cuenta tienes que aceptar la política de privacidad y las condiciones del programa."
+msgstr "Para crear la cuenta tienes que aceptar la política de privacidad y las condiciones del programa."
 
 msgid "Dónde vives"
 msgstr "Dónde vives"
@@ -992,6 +1001,15 @@ msgstr "Opcional. Formato internacional E.164. No está verificado."
 
 msgid "acepta emails promocionales"
 msgstr "acepta emails promocionales"
+
+msgid "textos legales aceptados el"
+msgstr "textos legales aceptados el"
+
+msgid "versión de la privacidad aceptada"
+msgstr "versión de la privacidad aceptada"
+
+msgid "versión de las condiciones aceptada"
+msgstr "versión de las condiciones aceptada"
 
 msgid "acepta SMS promocionales"
 msgstr "acepta SMS promocionales"
@@ -1869,6 +1887,30 @@ msgstr "Aviso destacado"
 msgid "Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."
 msgstr "Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."
 
+msgid "Titular (nombre o razón social)"
+msgstr "Titular (nombre o razón social)"
+
+msgid "NIF/CIF del titular"
+msgstr "NIF/CIF del titular"
+
+msgid "Domicilio del titular"
+msgstr "Domicilio del titular"
+
+msgid "Email de contacto legal"
+msgstr "Email de contacto legal"
+
+msgid "Para ejercer los derechos de protección de datos. Vacío: se usa el email de contacto."
+msgstr "Para ejercer los derechos de protección de datos. Vacío: se usa el email de contacto."
+
+msgid "Datos registrales"
+msgstr "Datos registrales"
+
+msgid "Solo si la empresa está inscrita (Registro Mercantil: tomo, folio, hoja)."
+msgstr "Solo si la empresa está inscrita (Registro Mercantil: tomo, folio, hoja)."
+
+msgid "Texto plano: deja una línea en blanco entre párrafos. Revísalo con tu asesor antes de publicarlo; se muestra tal cual en gallego y en castellano."
+msgstr "Texto plano: deja una línea en blanco entre párrafos. Revísalo con tu asesor antes de publicarlo; se muestra tal cual en gallego y en castellano."
+
 msgid "Confirmar"
 msgstr "Confirmar"
 
@@ -2128,6 +2170,20 @@ msgstr "Contenido guardado."
 
 msgid "No había cambios que guardar."
 msgstr "No había cambios que guardar."
+
+msgid "Texto publicado."
+msgstr "Texto publicado."
+
+msgid "Es un borrador base generado a partir del funcionamiento de la web: revísalo con tu asesor, completa lo marcado como pendiente y quita la primera línea antes de publicarlo."
+msgstr "Es un borrador base generado a partir del funcionamiento de la web: revísalo con tu asesor, completa lo marcado como pendiente y quita la primera línea antes de publicarlo."
+
+#, python-format
+msgid "Versión publicada: %(version)s. Al guardar un texto distinto se publica como versión nueva."
+msgstr "Versión publicada: %(version)s. Al guardar un texto distinto se publica como versión nueva."
+
+#, python-format
+msgid "Editar: %(name)s"
+msgstr "Editar: %(name)s"
 
 msgid "Contenido de la sección guardado."
 msgstr "Contenido de la sección guardado."
@@ -3365,6 +3421,15 @@ msgstr "Catálogo"
 msgid "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
 msgstr "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
 
+msgid "Solo el propietario puede editar los textos legales."
+msgstr "Solo el propietario puede editar los textos legales."
+
+msgid "Texto legal desconocido."
+msgstr "Texto legal desconocido."
+
+msgid "Escribe el texto."
+msgstr "Escribe el texto."
+
 msgid "dirección pública del local"
 msgstr "dirección pública del local"
 
@@ -3394,6 +3459,18 @@ msgstr "aviso destacado"
 
 msgid "enlace a Google Maps"
 msgstr "enlace a Google Maps"
+
+msgid "titular (nombre o razón social)"
+msgstr "titular (nombre o razón social)"
+
+msgid "domicilio del titular"
+msgstr "domicilio del titular"
+
+msgid "email de contacto legal"
+msgstr "email de contacto legal"
+
+msgid "datos registrales"
+msgstr "datos registrales"
 
 msgid "reservas online activadas"
 msgstr "reservas online activadas"
@@ -3433,6 +3510,9 @@ msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Días | horario»."
 msgid "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 msgstr "Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…»."
 
+msgid "NIF/CIF no válido: por ejemplo 12345678Z o B12345678."
+msgstr "NIF/CIF no válido: por ejemplo 12345678Z o B12345678."
+
 #, python-format
 msgid "Pega el enlace «Compartir» de Google Maps (%(examples)s)."
 msgstr "Pega el enlace «Compartir» de Google Maps (%(examples)s)."
@@ -3469,6 +3549,33 @@ msgstr "imagen de sección"
 
 msgid "imágenes de sección"
 msgstr "imágenes de sección"
+
+msgid "Aviso legal"
+msgstr "Aviso legal"
+
+msgid "Política de privacidad"
+msgstr "Política de privacidad"
+
+msgid "Política de cookies"
+msgstr "Política de cookies"
+
+msgid "Condiciones del programa de puntos"
+msgstr "Condiciones del programa de puntos"
+
+msgid "documento"
+msgstr "documento"
+
+msgid "versión"
+msgstr "versión"
+
+msgid "actualizado por"
+msgstr "actualizado por"
+
+msgid "texto legal"
+msgstr "texto legal"
+
+msgid "textos legales"
+msgstr "textos legales"
 
 msgid "Solo el propietario puede editar el contenido del local."
 msgstr "Solo el propietario puede editar el contenido del local."
@@ -3679,6 +3786,17 @@ msgstr "Paso %(step)s: "
 msgid "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil."
 msgstr "Son opcionales y están desactivadas por defecto. Verificar tu email no implica aceptarlas, y puedes cambiarlas cuando quieras desde tu perfil."
 
+#, python-format
+msgid "Más información en la <a class=\"link\" href=\"%(privacy_url)s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>."
+msgstr "Más información en la <a class=\"link\" href=\"%(privacy_url)s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>."
+
+msgid "Privacidad y condiciones"
+msgstr "Privacidad y condiciones"
+
+#, python-format
+msgid "Antes de crear la cuenta, lee la <a class=\"link\" href=\"%(privacy_url)s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a> (qué datos tratamos y tus derechos) y las <a class=\"link\" href=\"%(terms_url)s\" target=\"_blank\" rel=\"noopener\">condiciones del programa de puntos</a>."
+msgstr "Antes de crear la cuenta, lee la <a class=\"link\" href=\"%(privacy_url)s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a> (qué datos tratamos y tus derechos) y las <a class=\"link\" href=\"%(terms_url)s\" target=\"_blank\" rel=\"noopener\">condiciones del programa de puntos</a>."
+
 msgid "Creando cuenta…"
 msgstr "Creando cuenta…"
 
@@ -3817,6 +3935,18 @@ msgstr "Pie: cuenta"
 
 msgid "Visítanos"
 msgstr "Visítanos"
+
+msgid "Información legal"
+msgstr "Información legal"
+
+msgid "Privacidad"
+msgstr "Privacidad"
+
+msgid "Cookies"
+msgstr "Cookies"
+
+msgid "Condiciones del programa"
+msgstr "Condiciones del programa"
 
 msgid "Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años."
 msgstr "Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años."
@@ -4216,6 +4346,22 @@ msgstr "Bajar %(label)s"
 
 msgid "Guardar visibilidad"
 msgstr "Guardar visibilidad"
+
+msgid "Textos legales"
+msgstr "Textos legales"
+
+msgid "Se enlazan en el pie de todas las páginas y en el registro. Mientras no publiques uno, la web muestra un borrador base marcado como pendiente de revisión legal. Los datos del titular (formulario de arriba) se usan en el aviso legal y en la privacidad."
+msgstr "Se enlazan en el pie de todas las páginas y en el registro. Mientras no publiques uno, la web muestra un borrador base marcado como pendiente de revisión legal. Los datos del titular (formulario de arriba) se usan en el aviso legal y en la privacidad."
+
+msgid "Borrador base"
+msgstr "Borrador base"
+
+#, python-format
+msgid "Versión %(version)s · %(date)s"
+msgstr "Versión %(version)s · %(date)s"
+
+msgid "Ver"
+msgstr "Ver"
 
 msgid "Ficha de cliente"
 msgstr "Ficha de cliente"
@@ -5834,6 +5980,13 @@ msgstr "presentación de la marca (historia, filosofía y cerveza)"
 
 msgid "Conoce la cervecería →"
 msgstr "Conoce la cervecería →"
+
+msgid "Borrador pendiente de revisión legal: el titular aún no ha publicado este texto."
+msgstr "Borrador pendiente de revisión legal: el titular aún no ha publicado este texto."
+
+#, python-format
+msgid "Última actualización: %(date)s (versión %(version)s)."
+msgstr "Última actualización: %(date)s (versión %(version)s)."
 
 msgid "Lo que servimos"
 msgstr "Lo que servimos"

@@ -397,7 +397,7 @@ def register_customer(
     postal_code,
     country,
     date_of_birth,
-    sex,
+    sex="",
     city="",
     address_line_1="",
     address_line_2="",
@@ -405,9 +405,13 @@ def register_customer(
     phone_number="",
     promo_email_opt_in=False,
     promo_sms_opt_in=False,
+    accept_terms=False,
 ):
     """
     Registro público de un cliente con todos sus datos obligatorios.
+
+    Fase 25: exige `accept_terms` (política de privacidad y condiciones del
+    programa) y guarda cuándo y qué versiones se aceptaron. El sexo es opcional.
 
     De la dirección solo es obligatorio el código postal (Fase 16). En España la
     provincia se deduce del CP y la localidad debe ser una de las de ese CP
@@ -442,7 +446,18 @@ def register_customer(
                 "phone_number": phone_number,
             },
         )
-        _validate_registration(profile, email, first_name, last_name, password)
+        try:
+            _validate_registration(profile, email, first_name, last_name, password)
+        except ValidationError as exc:
+            errors = exc.message_dict
+        else:
+            errors = {}
+        if not accept_terms:
+            errors["accept_terms"] = [
+                _("Para crear la cuenta tienes que aceptar la política de privacidad y las condiciones del programa.")
+            ]
+        if errors:
+            raise ValidationError(errors)
 
         # Solo con todos los datos válidos se mira si el email existe: así la
         # respuesta a datos no válidos (p. ej. una contraseña débil) no depende
@@ -465,6 +480,11 @@ def register_customer(
         stored = user.customer_profile
         for name in (*PROFILE_FIELDS, "promo_email_opt_in", "promo_sms_opt_in"):
             setattr(stored, name, getattr(profile, name))
+        # Fase 25: prueba de la aceptación (fecha y versiones vigentes; 0 = borrador base).
+        from apps.web.legal import current_versions
+
+        stored.privacy_version, stored.terms_version = current_versions()
+        stored.terms_accepted_at = timezone.now()
         stored.save()
 
         _record_preference(user, Channel.EMAIL, stored.promo_email_opt_in, Source.REGISTRATION)

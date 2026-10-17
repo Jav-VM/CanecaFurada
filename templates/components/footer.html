@@ -54,6 +54,15 @@
   <div class="border-t border-line">
     <div class="container-page flex flex-col gap-2 py-6 text-xs text-mist sm:flex-row sm:justify-between">
       <p>© {% now "Y" %} {{ business.name|default:"Caneca Furada" }} · {{ business.city|default:"A Coruña" }}</p>
+      {# Fase 25: textos legales (aviso legal, privacidad, cookies y condiciones del programa). #}
+      <nav aria-label="{% translate 'Información legal' %}" data-footer-legal>
+        <ul class="flex flex-wrap gap-x-4 gap-y-1">
+          <li><a href="{% url 'web:legal' 'aviso-legal' %}" class="text-mist no-underline hover:text-gold">{% translate "Aviso legal" %}</a></li>
+          <li><a href="{% url 'web:legal' 'privacidad' %}" class="text-mist no-underline hover:text-gold">{% translate "Privacidad" %}</a></li>
+          <li><a href="{% url 'web:legal' 'cookies' %}" class="text-mist no-underline hover:text-gold">{% translate "Cookies" %}</a></li>
+          <li><a href="{% url 'web:legal' 'condiciones-programa' %}" class="text-mist no-underline hover:text-gold">{% translate "Condiciones del programa" %}</a></li>
+        </ul>
+      </nav>
       <p>{% translate "Bebe con moderación. Prohibida la venta de alcohol a menores de 18 años." %}</p>
     </div>
   </div>

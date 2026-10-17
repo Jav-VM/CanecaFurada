@@ -53,7 +53,8 @@ class RegisterFormUITests(TestCase):
         self.assertContains(response, 'value="nueva@example.com"')
 
     def test_sex_group_is_a_fieldset_linked_to_its_error(self):
-        response = self.client.post(self.url, registration_post_data(sex=None))
+        # Fase 25: el sexo es opcional; un valor no válido sigue enlazando su error al grupo.
+        response = self.client.post(self.url, registration_post_data(sex="OTRO"))
         self.assertContains(response, '<fieldset class="field field-choices" aria-describedby="id_sex_error">')
         self.assertContains(response, 'id="id_sex_error"', count=1)
 

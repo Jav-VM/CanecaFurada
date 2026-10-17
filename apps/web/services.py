@@ -37,6 +37,12 @@ EDITABLE_FIELDS = (
     "about_text",
     "hero_text",
     "announcement",
+    # Fase 25: titular del sitio (aviso legal).
+    "legal_name",
+    "tax_id",
+    "legal_address",
+    "legal_email",
+    "registry_data",
 )
 
 
@@ -51,6 +57,12 @@ def _stored_values():
         "address": info.address or None,
         # Vacío: sigue la de `content.BUSINESS` (ver `business_info`).
         "maps_url": info.maps_url or None,
+        # Fase 25: titular del sitio; vacío = «pendiente de publicar» en los textos legales.
+        "legal_name": info.legal_name or None,
+        "tax_id": info.tax_id or None,
+        "legal_address": info.legal_address or None,
+        "legal_email": info.legal_email or None,
+        "registry_data": info.registry_data or None,
         "opening_hours": tuple(parse_pairs(info.opening_hours)) or None,
         "email": info.email or None,
         "phone": info.phone or None,

@@ -25,6 +25,9 @@ SINGLETON_ID = 1
 LINE_SEPARATOR = "|"
 MAX_LINES = 10
 _PHONE_RE = re.compile(r"^\+?[0-9 ]{6,20}$")
+# Fase 25: NIF (8 cifras + letra), NIE (X/Y/Z + 7 cifras + letra) o CIF (letra + 7 cifras + control).
+# Solo el formato: el titular es quien responde de que sea el suyo.
+_TAX_ID_RE = re.compile(r"^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z]|[ABCDEFGHJNPQRSUVW][0-9]{7}[0-9A-J])$")
 
 
 def parse_pairs(value):
@@ -89,6 +92,12 @@ class BusinessInfo(models.Model):
     announcement = models.CharField(_("aviso destacado"), max_length=200, blank=True)
     # Fase 23: ficha del local en Google Maps (Contacto y pie). Vacío = la de `content.BUSINESS`.
     maps_url = models.URLField(_("enlace a Google Maps"), max_length=300, blank=True)
+    # Fase 25: titular del sitio para el aviso legal (LSSI-CE, art. 10). Vacío = «pendiente de publicar».
+    legal_name = models.CharField(_("titular (nombre o razón social)"), max_length=200, blank=True)
+    tax_id = models.CharField(_("NIF/CIF del titular"), max_length=12, blank=True)
+    legal_address = models.CharField(_("domicilio del titular"), max_length=300, blank=True)
+    legal_email = models.EmailField(_("email de contacto legal"), blank=True)
+    registry_data = models.CharField(_("datos registrales"), max_length=300, blank=True)
     # Fase 17: si está desactivado, los enlaces de reserva llevan a Contacto (reserva por teléfono).
     online_reservations_enabled = models.BooleanField(_("reservas online activadas"), default=True)
     # Fase 20: orden y visibilidad de las secciones (ver `layout.py`). Vacío = orden por defecto.
@@ -122,6 +131,11 @@ class BusinessInfo(models.Model):
         self.hero_text = normalize_text(self.hero_text)
         self.announcement = normalize_text(self.announcement)
         self.maps_url = (self.maps_url or "").strip()
+        self.legal_name = normalize_text(self.legal_name)
+        self.tax_id = re.sub(r"[\s.-]", "", self.tax_id or "").upper()
+        self.legal_address = normalize_text(self.legal_address)
+        self.legal_email = (self.legal_email or "").strip().lower()
+        self.registry_data = normalize_text(self.registry_data)
         errors = {}
         if self.phone and not _PHONE_RE.match(self.phone):
             errors["phone"] = _("Teléfono no válido: solo números, espacios y un + inicial.")
@@ -131,6 +145,8 @@ class BusinessInfo(models.Model):
         links = parse_pairs(self.social_links)
         if len(links) > MAX_LINES or any(not name or not _is_safe_url(url) for name, url in links):
             errors["social_links"] = _("Escribe hasta %(MAX_LINES)s líneas con el formato «Nombre | https://…».") % {"MAX_LINES": MAX_LINES}
+        if self.tax_id and not _TAX_ID_RE.match(self.tax_id):
+            errors["tax_id"] = _("NIF/CIF no válido: por ejemplo 12345678Z o B12345678.")
         if self.maps_url and not is_google_maps_url(self.maps_url):
             errors["maps_url"] = _("Pega el enlace «Compartir» de Google Maps (%(examples)s).") % {
                 "examples": "https://maps.app.goo.gl/…, https://www.google.com/maps/…"
@@ -224,3 +240,44 @@ class PageBlockImage(models.Model):
         verbose_name = _("imagen de sección")
         verbose_name_plural = _("imágenes de sección")
         ordering = ["position", "id"]
+
+
+# --- Fase 25: textos legales ------------------------------------------------------
+
+
+class LegalDocument(models.Model):
+    """
+    Texto legal que publica el propietario (aviso legal, privacidad, cookies,
+    condiciones del programa). Mientras no hay fila, la web muestra un borrador
+    base (`legal_defaults.py`) marcado como pendiente de revisión legal. Cada
+    cambio del texto sube `version`, que se guarda al aceptar en el registro.
+    """
+
+    class Kind(models.TextChoices):
+        LEGAL_NOTICE = "aviso-legal", _("Aviso legal")
+        PRIVACY = "privacidad", _("Política de privacidad")
+        COOKIES = "cookies", _("Política de cookies")
+        PROGRAM_TERMS = "condiciones-programa", _("Condiciones del programa de puntos")
+
+    kind = models.CharField(_("documento"), max_length=24, choices=Kind.choices, unique=True)
+    body = models.TextField(_("texto"), max_length=30000)
+    version = models.PositiveIntegerField(_("versión"), default=1)
+    updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_("actualizado por"), null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    class Meta:
+        verbose_name = _("texto legal")
+        verbose_name_plural = _("textos legales")
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(kind__in=["aviso-legal", "privacidad", "cookies", "condiciones-programa"]),
+                name="web_legaldocument_kind_valid",
+            ),
+            models.CheckConstraint(condition=Q(version__gte=1), name="web_legaldocument_version_positive"),
+        ]
+
+    def __str__(self):
+        return f"{self.get_kind_display()} (v{self.version})"
+

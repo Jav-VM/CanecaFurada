@@ -51,6 +51,7 @@ from apps.rewards import services as rewards
 from apps.rewards.models import Reward
 from apps.web import blocks as web_blocks
 from apps.web import layout as web_layout
+from apps.web import legal as web_legal
 from apps.web import services as web
 
 from . import forms
@@ -1592,12 +1593,48 @@ def content(request):
     else:
         form = _content_form()
         status = 200
-    return _render(request, "content.html", "contenido", {"form": form, "layouts": _layouts()}, status=status)
+    return _render(
+        request, "content.html", "contenido", {"form": form, "layouts": _layouts(), "legal_documents": web_legal.documents()}, status=status
+    )
 
 
 def _content_form():
     info = web.editable_business_info()
     return forms.BusinessInfoForm(initial={name: getattr(info, name) for name in web.EDITABLE_FIELDS})
+
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@owner_required
+def legal_edit(request, kind):
+    """Texto legal (Fase 25): parte del publicado o, si no hay, del borrador base."""
+    if kind not in web_legal.KINDS:
+        raise Http404
+    document = web_legal.get_document(kind)
+    form = forms.LegalDocumentForm(request.POST or None, initial={"body": document.body})
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            try:
+                _saved, changed = web_legal.save_document(actor=request.user, kind=kind, body=form.cleaned_data["body"])
+            except ValidationError as exc:
+                _apply_errors(form, exc)
+            else:
+                messages.success(request, _("Texto publicado.") if changed else _("No había cambios que guardar."))
+                return redirect(f"{reverse('dashboard:content')}#textos-legales")
+        status = 400
+    intro = (
+        _("Es un borrador base generado a partir del funcionamiento de la web: revísalo con tu asesor, completa lo marcado como pendiente y quita la primera línea antes de publicarlo.")
+        if document.is_draft
+        else _("Versión publicada: %(version)s. Al guardar un texto distinto se publica como versión nueva.") % {"version": document.version}
+    )
+    context = {
+        "form": form,
+        "form_title": _("Editar: %(name)s") % {"name": document.title},
+        "form_intro": intro,
+        "back_url": f"{reverse('dashboard:content')}#textos-legales",
+    }
+    return _render(request, "object_form.html", "contenido", context, status=status)
 
 
 def _layouts():
@@ -1742,7 +1779,8 @@ def content_layout(request):
         )
     except ValidationError as exc:
         _error(request, exc)
-        return _render(request, "content.html", "contenido", {"form": _content_form(), "layouts": _layouts()}, status=400)
+        context = {"form": _content_form(), "layouts": _layouts(), "legal_documents": web_legal.documents()}
+        return _render(request, "content.html", "contenido", context, status=400)
     messages.success(request, _("Orden de las secciones guardado.") if changed else _("No había cambios que guardar."))
     return redirect(f"{reverse('dashboard:content')}#orden-{page}")
 

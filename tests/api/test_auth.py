@@ -48,8 +48,10 @@ class RegisterTests(ApiTestCase):
         self.assertEqual(response.status_code, 400)
         body = response.json()
         self.assertEqual(body["code"], "invalid")
-        for field in ("first_name", "last_name", "date_of_birth", "sex", "postal_code"):
+        for field in ("first_name", "last_name", "date_of_birth", "postal_code", "accept_terms"):
             self.assertIn(field, body["fields"])
+        # Fase 25: el sexo es opcional.
+        self.assertNotIn("sex", body["fields"])
         # Fase 16: calle, localidad y provincia no son obligatorias en la entrada.
         for field in ("address_line_1", "city", "province"):
             self.assertNotIn(field, body["fields"])

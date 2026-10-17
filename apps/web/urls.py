@@ -11,4 +11,5 @@ urlpatterns = [
     path("recompensas/", views.RewardsView.as_view(), name="rewards"),
     path("eventos/", views.EventsView.as_view(), name="events"),
     path("contacto/", views.ContactView.as_view(), name="contact"),
+    path("legal/<slug:kind>/", views.LegalView.as_view(), name="legal"),
 ]

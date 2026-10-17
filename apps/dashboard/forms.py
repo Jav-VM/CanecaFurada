@@ -400,6 +400,32 @@ class BusinessInfoForm(forms.Form):
         max_length=200,
         help_text=_("Se muestra en una franja al principio del inicio (cierre por vacaciones, novedades…). Vacío: sin aviso."),
     )
+    # Fase 25: titular del sitio para el aviso legal y la política de privacidad.
+    legal_name = forms.CharField(label=_("Titular (nombre o razón social)"), max_length=200, required=False)
+    tax_id = forms.CharField(label=_("NIF/CIF del titular"), max_length=12, required=False)
+    legal_address = forms.CharField(label=_("Domicilio del titular"), max_length=300, required=False)
+    legal_email = forms.EmailField(
+        label=_("Email de contacto legal"),
+        required=False,
+        help_text=_("Para ejercer los derechos de protección de datos. Vacío: se usa el email de contacto."),
+    )
+    registry_data = forms.CharField(
+        label=_("Datos registrales"),
+        max_length=300,
+        required=False,
+        help_text=_("Solo si la empresa está inscrita (Registro Mercantil: tomo, folio, hoja)."),
+    )
+
+
+class LegalDocumentForm(forms.Form):
+    """Texto de un documento legal (Fase 25). Lo valida y versiona `apps.web.legal.save_document`."""
+
+    body = forms.CharField(
+        label=_("Texto"),
+        max_length=30000,
+        widget=forms.Textarea(attrs={"rows": 24}),
+        help_text=_("Texto plano: deja una línea en blanco entre párrafos. Revísalo con tu asesor antes de publicarlo; se muestra tal cual en gallego y en castellano."),
+    )
 
 
 # --- Eventos, reservas y comunicaciones (Fase 10) -------------------------------

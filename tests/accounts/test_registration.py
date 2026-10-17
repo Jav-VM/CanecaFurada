@@ -28,7 +28,6 @@ REQUIRED_SERVICE_FIELDS = (
     "city",
     "country",
     "date_of_birth",
-    "sex",
 )
 
 
@@ -297,7 +296,7 @@ class RegisterViewTests(TestCase):
 
     def test_missing_required_fields(self):
         for field in ("first_name", "last_name", "postal_code", "city", "country", "email",
-                      "password1", "password2", "date_of_birth", "sex"):
+                      "password1", "password2", "date_of_birth", "accept_terms"):
             with self.subTest(field=field):
                 response = self.post(**{field: ""})
                 self.assertEqual(response.status_code, 200)
