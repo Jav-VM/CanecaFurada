@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.accounts.countries import COUNTRIES
 from apps.accounts.selectors import GEO_LEVEL_LABELS
 from apps.catalog.models import Product
+from apps.catalog.validators import validate_image_extension, validate_image_file
 from apps.events.models import Event, Reservation
 from apps.core.i18n import lazy_format
 from apps.loyalty.birthday_settings import PLACEHOLDER
@@ -111,6 +112,8 @@ def _text(data, name, max_length=100):
 
 
 YES_NO = (("", _("Todos")), ("si", _("Sí")), ("no", _("No")))
+# Fase 19: clientes con o sin compras registradas.
+SPENT_CHOICES = (("", _("Todos")), ("con", _("Con compras")), ("sin", _("Sin gasto (ninguna compra)")))
 
 
 def yes_no(value):
@@ -135,6 +138,11 @@ class CustomerFilters:
     province: str
     city: str
     postal_code: str
+    spent: str = ""
+
+    @property
+    def spent_value(self):
+        return {"con": True, "sin": False}.get(self.spent)
 
     @classmethod
     def from_query(cls, data):
@@ -146,6 +154,7 @@ class CustomerFilters:
             province=_text(data, "provincia"),
             city=_text(data, "localidad"),
             postal_code=_text(data, "cp", 12),
+            spent=_choice(data, "gasto", SPENT_CHOICES),
         )
 
 
@@ -388,17 +397,64 @@ class ReservationActionForm(forms.Form):
 
 
 class CampaignForm(forms.Form):
-    name = forms.CharField(label=_("Nombre interno"), max_length=100, help_text=_("Solo lo ves tú."))
-    channel = forms.ChoiceField(label=_("Canal"), choices=Channel.choices)
-    subject = forms.CharField(label=_("Asunto"), max_length=120, required=False, help_text=_("Obligatorio en email."))
+    """
+    Formulario único de campaña (Fase 19). Obligatorios: nombre, asunto y
+    texto. Los destinatarios seleccionados no llegan por el formulario: salen
+    de la sesión (Clientes) o de la campaña guardada.
+    """
+
+    name = forms.CharField(label=_("Nombre"), max_length=100, help_text=_("Solo lo ves tú."))
+    subject = forms.CharField(
+        label=_("Asunto"), max_length=120, help_text=_("Asunto del email. En SMS solo sirve para identificar el envío.")
+    )
+    # Sin valor: todos los clientes con consentimiento (el comportamiento anterior a la Fase 19).
+    audience = forms.ChoiceField(
+        label=_("Destinatarios"), choices=Campaign.Audience.choices, widget=forms.RadioSelect, required=False
+    )
+    channel = forms.ChoiceField(label=_("Canal"), choices=Channel.choices, required=False)
     body = forms.CharField(
-        label=_("Mensaje"),
+        label=_("Texto"),
         max_length=Campaign.MAX_EMAIL_BODY,
         widget=forms.Textarea(attrs={"rows": 8}),
         help_text=(
             lazy_format(_("Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."), {"MAX_EMAIL_BODY": Campaign.MAX_EMAIL_BODY, "MAX_SMS_BODY": Campaign.MAX_SMS_BODY})
         ),
     )
+    image = forms.ImageField(
+        label=_("Imagen"),
+        required=False,
+        validators=[validate_image_extension, validate_image_file],
+        help_text=_("Opcional. JPEG, PNG o WebP. Solo se envía por email."),
+    )
+    clear_image = forms.BooleanField(label=_("Quitar la imagen actual"), required=False)
+    gift_points = forms.IntegerField(
+        label=_("Puntos de regalo"),
+        required=False,
+        min_value=1,
+        max_value=Campaign.MAX_GIFT_POINTS,
+        help_text=_("Opcional. Se suman al saldo de cada destinatario al repartir la campaña, una sola vez."),
+    )
+    gift_points_expire = forms.TypedChoiceField(
+        label=_("Caducidad de los puntos de regalo"),
+        choices=(("si", _("Caducan según la configuración de caducidad")), ("no", _("No caducan nunca"))),
+        coerce=lambda value: value == "si",
+        initial="si",
+        required=False,
+        empty_value=True,
+        widget=forms.RadioSelect,
+    )
+
+    def __init__(self, *args, initial=None, **kwargs):
+        initial = dict(initial or {})
+        if "gift_points_expire" in initial:
+            initial["gift_points_expire"] = "si" if initial["gift_points_expire"] else "no"
+        super().__init__(*args, initial=initial, **kwargs)
+
+    def clean_channel(self):
+        return self.cleaned_data.get("channel") or Channel.EMAIL
+
+    def clean_audience(self):
+        return self.cleaned_data.get("audience") or Campaign.Audience.ALL
 
 
 def reservation_period(key, now=None):

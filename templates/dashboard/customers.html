@@ -37,6 +37,10 @@
     <label for="f-pais">{% translate "País" %}</label>
     <select name="pais" id="f-pais"><option value="">{% translate "Todos" %}</option>{% for code, name in countries %}<option value="{{ code }}"{% if code == filters.country %} selected{% endif %}>{{ name }}</option>{% endfor %}</select>
   </div>
+  <div class="field">
+    <label for="f-gasto">{% translate "Gasto" %}</label>
+    <select name="gasto" id="f-gasto">{% for v, l in spent_choices %}<option value="{{ v }}"{% if v == filters.spent %} selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  </div>
   <div class="field"><label for="f-provincia">{% translate "Provincia" %}</label><input name="provincia" id="f-provincia" maxlength="100" value="{{ filters.province }}"></div>
   <div class="field"><label for="f-localidad">{% translate "Localidad" %}</label><input name="localidad" id="f-localidad" maxlength="100" value="{{ filters.city }}"></div>
   <div class="field"><label for="f-cp">{% translate "Código postal" %}</label><input name="cp" id="f-cp" maxlength="12" value="{{ filters.postal_code }}"></div>
@@ -46,9 +50,14 @@
 <p class="note mb-4">{% translate "El periodo filtra por fecha de alta." %}</p>
 
 {% if page.object_list %}
+  {# Fase 19: las casillas «Envío» pertenecen a este formulario (atributo form=), fuera de la tabla. #}
+  <form method="post" action="{% url 'dashboard:customer_selection' %}" id="seleccion-envio" data-selection-form>
+    {% csrf_token %}
+    <input type="hidden" name="filtros" value="{{ filters_query }}">
+  </form>
   <div class="table-wrap">
     <table class="data-table" data-customer-list>
-      <thead><tr>{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "email" _("Email") %}{% sort_th sort "verificacion" _("Verificación") %}{% sort_th sort "alta" _("Alta") %}{% sort_th sort "estado" _("Estado") %}</tr></thead>
+      <thead><tr>{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "email" _("Email") %}{% sort_th sort "verificacion" _("Verificación") %}{% sort_th sort "alta" _("Alta") %}{% sort_th sort "estado" _("Estado") %}<th scope="col" class="text-right"><label class="inline-flex items-center gap-2">{% translate "Envío" %}<input type="checkbox" data-select-all aria-label="{% translate 'Marcar todos los clientes de esta página' %}"></label></th></tr></thead>
       <tbody>
         {% for customer in page %}
           <tr>
@@ -57,12 +66,28 @@
             <td>{% if customer.is_email_verified %}<span class="badge">{% translate "Verificado" %}</span>{% else %}<span class="badge badge-muted">{% translate "Pendiente" %}</span>{% endif %}</td>
             <td class="whitespace-nowrap">{{ customer.date_joined|date:"d/m/Y" }}</td>
             <td>{% if customer.is_active %}{% translate "Activa" %}{% else %}<span class="text-danger">{% translate "Desactivada" %}</span>{% endif %}</td>
+            <td class="text-right"><input type="checkbox" name="cliente" value="{{ customer.public_id }}" form="seleccion-envio" data-select-item aria-label="{% blocktranslate trimmed with name=customer.get_full_name %}Seleccionar a {{ name }} para el envío{% endblocktranslate %}"></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
   {% include "dashboard/_pagination.html" %}
+  <div class="selection-bar" data-selection-bar role="region" aria-label="{% translate 'Clientes seleccionados para el envío' %}">
+    <p class="text-sm"><span data-selection-count>0</span> {% translate "seleccionados en esta página" %}</p>
+    <div class="flex flex-wrap gap-2">
+      <button type="submit" form="seleccion-envio" name="todos" value="1" class="btn btn-ghost btn-sm">{% blocktranslate trimmed count count=page.paginator.count %}Elegir el cliente filtrado{% plural %}Elegir los {{ count }} clientes filtrados{% endblocktranslate %}</button>
+      <button type="submit" form="seleccion-envio" class="btn btn-primary btn-sm" data-selection-submit>{% translate "Comunicaciones" %}</button>
+    </div>
+  </div>
+  {% if selected_count %}
+    <form method="post" action="{% url 'dashboard:customer_selection_clear' %}" class="note mt-4">
+      {% csrf_token %}
+      {% blocktranslate trimmed count count=selected_count %}Hay {{ count }} cliente elegido para una campaña sin crear.{% plural %}Hay {{ count }} clientes elegidos para una campaña sin crear.{% endblocktranslate %}
+      <a class="link" href="{% url 'dashboard:campaign_create' %}?destinatarios=seleccion">{% translate "Ir a la campaña" %}</a> ·
+      <button type="submit" class="link">{% translate "Descartar" %}</button>
+    </form>
+  {% endif %}
 {% else %}
   <p class="pending">{% translate "No hay clientes que cumplan estos filtros." %}</p>
 {% endif %}

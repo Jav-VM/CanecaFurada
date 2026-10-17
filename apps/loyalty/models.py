@@ -368,6 +368,8 @@ class PointsTransaction(models.Model):
         BIRTHDAY_GIFT = "BIRTHDAY_GIFT", _("Regalo de cumpleaños")
         # Puntos vencidos según la política de caducidad (Fase 14, `ledger.expire_points`).
         EXPIRATION = "EXPIRATION", _("Puntos caducados")
+        # Puntos regalados con una campaña (Fase 19, `ledger.grant_campaign_gift`).
+        CAMPAIGN_GIFT = "CAMPAIGN_GIFT", _("Regalo de campaña")
 
     public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     customer = models.ForeignKey(
@@ -430,6 +432,8 @@ class PointsTransaction(models.Model):
         related_name="+",
     )
     reason = models.CharField(_("motivo"), max_length=200, blank=True)
+    # Fase 19: puntos regalados «sin caducidad». La política de caducidad no los toca.
+    never_expires = models.BooleanField(_("no caducan"), default=False)
     idempotency_key = models.UUIDField(_("referencia de idempotencia"), null=True, blank=True, unique=True)
     created_at = models.DateTimeField(_("fecha"), auto_now_add=True, db_index=True)
 
@@ -449,9 +453,18 @@ class PointsTransaction(models.Model):
                         "REDEMPTION",
                         "BIRTHDAY_GIFT",
                         "EXPIRATION",
+                        "CAMPAIGN_GIFT",
                     ]
                 ),
                 name="loyalty_points_kind_valid",
+            ),
+            models.CheckConstraint(
+                condition=~Q(kind="CAMPAIGN_GIFT") | Q(points__gt=0, idempotency_key__isnull=False),
+                name="loyalty_points_campaign_gift_shape",
+            ),
+            models.CheckConstraint(
+                condition=Q(never_expires=False) | Q(kind="CAMPAIGN_GIFT"),
+                name="loyalty_points_never_expires_only_gifts",
             ),
             models.CheckConstraint(condition=~Q(points=0), name="loyalty_points_nonzero"),
             models.CheckConstraint(condition=Q(balance_after__gte=0), name="loyalty_points_balance_nonnegative"),

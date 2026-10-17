@@ -84,6 +84,45 @@
     input.addEventListener("input", check);
   });
 
+  // Clientes → columna «Envío» (Fase 19): casilla general de la página, contador y
+  // barra con el botón «Comunicaciones», que aparece al marcar alguno. Sin JS la barra
+  // se ve siempre; el servidor recalcula y valida la selección.
+  var bar = document.querySelector("[data-selection-bar]");
+  if (bar) {
+    var items = Array.prototype.slice.call(document.querySelectorAll("[data-select-item]"));
+    var all = document.querySelector("[data-select-all]");
+    var counter = bar.querySelector("[data-selection-count]");
+    var refresh = function () {
+      var checked = items.filter(function (item) { return item.checked; }).length;
+      counter.textContent = String(checked);
+      bar.hidden = checked === 0;
+      if (all) {
+        all.checked = checked > 0 && checked === items.length;
+        all.indeterminate = checked > 0 && checked < items.length;
+      }
+    };
+    items.forEach(function (item) { item.addEventListener("change", refresh); });
+    if (all) {
+      all.addEventListener("change", function () {
+        items.forEach(function (item) { item.checked = all.checked; });
+        refresh();
+      });
+    }
+    refresh();
+  }
+
+  // Botones que necesitan campos rellenos («Crear y enviar»): se activan cuando todos
+  // tienen texto. Solo es una ayuda: el servidor valida igual.
+  document.querySelectorAll("[data-requires]").forEach(function (button) {
+    var form = button.form;
+    var fields = button.dataset.requires.split(" ").map(function (name) { return form.elements[name]; }).filter(Boolean);
+    var update = function () {
+      button.disabled = fields.some(function (field) { return !String(field.value).trim(); });
+    };
+    fields.forEach(function (field) { field.addEventListener("input", update); });
+    update();
+  });
+
   // Localidad según el código postal (España): desplegable con las del CP,
   // marcada sola si solo hay una; sin datos, texto libre. Sin JS el servidor
   // valida igual y pinta el desplegable tras un envío con errores.

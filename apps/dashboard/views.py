@@ -13,13 +13,14 @@ cliente muestra sus datos completos y su consulta queda auditada. La búsqueda
 por nombre o email se envía por POST y se guarda en la sesión para que no
 aparezca en la URL ni en los logs del servidor.
 """
+import uuid
 from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.http import Http404
+from django.http import Http404, QueryDict
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
@@ -56,6 +57,10 @@ from .sorting import Sort
 
 PAGE_SIZE = 25
 CUSTOMER_QUERY_SESSION_KEY = "dashboard_customer_query"
+# Fase 19: clientes elegidos para una campaña. En la sesión, no en la URL.
+SELECTION_SESSION_KEY = "dashboard_campaign_selection"
+MAX_SELECTED_CUSTOMERS = 5000
+SELECTED_AUDIENCE_PARAM = "seleccion"
 
 # (clave, etiqueta, nombre de URL).
 SECTIONS = (
@@ -170,6 +175,8 @@ CAMPAIGN_COLUMNS = {
     "enviadas": ("sent",),
     "no_enviadas": ("skipped",),
     "fallidas": ("failed",),
+    "para": ("audience",),
+    "puntos": ("gift_points",),
 }
 NOTIFICATION_COLUMNS = {
     "fecha": ("created_at",),
@@ -261,21 +268,7 @@ def customers(request):
         return redirect(request.get_full_path())
 
     query = request.session.get(CUSTOMER_QUERY_SESSION_KEY, "")
-    filters = CustomerFilters.from_query(request.GET)
-    period_form, period = _period(request, default="todo")
-    queryset = accounts_selectors.search_customers(
-        actor=request.user,
-        query=query,
-        verified=yes_no(filters.verified),
-        active=yes_no(filters.active),
-        promo_email=yes_no(filters.promo),
-        start=period.start,
-        end=period.end,
-        country=filters.country,
-        province=filters.province,
-        city=filters.city,
-        postal_code=filters.postal_code,
-    )
+    filters, period_form, period, queryset = _filtered_customers(request, request.GET)
     sort = Sort(request.GET, CUSTOMER_COLUMNS)
     page = _page(request, sort.apply(queryset))
     return _render(
@@ -291,9 +284,85 @@ def customers(request):
             "period": period,
             "page": page,
             "yes_no": forms.YES_NO,
+            "spent_choices": forms.SPENT_CHOICES,
             "countries": COUNTRIES,
+            "filters_query": request.GET.urlencode(),
+            "selected_count": len(request.session.get(SELECTION_SESSION_KEY, [])),
         },
     )
+
+
+def _filtered_customers(request, data):
+    """Clientes según los filtros de `data` y la búsqueda guardada en la sesión."""
+    filters = CustomerFilters.from_query(data)
+    period_form = PeriodForm(data or None, default="todo")
+    period = period_form.period()
+    queryset = accounts_selectors.search_customers(
+        actor=request.user,
+        query=request.session.get(CUSTOMER_QUERY_SESSION_KEY, ""),
+        verified=yes_no(filters.verified),
+        active=yes_no(filters.active),
+        promo_email=yes_no(filters.promo),
+        start=period.start,
+        end=period.end,
+        country=filters.country,
+        province=filters.province,
+        city=filters.city,
+        postal_code=filters.postal_code,
+        spent=filters.spent_value,
+    )
+    return filters, period_form, period, queryset
+
+
+def _valid_uuids(values):
+    valid = []
+    for value in values:
+        try:
+            valid.append(uuid.UUID(str(value)))
+        except ValueError:
+            continue
+    return valid
+
+
+@never_cache
+@require_POST
+@owner_required
+def customer_selection(request):
+    """
+    Guarda en la sesión los clientes elegidos para una campaña (Fase 19) y
+    lleva al formulario de campaña. Los `public_id` se recalculan aquí: solo
+    cuentan clientes; cualquier otro identificador se ignora.
+    """
+    back = reverse("dashboard:customers")
+    filters_query = request.POST.get("filtros", "")
+    if filters_query:
+        back = f"{back}?{QueryDict(filters_query).urlencode()}"
+    if request.POST.get("todos") == "1":
+        queryset = _filtered_customers(request, QueryDict(filters_query))[-1]
+        ids = list(queryset.values_list("public_id", flat=True)[: MAX_SELECTED_CUSTOMERS + 1])
+    else:
+        candidates = _valid_uuids(request.POST.getlist("cliente")[: MAX_SELECTED_CUSTOMERS + 1])
+        ids = list(campaigns.selectable_customers(candidates).values_list("public_id", flat=True))
+    if not ids:
+        messages.error(request, _("Marca al menos un cliente en la columna «Envío»."))
+        return redirect(back)
+    if len(ids) > MAX_SELECTED_CUSTOMERS:
+        messages.error(
+            request,
+            _("Puedes seleccionar como máximo %(max)s clientes. Afina los filtros.") % {"max": MAX_SELECTED_CUSTOMERS},
+        )
+        return redirect(back)
+    request.session[SELECTION_SESSION_KEY] = [str(value) for value in ids]
+    return redirect(f"{reverse('dashboard:campaign_create')}?destinatarios={SELECTED_AUDIENCE_PARAM}")
+
+
+@never_cache
+@require_POST
+@owner_required
+def customer_selection_clear(request):
+    request.session.pop(SELECTION_SESSION_KEY, None)
+    messages.info(request, _("Selección de clientes descartada."))
+    return redirect("dashboard:customers")
 
 
 def _customer_or_404(request, public_id):
@@ -993,20 +1062,68 @@ def _campaign_or_404(request, public_id):
 
 
 def _campaign_form_view(request, campaign):
-    initial = {name: getattr(campaign, name) for name in campaigns.EDITABLE_FIELDS} if campaign.pk else {}
-    form = forms.CampaignForm(request.POST or None, initial=initial)
+    """
+    Formulario único de campaña (Fase 19): todos los clientes con
+    consentimiento o los seleccionados en Clientes (lista en la sesión).
+    «Crear y enviar» guarda y programa; «Guardar borrador» solo guarda.
+    """
+    selection = request.session.get(SELECTION_SESSION_KEY, [])
+    wants_selection = request.GET.get("destinatarios") == SELECTED_AUDIENCE_PARAM and bool(selection)
+    if campaign.pk:
+        initial = {name: getattr(campaign, name) for name in campaigns.EDITABLE_FIELDS}
+    else:
+        initial = {"audience": Campaign.Audience.SELECTED if wants_selection else Campaign.Audience.ALL}
+    form = forms.CampaignForm(request.POST or None, request.FILES or None, initial=initial)
     status = 200
     if request.method == "POST":
         if form.is_valid():
+            data = form.cleaned_data
+            # La selección de la sesión solo se usa si se viene de Clientes; al editar
+            # sin venir de allí se conservan los elegidos al crear la campaña.
+            recipients = selection if data["audience"] == Campaign.Audience.SELECTED and wants_selection else None
+            send_now = "enviar" in request.POST
+            service = campaigns.create_and_queue if send_now else campaigns.save_campaign
             try:
-                campaigns.save_campaign(actor=request.user, campaign=campaign, data=form.cleaned_data)
+                service(
+                    actor=request.user,
+                    campaign=campaign,
+                    data=data,
+                    recipients=recipients,
+                    image=data.get("image") or None,
+                    clear_image=data.get("clear_image", False),
+                )
             except ValidationError as exc:
                 _apply_errors(form, exc)
             else:
-                messages.success(request, _("Campaña guardada como borrador. Revísala y prográmala cuando quieras."))
+                if recipients is not None:
+                    request.session.pop(SELECTION_SESSION_KEY, None)
+                if send_now:
+                    messages.success(
+                        request,
+                        _("Campaña creada y programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."),
+                    )
+                else:
+                    messages.success(request, _("Campaña guardada como borrador. Revísala y prográmala cuando quieras."))
                 return redirect("dashboard:communications")
         status = 400
-    context = {"form": form, "campaign": campaign, "sms_available": notification_services.sms_available()}
+    selected_ids = None
+    if wants_selection:
+        selected_ids = list(campaigns.selectable_customers(selection).values_list("pk", flat=True))
+    elif campaign.pk and campaign.audience == Campaign.Audience.SELECTED:
+        selected_ids = list(campaign.selected_recipients.values_list("customer_id", flat=True))
+    context = {
+        "form": form,
+        "campaign": campaign,
+        "sms_available": notification_services.sms_available(),
+        "selected_count": len(selected_ids) if selected_ids is not None else 0,
+        "selected_reach": notification_selectors.selected_reach(actor=request.user, customer_ids=selected_ids)
+        if selected_ids
+        else None,
+        "all_reach": {
+            "email": notification_selectors.potential_recipients(actor=request.user, channel=Channel.EMAIL),
+            "sms": notification_selectors.potential_recipients(actor=request.user, channel=Channel.SMS),
+        },
+    }
     return _render(request, "campaign_form.html", "comunicaciones", context, status=status)
 
 

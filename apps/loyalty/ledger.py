@@ -376,6 +376,44 @@ def grant_birthday_gift(*, customer, promotion, day, at=None):
     return movement
 
 
+# --- Regalo de campaña (Fase 19) -----------------------------------------------------------
+
+
+def campaign_gift_key(campaign_public_id, customer_public_id):
+    """Clave fija por campaña y cliente: el regalo se concede una sola vez."""
+    return uuid.uuid5(campaign_public_id, str(customer_public_id))
+
+
+def grant_campaign_gift(*, customer, campaign_public_id, points, never_expires, reason):
+    """
+    Regala `points` a `customer` por una campaña. Devuelve el movimiento o
+    `None` si no le corresponde (no es cliente, cuenta desactivada o email sin
+    verificar) o si ya lo recibió: la clave de idempotencia es única, así que
+    repetir el reparto de la campaña no duplica puntos.
+    """
+    key = campaign_gift_key(campaign_public_id, customer.public_id)
+    with transaction.atomic():
+        customer = _lock_customer(customer)
+        if not (customer.role == User.Role.CUSTOMER and customer.is_active and customer.is_email_verified):
+            return None
+        if PointsTransaction.objects.filter(idempotency_key=key).exists():
+            return None
+        try:
+            with transaction.atomic():
+                movement = _append(
+                    customer,
+                    kind=Kind.CAMPAIGN_GIFT,
+                    points=points,
+                    never_expires=never_expires,
+                    reason=reason[:200],
+                    idempotency_key=key,
+                )
+        except IntegrityError:
+            return None
+    logger.info("Regalo de campaña %s: %s puntos", movement.public_id, movement.points)
+    return movement
+
+
 # --- Caducidad (Fase 14) ---------------------------------------------------------------
 
 

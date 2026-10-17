@@ -46,9 +46,10 @@ def channel_status(*, actor):
 def campaigns_for_owner(*, actor):
     _require_owner(actor)
     return Campaign.objects.annotate(
-        sent=Count("notifications", filter=Q(notifications__status=Notification.Status.SENT)),
-        skipped=Count("notifications", filter=Q(notifications__status=Notification.Status.SKIPPED)),
-        failed=Count("notifications", filter=Q(notifications__status=Notification.Status.FAILED)),
+        sent=Count("notifications", filter=Q(notifications__status=Notification.Status.SENT), distinct=True),
+        skipped=Count("notifications", filter=Q(notifications__status=Notification.Status.SKIPPED), distinct=True),
+        failed=Count("notifications", filter=Q(notifications__status=Notification.Status.FAILED), distinct=True),
+        selected_total=Count("selected_recipients", distinct=True),
     ).order_by("-created_at", "-id")
 
 
@@ -63,6 +64,27 @@ def potential_recipients(*, actor, channel):
     if channel == Channel.SMS and not sms.is_configured():
         return 0
     return campaigns.eligible_recipients(channel).count()
+
+
+@dataclass(frozen=True)
+class SelectedReach:
+    """De los clientes seleccionados, cuántos recibirían el mensaje por cada canal y cuántos los puntos."""
+
+    selected: int
+    email: int
+    sms: int
+    gift: int
+
+
+def selected_reach(*, actor, customer_ids):
+    _require_owner(actor)
+    ids = list(customer_ids)
+    return SelectedReach(
+        selected=len(ids),
+        email=campaigns.eligible_recipients(Channel.EMAIL, ids).count(),
+        sms=campaigns.eligible_recipients(Channel.SMS, ids).count() if sms.is_configured() else 0,
+        gift=campaigns.gift_candidates(ids).count(),
+    )
 
 
 def notification_log(*, actor, status="", kind=""):

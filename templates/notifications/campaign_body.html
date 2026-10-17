@@ -1,0 +1,15 @@
+{% load i18n %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'gl' }}">
+<head><meta charset="utf-8"><title>{{ campaign_subject }}</title></head>
+<body style="margin:0;padding:24px;background:#f4f1ea;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;">
+  <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;padding:24px;">
+    {% if campaign_image_cid %}<img src="cid:{{ campaign_image_cid }}" alt="" style="display:block;width:100%;max-width:552px;height:auto;border-radius:8px;margin:0 0 20px;">{% endif %}
+    <div style="font-size:16px;line-height:1.5;">{{ campaign_body|linebreaksbr }}</div>
+    {% if campaign_gift_points %}
+      <p style="margin:20px 0 0;padding:12px 16px;background:#fbf3dc;border-radius:8px;font-weight:bold;">{% if campaign_gift_expire %}{% blocktranslate trimmed with points=campaign_gift_points %}Te hemos regalado {{ points }} puntos. Ya están en tu saldo y caducan como el resto de tus puntos.{% endblocktranslate %}{% else %}{% blocktranslate trimmed with points=campaign_gift_points %}Te hemos regalado {{ points }} puntos. Ya están en tu saldo y no caducan.{% endblocktranslate %}{% endif %}</p>
+    {% endif %}
+    <p style="margin:24px 0 0;font-size:14px;">— Caneca Furada</p>
+    <p style="margin:16px 0 0;font-size:12px;color:#666666;">{% translate "Recibes este mensaje porque aceptaste recibir comunicaciones promocionales por email. Para darte de baja:" %} <a href="{{ unsubscribe_url }}" style="color:#666666;">{{ unsubscribe_url }}</a></p>
+  </div>
+</body>
+</html>

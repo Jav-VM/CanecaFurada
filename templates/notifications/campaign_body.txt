@@ -1,5 +1,7 @@
 {% load i18n %}{% autoescape off %}{{ campaign_body }}
-
+{% if campaign_gift_points %}
+{% if campaign_gift_expire %}{% blocktranslate trimmed with points=campaign_gift_points %}Te hemos regalado {{ points }} puntos. Ya están en tu saldo y caducan como el resto de tus puntos.{% endblocktranslate %}{% else %}{% blocktranslate trimmed with points=campaign_gift_points %}Te hemos regalado {{ points }} puntos. Ya están en tu saldo y no caducan.{% endblocktranslate %}{% endif %}
+{% endif %}
 —
 Caneca Furada
 

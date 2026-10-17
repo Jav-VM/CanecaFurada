@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 08:04+0200\n"
+"POT-Creation-Date: 2026-10-17 08:15+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -1689,6 +1689,12 @@ msgstr "Sí"
 msgid "No"
 msgstr "No"
 
+msgid "Con compras"
+msgstr "Con compras"
+
+msgid "Sin gasto (ninguna compra)"
+msgstr "Sin gasto (ninguna compra)"
+
 msgid "Buscar cliente"
 msgstr "Buscar cliente"
 
@@ -1854,27 +1860,45 @@ msgstr "Mensaje para el cliente"
 msgid "Opcional. Se muestra al cliente y va en el email. No incluyas datos personales."
 msgstr "Opcional. Se muestra al cliente y va en el email. No incluyas datos personales."
 
-msgid "Nombre interno"
-msgstr "Nombre interno"
-
 msgid "Solo lo ves tú."
 msgstr "Solo lo ves tú."
-
-msgid "Canal"
-msgstr "Canal"
 
 msgid "Asunto"
 msgstr "Asunto"
 
-msgid "Obligatorio en email."
-msgstr "Obligatorio en email."
+msgid "Asunto del email. En SMS solo sirve para identificar el envío."
+msgstr "Asunto del email. En SMS solo sirve para identificar el envío."
 
-msgid "Mensaje"
-msgstr "Mensaje"
+msgid "Destinatarios"
+msgstr "Destinatarios"
+
+msgid "Canal"
+msgstr "Canal"
+
+msgid "Texto"
+msgstr "Texto"
 
 #, python-format
 msgid "Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."
 msgstr "Texto plano. Email: hasta %(MAX_EMAIL_BODY)s caracteres; SMS: hasta %(MAX_SMS_BODY)s. Se añade siempre el enlace de baja. No incluyas datos personales."
+
+msgid "Opcional. JPEG, PNG o WebP. Solo se envía por email."
+msgstr "Opcional. JPEG, PNG o WebP. Solo se envía por email."
+
+msgid "Quitar la imagen actual"
+msgstr "Quitar la imagen actual"
+
+msgid "Opcional. Se suman al saldo de cada destinatario al repartir la campaña, una sola vez."
+msgstr "Opcional. Se suman al saldo de cada destinatario al repartir la campaña, una sola vez."
+
+msgid "Caducidad de los puntos de regalo"
+msgstr "Caducidad de los puntos de regalo"
+
+msgid "Caducan según la configuración de caducidad"
+msgstr "Caducan según la configuración de caducidad"
+
+msgid "No caducan nunca"
+msgstr "No caducan nunca"
 
 msgid "Resumen"
 msgstr "Resumen"
@@ -1911,6 +1935,16 @@ msgstr "Contenido"
 
 msgid "Configuración"
 msgstr "Configuración"
+
+msgid "Marca al menos un cliente en la columna «Envío»."
+msgstr "Marca al menos un cliente en la columna «Envío»."
+
+#, python-format
+msgid "Puedes seleccionar como máximo %(max)s clientes. Afina los filtros."
+msgstr "Puedes seleccionar como máximo %(max)s clientes. Afina los filtros."
+
+msgid "Selección de clientes descartada."
+msgstr "Selección de clientes descartada."
 
 #, python-format
 msgid "Ajuste registrado: %(points)s puntos."
@@ -1984,6 +2018,9 @@ msgstr "Reserva marcada como completada."
 
 msgid "La reserva ya estaba en ese estado."
 msgstr "La reserva ya estaba en ese estado."
+
+msgid "Campaña creada y programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
+msgstr "Campaña creada y programada. Se repartirá en la próxima ejecución de la tarea de envíos, solo a quien lo ha autorizado."
 
 msgid "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
 msgstr "Campaña guardada como borrador. Revísala y prográmala cuando quieras."
@@ -2521,6 +2558,9 @@ msgstr "Compensación"
 msgid "Canje"
 msgstr "Canje"
 
+msgid "Regalo de campaña"
+msgstr "Regalo de campaña"
+
 msgid "puntos"
 msgstr "puntos"
 
@@ -2550,6 +2590,9 @@ msgstr "puntos por euro aplicados"
 
 msgid "registrado por"
 msgstr "registrado por"
+
+msgid "no caducan"
+msgstr "no caducan"
 
 msgid "movimiento de puntos"
 msgstr "movimiento de puntos"
@@ -2611,8 +2654,18 @@ msgstr "Tu código QR se ha renovado. El anterior ya no sirve."
 msgid "Notificaciones"
 msgstr "Notificaciones"
 
+#, python-format
+msgid "Regalo de la campaña «%(name)s»"
+msgstr "Regalo de la campaña «%(name)s»"
+
 msgid "Solo el propietario gestiona las campañas."
 msgstr "Solo el propietario gestiona las campañas."
+
+msgid "Escribe el nombre de la campaña."
+msgstr "Escribe el nombre de la campaña."
+
+msgid "Escribe el asunto."
+msgstr "Escribe el asunto."
 
 msgid "Escribe el mensaje."
 msgstr "Escribe el mensaje."
@@ -2621,12 +2674,19 @@ msgstr "Escribe el mensaje."
 msgid "Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres."
 msgstr "Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres."
 
-msgid "Escribe el asunto del email."
-msgstr "Escribe el asunto del email."
-
 #, python-format
 msgid "El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres."
 msgstr "El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres."
+
+#, python-format
+msgid "Los puntos de regalo van de 1 a %(MAX)s."
+msgstr "Los puntos de regalo van de 1 a %(MAX)s."
+
+msgid "Elige los destinatarios."
+msgstr "Elige los destinatarios."
+
+msgid "No hay clientes seleccionados. Elígelos en Clientes."
+msgstr "No hay clientes seleccionados. Elígelos en Clientes."
 
 msgid "Esta campaña ya no se puede programar."
 msgstr "Esta campaña ya no se puede programar."
@@ -2642,6 +2702,12 @@ msgstr "Programada para envío"
 
 msgid "Repartida"
 msgstr "Repartida"
+
+msgid "Todos los clientes con consentimiento"
+msgstr "Todos los clientes con consentimiento"
+
+msgid "Clientes seleccionados"
+msgstr "Clientes seleccionados"
 
 msgid "nombre interno"
 msgstr "nombre interno"
@@ -2667,11 +2733,32 @@ msgstr "repartida el"
 msgid "destinatarios"
 msgstr "destinatarios"
 
+msgid "JPEG, PNG o WebP. Opcional; solo en email."
+msgstr "JPEG, PNG o WebP. Opcional; solo en email."
+
+msgid "puntos de regalo"
+msgstr "puntos de regalo"
+
+msgid "los puntos de regalo caducan"
+msgstr "los puntos de regalo caducan"
+
+msgid "clientes con puntos de regalo"
+msgstr "clientes con puntos de regalo"
+
 msgid "campaña promocional"
 msgstr "campaña promocional"
 
 msgid "campañas promocionales"
 msgstr "campañas promocionales"
+
+msgid "campaña"
+msgstr "campaña"
+
+msgid "destinatario seleccionado"
+msgstr "destinatario seleccionado"
+
+msgid "destinatarios seleccionados"
+msgstr "destinatarios seleccionados"
 
 msgid "Confirmación de cambio de email"
 msgstr "Confirmación de cambio de email"
@@ -2741,9 +2828,6 @@ msgstr "Sin tokens ni datos personales."
 
 msgid "clave de idempotencia"
 msgstr "clave de idempotencia"
-
-msgid "campaña"
-msgstr "campaña"
 
 msgid "intentos"
 msgstr "intentos"
@@ -3556,17 +3640,41 @@ msgstr "Editar campaña"
 msgid "Nueva campaña"
 msgstr "Nueva campaña"
 
-msgid "Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales."
-msgstr "Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales."
+msgid "Solo se envía a quien ha aceptado comunicaciones promocionales. «Crear y enviar» la programa para la próxima tarea de envíos; «Guardar borrador» la deja pendiente."
+msgstr "Solo se envía a quien ha aceptado comunicaciones promocionales. «Crear y enviar» la programa para la próxima tarea de envíos; «Guardar borrador» la deja pendiente."
 
 msgid "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
 msgstr "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar."
+
+#, python-format
+msgid "Cliente seleccionado (%(count)s)"
+msgid_plural "Clientes seleccionados (%(count)s)"
+msgstr[0] "Cliente seleccionado (%(count)s)"
+msgstr[1] "Clientes seleccionados (%(count)s)"
+
+#, python-format
+msgid "Todos los clientes con consentimiento (%(email)s por email)"
+msgstr "Todos los clientes con consentimiento (%(email)s por email)"
+
+#, python-format
+msgid "De los %(total)s seleccionados, recibirán el mensaje %(email)s por email o %(sms)s por SMS (los que lo autorizaron). Los puntos de regalo, si los hay, se dan a %(gift)s (cuentas activas con email verificado)."
+msgstr "De los %(total)s seleccionados, recibirán el mensaje %(email)s por email o %(sms)s por SMS (los que lo autorizaron). Los puntos de regalo, si los hay, se dan a %(gift)s (cuentas activas con email verificado)."
+
+#, python-format
+msgid "Para enviar a clientes concretos, márcalos en la columna «Envío» de <a class=\"link\" href=\"%(url)s\">Clientes</a> y pulsa «Comunicaciones»."
+msgstr "Para enviar a clientes concretos, márcalos en la columna «Envío» de <a class=\"link\" href=\"%(url)s\">Clientes</a> y pulsa «Comunicaciones»."
+
+msgid "Esta campaña ya tiene una imagen."
+msgstr "Esta campaña ya tiene una imagen."
 
 msgid "No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja."
 msgstr "No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja."
 
 msgid "Guardar borrador"
 msgstr "Guardar borrador"
+
+msgid "Crear y enviar"
+msgstr "Crear y enviar"
 
 msgid "← Volver a comunicaciones"
 msgstr "← Volver a comunicaciones"
@@ -3612,11 +3720,11 @@ msgstr "Solo la reciben los clientes con email verificado que han aceptado comun
 msgid "Campaña"
 msgstr "Campaña"
 
+msgid "Para"
+msgstr "Para"
+
 msgid "Estado"
 msgstr "Estado"
-
-msgid "Destinatarios"
-msgstr "Destinatarios"
 
 msgid "Enviadas"
 msgstr "Enviadas"
@@ -3629,6 +3737,19 @@ msgstr "Fallidas"
 
 msgid "Acciones"
 msgstr "Acciones"
+
+#, python-format
+msgid "%(count)s seleccionado"
+msgid_plural "%(count)s seleccionados"
+msgstr[0] "%(count)s seleccionado"
+msgstr[1] "%(count)s seleccionados"
+
+msgid "sin caducidad"
+msgstr "sin caducidad"
+
+#, python-format
+msgid "a %(count)s clientes"
+msgstr "a %(count)s clientes"
 
 msgid "Editar"
 msgstr "Editar"
@@ -3865,6 +3986,9 @@ msgstr "Cuenta activa"
 msgid "Acepta emails promocionales"
 msgstr "Acepta emails promocionales"
 
+msgid "Gasto"
+msgstr "Gasto"
+
 msgid "Filtrar"
 msgstr "Filtrar"
 
@@ -3879,6 +4003,40 @@ msgstr "Verificación"
 
 msgid "Alta"
 msgstr "Alta"
+
+msgid "Envío"
+msgstr "Envío"
+
+msgid "Marcar todos los clientes de esta página"
+msgstr "Marcar todos los clientes de esta página"
+
+#, python-format
+msgid "Seleccionar a %(name)s para el envío"
+msgstr "Seleccionar a %(name)s para el envío"
+
+msgid "Clientes seleccionados para el envío"
+msgstr "Clientes seleccionados para el envío"
+
+msgid "seleccionados en esta página"
+msgstr "seleccionados en esta página"
+
+#, python-format
+msgid "Elegir el cliente filtrado"
+msgid_plural "Elegir los %(count)s clientes filtrados"
+msgstr[0] "Elegir el cliente filtrado"
+msgstr[1] "Elegir los %(count)s clientes filtrados"
+
+#, python-format
+msgid "Hay %(count)s cliente elegido para una campaña sin crear."
+msgid_plural "Hay %(count)s clientes elegidos para una campaña sin crear."
+msgstr[0] "Hay %(count)s cliente elegido para una campaña sin crear."
+msgstr[1] "Hay %(count)s clientes elegidos para una campaña sin crear."
+
+msgid "Ir a la campaña"
+msgstr "Ir a la campaña"
+
+msgid "Descartar"
+msgstr "Descartar"
 
 msgid "No hay clientes que cumplan estos filtros."
 msgstr "No hay clientes que cumplan estos filtros."
@@ -4716,6 +4874,18 @@ msgstr "¡Feliz cumpleaños! Te hemos regalado %(points)s puntos."
 
 msgid "Baja:"
 msgstr "Baja:"
+
+#, python-format
+msgid "Te hemos regalado %(points)s puntos. Ya están en tu saldo y caducan como el resto de tus puntos."
+msgstr "Te hemos regalado %(points)s puntos. Ya están en tu saldo y caducan como el resto de tus puntos."
+
+#, python-format
+msgid "Te hemos regalado %(points)s puntos. Ya están en tu saldo y no caducan."
+msgstr "Te hemos regalado %(points)s puntos. Ya están en tu saldo y no caducan."
+
+#, python-format
+msgid "+%(points)s puntos de regalo."
+msgstr "+%(points)s puntos de regalo."
 
 #, python-format
 msgid "Hola %(first_name)s:"

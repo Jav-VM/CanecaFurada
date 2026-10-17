@@ -22,7 +22,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 15 | Web en gallego con selector gallego/castellano | **Completa** ([detalle](fase-15-idioma-gallego.md)); pendientes la revisión nativa de las traducciones y la visual |
 | 17 | Interruptor de reservas online | **Completa** ([detalle](fase-17-reservas-online.md)); pendiente revisión visual |
 | 18 | Ordenar los listados del dashboard por columnas | **Completa** ([detalle](fase-18-ordenacion-listados.md)); pendiente revisión visual |
-| 19 | Filtro «sin gasto», selección de clientes y campañas con imagen y puntos | **Pendiente** |
+| 19 | Filtro «sin gasto», selección de clientes y campañas con imagen y puntos | **Completa** ([detalle](fase-19-campanas-seleccion.md)); pendientes revisión visual y prueba con SMTP real |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -234,6 +234,9 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 ## Fase 19 — Filtro «sin gasto», selección de clientes y campañas con imagen y puntos
 - **Incluye:** filtro de clientes sin compras; casillas «Envío» y selección general en Clientes; botón a Comunicaciones; formulario único de campaña con destinatarios (todos con consentimiento o seleccionados), imagen y puntos de regalo con o sin caducidad; «Crear y enviar».
 - **Decisiones del usuario:** formulario único (sin apartado nuevo); los seleccionados sin consentimiento no reciben el mensaje pero sí los puntos; «con caducidad» sigue la política general y «sin caducidad» no caduca nunca.
+- **Criterios:** consentimiento comprobado en servidor; puntos idempotentes; selección recalculada en servidor; migraciones aditivas; catálogo gallego completo; suite existente intacta.
+- **Resultado (2026-10-17):** 22 tests nuevos; **1031 tests OK**; migraciones aplicadas en PostgreSQL y en la demo.
+- Ver [fase-19-campanas-seleccion.md](fase-19-campanas-seleccion.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

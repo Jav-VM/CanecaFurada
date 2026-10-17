@@ -30,7 +30,9 @@ from dataclasses import dataclass
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.mail import EmailMessage
+from email.mime.image import MIMEImage
+
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.db import IntegrityError, transaction
 from django.db.models import F, Q
 from django.template.loader import render_to_string
@@ -85,8 +87,40 @@ def _subject(template, context):
     return " ".join(render_to_string(template, context).split())
 
 
-def _send_email(*, to, subject, body, headers=None):
-    EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [to], headers=headers or None).send()
+def _send_email(*, to, subject, body, headers=None, html=None, image=None):
+    """
+    Email de texto plano. Con `html` añade la alternativa HTML y, con `image`
+    (`(contenido, subtipo)`), la incrusta como adjunto en línea (`cid:imagen`):
+    no depende de que la carpeta de imágenes del sitio sea pública.
+    """
+    if html is None:
+        EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [to], headers=headers or None).send()
+        return
+    message = EmailMultiAlternatives(subject, body, settings.DEFAULT_FROM_EMAIL, [to], headers=headers or None)
+    message.attach_alternative(html, "text/html")
+    if image is not None:
+        content, subtype = image
+        inline = MIMEImage(content, _subtype=subtype)
+        inline.add_header("Content-ID", f"<{CAMPAIGN_IMAGE_CID}>")
+        inline.add_header("Content-Disposition", "inline", filename=f"imagen.{subtype}")
+        message.mixed_subtype = "related"
+        message.attach(inline)
+    message.send()
+
+
+CAMPAIGN_IMAGE_CID = "imagen"
+_IMAGE_SUBTYPES = {"jpg": "jpeg", "jpeg": "jpeg", "png": "png", "webp": "webp"}
+
+
+def _campaign_image(campaign):
+    """Contenido y subtipo MIME de la imagen de la campaña, o `None`."""
+    if not campaign.image:
+        return None
+    subtype = _IMAGE_SUBTYPES.get(campaign.image.name.rsplit(".", 1)[-1].lower())
+    if subtype is None:
+        return None
+    with campaign.image.open("rb") as file:
+        return file.read(), subtype
 
 
 def _check_context(context):
@@ -104,8 +138,13 @@ def _context_for(notification):
     else:
         context["first_name"] = notification.recipient.first_name
     if notification.campaign_id:
-        context["campaign_subject"] = notification.campaign.subject
-        context["campaign_body"] = notification.campaign.body
+        campaign = notification.campaign
+        context["campaign_subject"] = campaign.subject
+        context["campaign_body"] = campaign.body
+        # Fase 19: aviso de los puntos regalados (no dice el saldo: no es un dato del mensaje).
+        context["campaign_gift_points"] = campaign.gift_points
+        context["campaign_gift_expire"] = campaign.gift_points_expire
+        context["campaign_image_cid"] = CAMPAIGN_IMAGE_CID if campaign.image else ""
     return context
 
 
@@ -239,11 +278,18 @@ def _send_rendered(notification):
         headers = None
         if notification.is_promotional:
             headers = {"List-Unsubscribe": f"<{context['unsubscribe_url']}>"}
+        html = image = None
+        if notification.campaign_id and notification.campaign.image:
+            image = _campaign_image(notification.campaign)
+            if image is not None:
+                html = render_to_string("notifications/campaign_body.html", context)
         _send_email(
             to=notification.recipient.email,
             subject=_subject(_template(notification, "subject"), context),
             body=render_to_string(_template(notification, "body"), context),
             headers=headers,
+            html=html,
+            image=image,
         )
     else:
         text = " ".join(render_to_string(_template(notification, "sms"), context).split())

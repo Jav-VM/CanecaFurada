@@ -17,7 +17,8 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Max, Q
+from django.apps import apps
+from django.db.models import Count, Exists, Max, OuterRef, Q
 from django.db.models.functions import Upper
 from django.utils.translation import gettext_lazy as _
 
@@ -68,8 +69,13 @@ def search_customers(
     city="",
     postal_code="",
     promo_email=None,
+    spent=None,
 ):
-    """Clientes que cumplen los filtros, del alta más reciente a la más antigua."""
+    """
+    Clientes que cumplen los filtros, del alta más reciente a la más antigua.
+    `spent` (Fase 19): `False` solo los que no tienen ninguna compra
+    registrada; `True`, los que tienen al menos una.
+    """
     _require_owner(actor)
     queryset = customers()
     for term in (query or "").split()[:5]:
@@ -91,6 +97,13 @@ def search_customers(
         queryset = queryset.filter(customer_profile__postal_code__iexact=postal_code)
     if promo_email is not None:
         queryset = queryset.filter(customer_profile__promo_email_opt_in=promo_email)
+    if spent is not None:
+        # Modelo por nombre: `purchases` ya depende de `accounts`.
+        Purchase = apps.get_model("purchases", "Purchase")
+        has_purchases = Exists(
+            Purchase.objects.filter(customer=OuterRef("pk"), status=Purchase.Status.COMPLETED)
+        )
+        queryset = queryset.filter(has_purchases if spent else ~has_purchases)
     return queryset.only(*LIST_FIELDS).order_by("-date_joined", "-id")
 
 

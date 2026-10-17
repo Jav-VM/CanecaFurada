@@ -2,16 +2,53 @@
 {% load i18n %}
 {% block title %}{% if campaign.pk %}{% translate "Editar campaña" %}{% else %}{% translate "Nueva campaña" %}{% endif %} · Dashboard{% endblock %}
 {% block heading %}{% if campaign.pk %}{% translate "Editar campaña" %}{% else %}{% translate "Nueva campaña" %}{% endif %}{% endblock %}
-{% block intro %}<p class="lead mt-2">{% translate "Se guarda como borrador. Cuando la programes, se enviará solo a quien ha aceptado comunicaciones promocionales." %}</p>{% endblock %}
+{% block intro %}<p class="lead mt-2">{% translate "Solo se envía a quien ha aceptado comunicaciones promocionales. «Crear y enviar» la programa para la próxima tarea de envíos; «Guardar borrador» la deja pendiente." %}</p>{% endblock %}
 {% block body %}
 <div class="max-w-2xl">
   {% if not sms_available %}<p class="alert alert-info mb-4">{% translate "No hay proveedor de SMS configurado: las campañas por SMS se pueden redactar, pero no programar." %}</p>{% endif %}
   {% include "components/form_errors.html" %}
-  <form method="post" class="form-section" novalidate data-loading>
+  <form method="post" enctype="multipart/form-data" class="form-section" novalidate data-loading data-campaign-form>
     {% csrf_token %}
-    {% for field in form %}{% include "accounts/_field.html" %}{% endfor %}
+    {% include "accounts/_field.html" with field=form.name %}
+    {% include "accounts/_field.html" with field=form.subject %}
+
+    <fieldset class="field field-choices" data-audience{% if form.audience.errors %} aria-describedby="{{ form.audience.auto_id }}_error"{% endif %}>
+      <legend>{% translate "Destinatarios" %}</legend>
+      <div class="choices flex-col items-start">
+        {% for radio in form.audience %}
+          {% if radio.data.value == "SELECTED" %}
+            <label for="{{ radio.id_for_label }}">{% if selected_count %}{{ radio.tag }}{% else %}<input type="radio" name="{{ radio.data.name }}" value="SELECTED" id="{{ radio.id_for_label }}" disabled>{% endif %}
+              {% blocktranslate trimmed count count=selected_count %}Cliente seleccionado ({{ count }}){% plural %}Clientes seleccionados ({{ count }}){% endblocktranslate %}</label>
+          {% else %}
+            <label for="{{ radio.id_for_label }}">{{ radio.tag }} {% blocktranslate trimmed with email=all_reach.email %}Todos los clientes con consentimiento ({{ email }} por email){% endblocktranslate %}</label>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% if selected_reach %}
+        <p class="note mt-2" data-selected-reach>{% blocktranslate trimmed with total=selected_reach.selected email=selected_reach.email sms=selected_reach.sms gift=selected_reach.gift %}De los {{ total }} seleccionados, recibirán el mensaje {{ email }} por email o {{ sms }} por SMS (los que lo autorizaron). Los puntos de regalo, si los hay, se dan a {{ gift }} (cuentas activas con email verificado).{% endblocktranslate %}</p>
+      {% elif not selected_count %}
+        {% url 'dashboard:customers' as customers_url %}
+        <p class="note mt-2">{% blocktranslate trimmed with url=customers_url %}Para enviar a clientes concretos, márcalos en la columna «Envío» de <a class="link" href="{{ url }}">Clientes</a> y pulsa «Comunicaciones».{% endblocktranslate %}</p>
+      {% endif %}
+      {{ form.audience.errors }}
+    </fieldset>
+
+    {% include "accounts/_field.html" with field=form.channel %}
+    {% include "accounts/_field.html" with field=form.body %}
+    {% include "accounts/_field.html" with field=form.image %}
+    {% if campaign.image %}
+      <p class="note">{% translate "Esta campaña ya tiene una imagen." %}</p>
+      {% include "accounts/_field.html" with field=form.clear_image %}
+    {% endif %}
+    {% include "accounts/_field.html" with field=form.gift_points %}
+    {% include "accounts/_field.html" with field=form.gift_points_expire %}
+
     <p class="note">{% translate "No incluyas datos personales de clientes ni de empleados. El mensaje no saluda por el nombre y siempre añade el enlace de baja." %}</p>
-    <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar borrador" %}</button>
+    {# «Guardar borrador» va primero: el estado de carga desactiva el primer botón y un botón desactivado no se envía. #}
+    <div class="flex flex-wrap gap-3">
+      <button type="submit" name="borrador" value="1" class="btn btn-secondary" data-loading-text="{% translate 'Guardando…' %}">{% translate "Guardar borrador" %}</button>
+      <button type="submit" name="enviar" value="1" class="btn btn-primary" data-requires="name subject body">{% translate "Crear y enviar" %}</button>
+    </div>
   </form>
   <p class="mt-4 text-sm"><a class="link" href="{% url 'dashboard:communications' %}">{% translate "← Volver a comunicaciones" %}</a></p>
 </div>

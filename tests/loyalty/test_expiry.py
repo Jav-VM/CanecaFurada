@@ -38,9 +38,11 @@ def at(year, month, day, hour=12):
 # --- Cálculo puro --------------------------------------------------------------------
 
 
-def mov(pk, points, created_at, kind=None, reverses=None):
+def mov(pk, points, created_at, kind=None, reverses=None, never_expires=False):
     kind = kind or (Kind.ADJUSTMENT if points > 0 else Kind.REDEMPTION)
-    return SimpleNamespace(pk=pk, kind=kind, points=points, created_at=created_at, reverses_id=reverses)
+    return SimpleNamespace(
+        pk=pk, kind=kind, points=points, created_at=created_at, reverses_id=reverses, never_expires=never_expires
+    )
 
 
 def pol(months, counts_from=at(2020, 1, 1)):

@@ -1,1 +1,1 @@
-{% load i18n %}{% autoescape off %}Caneca Furada: {{ campaign_body }} {% translate "Baja:" %} {{ unsubscribe_url }}{% endautoescape %}
+{% load i18n %}{% autoescape off %}Caneca Furada: {{ campaign_body }}{% if campaign_gift_points %} {% blocktranslate trimmed with points=campaign_gift_points %}+{{ points }} puntos de regalo.{% endblocktranslate %}{% endif %} {% translate "Baja:" %} {{ unsubscribe_url }}{% endautoescape %}

@@ -15,7 +15,9 @@ Registro de notificaciones y campañas promocionales (Fase 10).
     una reserva).
 - `Campaign`: comunicación promocional redactada por el propietario. Se
   encola desde el dashboard y la reparte `process_notifications`, nunca la
-  petición web.
+  petición web. Desde la Fase 19 puede ir a todos los clientes con
+  consentimiento o a una selección (`CampaignRecipient`), llevar una imagen
+  (solo email) y regalar puntos, con o sin caducidad.
 
 Las reglas están en `services.py` y `campaigns.py`.
 """
@@ -26,12 +28,20 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
+from apps.catalog.validators import validate_image_extension, validate_image_file
 from apps.core.models import TimeStampedModel
 
 
 class Channel(models.TextChoices):
     EMAIL = "EMAIL", _("Email")
     SMS = "SMS", "SMS"
+
+
+def campaign_image_path(instance, filename):
+    # Nombre aleatorio: no se publica el nombre original del fichero.
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    ext = "jpg" if ext == "jpeg" else ext
+    return f"campaigns/{uuid.uuid4().hex}.{ext}"
 
 
 class Campaign(TimeStampedModel):
@@ -41,8 +51,13 @@ class Campaign(TimeStampedModel):
         DISPATCHED = "DISPATCHED", _("Repartida")
         CANCELLED = "CANCELLED", _("Cancelada")
 
+    class Audience(models.TextChoices):
+        ALL = "ALL", _("Todos los clientes con consentimiento")
+        SELECTED = "SELECTED", _("Clientes seleccionados")
+
     MAX_EMAIL_BODY = 2000
     MAX_SMS_BODY = 320
+    MAX_GIFT_POINTS = 10000
 
     public_id = models.UUIDField(_("identificador"), default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(_("nombre interno"), max_length=100)
@@ -60,6 +75,18 @@ class Campaign(TimeStampedModel):
     queued_at = models.DateTimeField(_("programada el"), null=True, blank=True)
     dispatched_at = models.DateTimeField(_("repartida el"), null=True, blank=True)
     recipients_count = models.PositiveIntegerField(_("destinatarios"), null=True, blank=True)
+    # Fase 19: destinatarios, imagen y puntos de regalo.
+    audience = models.CharField(_("destinatarios"), max_length=8, choices=Audience.choices, default=Audience.ALL)
+    image = models.ImageField(
+        _("imagen"),
+        upload_to=campaign_image_path,
+        blank=True,
+        validators=[validate_image_extension, validate_image_file],
+        help_text=_("JPEG, PNG o WebP. Opcional; solo en email."),
+    )
+    gift_points = models.PositiveIntegerField(_("puntos de regalo"), null=True, blank=True)
+    gift_points_expire = models.BooleanField(_("los puntos de regalo caducan"), default=True)
+    gifted_count = models.PositiveIntegerField(_("clientes con puntos de regalo"), null=True, blank=True)
 
     class Meta:
         verbose_name = _("campaña promocional")
@@ -72,10 +99,33 @@ class Campaign(TimeStampedModel):
             ),
             models.CheckConstraint(condition=Q(channel__in=["EMAIL", "SMS"]), name="notifications_campaign_channel_valid"),
             models.CheckConstraint(condition=~Q(channel="EMAIL") | ~Q(subject=""), name="notifications_campaign_email_subject"),
+            models.CheckConstraint(condition=Q(audience__in=["ALL", "SELECTED"]), name="notifications_campaign_audience_valid"),
+            models.CheckConstraint(
+                condition=Q(gift_points__isnull=True) | Q(gift_points__gte=1, gift_points__lte=10000),
+                name="notifications_campaign_gift_points_range",
+            ),
         ]
 
     def __str__(self):
         return self.name
+
+
+class CampaignRecipient(models.Model):
+    """Cliente elegido para una campaña de destinatarios seleccionados (Fase 19)."""
+
+    campaign = models.ForeignKey(
+        Campaign, verbose_name=_("campaña"), on_delete=models.CASCADE, related_name="selected_recipients"
+    )
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_("cliente"), on_delete=models.CASCADE, related_name="+"
+    )
+
+    class Meta:
+        verbose_name = _("destinatario seleccionado")
+        verbose_name_plural = _("destinatarios seleccionados")
+        constraints = [
+            models.UniqueConstraint(fields=["campaign", "customer"], name="notifications_campaign_recipient_unique")
+        ]
 
 
 class Notification(models.Model):

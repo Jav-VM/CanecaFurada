@@ -133,6 +133,8 @@
   .sort-arrows { @apply inline-flex flex-col leading-none; }
   .sort-link { @apply rounded px-0.5 text-[0.7rem] text-mist/60 no-underline hover:text-gold focus-visible:text-gold; }
   .sort-link.is-active { @apply text-gold; }
+  /* Fase 19: barra fija con los clientes marcados en la columna «Envío». */
+  .selection-bar { @apply sticky bottom-4 z-30 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold/50 bg-coal p-4 shadow-lg; }
   /* Tabla que cabe sin scroll horizontal: compacta desde xl y, por debajo, una tarjeta por
      fila con la etiqueta de cada celda tomada de data-label. Uso: eventos, carta y cervezas. */
   .data-table-fit th { @apply whitespace-normal px-3; }

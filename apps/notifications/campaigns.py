@@ -12,22 +12,39 @@ que quien se da de baja entre medias no la recibe.
 Nunca se envía a empleados ni propietarios, ni a cuentas desactivadas. Un
 cliente recibe cada campaña una sola vez (`dedup_key`). Todo cambio queda
 auditado sin el texto de la campaña.
+
+Fase 19:
+- **Destinatarios** `ALL` (todos los clientes con consentimiento) o `SELECTED`
+  (los elegidos en el dashboard, guardados en `CampaignRecipient`). De los
+  seleccionados solo reciben el mensaje los que tienen consentimiento.
+- **Puntos de regalo**: al repartir, cada destinatario (`ALL`) o cada
+  seleccionado (`SELECTED`, tenga o no consentimiento) activo y con email
+  verificado recibe los puntos una sola vez (`ledger.grant_campaign_gift`),
+  en la misma transacción que el reparto. «Sin caducidad» los marca
+  `never_expires`.
+- **Imagen** opcional, solo en email.
+- `create_and_queue`: guarda y programa a la vez («Crear y enviar»).
 """
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 
 from apps.accounts.models import CustomerProfile, User
 from apps.accounts.permissions import is_owner
+from apps.core.i18n import site_text
 from apps.core.models import AuditEvent
 from apps.core.services import record_audit_event
+from apps.loyalty import ledger
 
 from . import services
-from .models import Campaign, Channel, Notification
+from .models import Campaign, CampaignRecipient, Channel, Notification
 
 Status = Campaign.Status
-EDITABLE_FIELDS = ("name", "channel", "subject", "body")
+Audience = Campaign.Audience
+GIFT_REASON = gettext_lazy("Regalo de la campaña «%(name)s»")
+EDITABLE_FIELDS = ("name", "channel", "subject", "body", "audience", "gift_points", "gift_points_expire")
 
 
 def _require_owner(actor):
@@ -44,25 +61,50 @@ def _validate(campaign):
     campaign.subject = " ".join((campaign.subject or "").split())
     campaign.body = (campaign.body or "").strip()
     errors = {}
+    if not campaign.name:
+        errors["name"] = _("Escribe el nombre de la campaña.")
+    if not campaign.subject:
+        errors["subject"] = _("Escribe el asunto.")
     if not campaign.body:
         errors["body"] = _("Escribe el mensaje.")
     if campaign.channel == Channel.SMS:
-        campaign.subject = ""
+        # El SMS no lleva asunto ni imagen: el asunto solo identifica el envío.
+        campaign.image = None
         if len(campaign.body) > Campaign.MAX_SMS_BODY:
             errors["body"] = _("Un SMS admite como máximo %(MAX_SMS_BODY)s caracteres.") % {"MAX_SMS_BODY": Campaign.MAX_SMS_BODY}
-    else:
-        if not campaign.subject:
-            errors["subject"] = _("Escribe el asunto del email.")
-        if len(campaign.body) > Campaign.MAX_EMAIL_BODY:
-            errors["body"] = _("El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres.") % {"MAX_EMAIL_BODY": Campaign.MAX_EMAIL_BODY}
+    elif len(campaign.body) > Campaign.MAX_EMAIL_BODY:
+        errors["body"] = _("El mensaje admite como máximo %(MAX_EMAIL_BODY)s caracteres.") % {"MAX_EMAIL_BODY": Campaign.MAX_EMAIL_BODY}
+    if campaign.gift_points is not None and not 1 <= campaign.gift_points <= Campaign.MAX_GIFT_POINTS:
+        errors["gift_points"] = _("Los puntos de regalo van de 1 a %(MAX)s.") % {"MAX": Campaign.MAX_GIFT_POINTS}
+    if campaign.audience not in Audience.values:
+        errors["audience"] = _("Elige los destinatarios.")
     if errors:
         raise ValidationError(errors)
     campaign.full_clean(exclude=["created_by"])
 
 
+def selectable_customers(public_ids):
+    """Clientes (solo rol cliente) entre los `public_id` recibidos; el resto se ignora."""
+    return User.objects.filter(role=User.Role.CUSTOMER, public_id__in=list(public_ids))
+
+
+def _clean_value(name, value):
+    if name == "gift_points":
+        return value or None
+    if name == "gift_points_expire":
+        return bool(value)
+    return value or ""
+
+
 @transaction.atomic
-def save_campaign(*, actor, campaign, data):
-    """Crea o modifica una campaña en borrador (lista blanca de campos)."""
+def save_campaign(*, actor, campaign, data, recipients=None, image=None, clear_image=False):
+    """
+    Crea o modifica una campaña en borrador (lista blanca de campos).
+
+    `recipients`: `public_id` de los clientes elegidos, obligatorio con
+    destinatarios `SELECTED`; se recalculan aquí (solo clientes). En una
+    campaña ya guardada, `None` conserva los que tenía.
+    """
     _require_owner(actor)
     if campaign.pk is not None:
         campaign = Campaign.objects.select_for_update().get(pk=campaign.pk)
@@ -72,12 +114,48 @@ def save_campaign(*, actor, campaign, data):
         campaign.created_by = actor
     for name in EDITABLE_FIELDS:
         if name in data:
-            setattr(campaign, name, data[name] or "")
+            setattr(campaign, name, _clean_value(name, data[name]))
+    if image:
+        campaign.image = image
+    elif clear_image:
+        campaign.image = None
+    selected = None
+    if campaign.audience == Audience.SELECTED:
+        if recipients is not None:
+            selected = list(selectable_customers(recipients).values_list("pk", flat=True))
+        elif campaign.pk is not None:
+            selected = list(campaign.selected_recipients.values_list("customer_id", flat=True))
+        if not selected:
+            raise ValidationError({"audience": _("No hay clientes seleccionados. Elígelos en Clientes.")})
     _validate(campaign)
     created = campaign.pk is None
     campaign.save()
-    _audit(actor, campaign, event="created" if created else "edited", channel=campaign.channel)
+    if campaign.audience == Audience.SELECTED:
+        campaign.selected_recipients.exclude(customer_id__in=selected).delete()
+        CampaignRecipient.objects.bulk_create(
+            [CampaignRecipient(campaign=campaign, customer_id=pk) for pk in selected], ignore_conflicts=True
+        )
+    else:
+        campaign.selected_recipients.all().delete()
+    _audit(
+        actor,
+        campaign,
+        event="created" if created else "edited",
+        channel=campaign.channel,
+        audience=campaign.audience,
+        selected=len(selected) if selected is not None else None,
+        gift_points=campaign.gift_points,
+    )
     return campaign
+
+
+@transaction.atomic
+def create_and_queue(*, actor, campaign, data, recipients=None, image=None, clear_image=False):
+    """«Crear y enviar»: guarda y programa en una sola transacción (o nada)."""
+    campaign = save_campaign(
+        actor=actor, campaign=campaign, data=data, recipients=recipients, image=image, clear_image=clear_image
+    )
+    return queue_campaign(actor=actor, campaign=campaign)
 
 
 @transaction.atomic
@@ -113,8 +191,11 @@ def cancel_campaign(*, actor, campaign):
     return campaign
 
 
-def eligible_recipients(channel):
-    """Clientes activos con email verificado y consentimiento vigente del canal."""
+def eligible_recipients(channel, customer_ids=None):
+    """
+    Clientes activos con email verificado y consentimiento vigente del canal.
+    Con `customer_ids`, solo entre esos (campañas a clientes seleccionados).
+    """
     profiles = CustomerProfile.objects.filter(
         user__is_active=True, user__role=User.Role.CUSTOMER, user__email_verified_at__isnull=False
     )
@@ -122,7 +203,32 @@ def eligible_recipients(channel):
         profiles = profiles.filter(promo_email_opt_in=True)
     else:
         profiles = profiles.filter(promo_sms_opt_in=True).exclude(phone_number="")
+    if customer_ids is not None:
+        profiles = profiles.filter(user_id__in=customer_ids)
     return User.objects.filter(pk__in=profiles.values("user_id")).order_by("pk")
+
+
+def gift_candidates(customer_ids):
+    """Seleccionados que pueden recibir puntos: clientes activos con email verificado."""
+    return User.objects.filter(
+        pk__in=customer_ids, role=User.Role.CUSTOMER, is_active=True, email_verified_at__isnull=False
+    ).order_by("pk")
+
+
+def _grant_gifts(campaign, customers):
+    reason = site_text(GIFT_REASON, name=campaign.name)
+    granted = 0
+    for user in customers.iterator():
+        movement = ledger.grant_campaign_gift(
+            customer=user,
+            campaign_public_id=campaign.public_id,
+            points=campaign.gift_points,
+            never_expires=not campaign.gift_points_expire,
+            reason=reason,
+        )
+        granted += movement is not None
+    return granted
+
 
 
 def dispatch_queued(now=None):
@@ -137,7 +243,11 @@ def dispatch_queued(now=None):
                 # Se queda programada hasta que haya proveedor (o el propietario la cancele).
                 continue
             count = 0
-            for user in eligible_recipients(campaign.channel).iterator():
+            selected = None
+            if campaign.audience == Audience.SELECTED:
+                selected = list(campaign.selected_recipients.values_list("customer_id", flat=True))
+            recipients = eligible_recipients(campaign.channel, selected)
+            for user in recipients.iterator():
                 _unused, created = services.enqueue(
                     kind=Notification.Kind.CAMPAIGN,
                     recipient=user,
@@ -146,10 +256,13 @@ def dispatch_queued(now=None):
                     dedup_key=f"campaign:{campaign.public_id}:{user.public_id}",
                 )
                 count += int(created)
+            if campaign.gift_points:
+                gifted = gift_candidates(selected) if selected is not None else recipients
+                campaign.gifted_count = _grant_gifts(campaign, gifted)
             campaign.status = Status.DISPATCHED
             campaign.dispatched_at = now or timezone.now()
             campaign.recipients_count = Notification.objects.filter(campaign=campaign).count()
-            campaign.save(update_fields=["status", "dispatched_at", "recipients_count", "updated_at"])
-            _audit(None, campaign, event="dispatched", recipients=campaign.recipients_count)
+            campaign.save(update_fields=["status", "dispatched_at", "recipients_count", "gifted_count", "updated_at"])
+            _audit(None, campaign, event="dispatched", recipients=campaign.recipients_count, gifted=campaign.gifted_count)
             created_total += count
     return created_total

@@ -1640,6 +1640,7 @@ components:
       - REDEMPTION
       - BIRTHDAY_GIFT
       - EXPIRATION
+      - CAMPAIGN_GIFT
       type: string
       description: |-
         * `EARN_PURCHASE` - Compra
@@ -1649,6 +1650,7 @@ components:
         * `REDEMPTION` - Canxe
         * `BIRTHDAY_GIFT` - Agasallo de aniversario
         * `EXPIRATION` - Puntos caducados
+        * `CAMPAIGN_GIFT` - Agasallo de campaña
     Localities:
       type: object
       properties:

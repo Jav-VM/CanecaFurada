@@ -38,7 +38,7 @@ from .models import PointsExpiryPolicy, PointsTransaction
 
 Kind = PointsTransaction.Kind
 # Campos que necesita el cálculo: los movimientos se leen sin el resto.
-MOVEMENT_FIELDS = ("id", "kind", "points", "created_at", "reverses_id")
+MOVEMENT_FIELDS = ("id", "kind", "points", "created_at", "reverses_id", "never_expires")
 
 
 def add_months(value, months):
@@ -158,13 +158,18 @@ def remaining_lots(movements, policy):
     """
     Créditos con puntos sin consumir, del que caduca antes al que caduca
     después. Sin política activa, lista vacía (nada caduca).
+
+    Los créditos que no caducan (`never_expires`, Fase 19) no forman lote y
+    los gastos consumen antes los que sí caducan: regalar puntos sin
+    caducidad nunca adelanta el vencimiento de los demás.
     """
     if policy is None or policy.months is None:
         return []
     effective = _effective(movements)
     debits = -sum(m.points for m in effective if m.points < 0)
     lots = []
-    for movement in sorted((m for m in effective if m.points > 0), key=lambda m: (m.created_at, m.pk)):
+    expiring = (m for m in effective if m.points > 0 and not m.never_expires)
+    for movement in sorted(expiring, key=lambda m: (m.created_at, m.pk)):
         consumed = min(debits, movement.points)
         debits -= consumed
         if movement.points > consumed:

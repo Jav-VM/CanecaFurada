@@ -280,7 +280,7 @@ class CampaignTests(NotificationTestCase):
         self.assertEqual(campaigns.dispatch_queued(), 0)
 
     def test_sms_campaign_needs_provider(self):
-        campaign = self.draft(channel=Channel.SMS, subject="")
+        campaign = self.draft(channel=Channel.SMS, subject="Aviso por SMS")
         with self.assertRaises(ValidationError):
             campaigns.queue_campaign(actor=self.owner, campaign=campaign)
 
