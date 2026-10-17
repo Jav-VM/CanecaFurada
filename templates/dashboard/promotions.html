@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Promociones" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Promociones" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% translate "Puntos extra al registrar una compra y regalo de cumpleaños (puntos fijos el día del cumpleaños; el aviso solo se envía a quien ha aceptado comunicaciones promocionales)." %}</p>{% endblock %}
@@ -8,7 +8,7 @@
 {% if promotions %}
   <div class="table-wrap">
     <table class="data-table" data-promotion-list>
-      <thead><tr><th scope="col">{% translate "Promoción" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col">{% translate "Bonificación" %}</th><th scope="col">{% translate "Vigencia" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Usos" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+      <thead><tr>{% sort_th sort "promocion" _("Promoción") %}{% sort_th sort "tipo" _("Tipo") %}<th scope="col">{% translate "Bonificación" %}</th>{% sort_th sort "vigencia" _("Vigencia") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "usos" _("Usos") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for promo in promotions %}
           <tr>

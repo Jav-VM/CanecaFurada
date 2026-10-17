@@ -21,6 +21,8 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 14 | Caducidad de puntos y regalo de cumpleaños configurables | **Completa** ([detalle](fase-14-caducidad-puntos-cumpleanos.md)); pendiente revisión visual |
 | 15 | Web en gallego con selector gallego/castellano | **Completa** ([detalle](fase-15-idioma-gallego.md)); pendientes la revisión nativa de las traducciones y la visual |
 | 17 | Interruptor de reservas online | **Completa** ([detalle](fase-17-reservas-online.md)); pendiente revisión visual |
+| 18 | Ordenar los listados del dashboard por columnas | **Completa** ([detalle](fase-18-ordenacion-listados.md)); pendiente revisión visual |
+| 19 | Filtro «sin gasto», selección de clientes y campañas con imagen y puntos | **Pendiente** |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -221,6 +223,17 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** solo el propietario lo cambia (servidor); por defecto activadas; reservas existentes intactas; migración no destructiva; catálogo gallego completo; suite existente intacta.
 - **Resultado (2026-10-17):** 16 tests nuevos; **996 tests OK**.
 - Ver [fase-17-reservas-online.md](fase-17-reservas-online.md).
+
+## Fase 18 — Ordenar los listados del dashboard por columnas
+- **Numeración:** fases 18 y 19 añadidas por el usuario el 2026-10-17 (una petición dividida en dos fases).
+- **Incluye:** flechas ↑/↓ en cada columna ordenable de todos los listados del dashboard, con lista blanca de columnas, filtros conservados y sin JavaScript.
+- **Criterios:** ningún dato de la petición llega a `order_by`; valores desconocidos sin error; solo propietario; suite existente intacta.
+- **Resultado (2026-10-17):** 13 tests nuevos; **1009 tests OK**.
+- Ver [fase-18-ordenacion-listados.md](fase-18-ordenacion-listados.md).
+
+## Fase 19 — Filtro «sin gasto», selección de clientes y campañas con imagen y puntos
+- **Incluye:** filtro de clientes sin compras; casillas «Envío» y selección general en Clientes; botón a Comunicaciones; formulario único de campaña con destinatarios (todos con consentimiento o seleccionados), imagen y puntos de regalo con o sin caducidad; «Crear y enviar».
+- **Decisiones del usuario:** formulario único (sin apartado nuevo); los seleccionados sin consentimiento no reciben el mensaje pero sí los puntos; «con caducidad» sigue la política general y «sin caducidad» no caduca nunca.
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

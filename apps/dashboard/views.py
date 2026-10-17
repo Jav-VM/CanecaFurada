@@ -52,6 +52,7 @@ from apps.web import services as web
 
 from . import forms
 from .forms import CustomerFilters, PeriodForm, choice, yes_no
+from .sorting import Sort
 
 PAGE_SIZE = 25
 CUSTOMER_QUERY_SESSION_KEY = "dashboard_customer_query"
@@ -75,6 +76,111 @@ SECTIONS = (
 )
 
 owner_required = role_required(User.Role.OWNER)
+
+
+# --- Ordenación (Fase 18): columnas que se pueden ordenar en cada listado ----------
+# Solo estas claves llegan desde la URL; los campos del ORM nunca salen de la petición.
+
+CUSTOMER_COLUMNS = {
+    "cliente": ("last_name", "first_name"),
+    "email": ("email",),
+    "verificacion": ("email_verified_at",),
+    "alta": ("date_joined",),
+    "estado": ("is_active",),
+}
+# Empleados y zonas se calculan en memoria: cada columna da el valor de una fila.
+EMPLOYEE_COLUMNS = {
+    "nombre": lambda row: (row[0].last_name.lower(), row[0].first_name.lower()),
+    "email": lambda row: row[0].email.lower(),
+    "rol": lambda row: row[0].role,
+    "estado": lambda row: row[0].is_active,
+    "compras": lambda row: row[1][0],
+    "importe": lambda row: row[1][1],
+    "canjes": lambda row: row[2],
+}
+ZONE_COLUMNS = {
+    "zona": lambda row: row[0].label.lower(),
+    "clientes": lambda row: row[0].count,
+}
+PURCHASE_COLUMNS = {
+    "fecha": ("created_at",),
+    "cliente": ("customer__last_name", "customer__first_name"),
+    "importe": ("amount",),
+    "puntos": ("points",),
+    "registrada": ("registered_by__last_name", "registered_by__first_name"),
+    "estado": ("status",),
+}
+MOVEMENT_COLUMNS = {
+    "fecha": ("created_at",),
+    "cliente": ("customer__last_name", "customer__first_name"),
+    "tipo": ("kind",),
+    "puntos": ("points",),
+}
+REWARD_COLUMNS = {
+    "recompensa": ("name",),
+    "coste": ("points_cost",),
+    "estado": ("status",),
+    "unidades": ("stock",),
+    "utilizadas": ("used_count",),
+    "pendientes": ("pending_count",),
+}
+REDEMPTION_COLUMNS = {
+    "solicitado": ("created_at",),
+    "cliente": ("customer__last_name", "customer__first_name"),
+    "recompensa": ("reward__name",),
+    "puntos": ("points_cost",),
+    "estado": ("status",),
+    "validado": ("validated_at",),
+}
+PROMOTION_COLUMNS = {
+    "promocion": ("name",),
+    "tipo": ("kind",),
+    "vigencia": ("starts_at",),
+    "estado": ("status",),
+    "usos": ("uses",),
+}
+PRODUCT_COLUMNS = {
+    "producto": ("name",),
+    "categoria": ("category__position", "category__name"),
+    "precio": ("price",),
+    "publicacion": ("status",),
+    "disponibilidad": ("is_available",),
+}
+EVENT_COLUMNS = {
+    "evento": ("title",),
+    "empieza": ("starts_at",),
+    "estado": ("status",),
+    "reservas": ("accepts_reservations",),
+    "pendientes": ("pending",),
+    "personas": ("confirmed_people",),
+}
+RESERVATION_COLUMNS = {
+    "fecha": ("requested_for",),
+    "cliente": ("customer__last_name", "customer__first_name"),
+    "personas": ("party_size",),
+    "evento": ("event__title",),
+    "estado": ("status",),
+    "solicitada": ("created_at",),
+}
+CAMPAIGN_COLUMNS = {
+    "campana": ("name",),
+    "canal": ("channel",),
+    "estado": ("status",),
+    "destinatarios": ("recipients_count",),
+    "enviadas": ("sent",),
+    "no_enviadas": ("skipped",),
+    "fallidas": ("failed",),
+}
+NOTIFICATION_COLUMNS = {
+    "fecha": ("created_at",),
+    "tipo": ("kind",),
+    "canal": ("channel",),
+    "estado": ("status",),
+    "intentos": ("attempts",),
+}
+# Páginas con dos listados: el segundo usa su propio prefijo en la URL.
+CAMPAIGN_SORT_PREFIX = "c_"
+REWARD_SORT_PREFIX = "r_"
 
 
 # --- Utilidades -------------------------------------------------------------------
@@ -170,12 +276,14 @@ def customers(request):
         city=filters.city,
         postal_code=filters.postal_code,
     )
-    page = _page(request, queryset)
+    sort = Sort(request.GET, CUSTOMER_COLUMNS)
+    page = _page(request, sort.apply(queryset))
     return _render(
         request,
         "customers.html",
         "clientes",
         {
+            "sort": sort,
             "search_form": forms.CustomerSearchForm(initial={"q": query}),
             "query": query,
             "filters": filters,
@@ -297,14 +405,16 @@ def customer_zones(request):
             actor=actor, level=level, start=period.start, end=period.end, country=country
         )
     top = max((row.count for row in distribution.rows), default=0)
-    rows = [
-        (row, urlencode(row.filters), round(row.count * 100 / top) if top else 0) for row in distribution.rows
-    ]
+    sort = Sort(request.GET, ZONE_COLUMNS)
+    rows = sort.apply_list(
+        [(row, urlencode(row.filters), round(row.count * 100 / top) if top else 0) for row in distribution.rows]
+    )
     return _render(
         request,
         "customer_zones.html",
         "clientes",
         {
+            "sort": sort,
             "distribution": distribution,
             "rows": rows,
             "others_percent": distribution.percent(distribution.others_count),
@@ -337,15 +447,19 @@ def _render_employees(request, create_form=None, status=200):
     span = {"actor": actor, "start": period.start, "end": period.end}
     purchases_by = purchase_selectors.purchases_by_staff(**span)
     validations_by = reward_selectors.validations_by_staff(**span)
-    rows = [
-        (member, purchases_by.get(member.pk, (0, None)), validations_by.get(member.pk, 0))
-        for member in accounts_selectors.staff_members(actor=actor)
-    ]
+    sort = Sort(request.GET, EMPLOYEE_COLUMNS)
+    rows = sort.apply_list(
+        [
+            (member, purchases_by.get(member.pk, (0, None)), validations_by.get(member.pk, 0))
+            for member in accounts_selectors.staff_members(actor=actor)
+        ]
+    )
     return _render(
         request,
         "employees.html",
         "empleados",
         {
+            "sort": sort,
             "rows": rows,
             "period_form": period_form,
             "period": period,
@@ -448,15 +562,17 @@ def purchases(request):
     queryset = purchase_selectors.all_purchases(
         actor=actor, start=period.start, end=period.end, registered_by=selected, status=status
     )
+    sort = Sort(request.GET, PURCHASE_COLUMNS)
     return _render(
         request,
         "purchases.html",
         "compras",
         {
+            "sort": sort,
             "period_form": period_form,
             "period": period,
             "stats": purchase_selectors.registered_purchases_stats(actor=actor, start=period.start, end=period.end),
-            "page": _page(request, queryset),
+            "page": _page(request, sort.apply(queryset)),
             "status": status,
             "status_choices": forms.PURCHASE_STATUS_CHOICES,
             "staff_options": staff_options,
@@ -473,16 +589,18 @@ def points(request):
     period_form, period = _period(request)
     kind = choice(request.GET, "tipo", forms.MOVEMENT_KIND_CHOICES)
     queryset = loyalty_selectors.all_movements(actor=actor, start=period.start, end=period.end, kind=kind)
+    sort = Sort(request.GET, MOVEMENT_COLUMNS)
     return _render(
         request,
         "points.html",
         "puntos",
         {
+            "sort": sort,
             "period_form": period_form,
             "period": period,
             "stats": loyalty_selectors.points_stats(actor=actor, start=period.start, end=period.end),
             "rate": conversion.current_rate(),
-            "page": _page(request, queryset),
+            "page": _page(request, sort.apply(queryset)),
             "kind": kind,
             "kind_choices": forms.MOVEMENT_KIND_CHOICES,
         },
@@ -500,16 +618,20 @@ def rewards_view(request):
     period_form, period = _period(request)
     status = choice(request.GET, "estado", forms.REDEMPTION_STATUS_CHOICES)
     queryset = reward_selectors.all_redemptions(actor=actor, start=period.start, end=period.end, status=status)
+    sort = Sort(request.GET, REDEMPTION_COLUMNS)
+    reward_sort = Sort(request.GET, REWARD_COLUMNS, prefix=REWARD_SORT_PREFIX)
     return _render(
         request,
         "rewards.html",
         "recompensas",
         {
+            "sort": sort,
+            "reward_sort": reward_sort,
             "period_form": period_form,
             "period": period,
-            "rewards": reward_selectors.rewards_overview(actor=actor),
+            "rewards": reward_sort.apply(reward_selectors.rewards_overview(actor=actor)),
             "stats": reward_selectors.redemption_stats(actor=actor, start=period.start, end=period.end),
-            "page": _page(request, queryset),
+            "page": _page(request, sort.apply(queryset)),
             "status": status,
             "status_choices": forms.REDEMPTION_STATUS_CHOICES,
             "manageable": rewards.MANAGEABLE_REWARD_STATUSES,
@@ -537,12 +659,14 @@ def reward_status(request, public_id):
 @require_GET
 @owner_required
 def promotions_view(request):
+    sort = Sort(request.GET, PROMOTION_COLUMNS)
     return _render(
         request,
         "promotions.html",
         "promociones",
         {
-            "promotions": loyalty_selectors.promotions_overview(actor=request.user),
+            "sort": sort,
+            "promotions": sort.apply(loyalty_selectors.promotions_overview(actor=request.user)),
             "manageable": promotions.MANAGEABLE_STATUSES,
         },
     )
@@ -574,12 +698,14 @@ def _products(request, *, beers, section):
     queryset = catalog_selectors.products_for_management(
         actor=request.user, beers=beers, status=status, category=category
     )
+    sort = Sort(request.GET, PRODUCT_COLUMNS)
     return _render(
         request,
         "products.html",
         section,
         {
-            "page": _page(request, queryset),
+            "sort": sort,
+            "page": _page(request, sort.apply(queryset)),
             "beers": beers,
             "status": status,
             "status_choices": forms.PRODUCT_STATUS_CHOICES,
@@ -662,12 +788,14 @@ def _event_or_404(request, public_id):
 def events(request):
     status = choice(request.GET, "estado", forms.EVENT_STATUS_CHOICES)
     queryset = event_selectors.events_for_management(actor=request.user, status=status)
+    sort = Sort(request.GET, EVENT_COLUMNS)
     return _render(
         request,
         "events.html",
         "eventos",
         {
-            "page": _page(request, queryset),
+            "sort": sort,
+            "page": _page(request, sort.apply(queryset)),
             "status": status,
             "status_choices": forms.EVENT_STATUS_CHOICES,
         },
@@ -733,12 +861,14 @@ def reservations(request):
     queryset = event_selectors.reservations_for_management(actor=request.user, status=status, start=start, end=end)
     if newest_first:
         queryset = queryset.order_by("-requested_for", "-id")
+    sort = Sort(request.GET, RESERVATION_COLUMNS)
     return _render(
         request,
         "reservations.html",
         "reservas",
         {
-            "page": _page(request, queryset),
+            "sort": sort,
+            "page": _page(request, sort.apply(queryset)),
             "status": status,
             "when": when,
             "status_choices": forms.RESERVATION_STATUS_CHOICES,
@@ -828,13 +958,17 @@ def communications(request):
     status = choice(request.GET, "estado", forms.NOTIFICATION_STATUS_CHOICES)
     kind = choice(request.GET, "tipo", forms.NOTIFICATION_KIND_CHOICES)
     counts = notification_selectors.notification_counts(actor=actor)
+    sort = Sort(request.GET, NOTIFICATION_COLUMNS)
+    campaign_sort = Sort(request.GET, CAMPAIGN_COLUMNS, prefix=CAMPAIGN_SORT_PREFIX)
     return _render(
         request,
         "communications.html",
         "comunicaciones",
         {
+            "sort": sort,
+            "campaign_sort": campaign_sort,
             "channels": notification_selectors.channel_status(actor=actor),
-            "campaigns": notification_selectors.campaigns_for_owner(actor=actor)[:20],
+            "campaigns": campaign_sort.apply(notification_selectors.campaigns_for_owner(actor=actor))[:20],
             "audience": {
                 "email": notification_selectors.potential_recipients(actor=actor, channel=Channel.EMAIL),
                 "sms": notification_selectors.potential_recipients(actor=actor, channel=Channel.SMS),
@@ -842,7 +976,7 @@ def communications(request):
             "status_counts": [
                 (label, counts.get(value, 0)) for value, label in Notification.Status.choices
             ],
-            "page": _page(request, notification_selectors.notification_log(actor=actor, status=status, kind=kind)),
+            "page": _page(request, sort.apply(notification_selectors.notification_log(actor=actor, status=status, kind=kind))),
             "status": status,
             "kind": kind,
             "status_choices": forms.NOTIFICATION_STATUS_CHOICES,

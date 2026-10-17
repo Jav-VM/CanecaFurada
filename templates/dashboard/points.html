@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Puntos" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Puntos" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% blocktranslate trimmed with rate=rate.points_per_euro %}Conversión vigente: <strong class="text-paper">{{ rate }} puntos por euro</strong>{% endblocktranslate %}{% if not rate.rule %} {% translate "(valor por defecto)" %}{% endif %}. <a class="link text-base" href="{% url 'dashboard:settings' %}">{% translate "Cambiar" %}</a></p>{% endblock %}
@@ -26,7 +26,7 @@
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table" data-movement-list>
-      <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Cliente" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col">{% translate "Detalle" %}</th></tr></thead>
+      <thead><tr>{% sort_th sort "fecha" _("Fecha") %}{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "tipo" _("Tipo") %}{% sort_th sort "puntos" _("Puntos") "num" %}<th scope="col">{% translate "Detalle" %}</th></tr></thead>
       <tbody>
         {% for m in page %}
           <tr>

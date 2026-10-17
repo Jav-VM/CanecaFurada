@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Recompensas" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Recompensas" %}{% endblock %}
 {% block body %}
@@ -11,7 +11,7 @@
   {% if rewards %}
     <div class="table-wrap">
       <table class="data-table" data-reward-list>
-        <thead><tr><th scope="col">{% translate "Recompensa" %}</th><th scope="col" class="num">{% translate "Coste" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Unidades" %}</th><th scope="col" class="num">{% translate "Utilizadas" %}</th><th scope="col" class="num">{% translate "Pendientes" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+        <thead><tr>{% sort_th reward_sort "recompensa" _("Recompensa") %}{% sort_th reward_sort "coste" _("Coste") "num" %}{% sort_th reward_sort "estado" _("Estado") %}{% sort_th reward_sort "unidades" _("Unidades") "num" %}{% sort_th reward_sort "utilizadas" _("Utilizadas") "num" %}{% sort_th reward_sort "pendientes" _("Pendientes") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
         <tbody>
           {% for reward in rewards %}
             <tr>
@@ -59,7 +59,7 @@
   {% if page.object_list %}
     <div class="table-wrap mt-6">
       <table class="data-table" data-redemption-list>
-        <thead><tr><th scope="col">{% translate "Solicitado" %}</th><th scope="col">{% translate "Cliente" %}</th><th scope="col">{% translate "Recompensa" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col">{% translate "Validado por" %}</th></tr></thead>
+        <thead><tr>{% sort_th sort "solicitado" _("Solicitado") %}{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "recompensa" _("Recompensa") %}{% sort_th sort "puntos" _("Puntos") "num" %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "validado" _("Validado por") %}</tr></thead>
         <tbody>
           {% for r in page %}
             <tr>

@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Comunicaciones" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Comunicaciones" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% translate "Campañas promocionales y registro de todo lo que envía la plataforma." %}</p>{% endblock %}
@@ -21,7 +21,7 @@
   {% if campaigns %}
     <div class="table-wrap">
       <table class="data-table" data-campaign-list>
-        <thead><tr><th scope="col">{% translate "Campaña" %}</th><th scope="col">{% translate "Canal" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Destinatarios" %}</th><th scope="col" class="num">{% translate "Enviadas" %}</th><th scope="col" class="num">{% translate "No enviadas" %}</th><th scope="col" class="num">{% translate "Fallidas" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+        <thead><tr>{% sort_th campaign_sort "campana" _("Campaña") %}{% sort_th campaign_sort "canal" _("Canal") %}{% sort_th campaign_sort "estado" _("Estado") %}{% sort_th campaign_sort "destinatarios" _("Destinatarios") "num" %}{% sort_th campaign_sort "enviadas" _("Enviadas") "num" %}{% sort_th campaign_sort "no_enviadas" _("No enviadas") "num" %}{% sort_th campaign_sort "fallidas" _("Fallidas") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
         <tbody>
           {% for c in campaigns %}
             <tr>
@@ -73,7 +73,7 @@
   {% if page.object_list %}
     <div class="table-wrap">
       <table class="data-table" data-notification-log>
-        <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Tipo" %}</th><th scope="col">{% translate "Canal" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col" class="num">{% translate "Intentos" %}</th><th scope="col">{% translate "Motivo / error" %}</th></tr></thead>
+        <thead><tr>{% sort_th sort "fecha" _("Fecha") %}{% sort_th sort "tipo" _("Tipo") %}{% sort_th sort "canal" _("Canal") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "intentos" _("Intentos") "num" %}<th scope="col">{% translate "Motivo / error" %}</th></tr></thead>
         <tbody>
           {% for n in page %}
             <tr>

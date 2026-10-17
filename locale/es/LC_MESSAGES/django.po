@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 07:01+0200\n"
+"POT-Creation-Date: 2026-10-17 08:04+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -3541,6 +3541,14 @@ msgstr "Se muestra el periodo por defecto."
 
 msgid "Periodo:"
 msgstr "Periodo:"
+
+#, python-format
+msgid "Ordenar por %(label)s ascendente"
+msgstr "Ordenar por %(label)s ascendente"
+
+#, python-format
+msgid "Ordenar por %(label)s descendente"
+msgstr "Ordenar por %(label)s descendente"
 
 msgid "Editar campaña"
 msgstr "Editar campaña"

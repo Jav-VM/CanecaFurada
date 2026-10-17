@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Estadísticas geográficas" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Estadísticas geográficas" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% translate "De qué zonas procede tu base de clientes." %}</p>{% endblock %}
@@ -34,7 +34,7 @@
   <div class="table-wrap">
     <table class="data-table" data-geo-table>
       <caption class="sr-only">{% blocktranslate trimmed with level=distribution.level_label|lower %}Clientes por {{ level }}{% endblocktranslate %}</caption>
-      <thead><tr><th scope="col">{{ distribution.level_label }}</th><th scope="col" class="w-1/3">{% translate "Proporción" %}</th><th scope="col" class="num">{% translate "Clientes" %}</th><th scope="col" class="num">%</th></tr></thead>
+      <thead><tr>{% sort_th sort "zona" distribution.level_label %}<th scope="col" class="w-1/3">{% translate "Proporción" %}</th>{% sort_th sort "clientes" _("Clientes") "num" %}<th scope="col" class="num">%</th></tr></thead>
       <tbody>
         {% for row, query, width in rows %}
           <tr>

@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Clientes" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Clientes" %}{% endblock %}
 {% block body %}
@@ -48,7 +48,7 @@
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table" data-customer-list>
-      <thead><tr><th scope="col">{% translate "Cliente" %}</th><th scope="col">{% translate "Email" %}</th><th scope="col">{% translate "Verificación" %}</th><th scope="col">{% translate "Alta" %}</th><th scope="col">{% translate "Estado" %}</th></tr></thead>
+      <thead><tr>{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "email" _("Email") %}{% sort_th sort "verificacion" _("Verificación") %}{% sort_th sort "alta" _("Alta") %}{% sort_th sort "estado" _("Estado") %}</tr></thead>
       <tbody>
         {% for customer in page %}
           <tr>

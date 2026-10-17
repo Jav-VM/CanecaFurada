@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Reservas" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Reservas" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% translate "Solicitudes de los clientes. Se confirman a mano: el cliente recibe un email con cada cambio." %}</p>{% endblock %}
@@ -18,7 +18,7 @@
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table" data-reservation-list>
-      <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Cliente" %}</th><th scope="col" class="num">{% translate "Personas" %}</th><th scope="col">{% translate "Evento" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col">{% translate "Solicitada" %}</th><th scope="col"><span class="sr-only">{% translate "Detalle" %}</span></th></tr></thead>
+      <thead><tr>{% sort_th sort "fecha" _("Fecha") %}{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "personas" _("Personas") "num" %}{% sort_th sort "evento" _("Evento") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "solicitada" _("Solicitada") %}<th scope="col"><span class="sr-only">{% translate "Detalle" %}</span></th></tr></thead>
       <tbody>
         {% for r in page %}
           <tr>

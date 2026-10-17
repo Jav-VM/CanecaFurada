@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Eventos" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Eventos" %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% translate "Crea, edita, publica y archiva los eventos del local. Solo los publicados se ven en la web." %}</p>{% endblock %}
@@ -17,7 +17,7 @@
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table data-table-fit" data-event-list>
-      <thead><tr><th scope="col">{% translate "Evento" %}</th><th scope="col">{% translate "Empieza" %}</th><th scope="col">{% translate "Estado" %}</th><th scope="col">{% translate "Reservas" %}</th><th scope="col" class="num">{% translate "Pendientes" %}</th><th scope="col" class="num">{% translate "Personas confirmadas" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+      <thead><tr>{% sort_th sort "evento" _("Evento") %}{% sort_th sort "empieza" _("Empieza") %}{% sort_th sort "estado" _("Estado") %}{% sort_th sort "reservas" _("Reservas") %}{% sort_th sort "pendientes" _("Pendientes") "num" %}{% sort_th sort "personas" _("Personas confirmadas") "num" %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for event in page %}
           <tr>

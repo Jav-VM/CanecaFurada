@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% if beers %}{% translate "Cervezas" %}{% else %}{% translate "Carta" %}{% endif %} · Dashboard{% endblock %}
 {% block heading %}{% if beers %}{% translate "Cervezas" %}{% else %}{% translate "Carta" %}{% endif %}{% endblock %}
 {% block intro %}<p class="lead mt-2">{% if beers %}{% translate "Cervezas propias, invitadas y rotativas." %}{% else %}{% translate "Productos fijos de la carta. Las cervezas están en su propia sección." %}{% endif %}</p>{% endblock %}
@@ -29,7 +29,7 @@
     {% comment %}Mismo ajuste que la lista de eventos (.data-table-fit): tabla compacta desde xl y una tarjeta por producto por debajo. En cervezas, tipo, estilo y graduación van en una sola columna para que quepa.{% endcomment %}
     {% translate "Tipo" as kind_label %}{% translate "Estilo" as style_label %}{% translate "Graduación" as abv_label %}
     <table class="data-table data-table-fit" data-product-list>
-      <thead><tr><th scope="col">{% translate "Producto" %}</th><th scope="col">{% translate "Categoría" %}</th>{% if beers %}<th scope="col">{{ kind_label }} · {{ style_label }} · {{ abv_label }}</th>{% endif %}<th scope="col" class="num">{% translate "Precio" %}</th><th scope="col">{% translate "Publicación" %}</th><th scope="col">{% translate "Disponibilidad" %}</th><th scope="col">{% translate "Acciones" %}</th></tr></thead>
+      <thead><tr>{% sort_th sort "producto" _("Producto") %}{% sort_th sort "categoria" _("Categoría") %}{% if beers %}<th scope="col">{{ kind_label }} · {{ style_label }} · {{ abv_label }}</th>{% endif %}{% sort_th sort "precio" _("Precio") "num" %}{% sort_th sort "publicacion" _("Publicación") %}{% sort_th sort "disponibilidad" _("Disponibilidad") %}<th scope="col">{% translate "Acciones" %}</th></tr></thead>
       <tbody>
         {% for product in page %}
           <tr>

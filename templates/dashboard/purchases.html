@@ -1,5 +1,5 @@
 {% extends "dashboard/_layout.html" %}
-{% load i18n %}
+{% load i18n %}{% load dashboard_sort %}
 {% block title %}{% translate "Compras" %} · Dashboard{% endblock %}
 {% block heading %}{% translate "Compras registradas" %}{% endblock %}
 {% block body %}
@@ -28,7 +28,7 @@
 {% if page.object_list %}
   <div class="table-wrap">
     <table class="data-table" data-purchase-list>
-      <thead><tr><th scope="col">{% translate "Fecha" %}</th><th scope="col">{% translate "Cliente" %}</th><th scope="col" class="num">{% translate "Importe" %}</th><th scope="col" class="num">{% translate "Puntos" %}</th><th scope="col">{% translate "Registrada por" %}</th><th scope="col">{% translate "Estado" %}</th></tr></thead>
+      <thead><tr>{% sort_th sort "fecha" _("Fecha") %}{% sort_th sort "cliente" _("Cliente") %}{% sort_th sort "importe" _("Importe") "num" %}{% sort_th sort "puntos" _("Puntos") "num" %}{% sort_th sort "registrada" _("Registrada por") %}{% sort_th sort "estado" _("Estado") %}</tr></thead>
       <tbody>
         {% for p in page %}
           <tr>
