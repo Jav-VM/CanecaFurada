@@ -95,7 +95,7 @@ Igual que en las Fases 20–21:
 - **Pie:** la dirección de «Visítanos» enlaza a la misma ficha (opción `map_link` de `components/business_info.html`, que solo activa ese enlace). «El local» de Inicio no cambia.
 - **Traducciones:** «Teléfono» ya estaba en el catálogo; se ha movido a la posición que le corresponde ahora que `business_info.html` lo usa. «E-mail» se ha añadido (traducción: «E-mail»). Las dos cosas se han hecho a mano en `locale/gl` y `locale/es`, en el orden que genera `makemessages`, porque GNU gettext no está instalado en este equipo. **Pendiente:** ejecutar `python scripts/i18n.py check` donde haya gettext (lo hace el CI).
 - **Tests:** 7 nuevos en `tests/web/test_public_pages.py` (`test_contact_sections_are_side_by_side`, `test_contact_local_has_a_line_between_title_and_content`, `test_contact_local_labels_phone_and_email`, `test_contact_local_email_only_has_no_phone_line`, `test_contact_local_highlighted_days_and_larger_titles`, `test_contact_local_address_links_to_google_maps`, `test_contact_local_without_address_has_no_map_link`). `python manage.py test --settings=config.settings.test --noinput` → **1080 tests OK**.
-- **Pendiente:** revisión visual de `/contacto/`.
+- **Revisión:** hecha en el navegador por el usuario (Fase 23).
 - Lo escrito por el propietario no se traduce (Fase 15).
 - Los botones (Canjear, Solicitar reserva, Entrar…) no se editan.
 
@@ -106,4 +106,4 @@ Igual que en las Fases 20–21:
 - **Traducciones:** se ha quitado a mano la cadena «Ver la carta de grifos en texto» de `locale/gl` y `locale/es`, porque ya no se usa y `makemessages --no-obsolete` la eliminaría. **Pendiente:** `python scripts/i18n.py check` donde haya gettext (lo hace el CI).
 - `docs/fase-04-carta.md` actualizado.
 - **Tests:** 2 nuevos en `tests/web/test_menu_page.py` (`test_tap_menu_text_is_shown_directly`, `test_tap_menu_without_text_has_no_caption`). `python manage.py test --settings=config.settings.test --noinput` → **1082 tests OK**.
-- **Pendiente:** revisión visual de `/carta/`.
+- **Revisión:** hecha en el navegador por el usuario (Fase 23).

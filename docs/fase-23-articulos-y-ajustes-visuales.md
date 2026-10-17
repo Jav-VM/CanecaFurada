@@ -1,6 +1,6 @@
 # Fase 23 — Artículos en Inicio y Eventos, y ajustes visuales
 
-**Estado:** En curso (2026-10-17). Código y tests hechos; falta la revisión visual en el navegador y la comprobación de traducciones con gettext (ver §7).
+**Estado:** Completa (2026-10-17). Código, tests y CI en verde (commits `4fb5def` y `c57021d`); revisada en el navegador por el usuario.
 
 ## 1. Objetivo y alcance
 
@@ -28,11 +28,11 @@
 | «Nuevo artículo» lista solo los artículos de las otras páginas | Completa (tests) |
 | «Copiar aquí» crea una copia independiente, con ficheros de imagen propios, al final de la página | Completa (tests) |
 | Copiar: solo el propietario, solo POST, origen válido de otra página (si no, error sin cambios) | Completa (tests) |
-| El QR de un canje es un QR normal (no Micro QR) y lo lee la cámara del panel | Completa (tests); comprobación con cámara pendiente |
+| El QR de un canje es un QR normal (no Micro QR) y lo lee la cámara del panel | Completa (tests y comprobación con cámara) |
 | Un doble envío de «Copiar aquí» crea una sola copia | Completa (tests) |
 | La URL de Google Maps se edita en Contenido y solo admite enlaces de Google Maps | Completa (tests) |
 | Sintaxis del JavaScript propio comprobada (local y CI) | Completa (local; el CI la repite) |
-| Revisión visual en navegador | Pendiente |
+| Revisión visual en navegador | Completa (revisada en el navegador por el usuario el 2026-10-17) |
 
 ## 3. Decisiones técnicas
 
@@ -100,7 +100,7 @@ Get-ChildItem static/js/*.js | ForEach-Object { node --check $_.FullName }
 | `python manage.py test --settings=config.settings.test --noinput` | **1108 tests OK** (SQLite) |
 | `python manage.py spectacular --validate --fail-on-warn` + comparación con `docs/api/openapi.yaml` | Idéntico |
 | `node --check` del JavaScript propio | Sin errores en `app.js` y `qr-scanner.js` (Node 24.20.0) |
-| `python scripts/i18n.py check` | **No ejecutado**: GNU gettext no está instalado en este equipo. Las entradas de los `.po` se han editado a mano siguiendo el orden de `makemessages`; lo comprobará el CI |
+| `python scripts/i18n.py check` | Al día y completas: en el CI de `4fb5def` y `c57021d` (en verde) y en local tras instalar gettext (Fase 24) |
 
 Tests nuevos (`ArticlesOnMorePagesTests`, 10): artículos con carrusel en Inicio y Eventos, sin contenedores anidados en Eventos, figura con una imagen, editar y eliminar con borrado de ficheros, 404 en páginas sin artículos, no borrar desde la URL de otra página, solo el propietario, secciones fijas de Inicio/Eventos sin imágenes, botón en Contenido solo en las tres páginas y restricción de BD. Adaptados los de la Fase 21 a las rutas con página.
 
@@ -110,11 +110,8 @@ Tests de la copia (`CopyArticleTests`, 6): la lista solo muestra artículos de o
 
 ## 8. Limitaciones y pendientes
 
-- **Revisión manual en el navegador** (el JavaScript no tiene tests de comportamiento, solo de sintaxis):
-  - Panel → Validar canje → «Abrir la cámara» → leer el QR de un canje desde el móvil del cliente; y lo mismo con el QR personal en Registrar compra.
-  - Carrusel: flechas, paso en bucle, ← / → con el foco en la galería, deslizar en móvil, sin JavaScript (se pasa deslizando), imagen en otra pestaña.
-  - Artículos en Inicio y Eventos, «Copiar aquí» (también con doble clic), y los ajustes de Contacto y Carta.
-  - Contenido → «Enlace a Google Maps»: guardar uno válido, uno de otra web (debe dar error) y vacío.
-- **Traducciones:** ejecutar `python scripts/i18n.py check` y `compile` donde haya gettext.
+- **Revisión en el navegador:** hecha por el usuario (QR de canje con la cámara, carrusel, artículos en Inicio y Eventos, «Copiar aquí», Contacto, Carta y la URL de Maps).
+- **Traducciones:** comprobadas con gettext en local y en el CI.
+- El JavaScript solo tiene comprobación de sintaxis (`node --check`), no tests de comportamiento en navegador.
 - Los artículos de Inicio usan el mismo diseño que en La cervecería; si se quiere otro estilo para el inicio, sería un cambio aparte.
-- **Siguiente paso:** revisión manual, `migrate` en la base local y commit de la fase. Después, **Fase 24**: crear y editar productos, categorías, estilos, carta de grifos, recompensas y promociones desde el dashboard (sin el admin), con el enlace al admin en Configuración.
+- **Siguiente fase:** [Fase 24](fase-24-dashboard-sin-admin.md) (crear y editar en el dashboard sin pasar por el admin).

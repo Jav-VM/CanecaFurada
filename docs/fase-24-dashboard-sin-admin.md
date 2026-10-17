@@ -1,6 +1,6 @@
 # Fase 24 — Crear y editar en el dashboard sin pasar por el admin
 
-**Estado:** En curso (2026-10-17). Código, traducciones y tests hechos; falta la revisión manual en el navegador (§8).
+**Estado:** Completa (2026-10-17). Código, traducciones, tests y CI en verde (commits `ffb60d8` y `416a833`); revisada en el navegador por el usuario.
 
 ## 1. Objetivo y alcance
 
@@ -30,7 +30,7 @@ En el dashboard del propietario, crear o editar productos, categorías, estilos 
 | Solo el propietario (empleado y cliente 403, anónimo al login, inexistente 404) | Completa (tests) |
 | Auditoría sin textos | Completa (tests) |
 | Traducciones al gallego al día y completas | Completa (`scripts/i18n.py check`) |
-| Revisión manual en navegador | Pendiente |
+| Revisión manual en navegador | Completa (revisada en el navegador por el usuario el 2026-10-17) |
 
 ## 3. Decisiones técnicas
 
@@ -96,11 +96,11 @@ Antes de usarlo en una base que ya existe: `python manage.py migrate` (aplica `c
 
 ## 8. Limitaciones y pendientes
 
-- **Revisión manual:** crear y editar cada ficha desde el dashboard sin llegar a `/admin/`, con y sin imagen, y comprobar los mensajes de error.
+- **Revisión manual:** hecha por el usuario (fichas del dashboard, Empleados y Promociones, enviar una campaña ya creada, eliminar y reactivar campañas).
 - Borrar categorías y estilos sigue en la administración avanzada (decisión de la fase).
 - Al sustituir una imagen, el fichero anterior se queda en `media/`, como ya pasaba con el admin.
 - La creación de empleados ya estaba en el dashboard (Fase 9); alguna guía antigua del README todavía lo describe en el admin.
-- **Siguiente paso:** revisión manual, `migrate` y commit de la fase.
+- **Siguiente paso propuesto:** una fase de conservación de datos (plazos y anonimización de cuentas; ver §11).
 
 ## 9. Ajuste posterior: Empleados y Promociones sin scroll horizontal (2026-10-17)
 
@@ -108,7 +108,7 @@ Antes de usarlo en una base que ya existe: `python manage.py migrate` (aplica `c
 - **Cambio:** sus tablas usan `.data-table-fit` (el mismo patrón que Eventos, Carta y Cervezas). Desde `xl` (80rem) son tablas compactas; por debajo, una tarjeta por fila con la etiqueta de cada dato (`data-label`), el nombre como título (`cell-title`) y las acciones al final (`cell-buttons` / `cell-actions`). Plantillas: `templates/dashboard/employees.html` y `promotions.html`; en `assets/css/input.css` solo cambia el comentario (sin clases nuevas, `app.css` igual).
 - Sin textos nuevos que traducir: las etiquetas son las de las cabeceras.
 - **Tests:** `FitTablesTests` en `tests/dashboard/test_phase24_forms.py` (las dos tablas usan `data-table-fit` y todas sus celdas llevan etiqueta).
-- **Pendiente:** revisar las dos páginas en el navegador a varios anchos (móvil, portátil, escritorio).
+- **Revisión:** hecha en el navegador a varios anchos.
 
 ## 10. Ajuste posterior: enviar una campaña ya creada a los clientes seleccionados (2026-10-17)
 
@@ -126,7 +126,7 @@ Antes de usarlo en una base que ya existe: `python manage.py migrate` (aplica `c
 - **Plantilla** `campaign_form.html`: bloque «Enviar una campaña ya creada» (las 20 más recientes, con canal, estado y puntos) y, debajo, «O crea una campaña nueva para ellos».
 - **Traducciones:** 11 entradas nuevas (con plurales), generadas con `scripts/i18n.py make`; `check` al día y completas.
 - **Tests:** `SendExistingCampaignTests` en `tests/notifications/test_campaign_selection.py` (6): lista y destinatarios fijos; formulario siempre `SELECTED`; copia programada con los mismos datos, imagen propia y la original intacta; reparto (mensaje con consentimiento, puntos a todos los seleccionados); misma clave = una copia; rechazos sin cambios (sin selección, UUID no válido, campaña inexistente, SMS sin proveedor); solo propietario y solo POST. Suite completa: **1137 tests OK**.
-- **Pendiente:** probarlo en el navegador y repartir con `python manage.py process_notifications`.
+- **Revisión:** probado en el navegador y repartido con `python manage.py process_notifications`.
 
 ## 11. Ajuste posterior: «Eliminar» campañas y Comunicaciones sin scroll lateral (2026-10-17)
 
