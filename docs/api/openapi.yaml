@@ -2597,9 +2597,9 @@ components:
       - UNDISCLOSED
       type: string
       description: |-
-        * `MALE` - Hombre
-        * `FEMALE` - Mujer
-        * `UNDISCLOSED` - Prefiero no decirlo
+        * `MALE` - Home
+        * `FEMALE` - Muller
+        * `UNDISCLOSED` - Prefiro non dicilo
     SourceEnum:
       enum:
       - MANUAL

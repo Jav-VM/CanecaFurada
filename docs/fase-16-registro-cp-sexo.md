@@ -98,6 +98,8 @@ Ejemplos para la app: [guia-app-flutter.md](guia-app-flutter.md#3-registro-y-ver
 | `python scripts/tailwind.py build` | OK |
 | Página de registro en gallego (cliente de pruebas con `config.settings.dev`) | Textos nuevos en gallego; sin campos de calle ni provincia; `/cuenta/localidades/?cp=15179` → `["Oleiros"]` |
 
+**Nota sobre el esquema OpenAPI:** las etiquetas de los `choices` (p. ej. `SexEnum`) salen en el idioma por defecto (gallego), así que `docs/api/openapi.yaml` se regenera **después** de `python scripts/i18n.py compile`. La primera versión de esta fase se generó antes de compilar, con las etiquetas de sexo en castellano, y el CI falló en «Esquema OpenAPI … igual a docs/api/openapi.yaml» hasta que se regeneró.
+
 **Pendiente:** la revisión visual en el navegador (desplegable de localidad con y sin JS, aviso de edad, botones de sexo en móvil) y aplicar la migración en el VPS al desplegar.
 
 ## 10. Limitaciones, riesgos y pendientes
