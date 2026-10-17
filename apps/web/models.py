@@ -123,9 +123,10 @@ def page_image_path(instance, filename):
 
 class PageBlock(models.Model):
     """
-    Textos propios de una sección de Inicio o La cervecería, o un artículo de La
-    cervecería. Un campo vacío deja el texto por defecto (traducido) de la
-    sección. Lo que escribe el propietario no se traduce (Fase 15).
+    Textos propios de una sección de una página, o un artículo de Inicio, La
+    cervecería o Eventos (`layout.ARTICLE_PAGES`). Un campo vacío deja el texto
+    por defecto (traducido) de la sección. Lo que escribe el propietario no se
+    traduce (Fase 15).
     """
 
     class Page(models.TextChoices):
@@ -161,7 +162,8 @@ class PageBlock(models.Model):
                 name="web_pageblock_page_valid",
             ),
             models.CheckConstraint(
-                condition=Q(is_article=False) | (Q(page="cerveceria") & ~Q(title="")),
+                # Artículos: solo en `layout.ARTICLE_PAGES` y siempre con título (Fase 23).
+                condition=Q(is_article=False) | (Q(page__in=["inicio", "cerveceria", "eventos"]) & ~Q(title="")),
                 name="web_pageblock_article_shape",
             ),
         ]

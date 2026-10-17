@@ -340,7 +340,7 @@ class PageBlockForm(forms.Form):
         label=_("Añadir imágenes"),
         required=False,
         validators=[validate_image_extension, validate_image_file],
-        help_text=_("JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más forman una galería bajo el texto."),
+        help_text=_("JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más, en un carrusel en su lugar."),
     )
 
     def __init__(self, *args, defaults=("", "", None), images=True, article=False, **kwargs):

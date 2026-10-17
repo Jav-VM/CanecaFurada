@@ -123,6 +123,33 @@
     update();
   });
 
+  // Galerías en carrusel (A cervexaría): una imagen a la vez; las flechas pasan a la
+  // anterior o la siguiente, en bucle, y también ← / → con el foco en la galería.
+  // Sin JS las flechas no se ven y se pasa deslizando (scroll-snap).
+  document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
+    var track = carousel.querySelector("[data-carousel-track]");
+    var prev = carousel.querySelector("[data-carousel-prev]");
+    var next = carousel.querySelector("[data-carousel-next]");
+    var total = track ? track.children.length : 0;
+    if (!prev || !next || total < 2) return;
+    var smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function current() { return Math.round(track.scrollLeft / track.clientWidth); }
+    function go(step) {
+      var index = (current() + step + total) % total;
+      track.scrollTo({ left: index * track.clientWidth, behavior: smooth ? "smooth" : "auto" });
+    }
+    prev.hidden = false;
+    next.hidden = false;
+    prev.addEventListener("click", function () { go(-1); });
+    next.addEventListener("click", function () { go(1); });
+    track.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        go(event.key === "ArrowLeft" ? -1 : 1);
+      }
+    });
+  });
+
   // Localidad según el código postal (España): desplegable con las del CP,
   // marcada sola si solo hay una; sin datos, texto libre. Sin JS el servidor
   // valida igual y pinta el desplegable tras un envío con errores.

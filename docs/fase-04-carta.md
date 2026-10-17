@@ -80,7 +80,7 @@ Entra en el admin (`/<DJANGO_ADMIN_URL>`, por defecto `/admin/`) con tu cuenta d
    - **Disponible ahora:** desmárcalo cuando se agote. Seguirá en la carta como "Agotada".
    - **Destacada en el inicio:** para que aparezca en "Nuestras cervezas" de la página principal (solo cervezas publicadas y disponibles).
 4. **Acciones rápidas en la lista de productos:** selecciona uno o varios y elige *Publicar*, *Pasar a borrador (ocultar)*, *Archivar*, *Marcar como agotado* o *Marcar como disponible*. Los filtros de la derecha muestran, por ejemplo, solo los archivados o solo los agotados.
-5. **Cartas de grifos → Añadir:** sube la foto o imagen de la carta de grifos y marca *Publicada*. Se recomienda escribir también la *versión en texto* (las cervezas de la imagen), que la web ofrece en "Ver la carta de grifos en texto" para quien usa lector de pantalla. Cuando la cambies, sube una nueva y publícala: se mostrará la más reciente. Desmarca *Publicada* en las antiguas si no quieres que vuelvan a salir.
+5. **Cartas de grifos → Añadir:** sube la foto o imagen de la carta de grifos y marca *Publicada*. Se recomienda escribir también la *versión en texto* (las cervezas de la imagen), que la web muestra debajo de la imagen, útil para quien usa lector de pantalla. Cuando la cambies, sube una nueva y publícala: se mostrará la más reciente. Desmarca *Publicada* en las antiguas si no quieres que vuelvan a salir.
 
 **No se puede borrar nada desde el admin.** Para retirar un producto, archívalo; para ocultar una categoría, desmarca *Publicada*. Así se conserva el historial (y, en fases posteriores, las compras y estadísticas que hagan referencia a ellos).
 

@@ -1821,8 +1821,8 @@ msgstr "Texto plano: deixa unha liña en branco entre parágrafos. Amósase tal 
 msgid "Añadir imágenes"
 msgstr "Engadir imaxes"
 
-msgid "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más forman una galería bajo el texto."
-msgstr "JPEG, PNG ou WebP. Unha imaxe amósase xunto ao texto; dúas ou máis forman unha galería baixo o texto."
+msgid "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más, en un carrusel en su lugar."
+msgstr "JPEG, PNG ou WebP. Unha imaxe amósase xunto ao texto; dúas ou máis, nun carrusel no seu lugar."
 
 msgid "Dirección pública del local"
 msgstr "Enderezo público do local"
@@ -2057,6 +2057,12 @@ msgstr "Non había cambios que gardar."
 
 msgid "Contenido de la sección guardado."
 msgstr "Contido da sección gardado."
+
+msgid "No se ha podido copiar el artículo: elige uno de la lista."
+msgstr "Non se puido copiar o artigo: escolle un da lista."
+
+msgid "Artículo copiado. Revisa los textos y las imágenes y guarda si cambias algo."
+msgstr "Artigo copiado. Revisa os textos e as imaxes e garda se cambias algo."
 
 msgid "Artículo eliminado."
 msgstr "Artigo eliminado."
@@ -3685,6 +3691,12 @@ msgstr "enderezo pendente de publicar"
 msgid "Pendiente de publicar"
 msgstr "Pendente de publicar"
 
+msgid "Teléfono"
+msgstr "Teléfono"
+
+msgid "E-mail"
+msgstr "E-mail"
+
 msgid "Redes"
 msgstr "Redes"
 
@@ -3769,9 +3781,6 @@ msgstr "%(title)s: cervexas que hai agora nas billas"
 
 msgid "(versión en texto a continuación)"
 msgstr "(versión en texto a continuación)"
-
-msgid "Ver la carta de grifos en texto"
-msgstr "Ver a carta de billas en texto"
 
 msgid "La carta de grifos se publicará aquí"
 msgstr "A carta de billas publicarase aquí"
@@ -4036,9 +4045,6 @@ msgstr "Sen enderezo no perfil"
 
 msgid "No indicado"
 msgstr "Non indicado"
-
-msgid "Teléfono"
-msgstr "Teléfono"
 
 msgid "No indicada"
 msgstr "Non indicada"
@@ -4763,6 +4769,25 @@ msgstr "Crear artigo"
 
 msgid "Guardar"
 msgstr "Gardar"
+
+msgid "Usar un artículo de otra página"
+msgstr "Usar un artigo doutra páxina"
+
+msgid "Se crea una copia en esta página, con sus textos e imágenes. Después cada artículo se edita y se elimina por separado."
+msgstr "Créase unha copia nesta páxina, cos seus textos e imaxes. Despois cada artigo edítase e elimínase por separado."
+
+#, python-format
+msgid "Imágenes: %(count)s"
+msgstr "Imaxes: %(count)s"
+
+msgid "Copiando…"
+msgstr "Copiando…"
+
+msgid "Copiar aquí"
+msgstr "Copiar aquí"
+
+msgid "No hay artículos en otras páginas."
+msgstr "Non hai artigos noutras páxinas."
 
 msgid "← Volver a Contenido"
 msgstr "← Volver a Contido"
@@ -5541,6 +5566,19 @@ msgstr "Como chegar"
 
 msgid "Galería de imágenes"
 msgstr "Galería de imaxes"
+
+msgid "carrusel"
+msgstr "carrusel"
+
+#, python-format
+msgid "Imagen %(number)s de %(total)s"
+msgstr "Imaxe %(number)s de %(total)s"
+
+msgid "Imagen anterior"
+msgstr "Imaxe anterior"
+
+msgid "Imagen siguiente"
+msgstr "Imaxe seguinte"
 
 msgid "historia de la cervecería y del local"
 msgstr "historia da cervexaría e do local"

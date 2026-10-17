@@ -1821,8 +1821,8 @@ msgstr "Texto plano: deja una línea en blanco entre párrafos. Se muestra tal c
 msgid "Añadir imágenes"
 msgstr "Añadir imágenes"
 
-msgid "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más forman una galería bajo el texto."
-msgstr "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más forman una galería bajo el texto."
+msgid "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más, en un carrusel en su lugar."
+msgstr "JPEG, PNG o WebP. Una imagen se muestra junto al texto; dos o más, en un carrusel en su lugar."
 
 msgid "Dirección pública del local"
 msgstr "Dirección pública del local"
@@ -2057,6 +2057,12 @@ msgstr "No había cambios que guardar."
 
 msgid "Contenido de la sección guardado."
 msgstr "Contenido de la sección guardado."
+
+msgid "No se ha podido copiar el artículo: elige uno de la lista."
+msgstr "No se ha podido copiar el artículo: elige uno de la lista."
+
+msgid "Artículo copiado. Revisa los textos y las imágenes y guarda si cambias algo."
+msgstr "Artículo copiado. Revisa los textos y las imágenes y guarda si cambias algo."
 
 msgid "Artículo eliminado."
 msgstr "Artículo eliminado."
@@ -3685,6 +3691,12 @@ msgstr "dirección pendiente de publicar"
 msgid "Pendiente de publicar"
 msgstr "Pendiente de publicar"
 
+msgid "Teléfono"
+msgstr "Teléfono"
+
+msgid "E-mail"
+msgstr "E-mail"
+
 msgid "Redes"
 msgstr "Redes"
 
@@ -3769,9 +3781,6 @@ msgstr "%(title)s: cervezas que hay ahora en los grifos"
 
 msgid "(versión en texto a continuación)"
 msgstr "(versión en texto a continuación)"
-
-msgid "Ver la carta de grifos en texto"
-msgstr "Ver la carta de grifos en texto"
 
 msgid "La carta de grifos se publicará aquí"
 msgstr "La carta de grifos se publicará aquí"
@@ -4036,9 +4045,6 @@ msgstr "Sin dirección en el perfil"
 
 msgid "No indicado"
 msgstr "No indicado"
-
-msgid "Teléfono"
-msgstr "Teléfono"
 
 msgid "No indicada"
 msgstr "No indicada"
@@ -4763,6 +4769,25 @@ msgstr "Crear artículo"
 
 msgid "Guardar"
 msgstr "Guardar"
+
+msgid "Usar un artículo de otra página"
+msgstr "Usar un artículo de otra página"
+
+msgid "Se crea una copia en esta página, con sus textos e imágenes. Después cada artículo se edita y se elimina por separado."
+msgstr "Se crea una copia en esta página, con sus textos e imágenes. Después cada artículo se edita y se elimina por separado."
+
+#, python-format
+msgid "Imágenes: %(count)s"
+msgstr "Imágenes: %(count)s"
+
+msgid "Copiando…"
+msgstr "Copiando…"
+
+msgid "Copiar aquí"
+msgstr "Copiar aquí"
+
+msgid "No hay artículos en otras páginas."
+msgstr "No hay artículos en otras páginas."
 
 msgid "← Volver a Contenido"
 msgstr "← Volver a Contenido"
@@ -5541,6 +5566,19 @@ msgstr "Cómo llegar"
 
 msgid "Galería de imágenes"
 msgstr "Galería de imágenes"
+
+msgid "carrusel"
+msgstr "carrusel"
+
+#, python-format
+msgid "Imagen %(number)s de %(total)s"
+msgstr "Imagen %(number)s de %(total)s"
+
+msgid "Imagen anterior"
+msgstr "Imagen anterior"
+
+msgid "Imagen siguiente"
+msgstr "Imagen siguiente"
 
 msgid "historia de la cervecería y del local"
 msgstr "historia de la cervecería y del local"

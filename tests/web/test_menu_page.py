@@ -75,6 +75,20 @@ class MenuPageTests(TempMediaMixin, TestCase):
         self.assertContains(response, "Grifo 1: Rubia Ficticia")
         self.assertContains(response, 'width="8" height="8"')
 
+    def test_tap_menu_text_is_shown_directly(self):
+        TapMenu.objects.create(
+            image=uploaded_image(), text_alternative="Grifo 1: Rubia Ficticia\n<b>Grifo 2</b>", is_published=True
+        )
+        response = self.get()
+        # Sin desplegable: el texto del propietario se ve debajo de la imagen, escapado.
+        self.assertContains(response, '<p class="text-sm text-mist" data-tap-menu-text>Grifo 1: Rubia Ficticia<br>&lt;b&gt;Grifo 2&lt;/b&gt;</p>')
+        self.assertNotContains(response, "<details")
+        self.assertNotContains(response, "Ver la carta de grifos en texto")
+
+    def test_tap_menu_without_text_has_no_caption(self):
+        TapMenu.objects.create(image=uploaded_image(), text_alternative="", is_published=True)
+        self.assertNotContains(self.get(), "data-tap-menu-text")
+
     def test_unpublished_tap_menu_is_not_shown(self):
         tap_menu = TapMenu.objects.create(image=uploaded_image(), is_published=False)
         response = self.get()

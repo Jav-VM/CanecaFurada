@@ -196,6 +196,12 @@
 
   .sr-only-focusable:not(:focus) { @apply sr-only; }
 
+  /* Galería en carrusel de A cervexaría: sin barra de scroll y flechas sobre un círculo oscuro translúcido */
+  .carousel-track { scrollbar-width: none; }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .carousel-arrow { @apply absolute top-1/2 flex size-14 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-0 bg-ink/45 p-0 text-paper ring-1 ring-paper/20 backdrop-blur-sm drop-shadow-[0_1px_3px_rgb(0_0_0/0.9)] transition-colors hover:bg-ink/70 hover:text-gold; }
+  .carousel-arrow[hidden] { display: none; }
+
   /* Selector de idioma (Fase 15): banderas tamaño icono; la activa, con borde dorado */
   .flag-btn { @apply block cursor-pointer rounded-sm opacity-60 ring-1 ring-line transition-opacity hover:opacity-100 focus-visible:opacity-100; }
   .flag-btn > svg { @apply rounded-[2px]; }

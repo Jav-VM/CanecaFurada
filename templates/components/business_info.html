@@ -2,28 +2,35 @@
 {% comment %}
 Datos del local (apps/web/content.py). Lo que falta se marca como pendiente;
 nunca se muestran valores inventados. `hide_hours`: sin el horario (el pie lo
-muestra en su propia columna).
+muestra en su propia columna). `spaced` (Contacto): títulos un poco más
+grandes, una línea de espacio entre cada título y su contenido, días del
+horario resaltados y, en «Contacto», «Teléfono: …» y debajo «E-mail: …». La
+dirección enlaza a la ficha del local en Google Maps (`BUSINESS["maps_url"]`).
+`map_link` (pie): solo ese enlace de la dirección, sin el resto de `spaced`.
 {% endcomment %}
 <dl class="space-y-4 text-sm">
   <div>
-    <dt class="font-semibold text-paper">{% translate "Dirección" %}</dt>
-    <dd class="text-mist">{% if business.address %}{{ business.address }}{% else %}{{ business.city }} · <span class="italic">{% translate "dirección pendiente de publicar" %}</span>{% endif %}</dd>
+    <dt class="font-semibold text-paper{% if spaced %} text-base{% endif %}">{% translate "Dirección" %}</dt>
+    <dd class="text-mist{% if spaced %} mt-5{% endif %}">{% if spaced and business.address and business.maps_url or map_link and business.address and business.maps_url %}<a class="link" href="{{ business.maps_url }}" rel="noopener noreferrer" data-contact-map>{{ business.address }}</a>{% elif business.address %}{{ business.address }}{% else %}{{ business.city }} · <span class="italic">{% translate "dirección pendiente de publicar" %}</span>{% endif %}</dd>
   </div>
   {% if not hide_hours %}
   <div>
-    <dt class="font-semibold text-paper">{% translate "Horario" %}</dt>
-    <dd class="text-mist">
+    <dt class="font-semibold text-paper{% if spaced %} text-base{% endif %}">{% translate "Horario" %}</dt>
+    <dd class="text-mist{% if spaced %} mt-5{% endif %}">
       {% if business.opening_hours %}
-        <ul>{% for days, hours in business.opening_hours %}<li>{{ days }}: {{ hours }}</li>{% endfor %}</ul>
+        <ul>{% for days, hours in business.opening_hours %}<li>{% if spaced %}<span class="text-paper">{{ days }}</span>{% else %}{{ days }}{% endif %}: {{ hours }}</li>{% endfor %}</ul>
       {% else %}<span class="italic">{% translate "Pendiente de publicar" %}</span>{% endif %}
     </dd>
   </div>
   {% endif %}
   {% if not compact or business.email or business.phone %}
   <div>
-    <dt class="font-semibold text-paper">{% translate "Contacto" %}</dt>
-    <dd class="text-mist">
-      {% if business.email or business.phone %}
+    <dt class="font-semibold text-paper{% if spaced %} text-base{% endif %}">{% translate "Contacto" %}</dt>
+    <dd class="text-mist{% if spaced %} mt-5{% endif %}">
+      {% if spaced and business.email or spaced and business.phone %}
+        {% if business.phone %}<p data-contact-phone><span class="text-paper">{% translate "Teléfono" %}:</span> <a class="link" href="tel:{{ business.phone }}">{{ business.phone }}</a></p>{% endif %}
+        {% if business.email %}<p data-contact-email><span class="text-paper">{% translate "E-mail" %}:</span> <a class="link" href="mailto:{{ business.email }}">{{ business.email }}</a></p>{% endif %}
+      {% elif business.email or business.phone %}
         {% if business.email %}<a class="link" href="mailto:{{ business.email }}">{{ business.email }}</a><br>{% endif %}
         {% if business.phone %}<a class="link" href="tel:{{ business.phone }}">{{ business.phone }}</a>{% endif %}
       {% else %}<span class="italic">{% translate "Pendiente de publicar" %}</span>{% endif %}
@@ -32,8 +39,8 @@ muestra en su propia columna).
   {% endif %}
   {% if business.social_links %}
   <div>
-    <dt class="font-semibold text-paper">{% translate "Redes" %}</dt>
-    <dd><ul class="flex flex-wrap gap-3">{% for name, url in business.social_links %}<li><a class="link" href="{{ url }}" rel="noopener noreferrer">{{ name }}</a></li>{% endfor %}</ul></dd>
+    <dt class="font-semibold text-paper{% if spaced %} text-base{% endif %}">{% translate "Redes" %}</dt>
+    <dd{% if spaced %} class="mt-5"{% endif %}><ul class="flex flex-wrap gap-3">{% for name, url in business.social_links %}<li><a class="link" href="{{ url }}" rel="noopener noreferrer">{{ name }}</a></li>{% endfor %}</ul></dd>
   </div>
   {% endif %}
 </dl>

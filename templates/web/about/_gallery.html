@@ -1,7 +1,17 @@
 {% load i18n %}{% if section.gallery %}
-<ul class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3" aria-label="{% translate 'Galería de imágenes' %}" data-gallery>
-  {% for image in section.gallery %}
-    <li><a href="{{ image.image.url }}" class="block overflow-hidden rounded-xl"><img src="{{ image.image.url }}" alt="{{ image.alt }}"{% if image.width %} width="{{ image.width }}" height="{{ image.height }}"{% endif %} loading="lazy" class="aspect-square h-full w-full object-cover transition hover:scale-105"></a></li>
-  {% endfor %}
-</ul>
+{% comment %}
+Galería en carrusel: una imagen a la vez, con el tamaño y la proporción de una
+imagen sola (_figure.html) y en su mismo sitio, junto al texto. Sin JS se
+pasa deslizando (scroll-snap); con JS aparecen las flechas (static/js/app.js).
+Cada imagen se abre a tamaño completo en otra pestaña.
+{% endcomment %}
+<div class="relative mx-auto w-full max-w-md" role="region" aria-label="{% translate 'Galería de imágenes' %}" aria-roledescription="{% translate 'carrusel' %}" data-gallery data-carousel>
+  <ul class="carousel-track flex snap-x snap-mandatory overflow-x-auto" tabindex="0" data-carousel-track>
+    {% for image in section.gallery %}
+      <li class="flex w-full shrink-0 snap-center items-center justify-center" aria-label="{% blocktranslate with number=forloop.counter total=section.gallery|length %}Imagen {{ number }} de {{ total }}{% endblocktranslate %}"><a href="{{ image.image.url }}" class="block w-full" target="_blank" rel="noopener noreferrer"><img src="{{ image.image.url }}" alt="{{ image.alt }}"{% if image.width %} width="{{ image.width }}" height="{{ image.height }}"{% endif %} loading="lazy" class="h-auto w-full rounded-xl object-cover"></a></li>
+    {% endfor %}
+  </ul>
+  <button type="button" class="carousel-arrow left-2" aria-label="{% translate 'Imagen anterior' %}" hidden data-carousel-prev><svg viewBox="0 0 24 24" class="size-10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button type="button" class="carousel-arrow right-2" aria-label="{% translate 'Imagen siguiente' %}" hidden data-carousel-next><svg viewBox="0 0 24 24" class="size-10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
 {% endif %}

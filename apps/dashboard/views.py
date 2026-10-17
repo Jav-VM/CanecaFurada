@@ -1208,9 +1208,9 @@ def _content_form():
 
 
 def _layouts():
-    """Bloques de «Orden de las secciones» (Fase 20): (página, título, filas)."""
+    """Bloques de «Orden de las secciones» (Fase 20): (página, título, filas, ¿admite artículos?)."""
     return [
-        (page, title, web_layout.rows(web.page_layout(page), web.sections_for(page)))
+        (page, title, web_layout.rows(web.page_layout(page), web.sections_for(page)), page in web_layout.ARTICLE_PAGES)
         for page, (_field, _sections, title) in web_layout.PAGES.items()
     ]
 
@@ -1230,27 +1230,27 @@ def _image_changes(request, block):
     return remove, alts
 
 
-def _block_form_view(request, *, page, key, block, article):
-    allows_images = web_blocks.allows_images(page)
+def _block_form_view(request, *, page, key, block, article, bound=True, status=200):
+    """`bound=False`: formulario vacío aunque la petición sea POST (vuelta desde «Copiar aquí» con error)."""
+    allows_images = web_blocks.images_allowed(page, article)
     defaults = web_blocks.defaults(page, key) if key else ("", "", None)
     initial = {"eyebrow": block.eyebrow, "title": block.title, "body": block.body} if block else {}
     form = forms.PageBlockForm(
-        request.POST or None,
-        request.FILES or None,
+        (request.POST or None) if bound else None,
+        (request.FILES or None) if bound else None,
         initial=initial,
         defaults=defaults,
         images=allows_images,
         article=article,
     )
-    status = 200
-    if request.method == "POST":
+    if bound and request.method == "POST":
         if form.is_valid():
             data = form.cleaned_data
             remove, alts = _image_changes(request, block)
             new_images = data.get("images") or []
             try:
                 if block is None and article:
-                    web_blocks.create_article(actor=request.user, data=data, new_images=new_images, alts=alts)
+                    web_blocks.create_article(actor=request.user, page=page, data=data, new_images=new_images, alts=alts)
                 else:
                     web_blocks.save_block(
                         actor=request.user, page=page, key=key, data=data, new_images=new_images, remove=remove, alts=alts
@@ -1271,6 +1271,8 @@ def _block_form_view(request, *, page, key, block, article):
         "section_label": dict(web.sections_for(page)).get(key, "") if key else "",
         "uses_about_text": (page, key) in web_blocks.ABOUT_TEXT_SECTIONS,
         "max_images": web_blocks.PageBlock.MAX_IMAGES,
+        # «Nuevo artículo»: artículos de las otras páginas que se pueden copiar aquí (Fase 23).
+        "copy_sources": web_blocks.copyable_articles(page) if article and block is None else None,
     }
     return _render(request, "section_form.html", "contenido", context, status=status)
 
@@ -1288,21 +1290,42 @@ def section_edit(request, page, key):
 @never_cache
 @require_http_methods(["GET", "POST"])
 @owner_required
-def article_create(request):
-    return _block_form_view(request, page=web_layout.ABOUT, key="", block=None, article=True)
+def article_create(request, page):
+    if page not in web_layout.ARTICLE_PAGES:
+        raise Http404
+    return _block_form_view(request, page=page, key="", block=None, article=True)
+
+
+@never_cache
+@require_POST
+@owner_required
+def article_copy(request, page):
+    """Copia a `page` un artículo de otra página (Fase 23) y abre la copia para editarla."""
+    if page not in web_layout.ARTICLE_PAGES:
+        raise Http404
+    try:
+        source = uuid.UUID(request.POST.get("origen", ""))
+        block = web_blocks.copy_article(actor=request.user, page=page, source_public_id=source)
+    except (ValueError, ValidationError):
+        messages.error(request, _("No se ha podido copiar el artículo: elige uno de la lista."))
+        return _block_form_view(request, page=page, key="", block=None, article=True, bound=False, status=400)
+    messages.success(request, _("Artículo copiado. Revisa los textos y las imágenes y guarda si cambias algo."))
+    return redirect("dashboard:section_edit", page, block.key)
 
 
 @never_cache
 @require_http_methods(["GET", "POST"])
 @owner_required
-def article_delete(request, key):
-    block = web_blocks.get_block(web_layout.ABOUT, key)
+def article_delete(request, page, key):
+    if page not in web_layout.ARTICLE_PAGES:
+        raise Http404
+    block = web_blocks.get_block(page, key)
     if block is None or not block.is_article:
         raise Http404
     if request.method == "POST":
-        web_blocks.delete_article(actor=request.user, key=key)
+        web_blocks.delete_article(actor=request.user, page=page, key=key)
         messages.success(request, _("Artículo eliminado."))
-        return redirect(f"{reverse('dashboard:content')}#orden-{web_layout.ABOUT}")
+        return redirect(f"{reverse('dashboard:content')}#orden-{page}")
     return _render(request, "article_confirm_delete.html", "contenido", {"page_block": block})
 
 

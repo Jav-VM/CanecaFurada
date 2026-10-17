@@ -19,13 +19,13 @@
   <section aria-labelledby="orden-secciones" class="mt-16 border-t border-line pt-10" data-page-layouts>
     <h2 id="orden-secciones" class="heading-md mb-2">{% translate "Orden de las secciones" %}</h2>
     <p class="note mb-6">{% translate "Sube, baja u oculta las secciones de cada página y pulsa «Editar» para cambiar su contenido. El aviso destacado y la portada del inicio, y la cabecera de La cervecería, van siempre arriba. Al pulsar una flecha también se guardan las casillas «Mostrar»." %}</p>
-    {% for page, title, rows in layouts %}
+    {% for page, title, rows, accepts_articles in layouts %}
       <form method="post" action="{% url 'dashboard:content_layout' %}" id="orden-{{ page }}" class="card mb-6" data-layout="{{ page }}">
         {% csrf_token %}
         <input type="hidden" name="pagina" value="{{ page }}">
         <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h3 class="font-semibold uppercase tracking-wider">{{ title }}</h3>
-          {% if page == "cerveceria" %}<a class="btn btn-secondary btn-sm" href="{% url 'dashboard:article_create' %}" data-new-article>{% translate "Nuevo artículo" %}</a>{% endif %}
+          {% if accepts_articles %}<a class="btn btn-secondary btn-sm" href="{% url 'dashboard:article_create' page %}" data-new-article>{% translate "Nuevo artículo" %}</a>{% endif %}
         </div>
         <ol class="divide-y divide-line">
           {% for key, label, visible in rows %}

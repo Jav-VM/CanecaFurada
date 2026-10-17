@@ -91,12 +91,13 @@ def business_info():
 
 def sections_for(page):
     """
-    Lista blanca de secciones de `page`: las fijas y, en La cervecería, los
-    artículos que existan (Fase 21), como `(clave, etiqueta)`.
+    Lista blanca de secciones de `page`: las fijas y, en las páginas con
+    artículos (`layout.ARTICLE_PAGES`, Fases 21 y 23), los que existan, como
+    `(clave, etiqueta)`.
     """
     _field, sections, _label = layout.PAGES[page]
     sections = list(sections)
-    if page == layout.ABOUT:
+    if page in layout.ARTICLE_PAGES:
         articles = PageBlock.objects.filter(page=page, is_article=True).order_by("created_at", "id")
         sections.extend((article.key, article.title) for article in articles.only("key", "title"))
     return sections

@@ -1,12 +1,11 @@
 {% load i18n %}
-{# --- Artículo del propietario (Fase 21): título, texto e imágenes ------------------- #}
-<section aria-labelledby="{{ section.key }}-titulo" class="container-page border-t border-line py-20" data-article>
-  <div class="grid gap-12 {% if section.single_image %}lg:grid-cols-2 lg:items-center{% endif %}">
+{# --- Artículo del propietario (Fases 21 y 23): Inicio, La cervecería y Eventos. En Eventos las secciones ya van dentro de un container-page. --- #}
+<section aria-labelledby="{{ section.key }}-titulo" class="{% if section.page == 'eventos' %}border-t border-line pt-10{% else %}container-page border-t border-line py-20{% endif %}" data-article>
+  <div class="grid gap-12 {% if section.single_image or section.gallery %}lg:grid-cols-2 lg:items-center{% endif %}">
     <div class="prose-site">
       {% with heading_id=section.key|add:"-titulo" %}{% include "components/section_heading.html" with id=heading_id eyebrow=section.eyebrow title=section.title %}{% endwith %}
       {{ section.body|linebreaks }}
     </div>
-    {% if section.single_image %}{% include "web/about/_figure.html" with image=section.single_image %}{% endif %}
+    {% if section.single_image %}{% include "web/about/_figure.html" with image=section.single_image %}{% elif section.gallery %}{% include "web/about/_gallery.html" %}{% endif %}
   </div>
-  {% include "web/about/_gallery.html" %}
 </section>

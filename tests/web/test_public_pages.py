@@ -1,4 +1,5 @@
 """Páginas públicas, plantilla base, páginas de error y recursos del sistema de diseño."""
+import re
 from unittest import mock
 
 from django.contrib.staticfiles import finders
@@ -94,6 +95,78 @@ class PublicPagesTests(TestCase):
         self.assertRegex(hours, r"<li[^>]*><span[^>]*>Martes a domingo</span><span[^>]*>18:00–00:00</span></li>")
         # En Contacto el horario sigue dentro de los datos del local.
         self.assertContains(contact, "Martes a domingo", count=2)
+
+    def test_contact_sections_are_side_by_side(self):
+        html = self.client.get(reverse("web:contact")).content.decode()
+        self.assertRegex(html, r'<div class="grid items-start gap-6 md:grid-cols-2" data-contact-sections>')
+        grid = html[html.index("data-contact-sections"):]
+        self.assertLess(grid.index('aria-labelledby="datos-local"'), grid.index('aria-labelledby="contacto-cuenta"'))
+
+    def test_contact_local_has_a_line_between_title_and_content(self):
+        business = {"social_links": (("Instagram", "https://example.com/ig"),)}
+        with mock.patch.dict("apps.web.content.BUSINESS", business):
+            contact = self.client.get(reverse("web:contact")).content.decode()
+            home = self.client.get(reverse("web:home")).content.decode()
+        section = contact[contact.index('aria-labelledby="datos-local"'):contact.index('aria-labelledby="contacto-cuenta"')]
+        # Dirección, Horario, Contacto y Redes: todos con el espacio.
+        self.assertEqual(section.count("<dd"), 4)
+        self.assertEqual(len(re.findall(r'<dd class="[^"]*mt-5"', section)), 4)
+        # Inicio y el pie no cambian.
+        self.assertNotIn('<dd class="text-mist mt-5"', home)
+
+    def test_contact_local_highlighted_days_and_larger_titles(self):
+        business = {"opening_hours": (("Lunes", "18:00-00:00"), ("Martes", "18:00-00:00"))}
+        with mock.patch.dict("apps.web.content.BUSINESS", business):
+            contact = self.client.get(reverse("web:contact")).content.decode()
+            home = self.client.get(reverse("web:home")).content.decode()
+        section = contact[contact.index('aria-labelledby="datos-local"'):contact.index('aria-labelledby="contacto-cuenta"')]
+        self.assertIn('<li><span class="text-paper">Lunes</span>: 18:00-00:00</li>', section)
+        self.assertIn('<li><span class="text-paper">Martes</span>: 18:00-00:00</li>', section)
+        self.assertEqual(section.count('<dt class="font-semibold text-paper text-base">'), 3)  # sin redes
+        # Inicio no cambia.
+        self.assertIn("<li>Lunes: 18:00-00:00</li>", home)
+        self.assertNotIn("text-paper text-base", home)
+
+    def test_contact_local_address_links_to_google_maps(self):
+        with mock.patch.dict("apps.web.content.BUSINESS", {"address": "Rúa Ficticia 0"}):
+            contact = self.client.get(reverse("web:contact")).content.decode()
+            home = self.client.get(reverse("web:home")).content.decode()
+        self.assertIn(
+            '<a class="link" href="https://maps.app.goo.gl/1azgzDRChyNmEtHy8" rel="noopener noreferrer" data-contact-map>Rúa Ficticia 0</a>',
+            contact,
+        )
+        # En el pie («Visítanos») también enlaza; en «El local» de Inicio, no.
+        footer = home[home.index("data-footer-visit"):home.index("data-footer-hours")]
+        self.assertIn('href="https://maps.app.goo.gl/1azgzDRChyNmEtHy8" rel="noopener noreferrer" data-contact-map>Rúa Ficticia 0</a>', footer)
+        local = home[home.index('aria-labelledby="local-titulo"'):]
+        local = local[:local.index("</section>")]
+        self.assertIn("Rúa Ficticia 0", local)
+        self.assertNotIn("data-contact-map", local)
+
+    def test_contact_local_without_address_has_no_map_link(self):
+        contact = self.client.get(reverse("web:contact")).content.decode()
+        self.assertNotIn("data-contact-map", contact)
+        self.assertIn("dirección pendiente de publicar", contact)
+
+    def test_contact_local_labels_phone_and_email(self):
+        business = {"phone": "600 000 000", "email": "info@example.com"}
+        with mock.patch.dict("apps.web.content.BUSINESS", business):
+            contact = self.client.get(reverse("web:contact")).content.decode()
+            home = self.client.get(reverse("web:home")).content.decode()
+        section = contact[contact.index('aria-labelledby="datos-local"'):contact.index('aria-labelledby="contacto-cuenta"')]
+        # Teléfono arriba y email justo debajo, sin espacio.
+        self.assertIn('<p data-contact-phone><span class="text-paper">Teléfono:</span> <a class="link" href="tel:600 000 000">', section)
+        self.assertIn('<p data-contact-email><span class="text-paper">E-mail:</span> <a class="link" href="mailto:info@example.com">', section)
+        self.assertLess(section.index("data-contact-phone"), section.index("data-contact-email"))
+        # Inicio y el pie siguen sin etiquetas.
+        self.assertNotIn("Teléfono:", home)
+        self.assertNotIn("E-mail:", home)
+
+    def test_contact_local_email_only_has_no_phone_line(self):
+        with mock.patch.dict("apps.web.content.BUSINESS", {"email": "info@example.com"}):
+            contact = self.client.get(reverse("web:contact")).content.decode()
+        self.assertIn('<p data-contact-email><span class="text-paper">E-mail:</span>', contact)
+        self.assertNotIn("data-contact-phone", contact)
 
     def test_business_info_is_rendered_when_provided(self):
         business = {

@@ -18,8 +18,10 @@
     </div>
   {% endif %}
 
-  {# Secciones que ordena el propietario (Fase 22): una debajo de otra. #}
-  {% for section in sections %}{% include section.template %}
-  {% endfor %}
+  {# Secciones que ordena el propietario (Fase 22): una al lado de la otra desde md; en móvil, apiladas. #}
+  <div class="grid items-start gap-6{% if sections|length > 1 %} md:grid-cols-2{% endif %}" data-contact-sections>
+    {% for section in sections %}{% include section.template %}
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

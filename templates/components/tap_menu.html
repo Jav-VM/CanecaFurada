@@ -15,10 +15,7 @@ heading_intro. Sin ellos, los textos de siempre.
       <img src="{{ tap_menu.image.url }}" alt="{% blocktranslate with title=tap_menu.title %}{{ title }}: cervezas que hay ahora en los grifos{% endblocktranslate %}{% if tap_menu.text_alternative %} {% translate '(versión en texto a continuación)' %}{% endif %}" {% if tap_menu.image_width %}width="{{ tap_menu.image_width }}" height="{{ tap_menu.image_height }}"{% endif %} loading="lazy" decoding="async" class="mx-auto h-auto w-full max-w-3xl rounded-xl">
       {% if tap_menu.text_alternative %}
         <figcaption class="mt-4">
-          <details>
-            <summary class="link cursor-pointer font-semibold">{% translate "Ver la carta de grifos en texto" %}</summary>
-            <p class="mt-3 text-sm text-mist">{{ tap_menu.text_alternative|linebreaksbr }}</p>
-          </details>
+          <p class="text-sm text-mist" data-tap-menu-text>{{ tap_menu.text_alternative|linebreaksbr }}</p>
         </figcaption>
       {% endif %}
     </figure>

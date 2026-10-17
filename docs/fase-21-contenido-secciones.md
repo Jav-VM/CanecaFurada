@@ -81,7 +81,7 @@ Tras actualizar: `python manage.py migrate` y `python scripts/i18n.py compile`.
 - El texto es plano: sin negritas ni enlaces.
 - Lo escrito por el propietario no se traduce (Fase 15).
 - Los textos de las secciones se leen de la base de datos en cada visita a Inicio y A cervexaría (dos consultas); no se cachean.
-- La galería abre cada imagen en su URL; no hay visor a pantalla completa.
+- La galería abre cada imagen en su URL; no hay visor a pantalla completa. Desde el 2026-10-17 es un carrusel (ver apartado 9).
 
 ## 8. Ajuste posterior: horario en su propia columna del pie (2026-10-17)
 
@@ -97,3 +97,15 @@ Tras actualizar: `python manage.py migrate` y `python scripts/i18n.py compile`.
 - **Pendiente:** revisión visual en escritorio y móvil.
 - **Ajuste (2026-10-17):** cada franja del horario del pie va en una línea, con la hora a la derecha del día. Se probó también repartir el contenido del pie en subcolumnas para que no creciera hacia abajo, pero el usuario pidió revertirlo.
 
+## 9. Ajuste posterior: galería en carrusel (2026-10-17)
+
+- **Petición:** en A cervexaría, que la galería de una sección o artículo muestre una sola imagen a la vez, con el mismo tamaño, proporción y lugar que una imagen sola (primero se hizo a todo el ancho; el usuario lo cambió el mismo día), con una flecha a la izquierda (anterior) y otra a la derecha (siguiente). Los botones, transparentes: solo se ve la flecha.
+- **Cambio:**
+  - `templates/web/about/_gallery.html`: en vez de la cuadrícula de miniaturas, una pista horizontal con *scroll-snap* (`data-carousel`). El carrusel va en el sitio de la imagen sola: a la derecha del texto en pantallas grandes (`lg:grid-cols-2 lg:items-center`) y debajo en móvil, con ancho máximo `max-w-md`. Cada foto conserva su proporción (`h-auto w-full object-cover`, como `_figure.html`) y enlaza a su URL, que se abre en otra pestaña (`target="_blank"`, `rel="noopener noreferrer"`). Cada imagen se anuncia como «Imagen N de total» y la galería como carrusel (`aria-roledescription`).
+  - `static/js/app.js`: muestra las flechas («Imagen anterior» / «Imagen siguiente»). Pasan una imagen, en bucle (de la última a la primera y al revés), con desplazamiento suave, o inmediato si el usuario prefiere reducir el movimiento. Con el foco en la galería también funcionan ← y →.
+  - `assets/css/input.css` → `static/css/app.css` (`python scripts/tailwind.py build`): `.carousel-track`, sin barra de scroll, y `.carousel-arrow`, flecha blanca sobre un círculo oscuro translúcido (`bg-ink/45`, borde fino `ring-paper/20`, ligero desenfoque), que se oscurece al pasar el ratón (`bg-ink/70`) y pone la flecha dorada; separada 8 px del borde, con el anillo de foco general y un área de 56 px.
+- **Sin JavaScript:** las flechas no se ven y las imágenes se pasan deslizando.
+- Afecta a todas las galerías de A cervexaría: artículos (`_article.html`), Historia (`_historia.html`, que ahora va siempre en dos columnas: imagen, carrusel o el cartel del aniversario) y Cómo trabajamos (`_como.html`). Con una sola imagen no hay galería: se sigue usando la figura.
+- **Traducciones:** «carrusel», «Imagen %(number)s de %(total)s», «Imagen anterior» e «Imagen siguiente» añadidas a mano en `locale/gl` («Imaxe … de …», «Imaxe anterior», «Imaxe seguinte») y `locale/es`, en el orden de `makemessages`. **Pendiente:** `python scripts/i18n.py check` y `compile` donde haya gettext (lo hace el CI). Mientras no se compilen los `.mo` en local, en gallego esos textos salen en castellano.
+- **Tests:** 3 nuevos en `tests/web/test_page_blocks.py` (`test_gallery_is_a_carousel_one_image_at_a_time`, `test_gallery_alt_text_is_escaped`, `test_article_carousel_sits_next_to_the_text_like_a_single_image`). `python manage.py test --settings=config.settings.test --noinput` → **1085 tests OK**. El JavaScript no tiene tests automáticos en el repositorio, ni se ha podido comprobar su sintaxis con Node (no está instalado).
+- **Pendiente:** revisión manual en navegador: flechas, paso en bucle, teclado, móvil y sin JS.

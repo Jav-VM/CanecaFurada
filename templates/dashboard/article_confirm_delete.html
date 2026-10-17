@@ -8,7 +8,7 @@
   <form method="post" class="flex flex-wrap gap-3">
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">{% translate "Sí, eliminar" %}</button>
-    <a class="btn btn-secondary" href="{% url 'dashboard:section_edit' 'cerveceria' page_block.key %}">{% translate "Cancelar" %}</a>
+    <a class="btn btn-secondary" href="{% url 'dashboard:section_edit' page_block.page page_block.key %}">{% translate "Cancelar" %}</a>
   </form>
 </div>
 {% endblock %}

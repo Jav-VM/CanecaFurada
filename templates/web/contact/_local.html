@@ -3,5 +3,5 @@
   {% if section.eyebrow %}<p class="eyebrow mb-2">{{ section.eyebrow }}</p>{% endif %}
   <h2 id="datos-local" class="heading-md mb-6">{{ section.title }}</h2>
   {% if section.body %}<div class="mb-6 text-mist">{{ section.body|linebreaksbr }}</div>{% endif %}
-  {% include "components/business_info.html" %}
+  {% include "components/business_info.html" with spaced=True %}
 </section>

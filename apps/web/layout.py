@@ -145,5 +145,8 @@ DEFAULT_TEXTS = {
         "cuenta": ("", _("¿Tienes cuenta?"), _("Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil.")),
     },
 }
-# Secciones con imágenes propias (solo La cervecería; los artículos también).
+# Secciones fijas con imágenes propias (solo La cervecería).
 IMAGE_PAGES = (ABOUT,)
+# Páginas que admiten artículos del propietario (Fase 21: La cervecería; Fase 23: también
+# Inicio y Eventos). Los artículos llevan imágenes en cualquiera de ellas.
+ARTICLE_PAGES = (HOME, ABOUT, EVENTS)

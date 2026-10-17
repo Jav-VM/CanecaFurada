@@ -264,7 +264,8 @@ class ContentAndSettingsTests(DashboardTestCase):
         self.assertRedirects(response, reverse("dashboard:content"))
         contact = self.client.get(reverse("web:contact"))
         self.assertContains(contact, "Rúa Ficticia 0, A Coruña")
-        self.assertContains(contact, "Lunes a jueves: 18:00–00:00")
+        # En Contacto el día va resaltado, como «Teléfono» y «E-mail».
+        self.assertContains(contact, '<span class="text-paper">Lunes a jueves</span>: 18:00–00:00')
         self.assertContains(contact, 'href="https://example.com/caneca"')
         event = AuditEvent.objects.get(action=AuditEvent.Action.SITE_CONTENT_UPDATED)
         self.assertEqual(event.metadata["fields"], ["address", "email", "opening_hours", "social_links"])

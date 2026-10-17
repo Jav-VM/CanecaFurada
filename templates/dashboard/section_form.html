@@ -36,9 +36,40 @@
     <p class="note">{% translate "Son datos públicos: no escribas datos personales de clientes ni de empleados." %}</p>
     <div class="flex flex-wrap gap-3">
       <button type="submit" class="btn btn-primary" data-loading-text="{% translate 'Guardando…' %}">{% if article and not page_block %}{% translate "Crear artículo" %}{% else %}{% translate "Guardar" %}{% endif %}</button>
-      {% if article and page_block %}<a class="btn btn-secondary" href="{% url 'dashboard:article_delete' page_block.key %}">{% translate "Eliminar artículo" %}</a>{% endif %}
+      {% if article and page_block %}<a class="btn btn-secondary" href="{% url 'dashboard:article_delete' page_block.page page_block.key %}">{% translate "Eliminar artículo" %}</a>{% endif %}
     </div>
   </form>
+
+  {% if copy_sources is not None %}
+    {# Fase 23: copiar aquí un artículo de otra página (copia independiente, con sus imágenes). #}
+    <section aria-labelledby="copiar-articulo" class="card mt-8" data-copy-articles>
+      <h2 id="copiar-articulo" class="heading-md mb-2">{% translate "Usar un artículo de otra página" %}</h2>
+      <p class="note mb-4">{% translate "Se crea una copia en esta página, con sus textos e imágenes. Después cada artículo se edita y se elimina por separado." %}</p>
+      {% if copy_sources %}
+        <ul class="divide-y divide-line">
+          {% for source in copy_sources %}
+            <li class="flex flex-wrap items-center gap-4 py-3" data-copy-source>
+              {% with first=source.images.all|first %}
+                {% if first %}<img src="{{ first.image.url }}" alt="" class="size-14 shrink-0 rounded-lg object-cover">{% endif %}
+              {% endwith %}
+              <div class="min-w-0 flex-1">
+                <p class="font-semibold text-paper">{{ source.title }}</p>
+                <p class="text-sm text-mist">{{ source.get_page_display }} · {% blocktranslate trimmed with count=source.images.all|length %}Imágenes: {{ count }}{% endblocktranslate %}</p>
+              </div>
+              <form method="post" action="{% url 'dashboard:article_copy' page %}" data-loading>
+                {% csrf_token %}
+                <input type="hidden" name="origen" value="{{ source.public_id }}">
+                <button type="submit" class="btn btn-secondary btn-sm" data-loading-text="{% translate 'Copiando…' %}">{% translate "Copiar aquí" %}<span class="sr-only">: {{ source.title }}</span></button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-sm text-mist" data-copy-empty>{% translate "No hay artículos en otras páginas." %}</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
   <p class="mt-4 text-sm"><a class="link" href="{% url 'dashboard:content' %}#orden-{{ page }}">{% translate "← Volver a Contenido" %}</a></p>
 </div>
 {% endblock %}
