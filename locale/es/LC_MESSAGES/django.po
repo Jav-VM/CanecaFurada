@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Caneca Furada\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 09:06+0200\n"
+"POT-Creation-Date: 2026-10-17 09:55+0200\n"
 "PO-Revision-Date: 2026-10-16 22:30+0200\n"
 "Last-Translator: Caneca Furada\n"
 "Language-Team: Castellano\n"
@@ -3210,6 +3210,27 @@ msgstr "Nuestra historia"
 msgid "Cómo trabajamos"
 msgstr "Cómo trabajamos"
 
+msgid "Carta por categorías"
+msgstr "Carta por categorías"
+
+msgid "Cómo funciona"
+msgstr "Cómo funciona"
+
+msgid "Recompensas disponibles"
+msgstr "Recompensas disponibles"
+
+msgid "Únete al club"
+msgstr "Únete al club"
+
+msgid "Próximos eventos"
+msgstr "Próximos eventos"
+
+msgid "¿Quieres reservar mesa?"
+msgstr "¿Quieres reservar mesa?"
+
+msgid "¿Tienes cuenta?"
+msgstr "¿Tienes cuenta?"
+
 msgid "La casa"
 msgstr "La casa"
 
@@ -3242,6 +3263,18 @@ msgstr "Cerveza 100% artesana"
 
 msgid "Caneca Furada es una cervecería artesana de A Coruña."
 msgstr "Caneca Furada es una cervecería artesana de A Coruña."
+
+msgid "En grifo"
+msgstr "En grifo"
+
+msgid "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
+msgstr "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
+
+msgid "Catálogo"
+msgstr "Catálogo"
+
+msgid "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
+msgstr "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
 
 msgid "dirección pública del local"
 msgstr "dirección pública del local"
@@ -3278,6 +3311,18 @@ msgstr "orden de las secciones del inicio"
 
 msgid "orden de las secciones de La cervecería"
 msgstr "orden de las secciones de La cervecería"
+
+msgid "orden de las secciones de la Carta"
+msgstr "orden de las secciones de la Carta"
+
+msgid "orden de las secciones de Recompensas"
+msgstr "orden de las secciones de Recompensas"
+
+msgid "orden de las secciones de Eventos"
+msgstr "orden de las secciones de Eventos"
+
+msgid "orden de las secciones de Contacto"
+msgstr "orden de las secciones de Contacto"
 
 msgid "contenido del local"
 msgstr "contenido del local"
@@ -3522,9 +3567,6 @@ msgstr "Guardar preferencias"
 msgid "Crear cuenta"
 msgstr "Crear cuenta"
 
-msgid "Únete al club"
-msgstr "Únete al club"
-
 msgid "Crear cuenta de cliente"
 msgstr "Crear cuenta de cliente"
 
@@ -3720,9 +3762,6 @@ msgstr "Graduación"
 
 msgid "Cervecera"
 msgstr "Cervecera"
-
-msgid "En grifo"
-msgstr "En grifo"
 
 #, python-format
 msgid "%(title)s: cervezas que hay ahora en los grifos"
@@ -4388,9 +4427,6 @@ msgstr "%(count)s confirmadas"
 msgid "%(count)s pendientes"
 msgstr "%(count)s pendientes"
 
-msgid "Próximos eventos"
-msgstr "Próximos eventos"
-
 #, python-format
 msgid "Publicados · %(count)s reservas confirmadas por venir"
 msgstr "Publicados · %(count)s reservas confirmadas por venir"
@@ -4642,9 +4678,6 @@ msgstr "No hay reservas con estos filtros."
 
 msgid "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
 msgstr "El listado no muestra datos de contacto. Al abrir una reserva verás el email y el teléfono del cliente; esa consulta queda registrada."
-
-msgid "Catálogo"
-msgstr "Catálogo"
 
 msgid "Nueva recompensa"
 msgstr "Nueva recompensa"
@@ -5531,12 +5564,6 @@ msgstr "Llamar al %(phone)s"
 msgid "Ahora mismo las reservas se hacen por teléfono. Pásate por el local o escríbenos y te indicamos cómo reservar."
 msgstr "Ahora mismo las reservas se hacen por teléfono. Pásate por el local o escríbenos y te indicamos cómo reservar."
 
-msgid "¿Tienes cuenta?"
-msgstr "¿Tienes cuenta?"
-
-msgid "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
-msgstr "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil."
-
 msgid "Lo que pasa en Caneca Furada."
 msgstr "Lo que pasa en Caneca Furada."
 
@@ -5545,9 +5572,6 @@ msgstr "No hay eventos publicados todavía"
 
 msgid "Cuando programemos el próximo, lo verás aquí."
 msgstr "Cuando programemos el próximo, lo verás aquí."
-
-msgid "¿Quieres reservar mesa?"
-msgstr "¿Quieres reservar mesa?"
 
 msgid "Envía una solicitud desde tu cuenta y te confirmaremos por email."
 msgstr "Envía una solicitud desde tu cuenta y te confirmaremos por email."
@@ -5608,15 +5632,6 @@ msgstr "Dónde estamos"
 
 msgid "Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa."
 msgstr "Tu fidelidad, en la jarra. Con tu cuenta acumularás puntos con tus consumiciones y podrás cambiarlos por recompensas de la casa."
-
-msgid "Cómo funciona"
-msgstr "Cómo funciona"
-
-msgid "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
-msgstr "Para sumar y canjear puntos necesitas una cuenta con el email verificado. Al canjear recibes un código de un solo uso que enseñas en la barra; si no lo usas a tiempo o lo cancelas, recuperas los puntos."
-
-msgid "Recompensas disponibles"
-msgstr "Recompensas disponibles"
 
 #, python-format
 msgid "Hasta el %(date)s"

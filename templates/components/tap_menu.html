@@ -2,9 +2,14 @@
 {% comment %}
 Carta de grifos: imagen que sube el propietario desde el admin. Mientras no
 haya ninguna publicada se reserva su hueco. Parámetro: tap_menu (o None).
+Opcionales (Fase 22, textos del propietario): heading_eyebrow, heading_title,
+heading_intro. Sin ellos, los textos de siempre.
 {% endcomment %}
-<section aria-labelledby="carta-grifos" class="mb-16">
-  {% include "components/section_heading.html" with id="carta-grifos" eyebrow=_("En grifo") title=tap_menu.title|default:_("Carta de grifos") %}
+<section aria-labelledby="carta-grifos" class="mb-16 scroll-mt-24">
+  {% translate "Carta de grifos" as fallback_title %}{% translate "En grifo" as fallback_eyebrow %}
+  {% firstof heading_title tap_menu.title fallback_title as title_text %}
+  {% firstof heading_eyebrow fallback_eyebrow as eyebrow_text %}
+  {% include "components/section_heading.html" with id="carta-grifos" eyebrow=eyebrow_text title=title_text intro=heading_intro %}
   {% if tap_menu %}
     <figure class="card p-3 sm:p-4">
       <img src="{{ tap_menu.image.url }}" alt="{% blocktranslate with title=tap_menu.title %}{{ title }}: cervezas que hay ahora en los grifos{% endblocktranslate %}{% if tap_menu.text_alternative %} {% translate '(versión en texto a continuación)' %}{% endif %}" {% if tap_menu.image_width %}width="{{ tap_menu.image_width }}" height="{{ tap_menu.image_height }}"{% endif %} loading="lazy" decoding="async" class="mx-auto h-auto w-full max-w-3xl rounded-xl">

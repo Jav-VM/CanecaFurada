@@ -25,6 +25,7 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 | 19 | Filtro «sin gasto», selección de clientes y campañas con imagen y puntos | **Completa** ([detalle](fase-19-campanas-seleccion.md)); pendientes revisión visual y prueba con SMTP real |
 | 20 | Ordenar y ocultar las secciones de Inicio y La cervecería | **Completa** ([detalle](fase-20-orden-secciones.md)); pendiente revisión visual |
 | 21 | Contenido editable de las secciones y artículos en La cervecería | **Completa** ([detalle](fase-21-contenido-secciones.md)); pendiente revisión visual |
+| 22 | Secciones de Carta, Agasallos, Eventos y Contacto | **Completa** ([detalle](fase-22-secciones-otras-paginas.md)); pendiente revisión visual |
 | Futuro | App móvil (Flutter) | Fuera del alcance actual |
 
 ---
@@ -255,6 +256,14 @@ El prompt maestro es la fuente de verdad de los requisitos. Este documento divid
 - **Criterios:** campo vacío = texto traducido de siempre; solo propietario; imágenes validadas; texto escapado; migración aditiva; suite existente intacta.
 - **Resultado (2026-10-17):** 15 tests nuevos; **1058 tests OK**; migración aplicada en PostgreSQL y en la demo.
 - Ver [fase-21-contenido-secciones.md](fase-21-contenido-secciones.md).
+
+## Fase 22 — Secciones de Carta, Agasallos, Eventos y Contacto
+- **Numeración:** fase añadida por el usuario el 2026-10-17.
+- **Incluye:** ordenar, ocultar y editar los textos de las secciones de Carta, Recompensas (Agasallos), Eventos y Contacto, igual que Inicio.
+- **Decisiones del usuario:** como Inicio (solo textos); en Contacto, «El local» y «¿Tienes cuenta?» una debajo de otra.
+- **Criterios:** orden por defecto igual al anterior; textos dependientes del estado intactos; lista blanca; solo propietario; migración aditiva; suite existente intacta.
+- **Resultado (2026-10-17):** 14 tests nuevos; **1073 tests OK**; migración aplicada en PostgreSQL y en la demo.
+- Ver [fase-22-secciones-otras-paginas.md](fase-22-secciones-otras-paginas.md).
 
 ## Futuro — App móvil
 Flutter para iOS y Android consumiendo la API v1. No se desarrolla en estas fases.

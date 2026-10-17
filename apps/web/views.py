@@ -42,6 +42,7 @@ class MenuView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["categories"] = catalog.public_menu()
         context["tap_menu"] = catalog.current_tap_menu()
+        context["sections"] = blocks.page_sections(layout.MENU, web.business_info())
         return context
 
 
@@ -51,6 +52,7 @@ class RewardsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["rewards"] = rewards.public_rewards()
+        context["sections"] = blocks.page_sections(layout.REWARDS, web.business_info())
         return context
 
 
@@ -60,8 +62,14 @@ class EventsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["events"] = events.public_events()
+        context["sections"] = blocks.page_sections(layout.EVENTS, web.business_info())
         return context
 
 
 class ContactView(TemplateView):
     template_name = "web/contact.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sections"] = blocks.page_sections(layout.CONTACT, web.business_info())
+        return context

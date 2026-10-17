@@ -1,0 +1,9 @@
+{# --- Cómo funciona (Fase 22: textos editables) --- #}
+<section aria-labelledby="como-funciona" class="container-page py-16">
+  <div class="mb-10 max-w-2xl">
+    {% if section.eyebrow %}<p class="eyebrow mb-3">{{ section.eyebrow }}</p>{% endif %}
+    <h2 id="como-funciona" class="heading-lg">{{ section.title }}</h2>
+  </div>
+  {% include "components/loyalty_steps.html" %}
+  {% if section.body %}<div class="mt-6 text-sm text-mist">{{ section.body|linebreaksbr }}</div>{% endif %}
+</section>

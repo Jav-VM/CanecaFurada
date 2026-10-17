@@ -1,0 +1,25 @@
+{% load i18n %}
+{# --- Carta por categorías (Fase 22). Sin textos propios no lleva encabezado (como antes). --- #}
+<div data-menu-listing>
+  {% if section.title or section.body %}
+    {% include "components/section_heading.html" with id="carta-categorias" eyebrow=section.eyebrow title=section.title intro=section.body %}
+  {% endif %}
+  {% if categories %}
+    {% for category in categories %}
+      <section aria-labelledby="{{ category.slug }}" class="mb-16 scroll-mt-24 last:mb-0">
+        {% include "components/section_heading.html" with id=category.slug title=category.name intro=category.description %}
+        <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {% for product in category.public_products %}
+            <li>{% include "components/product_card.html" %}</li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  {% else %}
+    <section aria-labelledby="carta-listado">
+      <h2 id="carta-listado" class="sr-only">{% translate "Productos" %}</h2>
+      {% url 'web:contact' as contact_url %}
+      {% include "components/empty_state.html" with title=_("Estamos preparando la carta online") text=_("Mientras tanto, pregunta en la barra por las cervezas de hoy.") cta_url=contact_url cta_label=_("Dónde estamos") %}
+    </section>
+  {% endif %}
+</div>

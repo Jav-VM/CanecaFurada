@@ -1,0 +1,7 @@
+{# --- El local (Fase 22: textos editables; los datos salen de Contenido) --- #}
+<section aria-labelledby="datos-local" class="card p-8">
+  {% if section.eyebrow %}<p class="eyebrow mb-2">{{ section.eyebrow }}</p>{% endif %}
+  <h2 id="datos-local" class="heading-md mb-6">{{ section.title }}</h2>
+  {% if section.body %}<div class="mb-6 text-mist">{{ section.body|linebreaksbr }}</div>{% endif %}
+  {% include "components/business_info.html" %}
+</section>

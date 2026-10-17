@@ -1,0 +1,15 @@
+{% load i18n %}
+{# --- ¿Tienes cuenta? (Fase 22: textos editables) --- #}
+<section aria-labelledby="contacto-cuenta" class="card p-8">
+  {% if section.eyebrow %}<p class="eyebrow mb-2">{{ section.eyebrow }}</p>{% endif %}
+  <h2 id="contacto-cuenta" class="heading-md mb-4">{{ section.title }}</h2>
+  {% if section.body %}<div class="text-mist">{{ section.body|linebreaksbr }}</div>{% endif %}
+  <div class="mt-6 flex flex-wrap gap-3">
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:home' %}" class="btn btn-primary">{% translate "Mi cuenta" %}</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="btn btn-primary">{% translate "Entrar" %}</a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-secondary">{% translate "Crear cuenta" %}</a>
+    {% endif %}
+  </div>
+</section>

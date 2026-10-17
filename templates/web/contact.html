@@ -4,9 +4,10 @@
 {% block content %}
 {% include "components/page_header.html" with eyebrow=_("Contacto") title=_("Ven a vernos") intro=business.city %}
 
-<section aria-labelledby="datos-local" class="container-page py-16">
+<div class="container-page space-y-6 py-16">
+  {# Fijo arriba: aviso de reservas por teléfono (Fase 17). #}
   {% if not business.online_reservations_enabled %}
-    <div id="reservas" class="card mb-6 p-8" data-phone-reservations>
+    <div id="reservas" class="card p-8" data-phone-reservations>
       <h2 class="heading-md mb-2">{% translate "Reservas por teléfono" %}</h2>
       {% if business.phone %}
         <p class="text-mist">{% translate "Ahora mismo las reservas se hacen por teléfono. Llámanos y te guardamos sitio:" %}</p>
@@ -16,23 +17,9 @@
       {% endif %}
     </div>
   {% endif %}
-  <div class="grid gap-6 md:grid-cols-[1.2fr_1fr]">
-    <div class="card p-8">
-      <h2 id="datos-local" class="heading-md mb-6">{% translate "El local" %}</h2>
-      {% include "components/business_info.html" %}
-    </div>
-    <div class="card p-8">
-      <h2 class="heading-md mb-4">{% translate "¿Tienes cuenta?" %}</h2>
-      <p class="text-mist">{% translate "Gestiona tus datos, tu email y tus preferencias de comunicación desde tu perfil." %}</p>
-      <div class="mt-6 flex flex-wrap gap-3">
-        {% if user.is_authenticated %}
-          <a href="{% url 'accounts:home' %}" class="btn btn-primary">{% translate "Mi cuenta" %}</a>
-        {% else %}
-          <a href="{% url 'accounts:login' %}" class="btn btn-primary">{% translate "Entrar" %}</a>
-          <a href="{% url 'accounts:register' %}" class="btn btn-secondary">{% translate "Crear cuenta" %}</a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</section>
+
+  {# Secciones que ordena el propietario (Fase 22): una debajo de otra. #}
+  {% for section in sections %}{% include section.template %}
+  {% endfor %}
+</div>
 {% endblock %}

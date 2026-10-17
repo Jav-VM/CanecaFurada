@@ -1,0 +1,27 @@
+{% load i18n %}
+{# --- Catálogo de recompensas (Fase 22: textos editables; la lista sale sola) --- #}
+<section aria-labelledby="catalogo" class="container-page py-8">
+  {% include "components/section_heading.html" with id="catalogo" eyebrow=section.eyebrow title=section.title intro=section.body %}
+  {% if rewards %}
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for reward in rewards %}
+        <li class="card card-hover flex flex-col gap-4" data-reward>
+          {% if reward.image %}<img src="{{ reward.image.url }}" alt="" width="{{ reward.image_width }}" height="{{ reward.image_height }}" class="aspect-[4/3] h-auto w-full rounded-xl object-cover" loading="lazy">{% endif %}
+          <div class="flex-1">
+            <h3 class="heading-md">{{ reward.name }}</h3>
+            {% if reward.description %}<p class="mt-2 text-mist">{{ reward.description|truncatechars:200 }}</p>{% endif %}
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <span class="text-lg font-extrabold text-gold">{% blocktranslate count points=reward.points_cost %}{{ points }} punto{% plural %}{{ points }} puntos{% endblocktranslate %}</span>
+            {% if not reward.is_in_stock %}<span class="badge badge-muted">{% translate "Agotada" context "recompensa" %}</span>
+            {% elif reward.valid_until %}<span class="text-sm text-mist">{% blocktranslate with date=reward.valid_until|date:"d/m/Y" %}Hasta el {{ date }}{% endblocktranslate %}</span>{% endif %}
+          </div>
+          {% if reward.is_in_stock %}<a href="{% url 'rewards:reward_detail' reward.public_id %}" class="btn btn-secondary btn-block">{% translate "Canjear" %}</a>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    {% include "components/empty_state.html" with title=_("El catálogo de recompensas aún no está publicado") text=_("Lo anunciaremos aquí y por email a quienes lo hayan aceptado.") %}
+  {% endif %}
+  <div class="mt-6">{% include "components/pending.html" with what=_("condiciones del programa de puntos") %}</div>
+</section>

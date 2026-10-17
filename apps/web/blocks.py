@@ -187,13 +187,12 @@ class Section:
 def _template(page, key, is_article):
     if is_article:
         return "web/about/_article.html"
-    folder = "home" if page == layout.HOME else "about"
-    return f"web/{folder}/_{key}.html"
+    return f"web/{layout.TEMPLATE_FOLDERS[page]}/_{key}.html"
 
 
 def page_sections(page, business):
     """Secciones visibles de `page`, en orden, con sus textos ya resueltos."""
-    keys = business["home_sections"] if page == layout.HOME else business["about_sections"]
+    keys = business["page_sections_visible"][page]
     blocks = {block.key: block for block in PageBlock.objects.filter(page=page).prefetch_related("images")}
     fixed = set(fixed_keys(page))
     sections = []

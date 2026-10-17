@@ -69,6 +69,11 @@ class BusinessInfo(models.Model):
     # Fase 20: orden y visibilidad de las secciones (ver `layout.py`). Vacío = orden por defecto.
     home_layout = models.JSONField(_("orden de las secciones del inicio"), default=list, blank=True)
     about_layout = models.JSONField(_("orden de las secciones de La cervecería"), default=list, blank=True)
+    # Fase 22.
+    menu_layout = models.JSONField(_("orden de las secciones de la Carta"), default=list, blank=True)
+    rewards_layout = models.JSONField(_("orden de las secciones de Recompensas"), default=list, blank=True)
+    events_layout = models.JSONField(_("orden de las secciones de Eventos"), default=list, blank=True)
+    contact_layout = models.JSONField(_("orden de las secciones de Contacto"), default=list, blank=True)
     updated_at = models.DateTimeField(_("actualizado"), auto_now=True)
 
     class Meta:
@@ -126,6 +131,10 @@ class PageBlock(models.Model):
     class Page(models.TextChoices):
         HOME = "inicio", _("Inicio")
         ABOUT = "cerveceria", _("La cervecería")
+        MENU = "carta", _("Carta")
+        REWARDS = "agasallos", _("Recompensas")
+        EVENTS = "eventos", _("Eventos")
+        CONTACT = "contacto", _("Contacto")
 
     MAX_IMAGES = 12
 
@@ -147,7 +156,10 @@ class PageBlock(models.Model):
         verbose_name_plural = _("secciones de página")
         constraints = [
             models.UniqueConstraint(fields=["page", "key"], name="web_pageblock_page_key_unique"),
-            models.CheckConstraint(condition=Q(page__in=["inicio", "cerveceria"]), name="web_pageblock_page_valid"),
+            models.CheckConstraint(
+                condition=Q(page__in=["inicio", "cerveceria", "carta", "agasallos", "eventos", "contacto"]),
+                name="web_pageblock_page_valid",
+            ),
             models.CheckConstraint(
                 condition=Q(is_article=False) | (Q(page="cerveceria") & ~Q(title="")),
                 name="web_pageblock_article_shape",

@@ -1,0 +1,16 @@
+{% load i18n %}
+{# --- Próximos eventos (Fase 22). Sin textos propios no lleva encabezado visible (como antes). --- #}
+<section aria-labelledby="eventos-listado">
+  {% if section.title or section.body %}
+    {% include "components/section_heading.html" with id="eventos-listado" eyebrow=section.eyebrow title=section.title intro=section.body %}
+  {% else %}
+    <h2 id="eventos-listado" class="sr-only">{% translate "Próximos eventos" %}</h2>
+  {% endif %}
+  {% if events %}
+    <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-event-list>
+      {% for event in events %}<li>{% include "components/event_card.html" %}</li>{% endfor %}
+    </ul>
+  {% else %}
+    {% include "components/empty_state.html" with title=_("No hay eventos publicados todavía") text=_("Cuando programemos el próximo, lo verás aquí.") %}
+  {% endif %}
+</section>

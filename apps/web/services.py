@@ -56,8 +56,11 @@ def _stored_values():
         "hero_text": info.hero_text or None,
         "announcement": info.announcement or None,
         "online_reservations_enabled": info.online_reservations_enabled,
-        "home_layout": layout.normalize(info.home_layout, sections_for(layout.HOME)),
-        "about_layout": layout.normalize(info.about_layout, sections_for(layout.ABOUT)),
+        # Fases 20–22: orden de cada página, ya normalizado.
+        "layouts": {
+            page: layout.normalize(getattr(info, field), sections_for(page))
+            for page, (field, _sections, _label) in layout.PAGES.items()
+        },
     }
 
 
@@ -76,12 +79,13 @@ def business_info():
     # Booleano: `False` también cuenta (el filtro anterior lo descartaría).
     data["online_reservations_enabled"] = stored.get("online_reservations_enabled", True)
     # Fase 20: claves visibles en orden, siempre de la lista blanca.
-    home = stored.get("home_layout") or layout.normalize([], sections_for(layout.HOME))
-    about = stored.get("about_layout") or layout.normalize([], sections_for(layout.ABOUT))
-    data["home_sections"] = layout.visible_keys(home)
-    data["about_sections"] = layout.visible_keys(about)
-    data.pop("home_layout", None)
-    data.pop("about_layout", None)
+    layouts = stored.get("layouts") or {}
+    data["page_sections_visible"] = {
+        page: layout.visible_keys(layouts.get(page) or layout.normalize([], sections_for(page))) for page in layout.PAGES
+    }
+    data["home_sections"] = data["page_sections_visible"][layout.HOME]
+    data["about_sections"] = data["page_sections_visible"][layout.ABOUT]
+    data.pop("layouts", None)
     return data
 
 

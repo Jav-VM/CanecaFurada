@@ -5,10 +5,11 @@
 {% include "components/page_header.html" with eyebrow=_("Carta") title=_("Lo que servimos") intro=_("Cervezas de la casa, invitadas y de temporada.") %}
 
 <div class="container-page py-16">
+  {# Índice fijo arriba; enlaza a «Grifos» solo si esa sección se muestra. #}
   {% if categories %}
     <nav aria-label="{% translate 'Categorías de la carta' %}" class="mb-12">
       <ul class="flex flex-wrap gap-2">
-        <li><a href="#carta-grifos" class="badge badge-muted no-underline hover:text-gold">{% translate "Grifos" %}</a></li>
+        {% if "grifos" in business.page_sections_visible.carta %}<li><a href="#carta-grifos" class="badge badge-muted no-underline hover:text-gold">{% translate "Grifos" %}</a></li>{% endif %}
         {% for category in categories %}
           <li><a href="#{{ category.slug }}" class="badge badge-muted no-underline hover:text-gold">{{ category.name }}</a></li>
         {% endfor %}
@@ -16,25 +17,8 @@
     </nav>
   {% endif %}
 
-  {% include "components/tap_menu.html" %}
-
-  {% if categories %}
-    {% for category in categories %}
-      <section aria-labelledby="{{ category.slug }}" class="mb-16 scroll-mt-24 last:mb-0">
-        {% include "components/section_heading.html" with id=category.slug title=category.name intro=category.description %}
-        <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {% for product in category.public_products %}
-            <li>{% include "components/product_card.html" %}</li>
-          {% endfor %}
-        </ul>
-      </section>
-    {% endfor %}
-  {% else %}
-    <section aria-labelledby="carta-listado">
-      <h2 id="carta-listado" class="sr-only">{% translate "Productos" %}</h2>
-      {% url 'web:contact' as contact_url %}
-      {% include "components/empty_state.html" with title=_("Estamos preparando la carta online") text=_("Mientras tanto, pregunta en la barra por las cervezas de hoy.") cta_url=contact_url cta_label=_("Dónde estamos") %}
-    </section>
-  {% endif %}
+  {# Secciones que ordena el propietario (Fase 22): Dashboard → Contenido. #}
+  {% for section in sections %}{% include section.template %}
+  {% endfor %}
 </div>
 {% endblock %}

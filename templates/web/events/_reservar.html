@@ -1,0 +1,14 @@
+{% load i18n %}
+{# --- ¿Quieres reservar mesa? (Fase 22). Sin texto propio, cambia según las reservas online (Fase 17). --- #}
+<section aria-labelledby="eventos-reservar" class="card flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    {% if section.eyebrow %}<p class="eyebrow mb-2">{{ section.eyebrow }}</p>{% endif %}
+    <h2 id="eventos-reservar" class="text-lg font-bold">{{ section.title }}</h2>
+    <div class="mt-1 text-mist">{% if section.body %}{{ section.body|linebreaksbr }}{% elif business.online_reservations_enabled %}{% translate "Envía una solicitud desde tu cuenta y te confirmaremos por email." %}{% else %}{% translate "Las reservas se hacen por teléfono: llámanos y te guardamos sitio." %}{% endif %}</div>
+  </div>
+  {% if business.online_reservations_enabled %}
+    <a href="{% url 'events:reservation_new' %}" class="btn btn-secondary shrink-0">{% translate "Solicitar reserva" %}</a>
+  {% else %}
+    <a href="{% url 'web:contact' %}#reservas" class="btn btn-secondary shrink-0" data-reserve-by-phone>{% translate "Reservar por teléfono" %}</a>
+  {% endif %}
+</section>
